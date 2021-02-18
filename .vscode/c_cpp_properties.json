@@ -1,0 +1,24 @@
+{
+  "configurations": [
+    {
+      "defines": [
+        "VERSION=\"0.1.0\"",
+        "__GNUC__",
+        "__aarch64__"
+      ],
+      "includePath": [
+        "${workspaceFolder}/**",
+        "${workspaceFolder}/shared",
+        "${workspaceFolder}/include",
+        "${workspaceFolder}/extern/**",
+        "${workspaceFolder}/extern/libil2cpp/il2cpp/libil2cpp",
+        "C:\\Users\\nyamimi~\\AppData\\Local\\Android\\Sdk\\ndk\\android-ndk-r21e\\**"
+      ],
+      "name": "Quest",
+      "cStandard": "c11",
+      "cppStandard": "c++20",
+      "intelliSenseMode": "clang-x64"
+    }
+  ],
+  "version": 4
+}

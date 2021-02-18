@@ -1,0 +1,29 @@
+{
+  "id": "chroma",
+  "name": "Chroma",
+  "version": "0.1.0",
+  "author": "nyamimi~",
+  "description": [
+    "Core Chroma Plugin for Quest"
+  ],
+  "category": "Gameplay",
+  "gameVersion": "1.13.2",
+  "platform": "Quest",
+  "components": [
+    {
+      "type": "HookMod",
+      "installAction": {
+        "installLibraryFile": "libchroma.so"
+      },
+      "uninstallAction": {
+        "removeLibraryFile": "libchroma.so"
+      }
+    },
+    {
+      "type": "HookModLibrary",
+      "installAction": {
+        "installLibraryFile": "libbeatsaber-hook_1_0_12.so"
+      }
+    }
+  ]
+}
