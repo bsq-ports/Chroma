@@ -74,9 +74,15 @@ extern "C" void setup(ModInfo& info) {
 /* LightSwitchEventEffect */
 
 MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_Start, void, LightSwitchEventEffect* self) {
+    getLogger().info("gdfgdf...");
+
     LightColorizer::LSEStart(self, self->event);
 
+    getLogger().info("aa...");
+
     LightSwitchEventEffect_Start(self);
+
+    getLogger().info("hjg...");
 }
 
 extern "C" void load() {

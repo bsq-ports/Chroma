@@ -49,76 +49,27 @@ private:
         MultipliedColorSO* mLightColor1;
         MultipliedColorSO* mHighlightColor1;
 
-        MultipliedColorSO* mLightColor0Boost;
-        MultipliedColorSO* mHighlightColor0Boost;
-        MultipliedColorSO* mLightColor1Boost;
-        MultipliedColorSO* mHighlightColor1Boost;
-
-        bool supportBoostColor;
-
         float lastValue;
 
         LSEColorManager(MonoBehaviour* mono, BeatmapEventType type) {
             this->lse = mono;
             this->type = type;
-            InitializeSOs(mono, "_lightColor0", lightColor0, lightColor0_Original, mLightColor0);
-            InitializeSOs(mono, "_highlightColor0", lightColor0, lightColor0_Original, mHighlightColor0);
-            InitializeSOs(mono, "_lightColor1", lightColor1, lightColor1_Original, mLightColor1);
-            InitializeSOs(mono, "_highlightColor1", lightColor1, lightColor1_Original, mHighlightColor1);
-
-            if (mono && mono->klass == classof(LightSwitchEventEffect*)) {
-                auto* lse = reinterpret_cast<LightSwitchEventEffect*>(mono);
-                InitializeSOs(mono, "_lightColor0Boost", lightColor0, lightColor0_Original, mLightColor0);
-                InitializeSOs(mono, "_highlightColor0Boost", lightColor0, lightColor0_Original, mHighlightColor0);
-                InitializeSOs(mono, "_lightColor1Boost", lightColor1, lightColor1_Original, mLightColor1);
-                InitializeSOs(mono, "_highlightColor1Boost", lightColor1, lightColor1_Original, mHighlightColor1);
-                supportBoostColor = true;
-
-                Lights = lse->lightManager->lights->values[lse->lightsID];
-                map<int, List_1<ILightWithId*>*> lightsPreGroup;
-                if (!Lights) {
-                    getLogger().info("LIGHTS IS NULL!!!");
-                } else {
-                    getLogger().info("LIGHTS ISNT NULL!!!");
-                    getLogger().info(to_utf8(csstrtostr(Lights->GetType()->get_FullName())));
-                }
-                if (!Lights->items) {
-                    getLogger().info("LIGHTS ITEMS IS NULL!!!");
-                } else {
-                    getLogger().info("LIGHTS ITEMS ISNT NULL!!!");
-                }
-                for (int i = 0; i < Lights->get_Count(); i++) {
-                    //ILightWithId* light = Lights->get_Item(i);
-                    //if (light/* && il2cpp_functions::class_has_parent(reinterpret_cast<Il2CppObject*>(light)->klass, classof(MonoBehaviour*))*/) {
-                        getLogger().info("LIGHT FOUND!!");
-                        //auto* monoBehaviour = reinterpret_cast<MonoBehaviour*>(light);
-                        //int z = UnityEngine::Mathf::RoundToInt(monoBehaviour->get_transform()->get_position().z);
-                        /*auto it = lightsPreGroup.find(z);
-                        if (it != lightsPreGroup.end()) {
-                            it->second->Add(light);
-                        } else {
-                            lightsPreGroup[z] = List_1<ILightWithId*>::New_ctor();
-                            lightsPreGroup[z]->Add(light);
-                        }*/
-                    //}
-                }
-                
-                /*for (auto elem : lightsPreGroup) {
-                    if (!elem.second) {
-                        continue;
-                    }
-
-                    Array<ILightWithId*>* lightList = elem.second->ToArray();
-
-                    LightsPropagationGrouped.push_back(lightList);
-                }*/
+            if (lse->klass == classof(LightSwitchEventEffect*)) {
+                auto* l1 = reinterpret_cast<LightSwitchEventEffect*>(lse);
+                InitializeSOs(mono, l1->lightColor0, lightColor0, lightColor0_Original, mLightColor0);
+                InitializeSOs(mono, l1->highlightColor0, lightColor0, lightColor0_Original, mHighlightColor0);
+                InitializeSOs(mono, l1->lightColor1, lightColor1, lightColor1_Original, mLightColor1);
+                InitializeSOs(mono, l1->highlightColor1, lightColor1, lightColor1_Original, mHighlightColor1);
+            } else if (lse->klass == classof(ParticleSystemEventEffect*)) {
+                auto* p1 = reinterpret_cast<ParticleSystemEventEffect*>(lse);
+                InitializeSOs(mono, p1->lightColor0, lightColor0, lightColor0_Original, mLightColor0);
+                InitializeSOs(mono, p1->highlightColor0, lightColor0, lightColor0_Original, mHighlightColor0);
+                InitializeSOs(mono, p1->lightColor1, lightColor1, lightColor1_Original, mLightColor1);
+                InitializeSOs(mono, p1->highlightColor1, lightColor1, lightColor1_Original, mHighlightColor1);
             }
         }
 
     public:
-        List_1<ILightWithId*>* Lights;
-        vector<Array<ILightWithId*>*> LightsPropagationGrouped;
-
         static unordered_set<LSEColorManager*> GetLSEColorManager(BeatmapEventType type) {
             unordered_set<LSEColorManager*> res;
 
@@ -150,29 +101,15 @@ private:
         void Reset() {
             lightColor0->SetColor(lightColor0_Original);
             lightColor1->SetColor(lightColor1_Original);
-            if (supportBoostColor) {
-                lightColor0Boost->SetColor(lightColor0Boost_Original);
-                lightColor1Boost->SetColor(lightColor1Boost_Original);
-            }
         }
 
-        void SetLightingColors(UnityEngine::Color* color0, UnityEngine::Color* color1, UnityEngine::Color* color0Boost = nullptr, UnityEngine::Color* color1Boost = nullptr) {
+        void SetLightingColors(UnityEngine::Color* color0, UnityEngine::Color* color1) {
             if (!color0) {
                 lightColor0->SetColor(*color0);
             }
 
             if (!color1) {
                 lightColor1->SetColor(*color1);
-            }
-
-            if (supportBoostColor) {
-                if (!color0Boost) {
-                    lightColor0Boost->SetColor(*color0Boost);
-                }
-
-                if (!color1Boost) {
-                    lightColor1Boost->SetColor(*color1Boost);
-                }
             }
         }
 
@@ -248,8 +185,8 @@ private:
         }
 
     private:
-        void InitializeSOs(MonoBehaviour* lse, string id, SimpleColorSO* sColorSO, UnityEngine::Color originalColor, MultipliedColorSO* mColorSO) {
-            MultipliedColorSO* lightMultSO = reinterpret_cast<MultipliedColorSO*>(RET_V_UNLESS(getLogger(), il2cpp_utils::GetFieldValue<ColorSO*>(lse, id)));
+        void InitializeSOs(MonoBehaviour* lse, ColorSO* id, SimpleColorSO* sColorSO, UnityEngine::Color originalColor, MultipliedColorSO* mColorSO) {
+            MultipliedColorSO* lightMultSO = (MultipliedColorSO*)id;
 
             UnityEngine::Color multiplierColor = lightMultSO->multiplierColor;
             SimpleColorSO* lightSO = lightMultSO->baseColor;
@@ -267,7 +204,7 @@ private:
                 mColorSO->baseColor = sColorSO;
             }
 
-            //CRASH_UNLESS(il2cpp_utils::SetFieldValue(lse, id, mColorSO));
+            id = mColorSO;
         }
     };
 
@@ -276,6 +213,8 @@ public:
         getLogger().info("LightColorizer::LSEStart() called.");
 
         LSEColorManager::CreateLSEColorManager(lse, type);
+
+        getLogger().info("LightColorizer::LSEStart() finished.");
     }
 };
 
