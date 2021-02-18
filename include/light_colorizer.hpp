@@ -76,14 +76,20 @@ private:
 
                 Lights = lse->lightManager->lights->values[lse->lightsID];
                 map<int, List_1<ILightWithId*>*> lightsPreGroup;
+                if (!Lights) {
+                    getLogger().info("LIGHTS IS NULL!!!");
+                } else {
+                    getLogger().info("LIGHTS ISNT NULL!!!");
+                    getLogger().info(to_utf8(csstrtostr(Lights->GetType()->get_FullName())));
+                }
                 if (!Lights->items) {
                     getLogger().info("LIGHTS ITEMS IS NULL!!!");
                 } else {
                     getLogger().info("LIGHTS ITEMS ISNT NULL!!!");
                 }
-                for (int i = 0; i < Lights->items->Length(); i++) {
-                    ILightWithId* light = Lights->items->values[i];
-                    if (light && il2cpp_functions::class_has_parent(reinterpret_cast<Il2CppObject*>(light)->klass, classof(MonoBehaviour*))) {
+                for (int i = 0; i < Lights->get_Count(); i++) {
+                    //ILightWithId* light = Lights->get_Item(i);
+                    //if (light/* && il2cpp_functions::class_has_parent(reinterpret_cast<Il2CppObject*>(light)->klass, classof(MonoBehaviour*))*/) {
                         getLogger().info("LIGHT FOUND!!");
                         //auto* monoBehaviour = reinterpret_cast<MonoBehaviour*>(light);
                         //int z = UnityEngine::Mathf::RoundToInt(monoBehaviour->get_transform()->get_position().z);
@@ -94,7 +100,7 @@ private:
                             lightsPreGroup[z] = List_1<ILightWithId*>::New_ctor();
                             lightsPreGroup[z]->Add(light);
                         }*/
-                    }
+                    //}
                 }
                 
                 /*for (auto elem : lightsPreGroup) {
