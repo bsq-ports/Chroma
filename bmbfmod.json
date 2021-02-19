@@ -24,6 +24,12 @@
       "installAction": {
         "installLibraryFile": "libbeatsaber-hook_1_0_12.so"
       }
+    },
+    {
+      "type": "HookModLibrary",
+      "installAction": {
+        "installLibraryFile": "libcustom-json-data.so"
+      }
     }
   ]
 }

@@ -22,6 +22,11 @@
       "id": "codegen",
       "versionRange": "*",
       "additionalData": {}
+    },
+    {
+      "id": "custom-json-data",
+      "versionRange": "*",
+      "additionalData": {}
     }
   ],
   "additionalData": {}

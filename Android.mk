@@ -18,14 +18,6 @@ TARGET_ARCH_ABI := $(APP_ABI)
 
 rwildcard=$(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))
 
-# Build the modloader shared library
-include $(CLEAR_VARS)
-LOCAL_MODULE := 
-include $(CLEAR_VARS)
-LOCAL_MODULE := modloader
-LOCAL_EXPORT_C_INCLUDES := extern/modloader
-LOCAL_SRC_FILES := extern/libmodloader.so
-include $(PREBUILT_SHARED_LIBRARY)
 # Creating prebuilt for dependency: beatsaber-hook - version: 1.0.12
 include $(CLEAR_VARS)
 LOCAL_MODULE := beatsaber-hook_1_0_12
@@ -39,6 +31,24 @@ LOCAL_MODULE := codegen_0_6_2
 LOCAL_EXPORT_C_INCLUDES := extern/codegen
 LOCAL_SRC_FILES := extern/libcodegen_0_6_2.so
 include $(PREBUILT_SHARED_LIBRARY)
+# Creating prebuilt for dependency: modloader - version: 1.0.4
+include $(CLEAR_VARS)
+LOCAL_MODULE := modloader
+LOCAL_EXPORT_C_INCLUDES := extern/modloader
+LOCAL_SRC_FILES := extern/libmodloader.so
+include $(PREBUILT_SHARED_LIBRARY)
+# Creating prebuilt for dependency: custom-json-data - version: 0.3.1
+include $(CLEAR_VARS)
+LOCAL_MODULE := custom-json-data
+LOCAL_EXPORT_C_INCLUDES := extern/custom-json-data
+LOCAL_SRC_FILES := extern/libcustom-json-data.so
+include $(PREBUILT_SHARED_LIBRARY)
+# Creating prebuilt for dependency: custom-types - version: 0.4.4
+include $(CLEAR_VARS)
+LOCAL_MODULE := custom-types
+LOCAL_EXPORT_C_INCLUDES := extern/custom-types
+LOCAL_SRC_FILES := extern/libcustom-types.so
+include $(PREBUILT_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := chroma
@@ -48,6 +58,8 @@ LOCAL_SRC_FILES += $(call rwildcard,extern/beatsaber-hook/src/inline-hook,*.c)
 LOCAL_SHARED_LIBRARIES += modloader
 LOCAL_SHARED_LIBRARIES += beatsaber-hook_1_0_12
 LOCAL_SHARED_LIBRARIES += codegen_0_6_2
+LOCAL_SHARED_LIBRARIES += custom-json-data
+LOCAL_SHARED_LIBRARIES += custom-types
 LOCAL_LDLIBS += -llog
 LOCAL_CFLAGS += -I'extern/libil2cpp/il2cpp/libil2cpp' -DID='"chroma"' -DVERSION='"0.1.0"' -I'./shared' -I'./extern' -isystem'extern/codegen/include'
 LOCAL_CPPFLAGS += -std=c++2a
