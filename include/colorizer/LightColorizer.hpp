@@ -8,92 +8,100 @@
 #include "GlobalNamespace/MultipliedColorSO.hpp"
 #include <vector>
 #include <string>
-
-using namespace GlobalNamespace;
-using namespace UnityEngine;
+#include <optional>
 
 // TODO: Document properly
 namespace Chroma {
     class LightColorizer {
     public:
-        static void Reset(MonoBehaviour* behaviour);
+        static void Reset(UnityEngine::MonoBehaviour *behaviour);
+
         static void ResetAllLightingColors();
 
-        static void SetLightingColors(MonoBehaviour* monoBehaviour, UnityEngine::Color* Color0, UnityEngine::Color* Color1, UnityEngine::Color* Color0Boost = nullptr, UnityEngine::Color* Color1Boost = nullptr);
-        static void SetLightingColors(BeatmapEventType* beatmapEventType, UnityEngine::Color* Color0, UnityEngine::Color* Color1, UnityEngine::Color* Color0Boost = nullptr, UnityEngine::Color* Color1Boost = nullptr);
-        static void SetAllLightingColors(UnityEngine::Color* Color0, UnityEngine::Color* Color1, UnityEngine::Color* Color0Boost = nullptr, UnityEngine::Color* Color1Boost = nullptr);
-        static void SetActiveColors(BeatmapEventType* lse);
+        static void
+        SetLightingColors(UnityEngine::MonoBehaviour *monoBehaviour, std::optional<UnityEngine::Color> Color0, std::optional<UnityEngine::Color> Color1,
+                std::optional<UnityEngine::Color> Color0Boost = std::nullopt, std::optional<UnityEngine::Color> Color1Boost = std::nullopt);
+
+        static void
+        SetLightingColors(GlobalNamespace::BeatmapEventType *beatmapEventType, std::optional<UnityEngine::Color> Color0, std::optional<UnityEngine::Color> Color1,
+                          std::optional<UnityEngine::Color> Color0Boost = std::nullopt, std::optional<UnityEngine::Color> Color1Boost = std::nullopt);
+
+        static void SetAllLightingColors(std::optional<UnityEngine::Color> Color0, std::optional<UnityEngine::Color> Color1,
+                                         std::optional<UnityEngine::Color> Color0Boost = std::nullopt, std::optional<UnityEngine::Color> Color1Boost = std::nullopt);
+
+        static void SetActiveColors(GlobalNamespace::BeatmapEventType *lse);
+
         static void SetAllActiveColors();
 
         static void ClearLSEColorManagers();
-        static void SetLastValue(MonoBehaviour* monoBehaviour, int val);
+
+        static void SetLastValue(UnityEngine::MonoBehaviour *monoBehaviour, int val);
 
         // Returns array of ILightWithId*
-        static std::vector<ILightWithId *> GetLights(LightSwitchEventEffect* lse);
+        static std::vector<GlobalNamespace::ILightWithId *> GetLights(GlobalNamespace::LightSwitchEventEffect *lse);
 
         // Returns 2d array of ILightWithId*
-        static std::unordered_map<int, std::vector<ILightWithId *>> GetLightsPropagationGrouped(LightSwitchEventEffect* lse);
+        static std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId *>>
+        GetLightsPropagationGrouped(GlobalNamespace::LightSwitchEventEffect *lse);
 
-        static void LSEStart(MonoBehaviour* monoBehaviour, BeatmapEventType* beatmapEventType);
+        static void LSEStart(UnityEngine::MonoBehaviour *monoBehaviour, GlobalNamespace::BeatmapEventType *beatmapEventType);
 
-    private:
         class LSEColorManager {
         private:
-        MonoBehaviour* _lse;
-        BeatmapEventType* _type;
+            UnityEngine::MonoBehaviour *_lse;
+            GlobalNamespace::BeatmapEventType *_type;
 
-         UnityEngine::Color* _lightColor0_Original;
-         UnityEngine::Color* _lightColor1_Original;
-         UnityEngine::Color* _lightColor0Boost_Original;
-         UnityEngine::Color* _lightColor1Boost_Original;
+            UnityEngine::Color _lightColor0_Original;
+            UnityEngine::Color _lightColor1_Original;
+            UnityEngine::Color _lightColor0Boost_Original;
+            UnityEngine::Color _lightColor1Boost_Original;
 
-         SimpleColorSO* _lightColor0;
-         SimpleColorSO* _lightColor1;
-         SimpleColorSO* _lightColor0Boost;
-         SimpleColorSO* _lightColor1Boost;
+            GlobalNamespace::SimpleColorSO* _lightColor0;
+            GlobalNamespace::SimpleColorSO* _lightColor1;
+            GlobalNamespace::SimpleColorSO* _lightColor0Boost;
+            GlobalNamespace::SimpleColorSO* _lightColor1Boost;
 
-         MultipliedColorSO* _mLightColor0;
-         MultipliedColorSO* _mHighlightColor0;
-         MultipliedColorSO* _mLightColor1;
-         MultipliedColorSO* _mHighlightColor1;
+            GlobalNamespace::MultipliedColorSO* _mLightColor0;
+            GlobalNamespace::MultipliedColorSO* _mHighlightColor0;
+            GlobalNamespace::MultipliedColorSO* _mLightColor1;
+            GlobalNamespace::MultipliedColorSO* _mHighlightColor1;
 
-         MultipliedColorSO* _mLightColor0Boost;
-         MultipliedColorSO* _mHighlightColor0Boost;
-         MultipliedColorSO* _mLightColor1Boost;
-         MultipliedColorSO* _mHighlightColor1Boost;
+            GlobalNamespace::MultipliedColorSO* _mLightColor0Boost;
+            GlobalNamespace::MultipliedColorSO* _mHighlightColor0Boost;
+            GlobalNamespace::MultipliedColorSO* _mLightColor1Boost;
+            GlobalNamespace::MultipliedColorSO* _mHighlightColor1Boost;
 
-         bool _supportBoostColor;
+            bool _supportBoostColor;
 
-         float _lastValue;
+            float _lastValue;
 
-         LSEColorManager(MonoBehaviour* mono, BeatmapEventType* type);
+            LSEColorManager(UnityEngine::MonoBehaviour *mono, GlobalNamespace::BeatmapEventType *type);
 
         public:
-            std::vector<ILightWithId*> Lights;
+            std::vector<GlobalNamespace::ILightWithId*> Lights = {};
 
             // 2d array of ILightWithId*
-            std::unordered_map<int, std::vector<ILightWithId *>> LightsPropagationGrouped;
+            std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId *>> LightsPropagationGrouped;
 
             // TODO: Is this the proper return type?
-            static std::vector<LSEColorManager*> GetLSEColorManager(BeatmapEventType* type);
+            static std::vector<LSEColorManager *> GetLSEColorManager(GlobalNamespace::BeatmapEventType *type);
 
-            static LSEColorManager* GetLSEColorManager(MonoBehaviour* m);
+            static LSEColorManager *GetLSEColorManager(UnityEngine::MonoBehaviour *m);
 
-            static LSEColorManager* CreateLSEColorManager(MonoBehaviour* lse, BeatmapEventType* type);
+            static LSEColorManager *CreateLSEColorManager(UnityEngine::MonoBehaviour *lse, GlobalNamespace::BeatmapEventType *type);
 
             void Reset();
 
 
-            void SetLightingColors(UnityEngine::Color* Color0, UnityEngine::Color* Color1, UnityEngine::Color* Color0Boost = nullptr, UnityEngine::Color* Color1Boost = nullptr);
+            void SetLightingColors(std::optional<UnityEngine::Color> Color0, std::optional<UnityEngine::Color> Color1,
+                                   std::optional<UnityEngine::Color> Color0Boost = std::nullopt, std::optional<UnityEngine::Color> Color1Boost = std::nullopt);
 
             void SetLastValue(int value);
 
             void SetActiveColors();
 
-            void InitializeSOs(MonoBehaviour* lse, std::string id, SimpleColorSO* sColorSO, UnityEngine::Color* originalColor, MultipliedColorSO* mColorSO);
+            void InitializeSOs(UnityEngine::MonoBehaviour *lse, const std::string& id, GlobalNamespace::SimpleColorSO *&sColorSO,
+                               UnityEngine::Color& originalColor, GlobalNamespace::MultipliedColorSO *&mColorSO);
         };
-
-        // TODO: Is this the proper equivalent of HashSet<LSEColorManager>?
-        static std::vector<LSEColorManager*> _lseColorManagers;
     };
 }

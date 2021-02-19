@@ -23,6 +23,9 @@ using namespace UnityEngine;
 
 using namespace Chroma;
 
+// TODO: Is this the proper equivalent of HashSet<LSEColorManager>?
+static std::vector<Chroma::LightColorizer::LSEColorManager *> lseColorManagers;
+
 void LightColorizer::Reset(MonoBehaviour *behaviour) {
     auto manager = LightColorizer::LSEColorManager::GetLSEColorManager(behaviour);
 
@@ -32,33 +35,32 @@ void LightColorizer::Reset(MonoBehaviour *behaviour) {
 }
 
 void LightColorizer::ResetAllLightingColors() {
-    for (auto manager : _lseColorManagers) {
+    for (auto manager : lseColorManagers) {
         manager->Reset();
     }
 }
 
-void LightColorizer::SetLightingColors(MonoBehaviour *monoBehaviour, UnityEngine::Color *color0, UnityEngine::Color *color1,
-                                  UnityEngine::Color *color0Boost, UnityEngine::Color *color1Boost) {
+void LightColorizer::SetLightingColors(MonoBehaviour *monoBehaviour, std::optional<UnityEngine::Color> Color0, std::optional<UnityEngine::Color> Color1,
+                                       std::optional<UnityEngine::Color> Color0Boost, std::optional<UnityEngine::Color> Color1Boost) {
     auto manager = LightColorizer::LSEColorManager::GetLSEColorManager(monoBehaviour);
 
     if (manager != nullptr) {
-        manager->SetLightingColors(color0, color1, color0Boost, color1Boost);
+        manager->SetLightingColors(Color0, Color1, Color0Boost, Color1Boost);
     }
 }
 
-void LightColorizer::SetLightingColors(BeatmapEventType *beatmapEventType, UnityEngine::Color *color0,
-                                       UnityEngine::Color *color1, UnityEngine::Color *color0Boost,
-                                       UnityEngine::Color *color1Boost) {
+void LightColorizer::SetLightingColors(BeatmapEventType *beatmapEventType, std::optional<UnityEngine::Color> Color0, std::optional<UnityEngine::Color> Color1,
+                                       std::optional<UnityEngine::Color> Color0Boost, std::optional<UnityEngine::Color> Color1Boost) {
     auto manager = LightColorizer::LSEColorManager::GetLSEColorManager(beatmapEventType);
 
     for (auto l : LSEColorManager::GetLSEColorManager(beatmapEventType)) {
-        l->SetLightingColors(color0, color1, color0Boost, color1Boost);
+        l->SetLightingColors(Color0, Color1, Color0Boost, Color1Boost);
     }
 }
 
-void LightColorizer::SetAllLightingColors(UnityEngine::Color* Color0, UnityEngine::Color *Color1,
-                                          UnityEngine::Color *Color0Boost, UnityEngine::Color *Color1Boost) {
-    for (auto manager : _lseColorManagers) {
+void LightColorizer::SetAllLightingColors(std::optional<UnityEngine::Color> Color0, std::optional<UnityEngine::Color> Color1,
+                                          std::optional<UnityEngine::Color> Color0Boost, std::optional<UnityEngine::Color> Color1Boost) {
+    for (auto manager : lseColorManagers) {
         manager->SetLightingColors(Color0, Color1, Color0Boost, Color1Boost);
     }
 }
@@ -70,14 +72,14 @@ void LightColorizer::SetActiveColors(BeatmapEventType *lse) {
 }
 
 void LightColorizer::SetAllActiveColors() {
-    for (LSEColorManager* lseColorManager : _lseColorManagers)
+    for (LSEColorManager* lseColorManager : lseColorManagers)
     {
         lseColorManager->SetActiveColors();
     }
 }
 
 void LightColorizer::ClearLSEColorManagers() {
-    _lseColorManagers.clear();
+    lseColorManagers.clear();
 }
 
 void LightColorizer::SetLastValue(MonoBehaviour *monoBehaviour, int val) {
@@ -133,12 +135,16 @@ LightColorizer::LSEColorManager::LSEColorManager(MonoBehaviour *mono, BeatmapEve
         InitializeSOs(mono, "_highlightColor1Boost", _lightColor1Boost, _lightColor1Boost_Original, _mHighlightColor1Boost);
         _supportBoostColor = true;
 
-        System::Collections::Generic::List_1<ILightWithId *> *t = lse->lightManager->lights->values[lse->lightsID];
+        Array<ILightWithId *>* lightArray = lse->lightManager->lights->values[lse->lightsID]->items;
+        ILightWithId** ptrArray = lightArray->values;
 
+        Lights = std::vector<ILightWithId*>(ptrArray, ptrArray + ((int) lightArray->Length()));
 
         std::unordered_map<int, std::vector<ILightWithId*>> lightsPreGroup;
         for (ILightWithId* light : Lights)
         {
+            if (!light) continue;
+
             auto object = reinterpret_cast<Il2CppObject*>(light);
             if (il2cpp_functions::class_is_assignable_from(object->klass, classof(MonoBehaviour*)))
             {
@@ -165,7 +171,7 @@ LightColorizer::LSEColorManager::LSEColorManager(MonoBehaviour *mono, BeatmapEve
 std::vector<LightColorizer::LSEColorManager*> LightColorizer::LSEColorManager::GetLSEColorManager(BeatmapEventType *type) {
     std::vector<LightColorizer::LSEColorManager*> colorManagers;
 
-    for (auto man : _lseColorManagers) {
+    for (auto man : lseColorManagers) {
         if (man->_type == type)
             colorManagers.push_back(man);
     }
@@ -174,7 +180,7 @@ std::vector<LightColorizer::LSEColorManager*> LightColorizer::LSEColorManager::G
 }
 
 LightColorizer::LSEColorManager *LightColorizer::LSEColorManager::GetLSEColorManager(MonoBehaviour *m) {
-    for (auto man : _lseColorManagers) {
+    for (auto man : lseColorManagers) {
         if (man->_lse == m)
             return man;
     }
@@ -185,43 +191,42 @@ LightColorizer::LSEColorManager *LightColorizer::LSEColorManager::GetLSEColorMan
 LightColorizer::LSEColorManager *LightColorizer::LSEColorManager::CreateLSEColorManager(MonoBehaviour *lse, BeatmapEventType *type) {
     LSEColorManager* lsecm;
     lsecm = new LSEColorManager(lse, type);
-    _lseColorManagers.push_back(lsecm);
+    lseColorManagers.push_back(lsecm);
     return lsecm;
 }
 
 void LightColorizer::LSEColorManager::Reset() {
-    _lightColor0->SetColor(*_lightColor0_Original);
-    _lightColor1->SetColor(*_lightColor1_Original);
+    _lightColor0->SetColor(_lightColor0_Original);
+    _lightColor1->SetColor(_lightColor1_Original);
     if (_supportBoostColor)
     {
-        _lightColor0Boost->SetColor(*_lightColor0Boost_Original);
-        _lightColor1Boost->SetColor(*_lightColor1Boost_Original);
+        _lightColor0Boost->SetColor(_lightColor0Boost_Original);
+        _lightColor1Boost->SetColor(_lightColor1Boost_Original);
     }
 }
 
-void LightColorizer::LSEColorManager::SetLightingColors(UnityEngine::Color* Color0, UnityEngine::Color* Color1,
-                                                        UnityEngine::Color* Color0Boost,
-                                                        UnityEngine::Color* Color1Boost) {
+void LightColorizer::LSEColorManager::SetLightingColors(std::optional<UnityEngine::Color> Color0, std::optional<UnityEngine::Color> Color1,
+                                                        std::optional<UnityEngine::Color> Color0Boost, std::optional<UnityEngine::Color> Color1Boost) {
     if (Color0)
     {
-        _lightColor0->SetColor(*Color0);
+        _lightColor0->SetColor(Color0.value());
     }
 
     if (Color1)
     {
-        _lightColor1->SetColor(*Color1);
+        _lightColor1->SetColor(Color1.value());
     }
 
     if (_supportBoostColor)
     {
         if (Color0Boost)
         {
-            _lightColor0Boost->SetColor(*Color0Boost);
+            _lightColor0Boost->SetColor(Color0Boost.value());
         }
 
         if (Color1Boost)
         {
-            _lightColor1Boost->SetColor(*Color1Boost);
+            _lightColor1Boost->SetColor(Color1Boost.value());
         }
     }
 }
@@ -352,25 +357,25 @@ void LightColorizer::LSEColorManager::SetActiveColors() {
 
 
 
-void LightColorizer::LSEColorManager::InitializeSOs(MonoBehaviour *lse, std::string id, SimpleColorSO *sColorSO,
-                                                    UnityEngine::Color* originalColor, MultipliedColorSO *mColorSO) {
+void LightColorizer::LSEColorManager::InitializeSOs(MonoBehaviour *lse, const std::string& id, SimpleColorSO *&sColorSO,
+                                                    UnityEngine::Color& originalColor, MultipliedColorSO *&mColorSO) {
 
     // Todo: Use codegen here
     MultipliedColorSO* lightMultSO = nullptr;
-    if (il2cpp_functions::class_is_assignable_from(_lse->klass, classof(LightSwitchEventEffect*)))
+    if (il2cpp_functions::class_is_assignable_from(lse->klass, classof(LightSwitchEventEffect*)))
     {
-        auto l1 = reinterpret_cast<LightSwitchEventEffect*>(_lse);
+        auto l1 = reinterpret_cast<LightSwitchEventEffect*>(lse);
         lightMultSO = reinterpret_cast<MultipliedColorSO*>(il2cpp_utils::GetFieldValue<ColorSO*>(l1, id).value()); //l1.GetField<ColorSO, LightSwitchEventEffect>(id);
     }
-    else if (il2cpp_functions::class_is_assignable_from(_lse->klass, classof(ParticleSystemEventEffect*)))
+    else if (il2cpp_functions::class_is_assignable_from(lse->klass, classof(ParticleSystemEventEffect*)))
     {
-        auto p1 = reinterpret_cast<ParticleSystemEventEffect*>(_lse);
+        auto p1 = reinterpret_cast<ParticleSystemEventEffect*>(lse);
         lightMultSO = reinterpret_cast<MultipliedColorSO*>(il2cpp_utils::GetFieldValue<ColorSO*>(p1, id).value()); //l1.GetField<ColorSO, LightSwitchEventEffect>(id);
     }
 
     UnityEngine::Color multiplierColor = lightMultSO->multiplierColor;
     SimpleColorSO* lightSO = lightMultSO->baseColor;
-    originalColor = &lightSO->color;
+    originalColor = lightSO->color;
 
     if (mColorSO == nullptr)
     {
@@ -380,24 +385,22 @@ void LightColorizer::LSEColorManager::InitializeSOs(MonoBehaviour *lse, std::str
         if (sColorSO == nullptr)
         {
             sColorSO = ScriptableObject::CreateInstance<SimpleColorSO*>();
-            sColorSO->SetColor(*originalColor);
+            sColorSO->SetColor(originalColor);
         }
 
         mColorSO->baseColor = sColorSO; //SetField("_baseColor", sColorSO);
     }
 
 
-    if (il2cpp_functions::class_is_assignable_from(_lse->klass, classof(LightSwitchEventEffect*)))
+    if (il2cpp_functions::class_is_assignable_from(lse->klass, classof(LightSwitchEventEffect*)))
     {
-        auto l1 = reinterpret_cast<LightSwitchEventEffect*>(_lse);
-        il2cpp_utils::SetFieldValue<LightSwitchEventEffect*, ColorSO*>(l1, id, mColorSO); //l1.GetField<ColorSO, LightSwitchEventEffect>(id);
+        auto l1 = reinterpret_cast<LightSwitchEventEffect*>(lse);
+        il2cpp_utils::SetFieldValue<LightSwitchEventEffect*, ColorSO*>(l1, id, reinterpret_cast<ColorSO*>(mColorSO)); //l1.GetField<ColorSO, LightSwitchEventEffect>(id);
     }
-    else if (il2cpp_functions::class_is_assignable_from(_lse->klass, classof(ParticleSystemEventEffect*)))
+    else if (il2cpp_functions::class_is_assignable_from(lse->klass, classof(ParticleSystemEventEffect*)))
     {
-        auto p1 = reinterpret_cast<ParticleSystemEventEffect*>(_lse);
-        il2cpp_utils::SetFieldValue<ParticleSystemEventEffect*, ColorSO*>(p1, id, mColorSO); //l1.GetField<ColorSO, LightSwitchEventEffect>(id);
+        auto p1 = reinterpret_cast<ParticleSystemEventEffect*>(lse);
+
+        il2cpp_utils::SetFieldValue<ParticleSystemEventEffect*, ColorSO*>(p1, id, reinterpret_cast<ColorSO*>(mColorSO)); //l1.GetField<ColorSO, LightSwitchEventEffect>(id);
     }
 }
-
-std::vector<LightColorizer::LSEColorManager*> LightColorizer::_lseColorManagers;
-
