@@ -6,6 +6,7 @@ namespace Chroma {
     namespace Hooks {
         void LightPairRotationEventEffect();
         void LightRotationEventEffect();
+        void LightSwitchEventEffect();
     }
 
     void InstallHooks();
