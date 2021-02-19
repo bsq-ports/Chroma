@@ -34,6 +34,8 @@ include_directories(extern/libil2cpp/il2cpp/libil2cpp)
 include_directories(extern/codegen/include)
 include_directories(extern/beatsaber-hook/shared)
 include_directories(extern/modloader/shared)
+include_directories(extern/custom-json-data/shared)
+include_directories(extern/custom-types/shared)
 include_directories(${CMAKE_ANDROID_NDK})
 include_directories(.)
 
