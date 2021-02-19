@@ -46,4 +46,5 @@ add_compile_definitions("__GNUC__")
 add_compile_definitions("__aarch64__")
 
 file(GLOB SRC src/*.cpp)
+file(GLOB SRC src/*/*.cpp)
 add_library(Chroma SHARED ${SRC}) # Is this necessary? Not sure, have it there anyways
