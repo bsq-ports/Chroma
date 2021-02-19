@@ -16,7 +16,7 @@ Logger& getLogger() {
 }
 
 extern "C" void setup(ModInfo& info) {
-    info.id = ID;
+    info.id = "Chroma";
     info.version = VERSION;
     modInfo = info;
 

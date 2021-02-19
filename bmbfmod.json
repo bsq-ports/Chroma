@@ -20,15 +20,18 @@
       }
     },
     {
-      "type": "HookModLibrary",
+      "type": "HookMod",
       "installAction": {
-        "installLibraryFile": "libbeatsaber-hook_1_0_12.so"
+        "installLibraryFile": "libcustom-json-data.so"
+      },
+      "uninstallAction": {
+        "removeLibraryFile": "libcustom-json-data.so"
       }
     },
     {
       "type": "HookModLibrary",
       "installAction": {
-        "installLibraryFile": "libcustom-json-data.so"
+        "installLibraryFile": "libbeatsaber-hook_1_0_12.so"
       }
     }
   ]
