@@ -399,3 +399,5 @@ void LightColorizer::LSEColorManager::InitializeSOs(MonoBehaviour *lse, std::str
     }
 }
 
+std::vector<LightColorizer::LSEColorManager*> LightColorizer::_lseColorManagers;
+
