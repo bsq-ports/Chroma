@@ -2,6 +2,7 @@
 
 #include "Chroma.hpp"
 #include "colorizer/LightColorizer.hpp"
+#include "colorizer/SaberColorizer.hpp"
 #include "custom-types/shared/register.hpp"
 
 static ModInfo modInfo;
@@ -32,6 +33,7 @@ extern "C" void load() {
     getLogger().info("Installing types...");
 
     CRASH_UNLESS(custom_types::Register::RegisterType<Chroma::LSEColorManager>());
+    CRASH_UNLESS(custom_types::Register::RegisterType<Chroma::ChangeColorCoroutine>());
 
     getLogger().info("Installed types");
 
