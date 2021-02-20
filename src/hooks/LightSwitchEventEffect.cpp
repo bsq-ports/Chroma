@@ -4,6 +4,7 @@
 #include "colorizer/LightColorizer.hpp"
 #include "custom-types/shared/types.hpp"
 #include "custom-types/shared/macros.hpp"
+#include "custom-types/shared/register.hpp"
 #include "UnityEngine/WaitForEndOfFrame.hpp"
 #include "LightSwitchEventEffect.hpp"
 
@@ -52,5 +53,7 @@ MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_Start, void, LightSwitchEventEffect*
 }
 
 void Chroma::Hooks::LightSwitchEventEffect() {
+    CRASH_UNLESS(custom_types::Register::RegisterType<Il2CppNamespace::WaitThenStartEnumerator>());
+
     INSTALL_HOOK_OFFSETLESS(getLogger(), LightSwitchEventEffect_Start, il2cpp_utils::FindMethodUnsafe("", "LightSwitchEventEffect", "Start", 0));
 }
