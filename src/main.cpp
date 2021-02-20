@@ -1,6 +1,8 @@
 #include "main.hpp"
 
 #include "Chroma.hpp"
+#include "colorizer/LightColorizer.hpp"
+#include "custom-types/shared/register.hpp"
 
 static ModInfo modInfo;
 
@@ -26,6 +28,12 @@ extern "C" void setup(ModInfo& info) {
 
 extern "C" void load() {
     il2cpp_functions::Init();
+
+    getLogger().info("Installing types...");
+
+    CRASH_UNLESS(custom_types::Register::RegisterType<Chroma::LSEColorManager>());
+
+    getLogger().info("Installed types");
 
     getLogger().info("Installing Chroma hooks...");
     Chroma::InstallHooks();
