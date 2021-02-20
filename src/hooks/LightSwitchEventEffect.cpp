@@ -41,7 +41,7 @@ bool Il2CppNamespace::WaitThenStartEnumerator::MoveNext() {
 }
  
 IEnumerator *WaitThenStart(LightSwitchEventEffect *instance, BeatmapEventType eventType) {
-    Il2CppNamespace::WaitThenStartEnumerator *coroutine = CRASH_UNLESS(il2cpp_utils::New<Il2CppNamespace::WaitThenStartEnumerator*>());
+    Il2CppNamespace::WaitThenStartEnumerator *coroutine = CRASH_UNLESS(il2cpp_utils::New<Il2CppNamespace::WaitThenStartEnumerator*>(instance, eventType));
     return reinterpret_cast<IEnumerator*>(coroutine);
 }
 
