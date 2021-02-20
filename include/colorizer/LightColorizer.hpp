@@ -59,6 +59,7 @@ namespace Chroma {
 
 typedef std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId *>> LightGroupMap;
 
+// We use custom types here to avoid GC deleting our variables
 DECLARE_CLASS_CODEGEN(Chroma, LSEColorManager, Il2CppObject,
 
                       public:

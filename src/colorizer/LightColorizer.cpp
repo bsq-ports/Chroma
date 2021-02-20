@@ -1,17 +1,11 @@
 #include "Chroma.hpp"
 
 #include "custom-json-data/shared/CustomBeatmapData.h"
-#include "GlobalNamespace/BeatmapEventData.hpp"
-#include "GlobalNamespace/BeatmapEventType.hpp"
 #include "GlobalNamespace/LightPairRotationEventEffect.hpp"
-#include "GlobalNamespace/LightPairRotationEventEffect_RotationData.hpp"
 #include "GlobalNamespace/ParticleSystemEventEffect.hpp"
-#include "UnityEngine/Quaternion.hpp"
 #include "UnityEngine/Transform.hpp"
-#include "UnityEngine/MonoBehaviour.hpp"
 #include "UnityEngine/Mathf.hpp"
 #include "GlobalNamespace/LightWithIdManager.hpp"
-#include "System/Collections/Generic/List_1.hpp"
 
 #include <unordered_map>
 
