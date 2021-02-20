@@ -1,23 +1,18 @@
 #include "Chroma.hpp"
 
-#include "custom-json-data/shared/CustomBeatmapData.h"
-#include "GlobalNamespace/LightPairRotationEventEffect.hpp"
 #include "UnityEngine/GameObject.hpp"
 #include "UnityEngine/Transform.hpp"
 #include "UnityEngine/Mathf.hpp"
 #include "UnityEngine/SpriteRenderer.hpp"
 #include "UnityEngine/MaterialPropertyBlock.hpp"
-#include "GlobalNamespace/SetSaberGlowColor.hpp"
-#include "GlobalNamespace/MaterialPropertyBlockController.hpp"
 
 #include <unordered_map>
 #include "colorizer/BombColorizer.hpp"
 
+#include "beatsaber-hook/shared/utils/il2cpp-utils.hpp"
 
-using namespace CustomJSONData;
 using namespace GlobalNamespace;
 using namespace UnityEngine;
-using namespace System::Collections;
 
 using namespace Chroma;
 

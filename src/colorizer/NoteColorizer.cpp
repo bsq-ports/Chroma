@@ -1,22 +1,7 @@
 #include "Chroma.hpp"
 
-#include "custom-json-data/shared/CustomBeatmapData.h"
-#include "GlobalNamespace/LightPairRotationEventEffect.hpp"
-#include "GlobalNamespace/ParticleSystemEventEffect.hpp"
-#include "UnityEngine/GameObject.hpp"
-#include "UnityEngine/WaitForSecondsRealtime.hpp"
-#include "UnityEngine/Transform.hpp"
-#include "UnityEngine/Mathf.hpp"
 #include "UnityEngine/SpriteRenderer.hpp"
 #include "UnityEngine/MaterialPropertyBlock.hpp"
-#include "GlobalNamespace/SaberModelController.hpp"
-#include "GlobalNamespace/SetSaberGlowColor.hpp"
-#include "GlobalNamespace/SetSaberFakeGlowColor.hpp"
-#include "GlobalNamespace/TubeBloomPrePassLight.hpp"
-#include "GlobalNamespace/SaberModelController_InitData.hpp"
-#include "GlobalNamespace/SaberTrail.hpp"
-#include "GlobalNamespace/SetSaberGlowColor_PropertyTintColorPair.hpp"
-#include "GlobalNamespace/Parametric3SliceSpriteController.hpp"
 #include "GlobalNamespace/MaterialPropertyBlockController.hpp"
 
 #include <unordered_map>
@@ -27,7 +12,6 @@
 using namespace CustomJSONData;
 using namespace GlobalNamespace;
 using namespace UnityEngine;
-using namespace System::Collections;
 
 using namespace Chroma;
 //

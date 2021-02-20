@@ -1,21 +1,8 @@
 #pragma once
 
 #include "UnityEngine/MonoBehaviour.hpp"
-#include "GlobalNamespace/LightSwitchEventEffect.hpp"
-#include "GlobalNamespace/BeatmapEventType.hpp"
-#include "GlobalNamespace/SimpleColorSO.hpp"
-#include "GlobalNamespace/MultipliedColorSO.hpp"
-#include "GlobalNamespace/SaberBurnMarkArea.hpp"
-#include "GlobalNamespace/SaberType.hpp"
-#include "GlobalNamespace/Saber.hpp"
 #include "GlobalNamespace/BombNoteController.hpp"
-#include "GlobalNamespace/NoteCutInfo.hpp"
-#include "GlobalNamespace/ColorNoteVisuals.hpp"
-#include "GlobalNamespace/ColorManager.hpp"
-#include "custom-json-data/shared/CustomBeatmapData.h"
 #include "UnityEngine/Material.hpp"
-#include "custom-types/shared/types.hpp"
-#include "custom-types/shared/macros.hpp"
 #include <vector>
 #include <string>
 #include <optional>

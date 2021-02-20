@@ -1,10 +1,7 @@
 #pragma once
 
 #include "UnityEngine/MonoBehaviour.hpp"
-#include "GlobalNamespace/LightSwitchEventEffect.hpp"
 #include "GlobalNamespace/BeatmapEventType.hpp"
-#include "GlobalNamespace/SimpleColorSO.hpp"
-#include "GlobalNamespace/MultipliedColorSO.hpp"
 #include "GlobalNamespace/SaberBurnMarkArea.hpp"
 #include "GlobalNamespace/SaberType.hpp"
 #include "GlobalNamespace/Saber.hpp"
