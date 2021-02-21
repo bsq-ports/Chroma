@@ -1,9 +1,5 @@
 #include "utils/Easing.hpp"
 
-#define _USE_MATH_DEFINES
-#include <cmath>
-
-
 
 /// <summary>
 /// Constant Pi.
@@ -15,42 +11,44 @@ const float PI = M_PI;
 /// </summary>
 const float HALFPI = M_PI / 2.0f;
 
+using namespace ChromaUtils;
+
 float ChromaUtils::Easings::Interpolate(float p, ChromaUtils::Functions function) {
     switch (function)
     {
         default:
-        case easeLinear: return EaseLinear(p);
-        case easeStep: return EaseStep(p);
-        case easeOutQuad: return EaseOutQuad(p);
-        case easeInQuad: return EaseInQuad(p);
-        case easeInOutQuad: return EaseInOutQuad(p);
-        case easeInCubic: return EaseInCubic(p);
-        case easeOutCubic: return EaseOutCubic(p);
-        case easeInOutCubic: return EaseInOutCubic(p);
-        case easeInQuart: return EaseInQuart(p);
-        case easeOutQuart: return EaseOutQuart(p);
-        case easeInOutQuart: return EaseInOutQuart(p);
-        case easeInQuint: return EaseInQuint(p);
-        case easeOutQuint: return EaseOutQuint(p);
-        case easeInOutQuint: return EaseInOutQuint(p);
-        case easeInSine: return EaseInSine(p);
-        case easeOutSine: return EaseOutSine(p);
-        case easeInOutSine: return EaseInOutSine(p);
-        case easeInCirc: return EaseInCirc(p);
-        case easeOutCirc: return EaseOutCirc(p);
-        case easeInOutCirc: return EaseInOutCirc(p);
-        case easeInExpo: return EaseInExpo(p);
-        case easeOutExpo: return EaseOutExpo(p);
-        case easeInOutExpo: return EaseInOutExpo(p);
-        case easeInElastic: return EaseInElastic(p);
-        case easeOutElastic: return EaseOutElastic(p);
-        case easeInOutElastic: return EaseInOutElastic(p);
-        case easeInBack: return EaseInBack(p);
-        case easeOutBack: return EaseOutBack(p);
-        case easeInOutBack: return EaseInOutBack(p);
-        case easeInBounce: return EaseInBounce(p);
-        case easeOutBounce: return EaseOutBounce(p);
-        case easeInOutBounce: return EaseInOutBounce(p);
+        case Functions::easeLinear: return EaseLinear(p);
+        case Functions::easeStep: return EaseStep(p);
+        case Functions::easeOutQuad: return EaseOutQuad(p);
+        case Functions::easeInQuad: return EaseInQuad(p);
+        case Functions::easeInOutQuad: return EaseInOutQuad(p);
+        case Functions::easeInCubic: return EaseInCubic(p);
+        case Functions::easeOutCubic: return EaseOutCubic(p);
+        case Functions::easeInOutCubic: return EaseInOutCubic(p);
+        case Functions::easeInQuart: return EaseInQuart(p);
+        case Functions::easeOutQuart: return EaseOutQuart(p);
+        case Functions::easeInOutQuart: return EaseInOutQuart(p);
+        case Functions::easeInQuint: return EaseInQuint(p);
+        case Functions::easeOutQuint: return EaseOutQuint(p);
+        case Functions::easeInOutQuint: return EaseInOutQuint(p);
+        case Functions::easeInSine: return EaseInSine(p);
+        case Functions::easeOutSine: return EaseOutSine(p);
+        case Functions::easeInOutSine: return EaseInOutSine(p);
+        case Functions::easeInCirc: return EaseInCirc(p);
+        case Functions::easeOutCirc: return EaseOutCirc(p);
+        case Functions::easeInOutCirc: return EaseInOutCirc(p);
+        case Functions::easeInExpo: return EaseInExpo(p);
+        case Functions::easeOutExpo: return EaseOutExpo(p);
+        case Functions::easeInOutExpo: return EaseInOutExpo(p);
+        case Functions::easeInElastic: return EaseInElastic(p);
+        case Functions::easeOutElastic: return EaseOutElastic(p);
+        case Functions::easeInOutElastic: return EaseInOutElastic(p);
+        case Functions::easeInBack: return EaseInBack(p);
+        case Functions::easeOutBack: return EaseOutBack(p);
+        case Functions::easeInOutBack: return EaseInOutBack(p);
+        case Functions::easeInBounce: return EaseInBounce(p);
+        case Functions::easeOutBounce: return EaseOutBounce(p);
+        case Functions::easeInOutBounce: return EaseInOutBounce(p);
     }
 }
 

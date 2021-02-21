@@ -1,43 +1,60 @@
 #pragma once
 
+#define _USE_MATH_DEFINES
+#include <cmath>
+
+#include <unordered_map>
+
+typedef std::unordered_map<std::string, int> FunctionsMap;
 
 namespace ChromaUtils {
 
+#define Functions_ENUM(DO) \
+        DO(easeLinear) \
+        DO(easeStep) \
+        DO(easeInQuad) \
+        DO(easeOutQuad) \
+        DO(easeInOutQuad) \
+        DO(easeInCubic) \
+        DO(easeOutCubic) \
+        DO(easeInOutCubic) \
+        DO(easeInQuart) \
+        DO(easeOutQuart) \
+        DO(easeInOutQuart) \
+        DO(easeInQuint) \
+        DO(easeOutQuint) \
+        DO(easeInOutQuint) \
+        DO(easeInSine) \
+        DO(easeOutSine) \
+        DO(easeInOutSine) \
+        DO(easeInCirc) \
+        DO(easeOutCirc) \
+        DO(easeInOutCirc) \
+        DO(easeInExpo) \
+        DO(easeOutExpo) \
+        DO(easeInOutExpo) \
+        DO(easeInElastic) \
+        DO(easeOutElastic) \
+        DO(easeInOutElastic) \
+        DO(easeInBack) \
+        DO(easeOutBack) \
+        DO(easeInOutBack) \
+        DO(easeInBounce) \
+        DO(easeOutBounce) \
+        DO(easeInOutBounce)
 
-    enum Functions {
-        easeLinear,
-        easeStep,
-        easeInQuad,
-        easeOutQuad,
-        easeInOutQuad,
-        easeInCubic,
-        easeOutCubic,
-        easeInOutCubic,
-        easeInQuart,
-        easeOutQuart,
-        easeInOutQuart,
-        easeInQuint,
-        easeOutQuint,
-        easeInOutQuint,
-        easeInSine,
-        easeOutSine,
-        easeInOutSine,
-        easeInCirc,
-        easeOutCirc,
-        easeInOutCirc,
-        easeInExpo,
-        easeOutExpo,
-        easeInOutExpo,
-        easeInElastic,
-        easeOutElastic,
-        easeInOutElastic,
-        easeInBack,
-        easeOutBack,
-        easeInOutBack,
-        easeInBounce,
-        easeOutBounce,
-        easeInOutBounce,
+    enum class Functions {
+        #define MAKE_ENUM(VAR) VAR,
+        Functions_ENUM(MAKE_ENUM)
+        #undef MAKE_ENUM
     };
+
+    inline static const FunctionsMap FUNCTION_NAMES {
+    #define MAKE_NAMES(VAR) {#VAR, (int)Functions::VAR},
+            Functions_ENUM(MAKE_NAMES)
+    #undef MAKE_NAMES
+    };
+
 
     class Easings {
     public:
@@ -212,5 +229,5 @@ namespace ChromaUtils {
         static float EaseOutBounce(float p);
 
         static float EaseInOutBounce(float p);
-    }
+    };
 }
