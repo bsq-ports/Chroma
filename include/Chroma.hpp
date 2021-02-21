@@ -3,6 +3,10 @@
 #include "main.hpp"
 #include "UnityEngine/Color.hpp"
 #include <optional>
+#include "GlobalNamespace/ILightWithId.hpp"
+#include <vector>
+
+static /*std::optional<*/std::vector<GlobalNamespace::ILightWithId *>/*>*/ OverrideLightWithIdActivation;
 
 namespace Chroma {
     namespace Hooks {

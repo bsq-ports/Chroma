@@ -1,13 +1,20 @@
 #include "Chroma.hpp"
 
+#include <vector>
+#include <optional>
+#include "LightColorManager.hpp"
+#include "custom-json-data/shared/CustomBeatmapData.h"
 #include "System/Collections/Generic/IEnumerator_1.hpp"
 #include "colorizer/LightColorizer.hpp"
 #include "custom-types/shared/types.hpp"
 #include "custom-types/shared/macros.hpp"
 #include "custom-types/shared/register.hpp"
+#include "UnityEngine/Color.hpp"
 #include "UnityEngine/WaitForEndOfFrame.hpp"
+#include "GlobalNamespace/ILightWithId.hpp"
 #include "LightSwitchEventEffect.hpp"
 
+using namespace CustomJSONData;
 using namespace Chroma;
 using namespace GlobalNamespace;
 using namespace UnityEngine;
@@ -52,8 +59,25 @@ MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_Start, void, LightSwitchEventEffect*
     LightSwitchEventEffect_Start(self);
 }
 
+MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_SetColor, void, LightSwitchEventEffect* self, UnityEngine::Color color) {
+    auto lights = OverrideLightWithIdActivation;
+    for (int i =0;i<lights.size();i++){
+        lights[i]->ColorWasSet(color);
+    }
+}
+
+MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger, void, LightSwitchEventEffect* self, CustomBeatmapEventData* beatmapEventData) {
+    if (beatmapEventData->type == self->event) {
+        LightColorManager::ColorLightSwitch(self, beatmapEventData);
+    }
+
+    LightSwitchEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);
+}
+
 void Chroma::Hooks::LightSwitchEventEffect() {
     CRASH_UNLESS(custom_types::Register::RegisterType<Il2CppNamespace::WaitThenStartEnumerator>());
 
     INSTALL_HOOK_OFFSETLESS(getLogger(), LightSwitchEventEffect_Start, il2cpp_utils::FindMethodUnsafe("", "LightSwitchEventEffect", "Start", 0));
+    INSTALL_HOOK_OFFSETLESS(getLogger(), LightSwitchEventEffect_SetColor, il2cpp_utils::FindMethodUnsafe("", "LightSwitchEventEffect", "SetColor", 1));
+    INSTALL_HOOK_OFFSETLESS(getLogger(), LightSwitchEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger, il2cpp_utils::FindMethodUnsafe("", "LightSwitchEventEffect", "HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger", 1));
 }
