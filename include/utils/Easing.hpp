@@ -3,11 +3,8 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 
-#include <unordered_map>
-
-typedef std::unordered_map<std::string, int> FunctionsMap;
-
-namespace ChromaUtils {
+#include <map>
+#include <string>
 
 #define Functions_ENUM(DO) \
         DO(easeLinear) \
@@ -43,16 +40,18 @@ namespace ChromaUtils {
         DO(easeOutBounce) \
         DO(easeInOutBounce)
 
+namespace ChromaUtils {
+
     enum class Functions {
         #define MAKE_ENUM(VAR) VAR,
         Functions_ENUM(MAKE_ENUM)
         #undef MAKE_ENUM
     };
 
-    inline static const FunctionsMap FUNCTION_NAMES {
-    #define MAKE_NAMES(VAR) {#VAR, (int)Functions::VAR},
-            Functions_ENUM(MAKE_NAMES)
-    #undef MAKE_NAMES
+    inline static const std::map<std::string, int> FUNCTION_NAMES {
+        #define MAKE_NAMES(VAR) {#VAR, (int)ChromaUtils::Functions::VAR},
+                Functions_ENUM(MAKE_NAMES)
+        #undef MAKE_NAMES
     };
 
 
