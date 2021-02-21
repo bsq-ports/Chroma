@@ -27,6 +27,11 @@
       "id": "custom-json-data",
       "versionRange": "*",
       "additionalData": {}
+    },
+    {
+      "id": "config-utils",
+      "versionRange": "*",
+      "additionalData": {}
     }
   ],
   "additionalData": {}

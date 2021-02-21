@@ -5,6 +5,10 @@
 #include "colorizer/SaberColorizer.hpp"
 #include "custom-types/shared/register.hpp"
 
+#include "ChromaConfig.hpp"
+
+using namespace Chroma;
+
 static ModInfo modInfo;
 
 Configuration& getConfig() {
@@ -24,6 +28,9 @@ extern "C" void setup(ModInfo& info) {
     modInfo = info;
 
     getConfig().Load();
+
+    getChromaConfig().Init(info);
+
     getLogger().info("Completed Chroma setup!");
 }
 
