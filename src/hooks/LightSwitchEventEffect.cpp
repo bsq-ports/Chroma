@@ -12,7 +12,7 @@
 #include "UnityEngine/Color.hpp"
 #include "UnityEngine/WaitForEndOfFrame.hpp"
 #include "GlobalNamespace/ILightWithId.hpp"
-#include "LightSwitchEventEffect.hpp"
+#include "hooks/LightSwitchEventEffect.hpp"
 
 using namespace CustomJSONData;
 using namespace Chroma;
