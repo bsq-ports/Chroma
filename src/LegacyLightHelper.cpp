@@ -9,6 +9,10 @@ void LegacyLightHelper::Activate(std::vector<GlobalNamespace::BeatmapEventData *
     LegacyColorEvents.clear();
     for (BeatmapEventData* d : eventData)
     {
+        // TODO: Should we do this or find the root of the nullptr and fix that instead?
+        if (d == nullptr)
+            continue;
+
         if (d->value >= RGB_INT_OFFSET)
         {
 
