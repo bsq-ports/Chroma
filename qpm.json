@@ -32,6 +32,11 @@
       "id": "config-utils",
       "versionRange": "*",
       "additionalData": {}
+    },
+    {
+      "id": "questui",
+      "versionRange": "*",
+      "additionalData": {}
     }
   ],
   "additionalData": {}
