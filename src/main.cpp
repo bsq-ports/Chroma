@@ -5,11 +5,14 @@
 #include "colorizer/SaberColorizer.hpp"
 #include "custom-types/shared/register.hpp"
 
+#include "ChromaController.hpp"
+#include "ChromaGradientController.hpp"
+
 #include "ChromaConfig.hpp"
 
 using namespace Chroma;
 
-static ModInfo modInfo;
+
 
 Configuration& getConfig() {
     static Configuration config(modInfo);
@@ -23,7 +26,7 @@ Logger& getLogger() {
 }
 
 extern "C" void setup(ModInfo& info) {
-    info.id = "Chroma";
+    info.id = modName;
     info.version = VERSION;
     modInfo = info;
 
@@ -41,6 +44,8 @@ extern "C" void load() {
 
     CRASH_UNLESS(custom_types::Register::RegisterType<Chroma::LSEColorManager>());
     CRASH_UNLESS(custom_types::Register::RegisterType<Chroma::ChangeColorCoroutine>());
+    CRASH_UNLESS(custom_types::Register::RegisterType<Chroma::ChromaGradientController>());
+    CRASH_UNLESS(custom_types::Register::RegisterType<Chroma::DelayedStartEnumerator>());
 
     getLogger().info("Installed types");
 

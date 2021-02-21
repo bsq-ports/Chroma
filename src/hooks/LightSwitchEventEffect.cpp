@@ -43,7 +43,7 @@ bool Il2CppNamespace::WaitThenStartEnumerator::MoveNext() {
         return true; // Continue coroutine
     }
  
-    LightColorizer::LSEStart(instance, &eventType);
+    LightColorizer::LSEStart(instance, eventType);
  
     return false; // Reached end of coroutine
 }

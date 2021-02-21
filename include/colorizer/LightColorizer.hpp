@@ -27,7 +27,7 @@ namespace Chroma {
                           std::optional<UnityEngine::Color> Color1Boost = std::nullopt);
 
         static void
-        SetLightingColors(GlobalNamespace::BeatmapEventType *beatmapEventType, std::optional<UnityEngine::Color> Color0,
+        SetLightingColors(GlobalNamespace::BeatmapEventType beatmapEventType, std::optional<UnityEngine::Color> Color0,
                           std::optional<UnityEngine::Color> Color1,
                           std::optional<UnityEngine::Color> Color0Boost = std::nullopt,
                           std::optional<UnityEngine::Color> Color1Boost = std::nullopt);
@@ -37,7 +37,7 @@ namespace Chroma {
                              std::optional<UnityEngine::Color> Color0Boost = std::nullopt,
                              std::optional<UnityEngine::Color> Color1Boost = std::nullopt);
 
-        static void SetActiveColors(GlobalNamespace::BeatmapEventType *lse);
+        static void SetActiveColors(GlobalNamespace::BeatmapEventType lse);
 
         static void SetAllActiveColors();
 
@@ -53,7 +53,7 @@ namespace Chroma {
         GetLightsPropagationGrouped(GlobalNamespace::LightSwitchEventEffect *lse);
 
         static void
-        LSEStart(UnityEngine::MonoBehaviour *monoBehaviour, GlobalNamespace::BeatmapEventType *beatmapEventType);
+        LSEStart(UnityEngine::MonoBehaviour *monoBehaviour, GlobalNamespace::BeatmapEventType beatmapEventType);
     };
 }
 
@@ -69,11 +69,11 @@ DECLARE_CLASS_CODEGEN(Chroma, LSEColorManager, Il2CppObject,
                               LightGroupMap LightsPropagationGrouped;
 
                               // TODO: Is this the proper return type?
-                              static std::vector<LSEColorManager *> GetLSEColorManager(GlobalNamespace::BeatmapEventType *type);
+                              static std::vector<LSEColorManager *> GetLSEColorManager(GlobalNamespace::BeatmapEventType type);
 
                               static LSEColorManager *GetLSEColorManager(UnityEngine::MonoBehaviour *m);
 
-                              static LSEColorManager *CreateLSEColorManager(UnityEngine::MonoBehaviour *lse, GlobalNamespace::BeatmapEventType *type);
+                              static LSEColorManager *CreateLSEColorManager(UnityEngine::MonoBehaviour *lse, GlobalNamespace::BeatmapEventType type);
 
                               void Reset();
 
@@ -89,7 +89,7 @@ DECLARE_CLASS_CODEGEN(Chroma, LSEColorManager, Il2CppObject,
                               UnityEngine::Color& originalColor, GlobalNamespace::MultipliedColorSO *&mColorSO);
 
                               DECLARE_INSTANCE_FIELD(UnityEngine::MonoBehaviour *, _lse);
-                              DECLARE_INSTANCE_FIELD(GlobalNamespace::BeatmapEventType *, _type);
+                              DECLARE_INSTANCE_FIELD(GlobalNamespace::BeatmapEventType, _type);
 
                               DECLARE_INSTANCE_FIELD(UnityEngine::Color, _lightColor0_Original);
                               DECLARE_INSTANCE_FIELD(UnityEngine::Color, _lightColor1_Original);
@@ -115,7 +115,7 @@ DECLARE_CLASS_CODEGEN(Chroma, LSEColorManager, Il2CppObject,
 
                               DECLARE_INSTANCE_FIELD(float, _lastValue);
 
-                              DECLARE_CTOR(ctor, UnityEngine::MonoBehaviour* mono, GlobalNamespace::BeatmapEventType* type);
+                              DECLARE_CTOR(ctor, UnityEngine::MonoBehaviour* mono, GlobalNamespace::BeatmapEventType type);
 
                               REGISTER_FUNCTION(Chroma::LSEColorManager,
                               REGISTER_METHOD(ctor);

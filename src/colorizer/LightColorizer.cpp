@@ -47,7 +47,7 @@ void LightColorizer::SetLightingColors(MonoBehaviour *monoBehaviour, std::option
     }
 }
 
-void LightColorizer::SetLightingColors(BeatmapEventType *beatmapEventType, std::optional<UnityEngine::Color> Color0, std::optional<UnityEngine::Color> Color1,
+void LightColorizer::SetLightingColors(BeatmapEventType beatmapEventType, std::optional<UnityEngine::Color> Color0, std::optional<UnityEngine::Color> Color1,
                                        std::optional<UnityEngine::Color> Color0Boost, std::optional<UnityEngine::Color> Color1Boost) {
     auto manager = Chroma::LSEColorManager::GetLSEColorManager(beatmapEventType);
 
@@ -63,7 +63,7 @@ void LightColorizer::SetAllLightingColors(std::optional<UnityEngine::Color> Colo
     }
 }
 
-void LightColorizer::SetActiveColors(BeatmapEventType *lse) {
+void LightColorizer::SetActiveColors(BeatmapEventType lse) {
     for (auto l : LSEColorManager::GetLSEColorManager(lse)) {
         l->SetActiveColors();
     }
@@ -109,7 +109,7 @@ std::unordered_map<int, std::vector<ILightWithId *>> LightColorizer::GetLightsPr
 
 }
 
-void LightColorizer::LSEStart(MonoBehaviour *monoBehaviour, BeatmapEventType *beatmapEventType) {
+void LightColorizer::LSEStart(MonoBehaviour *monoBehaviour, BeatmapEventType beatmapEventType) {
     LSEColorManager::CreateLSEColorManager(monoBehaviour, beatmapEventType);
 }
 
@@ -117,7 +117,7 @@ void LightColorizer::LSEStart(MonoBehaviour *monoBehaviour, BeatmapEventType *be
 
 
 namespace Chroma {
-    void LSEColorManager::ctor(MonoBehaviour *mono, BeatmapEventType *type) {
+    void LSEColorManager::ctor(MonoBehaviour *mono, BeatmapEventType type) {
         _lse = mono;
         _type = type;
         InitializeSOs(mono, "_lightColor0", _lightColor0, _lightColor0_Original, _mLightColor0);
@@ -172,7 +172,7 @@ namespace Chroma {
         }
     }
 
-    std::vector<LSEColorManager *> LSEColorManager::GetLSEColorManager(BeatmapEventType *type) {
+    std::vector<LSEColorManager *> LSEColorManager::GetLSEColorManager(BeatmapEventType type) {
         std::vector<LSEColorManager *> colorManagers;
 
         for (auto man : lseColorManagers) {
@@ -193,7 +193,7 @@ namespace Chroma {
     }
 
     LSEColorManager *
-    LSEColorManager::CreateLSEColorManager(MonoBehaviour *lse, BeatmapEventType *type) {
+    LSEColorManager::CreateLSEColorManager(MonoBehaviour *lse, BeatmapEventType type) {
         LSEColorManager * lsecm;
         lsecm = il2cpp_utils::New<LSEColorManager *>(lse, type).value();
         lseColorManagers.push_back(lsecm);

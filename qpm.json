@@ -37,6 +37,11 @@
       "id": "questui",
       "versionRange": "*",
       "additionalData": {}
+    },
+    {
+      "id": "bs-utils",
+      "versionRange": "*",
+      "additionalData": {}
     }
   ],
   "additionalData": {}
