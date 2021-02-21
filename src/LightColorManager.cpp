@@ -2,6 +2,9 @@
 #include "Chroma.hpp"
 #include "colorizer/LightColorizer.hpp"
 #include "GlobalNamespace/LightSwitchEventEffect.hpp"
+#include "LegacyLightHelper.hpp"
+#include "utils/ChromaUtils.hpp"
+#include "ChromaGradientController.hpp"
 
 using namespace CustomJSONData;
 using namespace GlobalNamespace;
@@ -10,8 +13,9 @@ using namespace UnityEngine;
 void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, CustomBeatmapEventData* beatmapEventData) {
     LightColorizer::SetLastValue(monobehaviour, beatmapEventData->value);
 
-    UnityEngine::Color color;
-    bool colorWasTouched = false;
+    std::optional<UnityEngine::Color> color;
+
+    color = LegacyLightHelper::GetLegacyColor(beatmapEventData);
 
     if(beatmapEventData->customData) {
         rapidjson::Value &dynData = *beatmapEventData->customData;
@@ -35,36 +39,21 @@ void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, C
 
             //gradientObject
             // FIXME, THIS IS VERY TEMP!!
-            if(dynData.HasMember("_lightGradient")&&dynData["_lightGradient"].HasMember("_startColor")) {
-                auto col = dynData["_lightGradient"]["_startColor"].GetArray();
-                float r = col[0].GetFloat();
-                float g = col[1].GetFloat();
-                float b = col[2].GetFloat();
-                // not parsing "a" atm..
-                color.r = r;
-                color.g = g;
-                color.b = b;
-                color.a = 1;
-                colorWasTouched=true;
+            if(dynData.HasMember("_lightGradient")) {
+                color = ChromaGradientController::AddGradient(&dynData["_lightGradient"], beatmapEventData->type, beatmapEventData->time);
             }
         }
 
-        // don't be bri'ish innit.
-        if(dynData.HasMember("_color")) {
-            auto col = dynData["_color"].GetArray();
-            float r = col[0].GetFloat();
-            float g = col[1].GetFloat();
-            float b = col[2].GetFloat();
-            // not parsing "a" atm..
-            color.r = r;
-            color.g = g;
-            color.b = b;
-            color.a = 1;
-            colorWasTouched=true;
+        std::optional<UnityEngine::Color> colorData = ChromaUtils::ChromaUtilities::GetColorFromData(&dynData);
+        if (colorData){
+            color = colorData;
+            ChromaGradientController::CancelGradient(beatmapEventData->type);
         }
     }
 
-    if (colorWasTouched){
-        LightColorizer::SetLightingColors(monobehaviour, std::make_optional(color), std::make_optional(color), std::make_optional(color), std::make_optional(color));
+    if (color){
+        LightColorizer::SetLightingColors(monobehaviour, color, color, color, color);
+    } else if (!ChromaGradientController::IsGradientActive(beatmapEventData->type)){
+        LightColorizer::Reset(monobehaviour);
     }
 }

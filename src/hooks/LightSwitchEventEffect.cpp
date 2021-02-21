@@ -60,9 +60,13 @@ MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_Start, void, LightSwitchEventEffect*
 }
 
 MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_SetColor, void, LightSwitchEventEffect* self, UnityEngine::Color color) {
-    auto lights = OverrideLightWithIdActivation;
-    for (int i =0;i<lights.size();i++){
-        lights[i]->ColorWasSet(color);
+    if (OverrideLightWithIdActivation){
+        auto lights = OverrideLightWithIdActivation.value();
+        for (int i =0;i<lights.size();i++){
+            lights[i]->ColorWasSet(color);
+        }
+    } else {
+        LightSwitchEventEffect_SetColor(self, color);
     }
 }
 

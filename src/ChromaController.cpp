@@ -62,12 +62,12 @@ bool Chroma::DelayedStartEnumerator::MoveNext() {
 
     IReadonlyBeatmapData *beatmapData = coreSetup->beatmapData;
 
-    auto delegate = il2cpp_utils::MakeDelegate<System::Action_2<NoteController*, NoteCutInfo*>*>(classof(System::Action_2<NoteController*, NoteCutInfo*>*),(Il2CppObject*) nullptr, NoteColorizer::ColorizeSaber);
+    //auto delegate = il2cpp_utils::MakeDelegate<System::Action_2<NoteController*, NoteCutInfo*>*>(classof(System::Action_2<NoteController*, NoteCutInfo*>*),(Il2CppObject*) nullptr, NoteColorizer::ColorizeSaber);
 
     // TODO: According to dan, this might cause crashes even though PC modders can do it just fine
-    beatmapObjectManager->remove_noteWasCutEvent(delegate);
+    //beatmapObjectManager->remove_noteWasCutEvent(delegate);
 
-    beatmapObjectManager->add_noteWasCutEvent(delegate);
+    //beatmapObjectManager->add_noteWasCutEvent(delegate);
 
     if (getChromaConfig().lightshowModifier.GetValue()) {
         auto list = reinterpret_cast<Generic::List_1<IReadonlyBeatmapData *> *>(beatmapData->get_beatmapLinesData());
@@ -183,7 +183,7 @@ bool Chroma::DelayedStartEnumerator::MoveNext() {
     return false; // Reached end of coroutine
 }
 
-IEnumerator *DelayedStart(BeatmapObjectSpawnController *instance) {
+IEnumerator *Chroma::ChromaController::DelayedStart(GlobalNamespace::BeatmapObjectSpawnController *instance) {
     Chroma::DelayedStartEnumerator *coroutine = CRASH_UNLESS(il2cpp_utils::New<Chroma::DelayedStartEnumerator*>(instance));
     return reinterpret_cast<IEnumerator*>(coroutine);
 }

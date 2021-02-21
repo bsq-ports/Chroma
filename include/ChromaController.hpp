@@ -33,6 +33,8 @@ namespace Chroma {
         // internal
         static void OnActiveSceneChanged(UnityEngine::SceneManagement::Scene current, UnityEngine::SceneManagement::Scene _);
 
+        static System::Collections::IEnumerator *DelayedStart(GlobalNamespace::BeatmapObjectSpawnController *instance);
+
     };
 }
 

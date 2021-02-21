@@ -7,10 +7,11 @@
 #include <vector>
 #include <string>
 
-static /*std::optional<*/std::vector<GlobalNamespace::ILightWithId *>/*>*/ OverrideLightWithIdActivation;
+static std::optional<std::vector<GlobalNamespace::ILightWithId *>> OverrideLightWithIdActivation;
 
 namespace Chroma {
     namespace Hooks {
+        void BeatmapObjectSpawnController();
         void LightPairRotationEventEffect();
         void LightRotationEventEffect();
         void LightSwitchEventEffect();
