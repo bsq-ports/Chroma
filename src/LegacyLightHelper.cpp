@@ -17,9 +17,10 @@ void LegacyLightHelper::Activate(std::vector<GlobalNamespace::BeatmapEventData *
         {
 
             auto list = std::vector<pair<float, UnityEngine::Color>>();
-            if (LegacyColorEvents.contains(d->type)) {
+            if (!LegacyColorEvents.contains(d->type)) {
                 LegacyColorEvents[d->type] = list;
-            }
+            } else
+                list = LegacyColorEvents[d->type];
 
 
             list.push_back(std::make_pair(d->time, ColorFromInt(d->value)));
