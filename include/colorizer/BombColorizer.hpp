@@ -12,7 +12,7 @@
 // TODO: Document properly
 // TODO: Does this need to become a custom type?
 namespace Chroma {
-    class NoteColorizer {
+    class BombColorizer {
     public:
         static void Reset(GlobalNamespace::BombNoteController* bnc);
         static void ResetAllBombColors();
