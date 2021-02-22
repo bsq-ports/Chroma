@@ -16,16 +16,16 @@ using namespace UnityEngine;
 
 using namespace Chroma;
 
-std::optional<UnityEngine::Color> NoteColorizer::BNCColorManager::_globalColor = std::nullopt;
+std::optional<UnityEngine::Color> BombColorizer::BNCColorManager::_globalColor = std::nullopt;
 
-void NoteColorizer::Reset(GlobalNamespace::BombNoteController *bnc) {
+void BombColorizer::Reset(GlobalNamespace::BombNoteController *bnc) {
     auto bncman = BNCColorManager::GetBNCColorManager(bnc);
 
     if (bncman)
         bncman->Reset();
 }
 
-void NoteColorizer::ResetAllBombColors() {
+void BombColorizer::ResetAllBombColors() {
     BNCColorManager::ResetGlobal();
 
     for (auto& bncColorManager : _bncColorManagers)
@@ -34,14 +34,14 @@ void NoteColorizer::ResetAllBombColors() {
     }
 }
 
-void NoteColorizer::SetBombColor(GlobalNamespace::BombNoteController *bnc, std::optional<UnityEngine::Color> color) {
+void BombColorizer::SetBombColor(GlobalNamespace::BombNoteController *bnc, std::optional<UnityEngine::Color> color) {
     auto bncman = BNCColorManager::GetBNCColorManager(bnc);
 
     if (bncman)
         bncman->SetBombColor(color);
 }
 
-void NoteColorizer::SetAllBombColors(std::optional<UnityEngine::Color> color) {
+void BombColorizer::SetAllBombColors(std::optional<UnityEngine::Color> color) {
     BNCColorManager::SetGlobalBombColor(color);
 
     for (auto& bncColorManager : _bncColorManagers)
@@ -50,16 +50,16 @@ void NoteColorizer::SetAllBombColors(std::optional<UnityEngine::Color> color) {
     }
 }
 
-void NoteColorizer::ClearBNCColorManagers() {
+void BombColorizer::ClearBNCColorManagers() {
     ResetAllBombColors();
     _bncColorManagers.clear();
 }
 
-void NoteColorizer::BNCStart(GlobalNamespace::BombNoteController *bnc) {
+void BombColorizer::BNCStart(GlobalNamespace::BombNoteController *bnc) {
     BNCColorManager::CreateBNCColorManager(bnc);
 }
 
-NoteColorizer::BNCColorManager::BNCColorManager(GlobalNamespace::BombNoteController *nc) {
+BombColorizer::BNCColorManager::BNCColorManager(GlobalNamespace::BombNoteController *nc) {
     _nc = nc;
 
     _bombMaterial = nc->noteTransform->get_gameObject()->GetComponent<Renderer*>()->get_material();
@@ -71,7 +71,7 @@ NoteColorizer::BNCColorManager::BNCColorManager(GlobalNamespace::BombNoteControl
     }
 }
 
-NoteColorizer::BNCColorManager *NoteColorizer::BNCColorManager::GetBNCColorManager(GlobalNamespace::BombNoteController *nc) {
+BombColorizer::BNCColorManager *BombColorizer::BNCColorManager::GetBNCColorManager(GlobalNamespace::BombNoteController *nc) {
     for (auto& n : _bncColorManagers) {
         if (n->_nc == nc)
             return n;
@@ -80,8 +80,8 @@ NoteColorizer::BNCColorManager *NoteColorizer::BNCColorManager::GetBNCColorManag
     return nullptr;
 }
 
-NoteColorizer::BNCColorManager *
-NoteColorizer::BNCColorManager::CreateBNCColorManager(GlobalNamespace::BombNoteController *nc) {
+BombColorizer::BNCColorManager *
+BombColorizer::BNCColorManager::CreateBNCColorManager(GlobalNamespace::BombNoteController *nc) {
     if (GetBNCColorManager(nc) != nullptr)
     {
         return nullptr;
@@ -92,18 +92,18 @@ NoteColorizer::BNCColorManager::CreateBNCColorManager(GlobalNamespace::BombNoteC
     return bnccm;
 }
 
-void NoteColorizer::BNCColorManager::SetGlobalBombColor(std::optional<UnityEngine::Color> color) {
+void BombColorizer::BNCColorManager::SetGlobalBombColor(std::optional<UnityEngine::Color> color) {
     if (color)
     {
         _globalColor = color.value();
     }
 }
 
-void NoteColorizer::BNCColorManager::ResetGlobal() {
+void BombColorizer::BNCColorManager::ResetGlobal() {
     _globalColor = std::nullopt;
 }
 
-void NoteColorizer::BNCColorManager::Reset() {
+void BombColorizer::BNCColorManager::Reset() {
     if (_globalColor)
     {
         _bombMaterial->SetColor(il2cpp_utils::createcsstr("_SimpleColor"), _globalColor.value());
@@ -114,7 +114,7 @@ void NoteColorizer::BNCColorManager::Reset() {
     }
 }
 
-void NoteColorizer::BNCColorManager::SetBombColor(std::optional<UnityEngine::Color> color) {
+void BombColorizer::BNCColorManager::SetBombColor(std::optional<UnityEngine::Color> color) {
     if (color)
     {
         _bombMaterial->SetColor(il2cpp_utils::createcsstr("_SimpleColor"), color.value());
