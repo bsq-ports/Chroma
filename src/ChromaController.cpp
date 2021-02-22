@@ -65,8 +65,11 @@ bool Chroma::DelayedStartEnumerator::MoveNext() {
 
     IReadonlyBeatmapData *beatmapData = coreSetup->beatmapData;
 
-    if (!hookInstalled)
-        INSTALL_HOOK_OFFSETLESS(getLogger(), ChromaController_NoteCutEvent, il2cpp_utils::FindMethodUnsafe("", "BeatmapObjectManager", "HandleNoteWasCut", 2));
+    if (!hookInstalled) {
+        INSTALL_HOOK_OFFSETLESS(getLogger(), ChromaController_NoteCutEvent,
+                                il2cpp_utils::FindMethodUnsafe("", "BeatmapObjectManager", "HandleNoteWasCut", 2));
+        hookInstalled = true;
+    }
 
     if (getChromaConfig().lightshowModifier.GetValue()) {
         auto list = reinterpret_cast<Generic::List_1<IReadonlyBeatmapData *> *>(beatmapData->get_beatmapLinesData());
@@ -179,6 +182,7 @@ bool Chroma::DelayedStartEnumerator::MoveNext() {
     // please let me kill legacy
     LegacyLightHelper::Activate(eventData);
 
+    current = nullptr;
     return false; // Reached end of coroutine
 }
 
