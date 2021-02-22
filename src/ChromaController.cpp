@@ -1,9 +1,7 @@
 #include "ChromaController.hpp"
 
 #include "GlobalNamespace/BeatmapObjectManager.hpp"
-#include "GlobalNamespace/BeatmapObjectCallbackController.hpp"
 #include "GlobalNamespace/IReadonlyBeatmapData.hpp"
-#include "GlobalNamespace/IAudioTimeSource.hpp"
 #include "GlobalNamespace/BeatmapLineData.hpp"
 #include "GlobalNamespace/BeatmapObjectType.hpp"
 #include "GlobalNamespace/BeatmapObjectData.hpp"
@@ -11,19 +9,14 @@
 
 #include "UnityEngine/Resources.hpp"
 #include "UnityEngine/GameObject.hpp"
-#include "UnityEngine/Events/UnityAction_2.hpp"
 
 #include "System/Action.hpp"
-#include "System/Action_2.hpp"
-#include "System/Collections/Generic/IReadOnlyList_1.hpp"
-#include "System/Collections/Generic/List_1.hpp"
 
 #include "bs-utils/shared/utils.hpp"
 #include "custom-json-data/shared/CustomBeatmapData.h"
 
 #include "main.hpp"
 #include "ChromaConfig.hpp"
-#include "Chroma.hpp"
 #include "colorizer/NoteColorizer.hpp"
 #include "LegacyLightHelper.hpp"
 

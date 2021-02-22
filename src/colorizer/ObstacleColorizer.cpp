@@ -30,7 +30,7 @@ void ObstacleColorizer::Reset(GlobalNamespace::ObstacleController *oc) {
 void ObstacleColorizer::ResetAllObstacleColors() {
     OCColorManager::ResetGlobal();
 
-    for (auto ocColorManager : _ocColorManagers)
+    for (auto& ocColorManager : _ocColorManagers)
     {
         ocColorManager->Reset();
     }
@@ -47,7 +47,7 @@ ObstacleColorizer::SetObstacleColor(GlobalNamespace::ObstacleController *oc, std
 void ObstacleColorizer::SetAllObstacleColors(std::optional<UnityEngine::Color> color) {
     OCColorManager::SetGlobalObstacleColor(color);
 
-    for (auto ocColorManager : _ocColorManagers)
+    for (auto& ocColorManager : _ocColorManagers)
     {
         ocColorManager->Reset();
     }
@@ -58,7 +58,7 @@ void ObstacleColorizer::SetActiveColors(GlobalNamespace::ObstacleController *oc)
 }
 
 void ObstacleColorizer::SetAllActiveColors() {
-    for (auto ocColorManager : _ocColorManagers)
+    for (auto& ocColorManager : _ocColorManagers)
     {
         ocColorManager->SetActiveColors();
     }
@@ -91,7 +91,7 @@ ObstacleColorizer::OCColorManager::OCColorManager(GlobalNamespace::ObstacleContr
 
 ObstacleColorizer::OCColorManager *
 ObstacleColorizer::OCColorManager::GetOCColorManager(GlobalNamespace::ObstacleController *oc) {
-    for (auto n : _ocColorManagers) {
+    for (auto& n : _ocColorManagers) {
         if (n->_oc == oc)
             return n;
     }

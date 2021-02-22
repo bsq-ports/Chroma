@@ -57,7 +57,7 @@ UnityEngine::Color ChromaGradientController::AddGradient(rapidjson::Value* gradi
         easing = (ChromaUtils::Functions) s[easingString];
     }
 
-    ChromaGradientEvent* gradientEvent = new ChromaGradientEvent(initcolor, endcolor, time, duration, id, easing);
+    auto* gradientEvent = new ChromaGradientEvent(initcolor, endcolor, time, duration, id, easing);
     Gradients[id.value] = gradientEvent;
     return gradientEvent->Interpolate();
 }

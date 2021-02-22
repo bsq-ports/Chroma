@@ -130,7 +130,7 @@ NoteColorizer::CNVColorManager::CNVColorManager(GlobalNamespace::ColorNoteVisual
 NoteColorizer::CNVColorManager *
 NoteColorizer::CNVColorManager::GetCNVColorManager(GlobalNamespace::NoteController *nc) {
 
-    for (auto n : _cnvColorManagers) {
+    for (auto& n : _cnvColorManagers) {
         if (n->_nc == nc)
             return n;
     }

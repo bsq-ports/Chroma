@@ -7,7 +7,7 @@ using namespace System::Collections;
 
 void LegacyLightHelper::Activate(std::vector<GlobalNamespace::BeatmapEventData *> eventData) {
     LegacyColorEvents.clear();
-    for (BeatmapEventData* d : eventData)
+    for (auto& d : eventData)
     {
         // TODO: Should we do this or find the root of the nullptr and fix that instead?
         if (d == nullptr)
@@ -35,7 +35,7 @@ std::optional<UnityEngine::Color> LegacyLightHelper::GetLegacyColor(
         auto dictionaryID = LegacyColorEvents[beatmapEventData->type];
         std::vector<pair<float, UnityEngine::Color>> colors;
 
-        for (pair<float, UnityEngine::Color> n : dictionaryID) {
+        for (pair<float, UnityEngine::Color>& n : dictionaryID) {
             if (n.first <= beatmapEventData->time)
                 colors.push_back(n);
         }

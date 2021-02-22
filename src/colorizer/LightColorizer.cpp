@@ -33,7 +33,7 @@ void LightColorizer::Reset(MonoBehaviour *behaviour) {
 }
 
 void LightColorizer::ResetAllLightingColors() {
-    for (auto manager : lseColorManagers) {
+    for (auto& manager : lseColorManagers) {
         manager->Reset();
     }
 }
@@ -51,26 +51,26 @@ void LightColorizer::SetLightingColors(BeatmapEventType beatmapEventType, std::o
                                        std::optional<UnityEngine::Color> Color0Boost, std::optional<UnityEngine::Color> Color1Boost) {
     auto manager = Chroma::LSEColorManager::GetLSEColorManager(beatmapEventType);
 
-    for (auto l : LSEColorManager::GetLSEColorManager(beatmapEventType)) {
+    for (auto& l : LSEColorManager::GetLSEColorManager(beatmapEventType)) {
         l->SetLightingColors(Color0, Color1, Color0Boost, Color1Boost);
     }
 }
 
 void LightColorizer::SetAllLightingColors(std::optional<UnityEngine::Color> Color0, std::optional<UnityEngine::Color> Color1,
                                           std::optional<UnityEngine::Color> Color0Boost, std::optional<UnityEngine::Color> Color1Boost) {
-    for (auto manager : lseColorManagers) {
+    for (auto& manager : lseColorManagers) {
         manager->SetLightingColors(Color0, Color1, Color0Boost, Color1Boost);
     }
 }
 
 void LightColorizer::SetActiveColors(BeatmapEventType lse) {
-    for (auto l : LSEColorManager::GetLSEColorManager(lse)) {
+    for (auto& l : LSEColorManager::GetLSEColorManager(lse)) {
         l->SetActiveColors();
     }
 }
 
 void LightColorizer::SetAllActiveColors() {
-    for (LSEColorManager* lseColorManager : lseColorManagers)
+    for (auto& lseColorManager : lseColorManagers)
     {
         lseColorManager->SetActiveColors();
     }
@@ -145,7 +145,7 @@ namespace Chroma {
             Lights = std::vector<ILightWithId *>(ptrArray, ptrArray + ((int) lightList->get_Count()));
 
             std::unordered_map<int, std::vector<ILightWithId *>> lightsPreGroup;
-            for (ILightWithId *light : Lights) {
+            for (auto& light : Lights) {
                 if (!light) continue;
 
                 getLogger().debug("Doing light");
@@ -175,7 +175,7 @@ namespace Chroma {
     std::vector<LSEColorManager *> LSEColorManager::GetLSEColorManager(BeatmapEventType type) {
         std::vector<LSEColorManager *> colorManagers;
 
-        for (auto man : lseColorManagers) {
+        for (auto& man : lseColorManagers) {
             if (man->_type == type)
                 colorManagers.push_back(man);
         }
@@ -184,7 +184,7 @@ namespace Chroma {
     }
 
     LSEColorManager *LSEColorManager::GetLSEColorManager(MonoBehaviour *m) {
-        for (auto man : lseColorManagers) {
+        for (auto& man : lseColorManagers) {
             if (man->_lse == m)
                 return man;
         }

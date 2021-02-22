@@ -29,17 +29,17 @@ std::vector<std::optional<UnityEngine::Color>> SaberColorizer::SaberColorOverrid
 std::vector<SaberColorizer::BSMColorManager *> SaberColorizer::_bsmColorManagers;
 
 void SaberColorizer::SetSaberColor(int saberType, std::optional<UnityEngine::Color> color) {
-    for (auto bms : SaberColorizer::BSMColorManager::GetBSMColorManager(saberType)) {
+    for (auto& bms : SaberColorizer::BSMColorManager::GetBSMColorManager(saberType)) {
         bms->SetSaberColor(color);
     }
 }
 
 void SaberColorizer::SetAllSaberColors(std::optional<UnityEngine::Color> color0, std::optional<UnityEngine::Color> color1) {
-    for (auto bms : SaberColorizer::BSMColorManager::GetBSMColorManager(SaberType::SaberA)) {
+    for (auto& bms : SaberColorizer::BSMColorManager::GetBSMColorManager(SaberType::SaberA)) {
         bms->SetSaberColor(color0);
     }
 
-    for (auto bms : SaberColorizer::BSMColorManager::GetBSMColorManager(SaberType::SaberB)) {
+    for (auto& bms : SaberColorizer::BSMColorManager::GetBSMColorManager(SaberType::SaberB)) {
         bms->SetSaberColor(color1);
     }
 }
@@ -63,7 +63,7 @@ SaberColorizer::BSMColorManager::BSMColorManager(GlobalNamespace::Saber *bsm, in
 std::vector<SaberColorizer::BSMColorManager *>SaberColorizer::BSMColorManager::GetBSMColorManager(int saberType) {
     std::vector<BSMColorManager *> saberColors;
 
-    for (auto man : _bsmColorManagers) {
+    for (auto& man : _bsmColorManagers) {
         if (man->_saberType == saberType)
             saberColors.push_back(man);
     }

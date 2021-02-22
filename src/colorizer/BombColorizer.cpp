@@ -28,7 +28,7 @@ void NoteColorizer::Reset(GlobalNamespace::BombNoteController *bnc) {
 void NoteColorizer::ResetAllBombColors() {
     BNCColorManager::ResetGlobal();
 
-    for (auto bncColorManager : _bncColorManagers)
+    for (auto& bncColorManager : _bncColorManagers)
     {
         bncColorManager->Reset();
     }
@@ -44,7 +44,7 @@ void NoteColorizer::SetBombColor(GlobalNamespace::BombNoteController *bnc, std::
 void NoteColorizer::SetAllBombColors(std::optional<UnityEngine::Color> color) {
     BNCColorManager::SetGlobalBombColor(color);
 
-    for (auto bncColorManager : _bncColorManagers)
+    for (auto& bncColorManager : _bncColorManagers)
     {
         bncColorManager->Reset();
     }
@@ -72,7 +72,7 @@ NoteColorizer::BNCColorManager::BNCColorManager(GlobalNamespace::BombNoteControl
 }
 
 NoteColorizer::BNCColorManager *NoteColorizer::BNCColorManager::GetBNCColorManager(GlobalNamespace::BombNoteController *nc) {
-    for (auto n : _bncColorManagers) {
+    for (auto& n : _bncColorManagers) {
         if (n->_nc == nc)
             return n;
     }
