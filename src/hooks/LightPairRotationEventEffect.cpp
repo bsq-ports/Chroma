@@ -12,6 +12,7 @@
 using namespace CustomJSONData;
 using namespace GlobalNamespace;
 using namespace UnityEngine;
+using namespace Chroma;
 
 static CustomBeatmapEventData* LastLightPairRotationEventEffectData;
 
@@ -25,9 +26,30 @@ MAKE_HOOK_OFFSETLESS(
         LastLightPairRotationEventEffectData = beatmapEventData;
     }
 
+//    getLogger().debug("Doing lights");
     LightPairRotationEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);
+//    getLogger().debug("Did the custom lights");
 
     LastLightPairRotationEventEffectData = nullptr;
+}
+
+UnityEngine::Vector3 vectorMultiply(UnityEngine::Vector3 vector, float m) {
+    return UnityEngine::Vector3(vector.x * m, vector.y * m, vector.z * m);
+}
+
+UnityEngine::Quaternion quaternionMultiply(UnityEngine::Quaternion lhs, UnityEngine::Quaternion rhs)
+{
+    return UnityEngine::Quaternion(lhs.w * rhs.x + lhs.x * rhs.w + lhs.y * rhs.z - lhs.z * rhs.y, lhs.w * rhs.y + lhs.y * rhs.w + lhs.z * rhs.x - lhs.x * rhs.z, lhs.w * rhs.z + lhs.z * rhs.w + lhs.x * rhs.y - lhs.y * rhs.x, lhs.w * rhs.w - lhs.x * rhs.x - lhs.y * rhs.y - lhs.z * rhs.z);
+}
+
+void PrintJSONValue(const rapidjson::Value &json) {
+    using namespace rapidjson;
+
+    StringBuffer sb;
+    PrettyWriter<StringBuffer> writer(sb);
+    json.Accept(writer);
+    auto str = sb.GetString();
+    getLogger().info("%s", str);
 }
 
 MAKE_HOOK_OFFSETLESS(
@@ -49,11 +71,13 @@ MAKE_HOOK_OFFSETLESS(
     if (beatmapEventData->customData) {
         rapidjson::Value &dynData = *beatmapEventData->customData;
 
-        bool lockPosition = dynData.HasMember("_lockPosition") ? dynData["_lockPosition"].GetBool() : false;
 
-        float precisionSpeed = dynData.HasMember("_preciseSpeed") ? dynData["_preciseSpeed"].GetFloat() : beatmapEventData->value;
+//        bool lockPosition = dynData.HasMember(LOCKPOSITION) && dynData[LOCKPOSITION].GetBool();
+        bool lockPosition = dynData.HasMember(LOCKPOSITION) && dynData.FindMember(LOCKPOSITION)->value.GetBool();
 
-        int dir = dynData.HasMember("_direction") ? dynData["_direction"].GetInt() : -1;
+        float precisionSpeed = dynData.HasMember(PRECISESPEED) ? dynData.FindMember(PRECISESPEED)->value.GetFloat() : (float) beatmapEventData->value;
+
+        int dir = dynData.HasMember(DIRECTION) ? dynData.FindMember(DIRECTION)->value.GetInt() : -1;
 
         switch (dir) {
         case 0:
@@ -65,19 +89,24 @@ MAKE_HOOK_OFFSETLESS(
             break;
         }
 
+
+        getLogger().debug("The time is: %d", beatmapEventData->time);
         if (beatmapEventData->value == 0) {
             customRotationData->enabled = false;
             if (!lockPosition) {
                 customRotationData->rotationAngle = customRotationData->startRotationAngle;
-                customRotationData->transform->set_localRotation(customRotationData->startRotation * UnityEngine::Quaternion::Euler(self->rotationVector * customRotationData->startRotationAngle));
+                customRotationData->transform->set_localRotation(quaternionMultiply(customRotationData->startRotation, UnityEngine::Quaternion::Euler(vectorMultiply(self->rotationVector, customRotationData->startRotationAngle))));
+                getLogger().debug("Doing rotation %d and local rot %d %d %d", customRotationData->rotationAngle, customRotationData->transform->get_localRotation().x,customRotationData->transform->get_localRotation().y,customRotationData->transform->get_localRotation().z);
             }
         } else if (beatmapEventData->value > 0) {
             customRotationData->enabled = true;
             customRotationData->rotationSpeed = precisionSpeed * 20.0f * direction;
+            getLogger().debug("Doing rotation speed (%d) %d", beatmapEventData->value, customRotationData->rotationSpeed);
             if (!lockPosition) {
                 float rotationAngle = startRotationOffset + customRotationData->startRotationAngle;
                 customRotationData->rotationAngle = rotationAngle;
-                customRotationData->transform->set_localRotation(customRotationData->startRotation * UnityEngine::Quaternion::Euler(self->rotationVector * rotationAngle));
+                customRotationData->transform->set_localRotation(quaternionMultiply(customRotationData->startRotation, UnityEngine::Quaternion::Euler(vectorMultiply(self->rotationVector, rotationAngle))));
+                getLogger().debug("Doing rotation %d and local rot %d %d %d", customRotationData->rotationAngle, customRotationData->transform->get_localRotation().x,customRotationData->transform->get_localRotation().y,customRotationData->transform->get_localRotation().z);
             }
         }
     } else {
