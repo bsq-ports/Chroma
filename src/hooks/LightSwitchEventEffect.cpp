@@ -14,48 +14,28 @@
 #include "GlobalNamespace/ILightWithId.hpp"
 #include "hooks/LightSwitchEventEffect.hpp"
 
+#include <coroutine>
+#include <experimental/generator>
+#include <experimental/coroutine>
+
+#include "utils/CoroutineHelper.hpp"
+
 using namespace CustomJSONData;
 using namespace Chroma;
 using namespace GlobalNamespace;
 using namespace UnityEngine;
 using namespace System::Collections;
 
-
-DEFINE_CLASS(Il2CppNamespace::WaitThenStartEnumerator);
-
-void Il2CppNamespace::WaitThenStartEnumerator::ctor(LightSwitchEventEffect *instance, BeatmapEventType eventType) {
-    this->instance = instance;
-    this->eventType = eventType;
-    this->current = nullptr;
-    this->hasWaited = false;
-}
-
-Il2CppObject* Il2CppNamespace::WaitThenStartEnumerator::get_Current() {
-    return current;
-}
-
-void Il2CppNamespace::WaitThenStartEnumerator::Reset() {}
-
-bool Il2CppNamespace::WaitThenStartEnumerator::MoveNext() {
-    if (!hasWaited) {
-        current = WaitForEndOfFrame::New_ctor();
-        hasWaited = true;
-        return true; // Continue coroutine
-    }
-
+generator<void*> WaitThenStart(LightSwitchEventEffect *instance) {
+    co_yield WaitForEndOfFrame::New_ctor();
     LightColorizer::LSEStart(instance, eventType);
-
-    current = nullptr;
-    return false; // Reached end of coroutine
-}
-
-IEnumerator *WaitThenStart(LightSwitchEventEffect *instance, BeatmapEventType eventType) {
-    Il2CppNamespace::WaitThenStartEnumerator *coroutine = CRASH_UNLESS(il2cpp_utils::New<Il2CppNamespace::WaitThenStartEnumerator*>(instance, eventType));
-    return reinterpret_cast<IEnumerator*>(coroutine);
+    co_return;
 }
 
 MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_Start, void, LightSwitchEventEffect* self) {
-    self->StartCoroutine(WaitThenStart(self, self->event));
+    auto coro = CoroutineRunner(reinterpret_cast<MonoBehaviour*>(self), WaitThenStart(instance));
+
+    self->StartCoroutine(reinterpret_cast<IEnumerator*>(coro));
 
     LightSwitchEventEffect_Start(self);
 }

@@ -23,6 +23,11 @@
 #include "colorizer/LightColorizer.hpp"
 #include "LegacyLightHelper.hpp"
 
+#include <coroutine>
+#include <experimental/generator>
+#include <experimental/coroutine>
+#include <vector>
+
 using namespace Chroma;
 using namespace GlobalNamespace;
 using namespace UnityEngine;
@@ -30,36 +35,19 @@ using namespace System::Collections;
 
 static bool hookInstalled = false;
 
-DEFINE_CLASS(Chroma::DelayedStartEnumerator);
-
-
-void Chroma::DelayedStartEnumerator::ctor(BeatmapObjectSpawnController *instance) {
-    this->instance = instance;
-    this->current = nullptr;
-    this->hasWaited = false;
-}
-
-Il2CppObject* Chroma::DelayedStartEnumerator::get_Current() {
-    return current;
-}
-
-void Chroma::DelayedStartEnumerator::Reset() {}
-
 MAKE_HOOK_OFFSETLESS(ChromaController_NoteCutEvent, void,BeatmapObjectManager* self, NoteController* noteController, NoteCutInfo* noteCutInfo) {
     NoteColorizer::ColorizeSaber(noteController, noteCutInfo);
     ChromaController_NoteCutEvent(self, noteController, noteCutInfo);
 }
 
-bool Chroma::DelayedStartEnumerator::MoveNext() {
-    if (!hasWaited) {
-        current = WaitForEndOfFrame::New_ctor();
-        hasWaited = true;
-        return true; // Continue coroutine
-    }
+std::experimental::generator<void*> DelayedStartEnumerator(BeatmapObjectSpawnController* beatmapObjectSpawnController) {
+    getLogger().debug("Waiting");
+    co_yield WaitForEndOfFrame::New_ctor();
+    getLogger().debug("Waited");
 
-    Chroma::ChromaController::BeatmapObjectSpawnController = instance;
-    BeatmapObjectManager *beatmapObjectManager = reinterpret_cast<BeatmapObjectManager*>(instance->beatmapObjectSpawner);
-    BeatmapObjectCallbackController *coreSetup = instance->beatmapObjectCallbackController;
+    Chroma::ChromaController::BeatmapObjectSpawnController = beatmapObjectSpawnController;
+    BeatmapObjectManager *beatmapObjectManager = reinterpret_cast<BeatmapObjectManager*>(beatmapObjectSpawnController->beatmapObjectSpawner);
+    BeatmapObjectCallbackController *coreSetup = beatmapObjectSpawnController->beatmapObjectCallbackController;
     Chroma::ChromaController::IAudioTimeSource = coreSetup->audioTimeSource;
 
     IReadonlyBeatmapData *beatmapData = coreSetup->beatmapData;
@@ -181,14 +169,10 @@ bool Chroma::DelayedStartEnumerator::MoveNext() {
     // please let me kill legacy
     LegacyLightHelper::Activate(eventData);
 
-    current = nullptr;
-    return false; // Reached end of coroutine
+    co_return; // Reached end of coroutine
 }
 
-IEnumerator *Chroma::ChromaController::DelayedStart(GlobalNamespace::BeatmapObjectSpawnController *instance) {
-    Chroma::DelayedStartEnumerator *coroutine = CRASH_UNLESS(il2cpp_utils::New<Chroma::DelayedStartEnumerator*>(instance));
-    return reinterpret_cast<IEnumerator*>(coroutine);
-}
+
 
 bool ChromaController::ChromaIsActive() {
     return _ChromaIsActive;

@@ -30,37 +30,7 @@ namespace Chroma {
         // internal
         static void OnActiveSceneChanged(UnityEngine::SceneManagement::Scene current, UnityEngine::SceneManagement::Scene _);
 
-        static System::Collections::IEnumerator *DelayedStart(GlobalNamespace::BeatmapObjectSpawnController *instance);
+        static void DelayedStart(GlobalNamespace::BeatmapObjectSpawnController *instance);
 
     };
 }
-
-DECLARE_CLASS_INTERFACES(Chroma, DelayedStartEnumerator, "System", "Object", sizeof(Il2CppObject),
-il2cpp_utils::GetClassFromName("System.Collections", "IEnumerator"),
-
-DECLARE_CTOR(ctor, GlobalNamespace::BeatmapObjectSpawnController *instance);
-
-        DECLARE_INSTANCE_FIELD(Il2CppObject*, current);
-        DECLARE_INSTANCE_FIELD(bool, hasWaited);
-
-        DECLARE_INSTANCE_FIELD(GlobalNamespace::BeatmapObjectSpawnController *, instance);
-
-        DECLARE_OVERRIDE_METHOD(bool, MoveNext, il2cpp_utils::FindMethod("System.Collections", "IEnumerator", "MoveNext"));
-        DECLARE_OVERRIDE_METHOD(Il2CppObject*, get_Current, il2cpp_utils::FindMethod("System.Collections", "IEnumerator", "get_Current"));
-        DECLARE_OVERRIDE_METHOD(void, Reset, il2cpp_utils::FindMethod("System.Collections", "IEnumerator", "Reset"));
-
-        REGISTER_FUNCTION(DelayedStartEnumerator,
-                getLogger().debug("Registering DelayedThenStart!");
-
-            REGISTER_FIELD(current);
-            REGISTER_FIELD(hasWaited);
-
-            REGISTER_FIELD(instance);
-
-            REGISTER_METHOD(ctor);
-
-            REGISTER_METHOD(MoveNext);
-            REGISTER_METHOD(get_Current);
-            REGISTER_METHOD(Reset);
-            )
-)

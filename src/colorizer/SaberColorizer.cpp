@@ -19,6 +19,9 @@
 #include "utils/ChromaUtils.hpp"
 #include "colorizer/SaberColorizer.hpp"
 
+#include <coroutine>
+#include <experimental/generator>
+#include <experimental/coroutine>
 
 
 using namespace GlobalNamespace;
@@ -125,13 +128,9 @@ Il2CppObject* Chroma::ChangeColorCoroutine::get_Current() {
 }
 
 // https://github.com/Auros/SiraUtil/blob/f40d4ca44f5e6632ed74606cb4d6676546f6f56e/SiraUtil/Sabers/SiraSaber.cs#L164
-bool Chroma::ChangeColorCoroutine::MoveNext() {
-    getLogger().debug("Waiting for change color coroutine");
-    if (!hasWaited) {
-        current = WaitForSecondsRealtime::New_ctor(0.05f);
-        hasWaited = true;
-        return true; // Continue coroutine
-    }
+generator<void*> ChangeColorCoroutine(Saber *instance, UnityEngine::Color color) {
+    co_yield WaitForSecondsRealtime::New_ctor(0.05f);
+
 
     getLogger().debug("Change color coroutine");
     if (instance->get_isActiveAndEnabled()) {
@@ -173,14 +172,7 @@ bool Chroma::ChangeColorCoroutine::MoveNext() {
     coroutineSabers[instance->get_saberType().value] = nullptr;
     coroutineSabers.erase(instance->get_saberType().value);
 
-    current = nullptr;
-
-    return false; // Reached end of coroutine
-}
-
-IEnumerator *ChangeColorCo(Saber *instance, UnityEngine::Color color) {
-    Chroma::ChangeColorCoroutine *coroutine = CRASH_UNLESS(il2cpp_utils::New<Chroma::ChangeColorCoroutine*>(instance, color));
-    return reinterpret_cast<IEnumerator*>(coroutine);
+    co_return; // Reached end of coroutine
 }
 
 // Must be down here to avoid compile issues
@@ -194,9 +186,10 @@ void SaberColorizer::BSMColorManager::SetSaberColor(std::optional<UnityEngine::C
             coroutineSabers.erase(runningCoro);
         }
 
-        auto coro = ChangeColorCo(_bsm, colorNullable.value());
-        coroutineSabers[_saberType] = coro;
-        _bsm->StartCoroutine(coro);
+        std::experimental::generator<void*> coro = ChangeColorCoroutine(_bsm, colorNullable.value());
+        coroutineSabers[_saberType] = CoroutineRunner(_bsm, colorNullable.value());
+
+        _bsm->StartCoroutine(reinterpret_cast<IEnumerator*>(coroutineSabers[_bsm]));
 //        getLogger().debug("Start the change color coroutine");
 //        _bsm->StartCoroutine(ChangeColorCo(_bsm, colorNullable.value()));
     }
