@@ -18,6 +18,10 @@
 #include "main.hpp"
 #include "ChromaConfig.hpp"
 #include "colorizer/NoteColorizer.hpp"
+#include "colorizer/SaberColorizer.hpp"
+#include "colorizer/ObstacleColorizer.hpp"
+#include "colorizer/BombColorizer.hpp"
+#include "colorizer/LightColorizer.hpp"
 #include "LegacyLightHelper.hpp"
 
 using namespace Chroma;
@@ -25,6 +29,7 @@ using namespace GlobalNamespace;
 using namespace UnityEngine;
 using namespace System::Collections;
 
+static bool hookInstalled = false;
 
 DEFINE_CLASS(Chroma::DelayedStartEnumerator);
 
@@ -41,6 +46,11 @@ Il2CppObject* Chroma::DelayedStartEnumerator::get_Current() {
 
 void Chroma::DelayedStartEnumerator::Reset() {}
 
+MAKE_HOOK_OFFSETLESS(ChromaController_NoteCutEvent, void, NoteController* noteController, NoteCutInfo* noteCutInfo) {
+    NoteColorizer::ColorizeSaber(noteController, noteCutInfo);
+    ChromaController_NoteCutEvent(noteController, noteCutInfo);
+}
+
 bool Chroma::DelayedStartEnumerator::MoveNext() {
     if (!hasWaited) {
         current = WaitForEndOfFrame::New_ctor();
@@ -55,12 +65,8 @@ bool Chroma::DelayedStartEnumerator::MoveNext() {
 
     IReadonlyBeatmapData *beatmapData = coreSetup->beatmapData;
 
-    //auto delegate = il2cpp_utils::MakeDelegate<System::Action_2<NoteController*, NoteCutInfo*>*>(classof(System::Action_2<NoteController*, NoteCutInfo*>*),(Il2CppObject*) nullptr, NoteColorizer::ColorizeSaber);
-
-    // TODO: According to dan, this might cause crashes even though PC modders can do it just fine
-    //beatmapObjectManager->remove_noteWasCutEvent(delegate);
-
-    //beatmapObjectManager->add_noteWasCutEvent(delegate);
+    if (!hookInstalled)
+        INSTALL_HOOK_OFFSETLESS(getLogger(), ChromaController_NoteCutEvent, il2cpp_utils::FindMethodUnsafe("", "BeatmapObjectManager", "HandleNoteWasCut", 2));
 
     if (getChromaConfig().lightshowModifier.GetValue()) {
         auto list = reinterpret_cast<Generic::List_1<IReadonlyBeatmapData *> *>(beatmapData->get_beatmapLinesData());
@@ -179,4 +185,24 @@ bool Chroma::DelayedStartEnumerator::MoveNext() {
 IEnumerator *Chroma::ChromaController::DelayedStart(GlobalNamespace::BeatmapObjectSpawnController *instance) {
     Chroma::DelayedStartEnumerator *coroutine = CRASH_UNLESS(il2cpp_utils::New<Chroma::DelayedStartEnumerator*>(instance));
     return reinterpret_cast<IEnumerator*>(coroutine);
+}
+
+bool ChromaController::ChromaIsActive() {
+    return _ChromaIsActive;
+}
+
+void ChromaController::ToggleChromaPatches(bool val) {
+
+}
+
+void ChromaController::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene current,
+                                            UnityEngine::SceneManagement::Scene _) {
+    if (strcmp(to_utf8(csstrtostr(current.get_name())).c_str(), "GameCore") != 0)
+    {
+        LightColorizer::ClearLSEColorManagers();
+        ObstacleColorizer::ClearOCColorManagers();
+        BombColorizer::ClearBNCColorManagers();
+        NoteColorizer::ClearCNVColorManagers();
+        SaberColorizer::ClearBSMColorManagers();
+    }
 }

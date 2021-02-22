@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include "colorizer/NoteColorizer.hpp"
 #include "colorizer/SaberColorizer.hpp"
+#include "ChromaController.hpp"
 
 
 using namespace CustomJSONData;
@@ -95,8 +96,7 @@ void NoteColorizer::DisableNoteColorOverride() {
 void NoteColorizer::ColorizeSaber(GlobalNamespace::NoteController *noteController,
                                   GlobalNamespace::NoteCutInfo *noteCutInfo) {
     // TODO: Actually implement this
-//    if (ChromaController.DoColorizerSabers)
-        if (true)
+    if (ChromaController::DoColorizerSabers)
         {
         NoteData* noteData = noteController->noteData;
         SaberType saberType = noteCutInfo->saberType;

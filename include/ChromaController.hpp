@@ -16,7 +16,7 @@
 namespace Chroma {
     class ChromaController {
     private:
-        static bool _ChromaIsActive;
+        inline static bool _ChromaIsActive = false;
 
     public:
         static bool ChromaIsActive();
@@ -26,9 +26,6 @@ namespace Chroma {
         inline static GlobalNamespace::IAudioTimeSource* IAudioTimeSource = nullptr;
 
         static void ToggleChromaPatches(bool val);
-
-        //internal
-        static void InitChromaPatches();
 
         // internal
         static void OnActiveSceneChanged(UnityEngine::SceneManagement::Scene current, UnityEngine::SceneManagement::Scene _);
