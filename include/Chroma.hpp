@@ -9,6 +9,7 @@
 
 namespace Chroma {
     namespace Hooks {
+        void BeatEffectSpawner();
         void BeatmapObjectSpawnController();
         void LightPairRotationEventEffect();
         void LightRotationEventEffect();
@@ -33,6 +34,7 @@ namespace Chroma {
     inline const std::string LOCKPOSITION = "_lockPosition";
     inline const std::string PROPAGATIONID = "_propID";
     inline const std::string LIGHTID = "_lightID";
+    inline const std::string DISABLESPAWNEFFECT = "_disableSpawnEffect";
 
     void InstallHooks();
 }
