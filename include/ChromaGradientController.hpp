@@ -13,6 +13,7 @@
 #include "GlobalNamespace/BeatmapEventType.hpp"
 
 #include "utils/Easing.hpp"
+#include "main.hpp"
 
 #include "beatsaber-hook/shared/config/rapidjson-utils.hpp"
 
@@ -51,6 +52,7 @@ public:
 
 
                               REGISTER_FUNCTION(Chroma::ChromaGradientController,
+                                    getLogger().debug("Registering ChromaGradientController!");
                               REGISTER_METHOD(getInstance);
                               REGISTER_METHOD(IsGradientActive);
                               REGISTER_METHOD(CancelGradient);

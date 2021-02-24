@@ -24,7 +24,7 @@ using namespace System::Collections;
 
 using namespace Chroma;
 
-std::vector<std::optional<UnityEngine::Color>> SaberColorizer::SaberColorOverride = std::vector<std::optional<UnityEngine::Color>>(2);
+std::vector<std::optional<UnityEngine::Color>> SaberColorizer::SaberColorOverride = std::vector<std::optional<UnityEngine::Color>>(2, std::nullopt);
 
 std::vector<SaberColorizer::BSMColorManager *> SaberColorizer::_bsmColorManagers;
 

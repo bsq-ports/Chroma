@@ -21,8 +21,8 @@ using namespace Chroma;
 //
 //std::vector<SaberColorizer::BSMColorManager *> SaberColorizer::_bsmColorManagers;
 
-std::vector<std::optional<UnityEngine::Color>> NoteColorizer::NoteColorOverride = std::vector<std::optional<UnityEngine::Color>>(2);
-std::vector<std::optional<UnityEngine::Color>> NoteColorizer::CNVColorManager::_globalColor = std::vector<std::optional<UnityEngine::Color>>(2);
+std::vector<std::optional<UnityEngine::Color>> NoteColorizer::NoteColorOverride = std::vector<std::optional<UnityEngine::Color>>(2, std::nullopt);
+std::vector<std::optional<UnityEngine::Color>> NoteColorizer::CNVColorManager::_globalColor = std::vector<std::optional<UnityEngine::Color>>(2, std::nullopt);
 
 void NoteColorizer::Reset(GlobalNamespace::NoteController *nc) {
     auto m = CNVColorManager::GetCNVColorManager(nc);

@@ -118,6 +118,7 @@ DECLARE_CLASS_CODEGEN(Chroma, LSEColorManager, Il2CppObject,
                               DECLARE_CTOR(ctor, UnityEngine::MonoBehaviour* mono, GlobalNamespace::BeatmapEventType type);
 
                               REGISTER_FUNCTION(Chroma::LSEColorManager,
+                              getLogger().debug("Registering LSEColorManager!");
                               REGISTER_METHOD(ctor);
 
                               REGISTER_FIELD(_lse);

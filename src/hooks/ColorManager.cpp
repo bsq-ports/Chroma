@@ -3,6 +3,7 @@
 #include "ChromaController.hpp"
 
 #include "colorizer/NoteColorizer.hpp"
+#include "colorizer/SaberColorizer.hpp"
 #include "GlobalNamespace/ColorManager.hpp"
 #include "GlobalNamespace/ColorType.hpp"
 #include "GlobalNamespace/SaberType.hpp"
@@ -10,7 +11,7 @@
 using namespace GlobalNamespace;
 using namespace Chroma;
 
-MAKE_HOOK_OFFSETLESS(ColorManager_ColorForType, UnityEngine::Color, ColorManager* self, ColorType type) {
+MAKE_HOOK_OFFSETLESS(ColorManager_ColorForType, UnityEngine::Color, GlobalNamespace::ColorManager* self, GlobalNamespace::ColorType type) {
     if (type == ColorType::ColorA || type == ColorType::ColorB){
         auto color = NoteColorizer::getNoteColorOverride(type);
 
@@ -22,7 +23,18 @@ MAKE_HOOK_OFFSETLESS(ColorManager_ColorForType, UnityEngine::Color, ColorManager
     return ColorManager_ColorForType(self, type);
 }
 
-MAKE_HOOK_OFFSETLESS(ColorManager_EffectsColorForSaberType, UnityEngine::Color, ColorManager* self, SaberType type) {
+MAKE_HOOK_OFFSETLESS(ColorManager_ColorForSaberType, UnityEngine::Color, GlobalNamespace::ColorManager* self, GlobalNamespace::SaberType type) {
+    getLogger().debug("Saber color override");
+    auto color = SaberColorizer::SaberColorOverride[(int)type];
+    if (color)
+    {
+        return color.value();
+    }
+
+    return ColorManager_ColorForSaberType(self, type);
+}
+
+MAKE_HOOK_OFFSETLESS(ColorManager_EffectsColorForSaberType, UnityEngine::Color, GlobalNamespace::ColorManager* self, GlobalNamespace::SaberType type) {
     auto color = self->ColorForSaberType(type);
 
     float h;
@@ -36,6 +48,7 @@ MAKE_HOOK_OFFSETLESS(ColorManager_EffectsColorForSaberType, UnityEngine::Color, 
 
 void Chroma::Hooks::ColorManager() {
     INSTALL_HOOK_OFFSETLESS(getLogger(), ColorManager_ColorForType, il2cpp_utils::FindMethodUnsafe("", "ColorManager", "ColorForType", 1));
+    INSTALL_HOOK_OFFSETLESS(getLogger(), ColorManager_ColorForSaberType, il2cpp_utils::FindMethodUnsafe("", "ColorManager", "ColorForSaberType", 1));
     INSTALL_HOOK_OFFSETLESS(getLogger(), ColorManager_EffectsColorForSaberType, il2cpp_utils::FindMethodUnsafe("", "ColorManager", "EffectsColorForSaberType", 1));
 
 }

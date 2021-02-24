@@ -50,7 +50,7 @@ DECLARE_CTOR(ctor, GlobalNamespace::BeatmapObjectSpawnController *instance);
         DECLARE_OVERRIDE_METHOD(void, Reset, il2cpp_utils::FindMethod("System.Collections", "IEnumerator", "Reset"));
 
         REGISTER_FUNCTION(DelayedStartEnumerator,
-                getLogger().debug("Registering WaitThenStartEnumerator!");
+                getLogger().debug("Registering DelayedThenStart!");
 
             REGISTER_FIELD(current);
             REGISTER_FIELD(hasWaited);
