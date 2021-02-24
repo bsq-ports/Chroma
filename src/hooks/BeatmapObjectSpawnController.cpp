@@ -7,9 +7,9 @@
 using namespace GlobalNamespace;
 
 MAKE_HOOK_OFFSETLESS(BeatmapObjectSpawnController_Start, void, BeatmapObjectSpawnController* self) {
-    self->StartCoroutine(Chroma::ChromaController::DelayedStart(self));
-
     BeatmapObjectSpawnController_Start(self);
+
+    self->StartCoroutine(Chroma::ChromaController::DelayedStart(self));
 }
 
 void Chroma::Hooks::BeatmapObjectSpawnController() {
