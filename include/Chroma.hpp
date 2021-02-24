@@ -16,6 +16,7 @@ namespace Chroma {
         void LightPairRotationEventEffect();
         void LightRotationEventEffect();
         void LightSwitchEventEffect();
+        void Saber();
     }
 
     namespace CustomData {
