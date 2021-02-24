@@ -8,6 +8,7 @@
 #include "colorizer/NoteColorizer.hpp"
 #include "colorizer/SaberColorizer.hpp"
 #include "ChromaController.hpp"
+#include "utils/ChromaUtils.hpp"
 
 
 using namespace CustomJSONData;
@@ -72,11 +73,25 @@ void NoteColorizer::ClearCNVColorManagers() {
     _cnvColorManagers.clear();
 }
 
-UnityEngine::Color getColor(rapidjson::Value& json) {
-    auto jsonArray = json.GetArray();
+void PrintJSONValue(const rapidjson::Value &json) {
+    using namespace rapidjson;
 
-    return UnityEngine::Color(jsonArray[0].GetFloat(), jsonArray[1].GetFloat(), jsonArray[2].GetFloat(), jsonArray.Capacity() > 3 ? jsonArray[4].GetFloat() : 1.0f);
+    StringBuffer sb;
+    PrettyWriter<StringBuffer> writer(sb);
+    json.Accept(writer);
+    auto str = sb.GetString();
+    getLogger().info("%s", str);
 }
+
+//std::optional<UnityEngine::Color> getColor(rapidjson::Value& json) {
+//    auto jsonArray = json.GetArray();
+//
+//    if (jsonArray.Size() < 3)
+//        return std::nullopt;
+//
+//
+//    return UnityEngine::Color(jsonArray[0].GetFloat(), jsonArray[1].GetFloat(), jsonArray[2].GetFloat(), jsonArray.Size() > 3 ? jsonArray[4].GetFloat() : 1.0f);
+//}
 
 void NoteColorizer::EnableNoteColorOverride(GlobalNamespace::NoteController *noteController) {
     if (il2cpp_functions::class_is_assignable_from(noteController->noteData->klass, classof(CustomNoteData*))) {
@@ -86,11 +101,25 @@ void NoteColorizer::EnableNoteColorOverride(GlobalNamespace::NoteController *not
             getLogger().debug("Coloring notes");
             auto &dynData = *customData->customData->value;
 
+
             // TODO: Do these execute a similar or exact implementation of the PC version at
             // https://github.com/Aeroluna/Chroma/blob/e7a72f8b848c822d860361a027034218125af135/Chroma/Colorizer/NoteColorizer.cs#L71-L72
 
-            NoteColorOverride[0] = getColor(dynData["color0"]);
-            NoteColorOverride[1] = getColor(dynData["color1"]);
+
+            if (dynData.MemberCount() > 0) {
+                PrintJSONValue(dynData);
+                NoteColorOverride[0] = ChromaUtils::ChromaUtilities::GetColorFromData(&dynData, "color0");
+            } else {
+                NoteColorOverride[0] = std::nullopt;
+            }
+
+            if (dynData.MemberCount() > 1) {
+                NoteColorOverride[1] = ChromaUtils::ChromaUtilities::GetColorFromData(&dynData, "color1");
+            } else {
+                NoteColorOverride[1] = std::nullopt;
+            }
+
+
         }
     }
 }

@@ -9,7 +9,7 @@ bool ChromaUtilities::IsModInstalled(std::string mod)
     return Modloader::getMods().contains(modName);
 }
 
-std::optional<UnityEngine::Color> ChromaUtilities::GetColorFromData(rapidjson::Value* data, std::string member)
+std::optional<UnityEngine::Color> ChromaUtilities::GetColorFromData(rapidjson::Value* data, const std::string& member)
 {
     rapidjson::Value::MemberIterator color = data->FindMember(member);
 

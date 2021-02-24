@@ -42,16 +42,6 @@ UnityEngine::Quaternion quaternionMultiply(UnityEngine::Quaternion lhs, UnityEng
     return UnityEngine::Quaternion(lhs.w * rhs.x + lhs.x * rhs.w + lhs.y * rhs.z - lhs.z * rhs.y, lhs.w * rhs.y + lhs.y * rhs.w + lhs.z * rhs.x - lhs.x * rhs.z, lhs.w * rhs.z + lhs.z * rhs.w + lhs.x * rhs.y - lhs.y * rhs.x, lhs.w * rhs.w - lhs.x * rhs.x - lhs.y * rhs.y - lhs.z * rhs.z);
 }
 
-void PrintJSONValue(const rapidjson::Value &json) {
-    using namespace rapidjson;
-
-    StringBuffer sb;
-    PrettyWriter<StringBuffer> writer(sb);
-    json.Accept(writer);
-    auto str = sb.GetString();
-    getLogger().info("%s", str);
-}
-
 MAKE_HOOK_OFFSETLESS(
     LightPairRotationEventEffect_UpdateRotationData,
     void,
