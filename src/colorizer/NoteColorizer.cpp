@@ -98,7 +98,6 @@ void NoteColorizer::EnableNoteColorOverride(GlobalNamespace::NoteController *not
         auto *customData = reinterpret_cast<CustomNoteData *>(noteController->noteData);
 
         if (customData->customData && customData->customData->value) {
-            getLogger().debug("Coloring notes");
             auto &dynData = *customData->customData->value;
 
 
@@ -165,6 +164,7 @@ NoteColorizer::CNVColorManager::CNVColorManager(GlobalNamespace::ColorNoteVisual
     _colorManager = cnv->colorManager;
     if (il2cpp_functions::class_is_assignable_from(nc->noteData->klass, classof(CustomJSONData::CustomNoteData*))) {
         _noteData = reinterpret_cast<CustomJSONData::CustomNoteData *>(nc->noteData);
+        _noteData->customData->associatedData['C'] = new CustomData::NoteData {_globalColor[0], _globalColor[1]};
     }
 }
 
@@ -228,9 +228,7 @@ void NoteColorizer::CNVColorManager::Reset() {
 
 void NoteColorizer::CNVColorManager::SetNoteColors(std::optional<UnityEngine::Color> color0, std::optional<UnityEngine::Color> color1) {
     if (color0 || color1) {
-        CustomData::NoteData *noteData;
-        CustomData::NoteData *oldNoteData = static_cast<CustomData::NoteData *>(_noteData->customData->associatedData['C']);
-        memcpy(&noteData, &oldNoteData, sizeof oldNoteData);
+        CustomData::NoteData *noteData = static_cast<CustomData::NoteData *>(_noteData->customData->associatedData['C']);
 
         if (color0) {
             noteData->_color0 = color0.value();
@@ -240,7 +238,6 @@ void NoteColorizer::CNVColorManager::SetNoteColors(std::optional<UnityEngine::Co
             noteData->_color1 = color1.value();
         }
 
-        _noteData->customData->associatedData['C'] = noteData;
     }
 }
 

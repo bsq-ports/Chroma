@@ -4,6 +4,7 @@ void Chroma::InstallHooks() {
     Hooks::BeatEffectSpawner();
     Hooks::BeatmapObjectSpawnController();
     Hooks::ColorManager();
+    Hooks::ColorNoteVisuals();
     Hooks::LightPairRotationEventEffect();
     Hooks::LightRotationEventEffect();
     Hooks::LightSwitchEventEffect();
