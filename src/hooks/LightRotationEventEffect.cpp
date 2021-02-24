@@ -1,8 +1,6 @@
 #include "Chroma.hpp"
 
 #include "custom-json-data/shared/CustomBeatmapData.h"
-#include "GlobalNamespace/BeatmapEventData.hpp"
-#include "GlobalNamespace/BeatmapEventType.hpp"
 #include "GlobalNamespace/LightRotationEventEffect.hpp"
 #include "UnityEngine/Random.hpp"
 #include "UnityEngine/Space.hpp"
@@ -11,6 +9,7 @@
 using namespace CustomJSONData;
 using namespace GlobalNamespace;
 using namespace UnityEngine;
+using namespace Chroma;
 
 MAKE_HOOK_OFFSETLESS(
     LightRotationEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger,
@@ -23,11 +22,11 @@ MAKE_HOOK_OFFSETLESS(
 
         rapidjson::Value &dynData = *beatmapEventData->customData;
 
-        bool lockPosition = dynData.HasMember("_lockPosition") ? dynData["_lockPosition"].GetBool() : false;
+        bool lockPosition = dynData.HasMember(LOCKPOSITION) && dynData[LOCKPOSITION].GetBool();
 
-        float precisionSpeed = dynData.HasMember("_preciseSpeed") ? dynData["_preciseSpeed"].GetFloat() : beatmapEventData->value;
+        float precisionSpeed = dynData.HasMember(PRECISESPEED) ? dynData[PRECISESPEED].GetFloat() : beatmapEventData->value;
 
-        int dir = dynData.HasMember("_direction") ? dynData["_direction"].GetInt() : -1;
+        int dir = dynData.HasMember(DIRECTION) ? dynData[DIRECTION].GetInt() : -1;
 
         float direction = (Random::get_value() > 0.5f) ? 1.0f : -1.0f;
         switch (dir) {
@@ -50,7 +49,7 @@ MAKE_HOOK_OFFSETLESS(
             self->rotationSpeed = precisionSpeed * 20.0f * direction;
             if (!lockPosition) {
                 self->get_transform()->set_localRotation(self->startRotation);
-                self->get_transform()->Rotate(self->rotationVector, Random::Range(0, 180), Space::Self);
+                self->get_transform()->Rotate(self->rotationVector, Random::Range(0.0f, 180.0f), Space::Self);
             }
         }
     } else {
