@@ -8,6 +8,8 @@
 #include "UnityEngine/WaitForEndOfFrame.hpp"
 #include "LightSwitchEventEffect.hpp"
 
+inline static std::optional<std::vector<GlobalNamespace::ILightWithId *>> OverrideLightWithIdActivation = std::nullopt;
+
 DECLARE_CLASS_INTERFACES(Il2CppNamespace, WaitThenStartEnumerator, "System", "Object", sizeof(Il2CppObject),
 il2cpp_utils::GetClassFromName("System.Collections", "IEnumerator"),
 

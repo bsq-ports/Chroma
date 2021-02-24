@@ -63,8 +63,8 @@ MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_Start, void, LightSwitchEventEffect*
 MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_SetColor, void, LightSwitchEventEffect* self, UnityEngine::Color color) {
     if (OverrideLightWithIdActivation){
         auto lights = OverrideLightWithIdActivation.value();
-        for (int i =0;i<lights.size();i++){
-            lights[i]->ColorWasSet(color);
+        for (auto & light : lights){
+            light->ColorWasSet(color);
         }
     } else {
         LightSwitchEventEffect_SetColor(self, color);
@@ -77,6 +77,8 @@ MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_HandleBeatmapObjectCallbackControlle
     }
 
     LightSwitchEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);
+
+    OverrideLightWithIdActivation = std::nullopt;
 }
 
 void Chroma::Hooks::LightSwitchEventEffect() {

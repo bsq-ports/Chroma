@@ -7,8 +7,6 @@
 #include <vector>
 #include <string>
 
-static std::optional<std::vector<GlobalNamespace::ILightWithId *>> OverrideLightWithIdActivation;
-
 namespace Chroma {
     namespace Hooks {
         void BeatmapObjectSpawnController();
@@ -33,6 +31,8 @@ namespace Chroma {
     inline const std::string ENDCOLOR = "_endColor";
     inline const std::string PRECISESPEED = "_preciseSpeed";
     inline const std::string LOCKPOSITION = "_lockPosition";
+    inline const std::string PROPAGATIONID = "_propID";
+    inline const std::string LIGHTID = "_lightID";
 
     void InstallHooks();
 }

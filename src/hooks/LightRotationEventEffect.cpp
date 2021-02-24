@@ -24,7 +24,7 @@ MAKE_HOOK_OFFSETLESS(
 
         bool lockPosition = dynData.HasMember(LOCKPOSITION) && dynData[LOCKPOSITION].GetBool();
 
-        float precisionSpeed = dynData.HasMember(PRECISESPEED) ? dynData[PRECISESPEED].GetFloat() : beatmapEventData->value;
+        float precisionSpeed = dynData.HasMember(PRECISESPEED) ? dynData[PRECISESPEED].GetFloat() : (float) beatmapEventData->value;
 
         int dir = dynData.HasMember(DIRECTION) ? dynData[DIRECTION].GetInt() : -1;
 
