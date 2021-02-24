@@ -5,61 +5,51 @@
 #include "custom-types/shared/types.hpp"
 #include "custom-types/shared/macros.hpp"
 
-#include <coroutine>
+
+#include <experimental/coroutine>
+#include <type_traits>
+#include <utility>
+#include <exception>
+#include <iterator>
+#include <functional>
+#include "generator.hpp"
+#include <memory>
+
 
 #include "UnityEngine/MonoBehaviour.hpp"
 
-namespace Chroma {
-//    template<typename ReturnType, typename... Parameters>
-//    class Coroutine {
-//    public:
-//        typedef std::function<ReturnType, (bool&, Parameters)> CoroutineFunction;
-//
-//    private:
-//        inline bool hasWaited = false;
-//        inline CoroutineFunction coroutineFunc;
-//        inline bool done = false;
-//
-//    public:
-//        Coroutine(CoroutineFunction coroutineFunction);
-//
-//        void Start(Parameters... parameters) {
-//            if (!done) {
-//                coroutineFunc(done, parameters);
-//            }
-//        }
-//
-//    };
-
-
-
-}
+#include "main.hpp"
 
 
 DECLARE_CLASS_INTERFACES(Chroma, CoroutineRunner, "System", "Object", sizeof(Il2CppObject),
                          il2cpp_utils::GetClassFromName("System.Collections", "IEnumerator"),
 
-                            public:
-                                 CoroutineRunner(UnityEngine::Monobehaviour* monobehaviour, std::experimental::generator<void*> coroutine);
-                                 std::experimental::generator<void*> coroutine;
+         public:
+                //
+                typedef std::generator<const void*> coroutineType;
 
-                                 DECLARE_INSTANCE_FIELD(bool, frameNext);
+                 std::generator<const void*>& coroutine;
+                 std::optional<std::generator<const void*>::iterator>& coroutineIterator;
 
-                                 DECLARE_INSTANCE_FIELD(UnityEngine::Monobehaviour*, instance);
+                 static CoroutineRunner* Create(coroutineType coroutineType1);
 
-                                 DECLARE_OVERRIDE_METHOD(bool, MoveNext, il2cpp_utils::FindMethod("System.Collections", "IEnumerator", "MoveNext"));
-                                 DECLARE_OVERRIDE_METHOD(Il2CppObject*, get_Current, il2cpp_utils::FindMethod("System.Collections", "IEnumerator", "get_Current"));
-                                 DECLARE_OVERRIDE_METHOD(void, Reset, il2cpp_utils::FindMethod("System.Collections", "IEnumerator", "Reset"));
-
-                                 REGISTER_FUNCTION(WaitThenStartEnumerator,
-                                                   getLogger().debug("Registering CoroutineHelper!");
+                 DECLARE_CTOR(ctor, void* corountine );
+                 DECLARE_OVERRIDE_METHOD(void, Reset, il2cpp_utils::FindMethod("System.Collections", "IEnumerator", "Reset"));
 
 
-                                 REGISTER_FIELD(instance);
-                                 REGISTER_FIELD(frameNext);
+//                 DECLARE_OVERRIDE_METHOD(void, Finalize,il2cpp_utils::FindMethod("System", "Object", "Finalize"));
+                    DECLARE_OVERRIDE_METHOD(Il2CppObject*, get_Current, il2cpp_utils::FindMethod("System.Collections", "IEnumerator", "get_Current"));
 
-                                 REGISTER_METHOD(MoveNext);
-                                 REGISTER_METHOD(get_Current);
-                                 REGISTER_METHOD(Reset);
-                         )
+                 DECLARE_OVERRIDE_METHOD(bool, MoveNext, il2cpp_utils::FindMethod("System.Collections", "IEnumerator", "MoveNext"));
+//                                 DECLARE_OVERRIDE_METHOD(void, Reset, il2cpp_utils::FindMethod("System.Collections", "IEnumerator", "Reset"));
+
+                REGISTER_FUNCTION(CoroutineRunner,
+        getLogger().debug("Registering CoroutineHelper!");
+
+                REGISTER_METHOD(ctor);
+                REGISTER_METHOD(MoveNext);
+                REGISTER_METHOD(get_Current);
+//        REGISTER_METHOD(Finalize);
+                 REGISTER_METHOD(Reset);
+        )
 )

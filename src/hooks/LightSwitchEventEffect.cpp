@@ -14,10 +14,6 @@
 #include "GlobalNamespace/ILightWithId.hpp"
 #include "hooks/LightSwitchEventEffect.hpp"
 
-#include <coroutine>
-#include <experimental/generator>
-#include <experimental/coroutine>
-
 #include "utils/CoroutineHelper.hpp"
 
 using namespace CustomJSONData;
@@ -26,14 +22,15 @@ using namespace GlobalNamespace;
 using namespace UnityEngine;
 using namespace System::Collections;
 
-generator<void*> WaitThenStart(LightSwitchEventEffect *instance) {
-    co_yield WaitForEndOfFrame::New_ctor();
+std::generator<const void*> WaitThenStart(LightSwitchEventEffect *instance, BeatmapEventType eventType) {
+    CRASH_UNLESS(instance);
+    co_yield CRASH_UNLESS(il2cpp_utils::New<WaitForEndOfFrame*>());
     LightColorizer::LSEStart(instance, eventType);
     co_return;
 }
 
 MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_Start, void, LightSwitchEventEffect* self) {
-    auto coro = CoroutineRunner(reinterpret_cast<MonoBehaviour*>(self), WaitThenStart(instance));
+    CoroutineRunner* coro = CoroutineRunner::Create(WaitThenStart(self, self->event));
 
     self->StartCoroutine(reinterpret_cast<IEnumerator*>(coro));
 
@@ -62,8 +59,6 @@ MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_HandleBeatmapObjectCallbackControlle
 }
 
 void Chroma::Hooks::LightSwitchEventEffect() {
-    CRASH_UNLESS(custom_types::Register::RegisterType<Il2CppNamespace::WaitThenStartEnumerator>());
-
     INSTALL_HOOK_OFFSETLESS(getLogger(), LightSwitchEventEffect_Start, il2cpp_utils::FindMethodUnsafe("", "LightSwitchEventEffect", "Start", 0));
     INSTALL_HOOK_OFFSETLESS(getLogger(), LightSwitchEventEffect_SetColor, il2cpp_utils::FindMethodUnsafe("", "LightSwitchEventEffect", "SetColor", 1));
     INSTALL_HOOK_OFFSETLESS(getLogger(), LightSwitchEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger, il2cpp_utils::FindMethodUnsafe("", "LightSwitchEventEffect", "HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger", 1));

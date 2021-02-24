@@ -192,10 +192,8 @@ namespace Chroma {
         return nullptr;
     }
 
-    LSEColorManager *
-    LSEColorManager::CreateLSEColorManager(MonoBehaviour *lse, BeatmapEventType type) {
-        LSEColorManager * lsecm;
-        lsecm = il2cpp_utils::New<LSEColorManager *>(lse, type).value();
+    LSEColorManager *LSEColorManager::CreateLSEColorManager(MonoBehaviour *lse, BeatmapEventType type) {
+        LSEColorManager * lsecm = CRASH_UNLESS(il2cpp_utils::New<LSEColorManager *>(lse, type));
         lseColorManagers.push_back(lsecm);
         return lsecm;
     }

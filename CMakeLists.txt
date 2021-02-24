@@ -32,6 +32,11 @@ add_compile_definitions("VERSION=\"0.1.0\"") #Modify this if you use it
 add_compile_definitions("__GNUC__")
 add_compile_definitions("__aarch64__")
 
+file(GLOB SRC include/*.hpp)
 file(GLOB SRC src/*.cpp)
 file(GLOB SRC src/*/*.cpp)
+file(GLOB SRC src/**/*.cpp)
+file(GLOB SRC src/main.cpp)
+file(GLOB SRC src/**.cpp)
+file(GLOB SRC src/*)
 add_library(Chroma SHARED ${SRC}) # Is this necessary? Not sure, have it there anyways

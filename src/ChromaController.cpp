@@ -22,10 +22,8 @@
 #include "colorizer/BombColorizer.hpp"
 #include "colorizer/LightColorizer.hpp"
 #include "LegacyLightHelper.hpp"
+#include "utils/CoroutineHelper.hpp"
 
-#include <coroutine>
-#include <experimental/generator>
-#include <experimental/coroutine>
 #include <vector>
 
 using namespace Chroma;
@@ -40,7 +38,7 @@ MAKE_HOOK_OFFSETLESS(ChromaController_NoteCutEvent, void,BeatmapObjectManager* s
     ChromaController_NoteCutEvent(self, noteController, noteCutInfo);
 }
 
-std::experimental::generator<void*> DelayedStartEnumerator(BeatmapObjectSpawnController* beatmapObjectSpawnController) {
+std::generator<const void*> ChromaController::DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnController *beatmapObjectSpawnController) {
     getLogger().debug("Waiting");
     co_yield WaitForEndOfFrame::New_ctor();
     getLogger().debug("Waited");
