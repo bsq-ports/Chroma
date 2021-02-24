@@ -11,6 +11,7 @@ namespace Chroma {
     namespace Hooks {
         void BeatEffectSpawner();
         void BeatmapObjectSpawnController();
+        void ColorManager();
         void LightPairRotationEventEffect();
         void LightRotationEventEffect();
         void LightSwitchEventEffect();

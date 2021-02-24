@@ -21,6 +21,7 @@ namespace Chroma {
         static std::vector<std::optional<UnityEngine::Color>> NoteColorOverride;
 
     public:
+        static std::optional<UnityEngine::Color> getNoteColorOverride(int color);
      static void Reset(GlobalNamespace::NoteController* nc);
      static void ResetAllNotesColors();
      static void SetNoteColors(GlobalNamespace::NoteController* cnv, std::optional<UnityEngine::Color> color0, std::optional<UnityEngine::Color> color1);

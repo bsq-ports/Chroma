@@ -123,6 +123,13 @@ void NoteColorizer::CNVStart(GlobalNamespace::ColorNoteVisuals *cnv, GlobalNames
     }
 }
 
+std::optional<UnityEngine::Color> NoteColorizer::getNoteColorOverride(int color) {
+    if (NoteColorizer::NoteColorOverride.size() < color + 1)
+        return std::nullopt;
+
+    return NoteColorizer::NoteColorOverride[color];
+}
+
 NoteColorizer::CNVColorManager::CNVColorManager(GlobalNamespace::ColorNoteVisuals *cnv, GlobalNamespace::NoteController *nc) {
     _cnv = cnv;
     _nc = nc;
