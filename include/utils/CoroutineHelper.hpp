@@ -1,10 +1,8 @@
 #pragma once
 
 #include <functional>
-#include "System/Collections/Generic/IEnumerator_1.hpp"
 #include "custom-types/shared/types.hpp"
 #include "custom-types/shared/macros.hpp"
-
 
 #include <experimental/coroutine>
 #include <type_traits>
@@ -14,9 +12,6 @@
 #include <functional>
 #include "generator.hpp"
 #include <memory>
-
-
-#include "UnityEngine/MonoBehaviour.hpp"
 
 #include "main.hpp"
 

@@ -1,16 +1,9 @@
 #include "utils/CoroutineHelper.hpp"
-#include <cassert>
 #include <utility>
-#include "beatsaber-hook/shared/utils/utils.h"
-#include "beatsaber-hook/shared/utils/il2cpp-functions.hpp"
-#include "beatsaber-hook/shared/utils/il2cpp-utils.hpp"
-#include "beatsaber-hook/shared/utils/typedefs.h"
 
 DEFINE_CLASS(Chroma::CoroutineRunner);
 
 using namespace Chroma;
-using namespace UnityEngine;
-using namespace System::Collections;
 
 
 bool CoroutineRunner::MoveNext() {
