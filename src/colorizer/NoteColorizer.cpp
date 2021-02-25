@@ -121,9 +121,10 @@ void NoteColorizer::DisableNoteColorOverride() {
 }
 
 bool MatchesColorType(SaberType saberType, ColorType colorType){
-    getLogger().debug("%d saber %d saberA %d colorType %d colorTypeA", saberType.value, SaberType::_get_SaberA().value, colorType.value, ColorType::_get_ColorA().value);
-    return (saberType.value == SaberType::_get_SaberA().value && colorType.value == ColorType::_get_ColorA().value)
-    || (saberType.value == SaberType::_get_SaberB().value && colorType.value == ColorType::_get_ColorB().value);
+    static_assert(sizeof(ColorType) == sizeof(int));
+    getLogger().debug("%i saber %i saberA %i colorType %i colorTypeA", saberType.value, SaberType::_get_SaberA().value, colorType.value, ColorType::_get_ColorA().value);
+    return (saberType.value == SaberType::SaberA && colorType.value == ColorType::ColorA)
+    || (saberType.value == SaberType::SaberB && colorType.value == ColorType::ColorB);
 }
 
 

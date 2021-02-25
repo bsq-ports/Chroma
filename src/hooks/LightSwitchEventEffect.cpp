@@ -23,15 +23,12 @@ using namespace Chroma;
 using namespace GlobalNamespace;
 using namespace UnityEngine;
 using namespace System::Collections;
-
-custom_types::Helpers::Coroutine WaitForEndFrameCoro() {
-    CRASH_UNLESS(WaitForEndOfFrame::New_ctor());
-    co_return;
-}
+using namespace custom_types::Helpers;
 
 custom_types::Helpers::Coroutine WaitThenStart(LightSwitchEventEffect *instance, BeatmapEventType eventType) {
     CRASH_UNLESS(instance);
-    co_yield reinterpret_cast<IEnumerator*>(custom_types::Helpers::CoroutineHelper::New(WaitForEndFrameCoro()));
+    co_yield reinterpret_cast<IEnumerator*>(CRASH_UNLESS(WaitForEndOfFrame::New_ctor()));
+    getLogger().debug("Doing coroutine stuff yay");
     LightColorizer::LSEStart(instance, eventType);
     co_return;
 }

@@ -45,7 +45,7 @@ LOCAL_MODULE := custom-json-data
 LOCAL_EXPORT_C_INCLUDES := extern/custom-json-data
 LOCAL_SRC_FILES := extern/libcustom-json-data.so
 include $(PREBUILT_SHARED_LIBRARY)
-# Creating prebuilt for dependency: custom-types - version: 0.4.6
+# Creating prebuilt for dependency: custom-types - version: 0.4.5
 include $(CLEAR_VARS)
 LOCAL_MODULE := custom-types
 LOCAL_EXPORT_C_INCLUDES := extern/custom-types
@@ -78,7 +78,7 @@ LOCAL_SHARED_LIBRARIES += questui
 LOCAL_SHARED_LIBRARIES += bs-utils
 LOCAL_LDLIBS += -llog
 LOCAL_CFLAGS += -I'extern/libil2cpp/il2cpp/libil2cpp' -DID='"chroma"' -DVERSION='"0.1.0"' -I'./shared' -I'./extern' -isystem'extern/codegen/include'
+LOCAL_EXPORT_CFLAGS +=  -DUNSAFE_CSHARP
 LOCAL_CPPFLAGS += -std=c++20
 LOCAL_C_INCLUDES += ./include ./src
-LOCAL_EXPORT_C_FLAGS := 
 include $(BUILD_SHARED_LIBRARY)

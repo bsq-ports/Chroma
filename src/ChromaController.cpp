@@ -30,6 +30,7 @@ using namespace Chroma;
 using namespace GlobalNamespace;
 using namespace UnityEngine;
 using namespace System::Collections;
+using namespace custom_types::Helpers;
 
 static bool hookInstalled = false;
 
@@ -38,18 +39,13 @@ MAKE_HOOK_OFFSETLESS(ChromaController_NoteCutEvent, void,BeatmapObjectManager* s
     ChromaController_NoteCutEvent(self, noteController, noteCutInfo);
 }
 
-custom_types::Helpers::Coroutine WaitForEndOfFrameCoro() {
-    il2cpp_utils::New<UnityEngine::WaitForEndOfFrame*>();
-    co_return;
-}
-
 custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnController *beatmapObjectSpawnController) {
     getLogger().debug("Waiting");
-    co_yield reinterpret_cast<IEnumerator*>(custom_types::Helpers::CoroutineHelper::New(WaitForEndOfFrameCoro()));
+    co_yield reinterpret_cast<enumeratorT*>(CRASH_UNLESS(il2cpp_utils::New<UnityEngine::WaitForEndOfFrame*>()));
     getLogger().debug("Waited");
 
     Chroma::ChromaController::BeatmapObjectSpawnController = beatmapObjectSpawnController;
-    BeatmapObjectManager *beatmapObjectManager = reinterpret_cast<BeatmapObjectManager*>(beatmapObjectSpawnController->beatmapObjectSpawner);
+    auto *beatmapObjectManager = reinterpret_cast<BeatmapObjectManager*>(beatmapObjectSpawnController->beatmapObjectSpawner);
     BeatmapObjectCallbackController *coreSetup = beatmapObjectSpawnController->beatmapObjectCallbackController;
     Chroma::ChromaController::IAudioTimeSource = coreSetup->audioTimeSource;
 
