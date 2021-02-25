@@ -45,9 +45,9 @@ Il2CppObject* Chroma::DelayedStartEnumerator::get_Current() {
 
 void Chroma::DelayedStartEnumerator::Reset() {}
 
-MAKE_HOOK_OFFSETLESS(ChromaController_NoteCutEvent, void, NoteController* noteController, NoteCutInfo* noteCutInfo) {
+MAKE_HOOK_OFFSETLESS(ChromaController_NoteCutEvent, void,BeatmapObjectManager* self, NoteController* noteController, NoteCutInfo* noteCutInfo) {
     NoteColorizer::ColorizeSaber(noteController, noteCutInfo);
-    ChromaController_NoteCutEvent(noteController, noteCutInfo);
+    ChromaController_NoteCutEvent(self, noteController, noteCutInfo);
 }
 
 bool Chroma::DelayedStartEnumerator::MoveNext() {
