@@ -9,12 +9,14 @@
 #include "custom-types/shared/types.hpp"
 #include "custom-types/shared/macros.hpp"
 #include "custom-types/shared/register.hpp"
+#include "System/Collections/IEnumerator.hpp"
+#include "custom-types/shared/coroutine.hpp"
 #include "UnityEngine/Color.hpp"
 #include "UnityEngine/WaitForEndOfFrame.hpp"
 #include "GlobalNamespace/ILightWithId.hpp"
 #include "hooks/LightSwitchEventEffect.hpp"
 
-#include "utils/CoroutineHelper.hpp"
+#include <experimental/coroutine>
 
 using namespace CustomJSONData;
 using namespace Chroma;
@@ -22,15 +24,20 @@ using namespace GlobalNamespace;
 using namespace UnityEngine;
 using namespace System::Collections;
 
-std::generator<const void*> WaitThenStart(LightSwitchEventEffect *instance, BeatmapEventType eventType) {
+custom_types::Helpers::Coroutine WaitForEndFrameCoro() {
+    CRASH_UNLESS(WaitForEndOfFrame::New_ctor());
+    co_return;
+}
+
+custom_types::Helpers::Coroutine WaitThenStart(LightSwitchEventEffect *instance, BeatmapEventType eventType) {
     CRASH_UNLESS(instance);
-    co_yield CRASH_UNLESS(il2cpp_utils::New<WaitForEndOfFrame*>());
+    co_yield reinterpret_cast<IEnumerator*>(custom_types::Helpers::CoroutineHelper::New(WaitForEndFrameCoro()));
     LightColorizer::LSEStart(instance, eventType);
     co_return;
 }
 
 MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_Start, void, LightSwitchEventEffect* self) {
-    CoroutineRunner* coro = CoroutineRunner::Create(WaitThenStart(self, self->event));
+    auto* coro = custom_types::Helpers::CoroutineHelper::New(WaitThenStart(self, self->event));
 
     self->StartCoroutine(reinterpret_cast<IEnumerator*>(coro));
 

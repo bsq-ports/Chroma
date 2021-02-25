@@ -1,3 +1,5 @@
+#include "custom-types/shared/coroutine.hpp"
+
 #include "main.hpp"
 
 #include "Chroma.hpp"
@@ -5,11 +7,11 @@
 #include "colorizer/SaberColorizer.hpp"
 #include "custom-types/shared/register.hpp"
 
+
 #include "ChromaController.hpp"
 #include "ChromaGradientController.hpp"
 
 #include "ChromaConfig.hpp"
-#include "utils/CoroutineHelper.hpp"
 
 using namespace Chroma;
 
@@ -45,8 +47,7 @@ extern "C" void load() {
 
     custom_types::Register::RegisterTypes<
             Chroma::LSEColorManager,
-            Chroma::ChromaGradientController,
-            Chroma::CoroutineRunner
+            Chroma::ChromaGradientController
     >();
 
     getLogger().info("Installed types");

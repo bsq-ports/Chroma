@@ -11,7 +11,7 @@
 #include <string>
 #include <optional>
 
-#include "utils/CoroutineHelper.hpp"
+#include "custom-types/shared/coroutine.hpp"
 
 
 // TODO: Document properly
@@ -60,5 +60,5 @@ namespace Chroma {
     };
 }
 
-inline static std::unordered_map<int, Chroma::CoroutineRunner*> coroutineSabers;
+inline static std::unordered_map<int, custom_types::Helpers::StandardCoroutine*> coroutineSabers;
 

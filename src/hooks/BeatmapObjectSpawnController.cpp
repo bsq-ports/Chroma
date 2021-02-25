@@ -1,8 +1,6 @@
 #include "Chroma.hpp"
 
 #include "ChromaController.hpp"
-#include "utils/CoroutineHelper.hpp"
-#include "GlobalNamespace/BeatmapObjectSpawnController.hpp"
 
 using namespace Chroma;
 using namespace GlobalNamespace;

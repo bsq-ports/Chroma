@@ -6,3 +6,4 @@
 #include "custom-types/shared/macros.hpp"
 #include "GlobalNamespace/LightSwitchEventEffect.hpp"
 
+inline static std::optional<std::vector<GlobalNamespace::ILightWithId *>> OverrideLightWithIdActivation = std::nullopt;

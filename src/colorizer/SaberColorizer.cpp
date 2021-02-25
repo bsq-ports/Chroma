@@ -19,8 +19,6 @@
 #include "utils/ChromaUtils.hpp"
 #include "colorizer/SaberColorizer.hpp"
 
-#include "utils/CoroutineHelper.hpp"
-
 using namespace GlobalNamespace;
 using namespace UnityEngine;
 using namespace System::Collections;
@@ -107,10 +105,16 @@ void OverrideColor(SetSaberFakeGlowColor* ssfgc, UnityEngine::Color color) {
     sliceSpriteController->Refresh();
 }
 
+custom_types::Helpers::Coroutine WaitForSecondsRealtimeCoro(float t) {
+    CRASH_UNLESS(il2cpp_utils::New<UnityEngine::WaitForSecondsRealtime*>(t));
+
+    co_return;
+}
+
 
 // https://github.com/Auros/SiraUtil/blob/f40d4ca44f5e6632ed74606cb4d6676546f6f56e/SiraUtil/Sabers/SiraSaber.cs#L164
-std::generator<const void*> ChangeColorCoroutine(Saber *instance, UnityEngine::Color color) {
-    co_yield WaitForSecondsRealtime::New_ctor(0.05f);
+custom_types::Helpers::Coroutine ChangeColorCoroutine(Saber *instance, UnityEngine::Color color) {
+    co_yield reinterpret_cast<IEnumerator*>(custom_types::Helpers::CoroutineHelper::New(WaitForSecondsRealtimeCoro(0.05f)));
 
 
     getLogger().debug("Change color coroutine");
@@ -167,7 +171,7 @@ void SaberColorizer::BSMColorManager::SetSaberColor(std::optional<UnityEngine::C
             coroutineSabers.erase(runningCoro);
         }
 
-        CoroutineRunner* coro = CoroutineRunner::Create(ChangeColorCoroutine(_bsm, colorNullable.value()));
+        custom_types::Helpers::StandardCoroutine* coro = custom_types::Helpers::CoroutineHelper::New(ChangeColorCoroutine(_bsm, colorNullable.value()));
         coroutineSabers[_bsm] = coro;
 
         _bsm->StartCoroutine(reinterpret_cast<IEnumerator*>(coroutineSabers[_bsm]));

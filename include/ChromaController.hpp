@@ -1,6 +1,6 @@
 #pragma once
 
-#include "utils/CoroutineHelper.hpp"
+#include "custom-types/shared/coroutine.hpp"
 #include "GlobalNamespace/BeatmapObjectSpawnController.hpp"
 #include "GlobalNamespace/IAudioTimeSource.hpp"
 
@@ -31,6 +31,6 @@ namespace Chroma {
         // internal
         static void OnActiveSceneChanged(UnityEngine::SceneManagement::Scene current, UnityEngine::SceneManagement::Scene _);
 
-        static std::generator<const void*> DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnController *beatmapObjectSpawnController);
+        static custom_types::Helpers::Coroutine DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnController *beatmapObjectSpawnController);
     };
 }
