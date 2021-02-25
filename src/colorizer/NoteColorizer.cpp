@@ -130,8 +130,10 @@ void NoteColorizer::DisableNoteColorOverride() {
 
 void NoteColorizer::ColorizeSaber(GlobalNamespace::NoteController *noteController, GlobalNamespace::NoteCutInfo *noteCutInfo) {
     // TODO: Actually implement this
-    if (ChromaController::DoColorizerSabers)
+    getLogger().debug("Coloring sabers");
+    if (ChromaController::DoColorizerSabers())
         {
+        getLogger().debug("Oh wait I'm actually coloring them");
         NoteData* noteData = noteController->noteData;
         SaberType saberType = noteCutInfo->saberType;
         if ((int)noteData->colorType == (int)saberType)

@@ -8,8 +8,6 @@
 #include "ChromaController.hpp"
 #include "ChromaGradientController.hpp"
 
-#include "ChromaConfig.hpp"
-
 using namespace Chroma;
 
 

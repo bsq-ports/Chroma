@@ -7,6 +7,7 @@
 #include <vector>
 #include <string>
 
+
 namespace Chroma {
     namespace Hooks {
         void BeatEffectSpawner();
@@ -16,7 +17,9 @@ namespace Chroma {
         void LightPairRotationEventEffect();
         void LightRotationEventEffect();
         void LightSwitchEventEffect();
+        void NoteCutEffectSpawner();
         void Saber();
+        void StandardLevelScenesTransitionSetupDataSO();
     }
 
     namespace CustomData {

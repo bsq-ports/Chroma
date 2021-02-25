@@ -20,7 +20,7 @@ namespace Chroma {
 
     public:
         static bool ChromaIsActive();
-        inline static bool DoColorizerSabers = false;
+        static bool DoColorizerSabers();
 
         inline static GlobalNamespace::BeatmapObjectSpawnController* BeatmapObjectSpawnController = nullptr;
         inline static GlobalNamespace::IAudioTimeSource* IAudioTimeSource = nullptr;

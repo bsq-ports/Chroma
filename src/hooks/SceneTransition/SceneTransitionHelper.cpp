@@ -1,13 +1,11 @@
-#include "Chroma.hpp"
-
+#include "ChromaConfig.hpp"
+#include "hooks/SceneTransition/SceneTransitionHelper.hpp"
 #include <vector>
 #include <optional>
-#include "custom-json-data/shared/CustomBeatmapData.h"
-#include "beatsaber-hook/shared/config/rapidjson-utils.hpp"
+
 
 #include "LegacyLightHelper.hpp"
 #include "ChromaController.hpp"
-#include "ChromaConfig.hpp"
 
 #include <cstdlib>
 
@@ -17,7 +15,18 @@ using namespace GlobalNamespace;
 using namespace UnityEngine;
 using namespace System::Collections;
 
-bool BasicPatch(CustomBeatmapData* customBeatmapData) {
+void SceneTransitionHelper::Patch(CustomBeatmapData *customBeatmapData) {
+    SceneTransitionHelper::BasicPatch(customBeatmapData);
+}
+
+void SceneTransitionHelper::Patch(CustomBeatmapData* customBeatmapData, OverrideEnvironmentSettings*& overrideEnvironmentSettings) {
+    bool chromaRequirement = SceneTransitionHelper::BasicPatch(customBeatmapData);
+    if (chromaRequirement && getChromaConfig().environmentEnhancementsEnabled.GetValue() && customBeatmapData->customData->value->HasMember("_environmentRemoval")) {
+        overrideEnvironmentSettings = nullptr;
+    }
+}
+
+bool SceneTransitionHelper::BasicPatch(CustomBeatmapData* customBeatmapData) {
     auto& dynData = *customBeatmapData->customData->value;
 
 
@@ -51,7 +60,7 @@ bool BasicPatch(CustomBeatmapData* customBeatmapData) {
 
 //    ChromaController.ToggleChromaPatches((chromaRequirement || legacyOverride) && ChromaConfig.Instance.CustomColorEventsEnabled);
 
-    ChromaController::DoColorizerSabers = chromaRequirement && getChromaConfig().customColorEventsEnabled.GetValue();
+//    ChromaController::DoColorizerSabers = chromaRequirement && getChromaConfig().customColorEventsEnabled.GetValue();
 
     return chromaRequirement;
 }

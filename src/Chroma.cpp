@@ -8,5 +8,7 @@ void Chroma::InstallHooks() {
     Hooks::LightPairRotationEventEffect();
     Hooks::LightRotationEventEffect();
     Hooks::LightSwitchEventEffect();
+    Hooks::NoteCutEffectSpawner();
     Hooks::Saber();
+    Hooks::StandardLevelScenesTransitionSetupDataSO();
 }

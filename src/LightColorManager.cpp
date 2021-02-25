@@ -1,7 +1,6 @@
-#include "LightColorManager.hpp"
 #include "Chroma.hpp"
+#include "LightColorManager.hpp"
 #include "colorizer/LightColorizer.hpp"
-#include "GlobalNamespace/LightSwitchEventEffect.hpp"
 #include "LegacyLightHelper.hpp"
 #include "utils/ChromaUtils.hpp"
 #include "ChromaGradientController.hpp"

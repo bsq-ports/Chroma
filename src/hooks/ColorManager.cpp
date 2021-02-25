@@ -24,7 +24,6 @@ MAKE_HOOK_OFFSETLESS(ColorManager_ColorForType, UnityEngine::Color, GlobalNamesp
 }
 
 MAKE_HOOK_OFFSETLESS(ColorManager_ColorForSaberType, UnityEngine::Color, GlobalNamespace::ColorManager* self, GlobalNamespace::SaberType type) {
-    getLogger().debug("Saber color override");
     auto color = SaberColorizer::SaberColorOverride[(int)type];
     if (color)
     {

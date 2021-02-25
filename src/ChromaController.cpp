@@ -11,12 +11,11 @@
 #include "UnityEngine/GameObject.hpp"
 
 #include "System/Action.hpp"
-
+#include "ChromaConfig.hpp"
 #include "bs-utils/shared/utils.hpp"
 #include "custom-json-data/shared/CustomBeatmapData.h"
 
 #include "main.hpp"
-#include "ChromaConfig.hpp"
 #include "colorizer/NoteColorizer.hpp"
 #include "colorizer/SaberColorizer.hpp"
 #include "colorizer/ObstacleColorizer.hpp"
@@ -209,4 +208,8 @@ void ChromaController::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene 
         NoteColorizer::ClearCNVColorManagers();
         SaberColorizer::ClearBSMColorManagers();
     }
+}
+
+bool ChromaController::DoColorizerSabers() {
+    return getChromaConfig().customColorEventsEnabled.GetValue() && (getenv("req_Chroma"));
 }
