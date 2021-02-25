@@ -73,15 +73,7 @@ void NoteColorizer::ClearCNVColorManagers() {
     _cnvColorManagers.clear();
 }
 
-void PrintJSONValue(const rapidjson::Value &json) {
-    using namespace rapidjson;
 
-    StringBuffer sb;
-    PrettyWriter<StringBuffer> writer(sb);
-    json.Accept(writer);
-    auto str = sb.GetString();
-    getLogger().info("%s", str);
-}
 
 //std::optional<UnityEngine::Color> getColor(rapidjson::Value& json) {
 //    auto jsonArray = json.GetArray();
@@ -106,7 +98,7 @@ void NoteColorizer::EnableNoteColorOverride(GlobalNamespace::NoteController *not
 
 
             if (dynData.MemberCount() > 0) {
-                PrintJSONValue(dynData);
+//                PrintJSONValue(dynData);
                 NoteColorOverride[0] = ChromaUtils::ChromaUtilities::GetColorFromData(&dynData, "color0");
             } else {
                 NoteColorOverride[0] = std::nullopt;
@@ -128,16 +120,25 @@ void NoteColorizer::DisableNoteColorOverride() {
     NoteColorOverride[1] = std::nullopt;
 }
 
+bool MatchesColorType(SaberType saberType, ColorType colorType){
+    getLogger().debug("%d saber %d saberA %d colorType %d colorTypeA", saberType.value, SaberType::_get_SaberA().value, colorType.value, ColorType::_get_ColorA().value);
+    return (saberType.value == SaberType::_get_SaberA().value && colorType.value == ColorType::_get_ColorA().value)
+    || (saberType.value == SaberType::_get_SaberB().value && colorType.value == ColorType::_get_ColorB().value);
+}
+
+
 void NoteColorizer::ColorizeSaber(GlobalNamespace::NoteController *noteController, GlobalNamespace::NoteCutInfo *noteCutInfo) {
     // TODO: Actually implement this
     getLogger().debug("Coloring sabers");
     if (ChromaController::DoColorizerSabers())
         {
-        getLogger().debug("Oh wait I'm actually coloring them");
         NoteData* noteData = noteController->noteData;
-        SaberType saberType = noteCutInfo->saberType;
-        if ((int)noteData->colorType == (int)saberType)
+        auto saberType = noteCutInfo->saberType;
+        auto colorType = noteData->colorType;
+        getLogger().debug("Oh wait I'm actually coloring them %d vs saber %d", colorType.value, saberType.value);
+        if (MatchesColorType(saberType, colorType))
         {
+            getLogger().debug("Ok now time to color");
             UnityEngine::Color color = CNVColorManager::GetCNVColorManager(noteController)->ColorForCNVManager();
 
             SaberColorizer::SetSaberColor(saberType, color);

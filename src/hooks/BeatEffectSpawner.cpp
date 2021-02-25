@@ -18,7 +18,7 @@ MAKE_HOOK_OFFSETLESS(BeatEffectSpawner_HandleNoteDidStartJumpColorizer, void, Be
         auto *pCustomNoteData = reinterpret_cast<CustomJSONData::CustomNoteData *>(noteController->noteData);
 
         if (pCustomNoteData->customData && pCustomNoteData->customData->value) {
-            getLogger().debug("I could disable notes");
+//            getLogger().debug("I could disable notes");
             rapidjson::Value &dynData = *pCustomNoteData->customData->value;
 
             if (dynData.HasMember(DISABLESPAWNEFFECT)) {

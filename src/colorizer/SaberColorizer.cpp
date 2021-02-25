@@ -26,10 +26,9 @@ using namespace Chroma;
 
 std::vector<std::optional<UnityEngine::Color>> SaberColorizer::SaberColorOverride = std::vector<std::optional<UnityEngine::Color>>(2, std::nullopt);
 
-std::vector<SaberColorizer::BSMColorManager *> SaberColorizer::_bsmColorManagers;
-
 void SaberColorizer::SetSaberColor(int saberType, std::optional<UnityEngine::Color> color) {
     for (auto& bms : SaberColorizer::BSMColorManager::GetBSMColorManager(saberType)) {
+        getLogger().debug("Coloring a saber");
         bms->SetSaberColor(color);
     }
 }
@@ -51,6 +50,7 @@ void SaberColorizer::ClearBSMColorManagers() {
 void SaberColorizer::BSMStart(GlobalNamespace::Saber *bcm, int saberType) {
     if (saberType == SaberType::SaberA || saberType == SaberType::SaberB)
     {
+        getLogger().debug("Saber start was called, doing stuff");
         BSMColorManager::CreateBSMColorManager(bcm, saberType);
     }
 }
@@ -63,7 +63,9 @@ SaberColorizer::BSMColorManager::BSMColorManager(GlobalNamespace::Saber *bsm, in
 std::vector<SaberColorizer::BSMColorManager *>SaberColorizer::BSMColorManager::GetBSMColorManager(int saberType) {
     std::vector<BSMColorManager *> saberColors;
 
+    getLogger().debug("Checking all the beat saber models %d", _bsmColorManagers.size());
     for (auto& man : _bsmColorManagers) {
+        getLogger().debug("Is %d also %d", man->_saberType, saberType);
         if (man->_saberType == saberType)
             saberColors.push_back(man);
     }
@@ -73,26 +75,15 @@ std::vector<SaberColorizer::BSMColorManager *>SaberColorizer::BSMColorManager::G
 
 SaberColorizer::BSMColorManager* SaberColorizer::BSMColorManager::CreateBSMColorManager(GlobalNamespace::Saber *bsm,
                                                                                          int saberType) {
+    getLogger().debug("Creating a beat saber model manager");
     auto* bsmcm = new BSMColorManager(bsm, saberType);
     _bsmColorManagers.push_back(bsmcm);
     return bsmcm;
 }
 
 
-DEFINE_CLASS(Chroma::ChangeColorCoroutine);
 
-void Chroma::ChangeColorCoroutine::ctor(Saber *instance, UnityEngine::Color color) {
-    this->instance = instance;
-    this->color = color;
-    this->current = nullptr;
-    this->hasWaited = false;
-}
 
-Il2CppObject* Chroma::ChangeColorCoroutine::get_Current() {
-    return current;
-}
-
-void Chroma::ChangeColorCoroutine::Reset() {}
 
 
 // Sira utils methods
@@ -118,19 +109,39 @@ void OverrideColor(SetSaberFakeGlowColor* ssfgc, UnityEngine::Color color) {
     sliceSpriteController->Refresh();
 }
 
+DEFINE_CLASS(Chroma::ChangeColorCoroutine);
+
+void Chroma::ChangeColorCoroutine::ctor(Saber *instance, UnityEngine::Color color) {
+    this->instance = instance;
+    this->color = color;
+    this->current = nullptr;
+    this->hasWaited = false;
+}
+
+void Chroma::ChangeColorCoroutine::Reset() {
+
+}
+
+Il2CppObject* Chroma::ChangeColorCoroutine::get_Current() {
+    return current;
+}
 
 // https://github.com/Auros/SiraUtil/blob/f40d4ca44f5e6632ed74606cb4d6676546f6f56e/SiraUtil/Sabers/SiraSaber.cs#L164
 bool Chroma::ChangeColorCoroutine::MoveNext() {
+    getLogger().debug("Waiting for change color coroutine");
     if (!hasWaited) {
         current = WaitForSecondsRealtime::New_ctor(0.05f);
         hasWaited = true;
         return true; // Continue coroutine
     }
 
+    getLogger().debug("Change color coroutine");
     if (instance->get_isActiveAndEnabled()) {
         // In th epc version, this starts another coroutine which does the color changing
         // However, I believe we can get hopefully away without making another coroutine class since
         // the wait time is set to 0 anyways
+
+        getLogger().debug("Coloring saber model");
 
         auto *modelController = instance->get_gameObject()->GetComponentInChildren<SaberModelController *>(true);
 
@@ -164,6 +175,8 @@ bool Chroma::ChangeColorCoroutine::MoveNext() {
     coroutineSabers[instance] = nullptr;
     coroutineSabers.erase(instance);
 
+    current = nullptr;
+
     return false; // Reached end of coroutine
 }
 
@@ -182,6 +195,9 @@ void SaberColorizer::BSMColorManager::SetSaberColor(std::optional<UnityEngine::C
             coroutineSabers.erase(_bsm);
         }
 
-        _bsm->StartCoroutine(ChangeColorCo(_bsm, colorNullable.value()));
+        coroutineSabers[_bsm] = ChangeColorCo(_bsm, colorNullable.value());
+        _bsm->StartCoroutine(coroutineSabers[_bsm]);
+//        getLogger().debug("Start the change color coroutine");
+//        _bsm->StartCoroutine(ChangeColorCo(_bsm, colorNullable.value()));
     }
 }

@@ -88,10 +88,10 @@ namespace Chroma {
         };
 
     private:
-        static std::vector<BSMColorManager *> _bsmColorManagers;
+        inline static std::vector<BSMColorManager *> _bsmColorManagers;
 
     };
 }
 
-inline static std::unordered_map<GlobalNamespace::Saber*, Chroma::ChangeColorCoroutine*> coroutineSabers;
+inline static std::unordered_map<GlobalNamespace::Saber*, System::Collections::IEnumerator*> coroutineSabers;
 

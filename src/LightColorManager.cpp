@@ -31,8 +31,8 @@ void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, C
                 std::vector<ILightWithId *> lights = LightColorizer::GetLights(lightSwitchEventEffect);
                 int lightCount = lights.size();
 
-                if (lightIdData.IsInt64()) {
-                    auto lightIdLong = lightIdData.GetInt64();
+                if (lightIdData.IsInt() || lightIdData.IsInt64()) {
+                    auto lightIdLong = lightIdData.GetInt();
                     if (lightCount > lightIdLong) {
                         std::vector<ILightWithId*> overrideLights;
 
@@ -41,6 +41,7 @@ void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, C
                         OverrideLightWithIdActivation = std::make_optional(overrideLights);
                     }
                 } else {
+                    // It's a list
                     auto lightIDobjects = lightIdData.GetObject();
                     std::vector<int> lightIDArray;
 
@@ -63,15 +64,20 @@ void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, C
 
             if(dynData.HasMember("_propID")) {
                 rapidjson::Value &propIDData = dynData["_propID"];
+
                 std::unordered_map<int, std::vector<ILightWithId *>> lights = LightColorizer::GetLightsPropagationGrouped(lightSwitchEventEffect);
                 int lightCount = lights.size();
 
-                if (propIDData.IsInt64()) {
-                    auto propIdLong = propIDData.GetInt64();
+                getLogger().debug("Prop id data is");
+                PrintJSONValue(propIDData);
+
+                if (propIDData.IsInt64() || propIDData.IsInt()) {
+                    auto propIdLong = propIDData.GetInt();
                     if (lightCount > propIdLong) {
                         OverrideLightWithIdActivation = std::make_optional(lights[propIdLong]);
                     }
                 } else {
+                    // It's a list
                     auto propIDobjects = propIDData.GetObject();
                     std::vector<int> propIDArray;
 

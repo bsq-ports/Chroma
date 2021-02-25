@@ -8,6 +8,16 @@
 #include <string>
 
 
+inline void PrintJSONValue(const rapidjson::Value &json) {
+    using namespace rapidjson;
+
+    StringBuffer sb;
+    PrettyWriter<StringBuffer> writer(sb);
+    json.Accept(writer);
+    auto str = sb.GetString();
+    getLogger().info("%s", str);
+}
+
 namespace Chroma {
     namespace Hooks {
         void BeatEffectSpawner();
