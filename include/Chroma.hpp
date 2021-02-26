@@ -29,6 +29,7 @@ namespace Chroma {
         void LightSwitchEventEffect();
         void NoteCutEffectSpawner();
         void Saber();
+        void SaberManager();
         void StandardLevelScenesTransitionSetupDataSO();
     }
 

@@ -22,33 +22,33 @@ using namespace System::Collections;
 
 
 DEFINE_CLASS(Il2CppNamespace::WaitThenStartEnumerator);
- 
+
 void Il2CppNamespace::WaitThenStartEnumerator::ctor(LightSwitchEventEffect *instance, BeatmapEventType eventType) {
     this->instance = instance;
     this->eventType = eventType;
     this->current = nullptr;
     this->hasWaited = false;
 }
- 
+
 Il2CppObject* Il2CppNamespace::WaitThenStartEnumerator::get_Current() {
     return current;
 }
- 
+
 void Il2CppNamespace::WaitThenStartEnumerator::Reset() {}
- 
+
 bool Il2CppNamespace::WaitThenStartEnumerator::MoveNext() {
     if (!hasWaited) {
         current = WaitForEndOfFrame::New_ctor();
         hasWaited = true;
         return true; // Continue coroutine
     }
- 
+
     LightColorizer::LSEStart(instance, eventType);
 
     current = nullptr;
     return false; // Reached end of coroutine
 }
- 
+
 IEnumerator *WaitThenStart(LightSwitchEventEffect *instance, BeatmapEventType eventType) {
     Il2CppNamespace::WaitThenStartEnumerator *coroutine = CRASH_UNLESS(il2cpp_utils::New<Il2CppNamespace::WaitThenStartEnumerator*>(instance, eventType));
     return reinterpret_cast<IEnumerator*>(coroutine);

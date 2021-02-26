@@ -10,5 +10,6 @@ void Chroma::InstallHooks() {
     Hooks::LightSwitchEventEffect();
     Hooks::NoteCutEffectSpawner();
     Hooks::Saber();
+    Hooks::SaberManager();
     Hooks::StandardLevelScenesTransitionSetupDataSO();
 }

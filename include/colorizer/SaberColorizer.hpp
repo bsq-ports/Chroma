@@ -73,10 +73,11 @@ namespace Chroma {
 
         class BSMColorManager {
         private:
-            GlobalNamespace::Saber *_bsm;
             int _saberType;
 
             BSMColorManager(GlobalNamespace::Saber *bsm, int saberType);
+
+            [[nodiscard]] GlobalNamespace::Saber* getSaber() const;
 
         public:
             static std::vector<BSMColorManager *> GetBSMColorManager(int saberType);
@@ -93,5 +94,5 @@ namespace Chroma {
     };
 }
 
-inline static std::unordered_map<GlobalNamespace::Saber*, System::Collections::IEnumerator*> coroutineSabers;
+inline static std::unordered_map<int, System::Collections::IEnumerator*> coroutineSabers;
 

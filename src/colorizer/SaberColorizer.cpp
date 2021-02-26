@@ -12,8 +12,11 @@
 #include "GlobalNamespace/SaberTrail.hpp"
 #include "GlobalNamespace/SetSaberGlowColor_PropertyTintColorPair.hpp"
 #include "GlobalNamespace/Parametric3SliceSpriteController.hpp"
+#include "GlobalNamespace/SaberManager.hpp"
+#include "hooks/SaberManager.hpp"
 
 #include <unordered_map>
+#include "utils/ChromaUtils.hpp"
 #include "colorizer/SaberColorizer.hpp"
 
 
@@ -56,7 +59,6 @@ void SaberColorizer::BSMStart(GlobalNamespace::Saber *bcm, int saberType) {
 }
 
 SaberColorizer::BSMColorManager::BSMColorManager(GlobalNamespace::Saber *bsm, int saberType) {
-    _bsm = bsm;
     _saberType = saberType;
 }
 
@@ -80,10 +82,6 @@ SaberColorizer::BSMColorManager* SaberColorizer::BSMColorManager::CreateBSMColor
     _bsmColorManagers.push_back(bsmcm);
     return bsmcm;
 }
-
-
-
-
 
 
 // Sira utils methods
@@ -141,7 +139,7 @@ bool Chroma::ChangeColorCoroutine::MoveNext() {
         // However, I believe we can get hopefully away without making another coroutine class since
         // the wait time is set to 0 anyways
 
-        getLogger().debug("Coloring saber model");
+        getLogger().debug("Coloring saber model %d",(int) instance->get_saberType());
 
         auto *modelController = instance->get_gameObject()->GetComponentInChildren<SaberModelController *>(true);
 
@@ -172,8 +170,8 @@ bool Chroma::ChangeColorCoroutine::MoveNext() {
         }
 
     }
-    coroutineSabers[instance] = nullptr;
-    coroutineSabers.erase(instance);
+    coroutineSabers[instance->get_saberType().value] = nullptr;
+    coroutineSabers.erase(instance->get_saberType().value);
 
     current = nullptr;
 
@@ -189,15 +187,21 @@ IEnumerator *ChangeColorCo(Saber *instance, UnityEngine::Color color) {
 void SaberColorizer::BSMColorManager::SetSaberColor(std::optional<UnityEngine::Color> colorNullable) {
     if (colorNullable)
     {
-        if (coroutineSabers.contains(_bsm)) {
-            _bsm->StopCoroutine(reinterpret_cast<IEnumerator*>(coroutineSabers[_bsm]));
-            coroutineSabers[_bsm] = nullptr;
-            coroutineSabers.erase(_bsm);
+        auto _bsm = getSaber();
+        auto runningCoro = coroutineSabers.find(_saberType);
+        if (runningCoro != coroutineSabers.end()) {
+            _bsm->StopCoroutine(reinterpret_cast<IEnumerator*>(runningCoro->second));
+            coroutineSabers.erase(runningCoro);
         }
 
-        coroutineSabers[_bsm] = ChangeColorCo(_bsm, colorNullable.value());
-        _bsm->StartCoroutine(coroutineSabers[_bsm]);
+        auto coro = ChangeColorCo(_bsm, colorNullable.value());
+        coroutineSabers[_saberType] = coro;
+        _bsm->StartCoroutine(coro);
 //        getLogger().debug("Start the change color coroutine");
 //        _bsm->StartCoroutine(ChangeColorCo(_bsm, colorNullable.value()));
     }
+}
+
+GlobalNamespace::Saber *SaberColorizer::BSMColorManager::getSaber() const {
+    return Chroma::SaberManagerHolder::saberManager->SaberForType(_saberType);
 }
