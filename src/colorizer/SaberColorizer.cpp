@@ -148,7 +148,6 @@ custom_types::Helpers::Coroutine ChangeColorCoroutine(Saber *instance, UnityEngi
         }
 
     }
-    coroutineSabers[instance->get_saberType().value] = nullptr;
     coroutineSabers.erase(instance->get_saberType().value);
 }
 
@@ -159,16 +158,14 @@ void SaberColorizer::BSMColorManager::SetSaberColor(std::optional<UnityEngine::C
         auto _bsm = getSaber();
         auto runningCoro = coroutineSabers.find(_saberType);
         if (runningCoro != coroutineSabers.end()) {
-            _bsm->StopCoroutine(reinterpret_cast<IEnumerator*>(runningCoro->second));
+            _bsm->StopCoroutine(reinterpret_cast<enumeratorT *>(runningCoro->second));
             coroutineSabers.erase(runningCoro);
         }
 
         custom_types::Helpers::StandardCoroutine* coro = custom_types::Helpers::CoroutineHelper::New(ChangeColorCoroutine(_bsm, colorNullable.value()));
-        coroutineSabers[_saberType] = coro;
 
-        _bsm->StartCoroutine(reinterpret_cast<IEnumerator*>(coro));
-//        getLogger().debug("Start the change color coroutine");
-//        _bsm->StartCoroutine(ChangeColorCo(_bsm, colorNullable.value()));
+        _bsm->StartCoroutine(reinterpret_cast<enumeratorT*>(coro));
+        coroutineSabers[_saberType] = coro;
     }
 }
 
