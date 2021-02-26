@@ -25,12 +25,10 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffectSpawner_Start, void, GlobalName
     TrackLaneRingsRotationEffectSpawner_Start(self);
 }
 
-
 template<typename T>
 T getValueOrDefault(rapidjson::Value& val, const std::string& s, T def) {
     auto v = val.FindMember(s);
     return v != val.MemberEnd() ? v->value.Get<T>() : def;
-}
 
 void TriggerRotation(
         TrackLaneRingsRotationEffect* trackLaneRingsRotationEffect,
