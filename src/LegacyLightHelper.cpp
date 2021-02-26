@@ -5,7 +5,7 @@ using namespace GlobalNamespace;
 using namespace UnityEngine;
 using namespace System::Collections;
 
-void LegacyLightHelper::Activate(std::vector<GlobalNamespace::BeatmapEventData *> eventData) {
+void LegacyLightHelper::Activate(const std::vector<GlobalNamespace::BeatmapEventData *>& eventData) {
     LegacyColorEvents.clear();
     for (auto& d : eventData)
     {
@@ -23,7 +23,7 @@ void LegacyLightHelper::Activate(std::vector<GlobalNamespace::BeatmapEventData *
                 list = LegacyColorEvents[d->type];
 
 
-            list.push_back(std::make_pair(d->time, ColorFromInt(d->value)));
+            list.emplace_back(d->time, ColorFromInt(d->value));
         }
     }
 }
@@ -41,7 +41,7 @@ std::optional<UnityEngine::Color> LegacyLightHelper::GetLegacyColor(
         }
 
 
-        if (colors.size() > 0)
+        if (!colors.empty())
         {
             return std::make_optional(colors.end()->second);
         }
@@ -52,8 +52,8 @@ std::optional<UnityEngine::Color> LegacyLightHelper::GetLegacyColor(
 
 UnityEngine::Color LegacyLightHelper::ColorFromInt(int rgb) {
     rgb -= RGB_INT_OFFSET;
-    int red = (rgb >> 16) & 0x0ff;
-    int green = (rgb >> 8) & 0x0ff;
-    int blue = rgb & 0x0ff;
+    auto red = (float) ((rgb >> 16) & 0x0ff);
+    auto green = (float) ((rgb >> 8) & 0x0ff);
+    auto blue = (float ) (rgb & 0x0ff);
     return UnityEngine::Color(red / 255.0f, green / 255.0f, blue / 255.0f);
 }

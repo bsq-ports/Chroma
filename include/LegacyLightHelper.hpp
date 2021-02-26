@@ -24,7 +24,7 @@ namespace Chroma {
         inline static std::unordered_map<int, std::vector<pair<float, UnityEngine::Color>>> LegacyColorEvents;
 
         // internal
-        static void Activate(std::vector<GlobalNamespace::BeatmapEventData*> eventData);
+        static void Activate(const std::vector<GlobalNamespace::BeatmapEventData*>& eventData);
 
         // internal
         static std::optional<UnityEngine::Color> GetLegacyColor(GlobalNamespace::BeatmapEventData* beatmapEventData);
