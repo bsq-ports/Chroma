@@ -15,4 +15,6 @@ void Chroma::InstallHooks() {
     Hooks::SceneManager_Internal();
     Hooks::ObstacleController();
     Hooks::BombNoteController();
+    Hooks::TrackLaneRingsRotationEffect();
+    Hooks::TrackLaneRingsRotationEffectSpawner();
 }

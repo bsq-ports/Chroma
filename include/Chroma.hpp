@@ -44,6 +44,8 @@ namespace Chroma {
         void StandardLevelScenesTransitionSetupDataSO();
         void ObstacleController();
         void BombNoteController();
+        void TrackLaneRingsRotationEffect();
+        void TrackLaneRingsRotationEffectSpawner();
     }
 
     namespace CustomData {
@@ -56,6 +58,7 @@ namespace Chroma {
     inline const std::string DIRECTION = "_direction";
     inline const std::string ENVIRONMENTREMOVAL = "_environmentRemoval";
     inline const std::string COLOR = "_color";
+    inline const std::string COUNTERSPIN = "_counterSpin";
     inline const std::string DURATION = "_duration";
     inline const std::string EASING = "_easing";
     inline const std::string STARTCOLOR = "_startColor";
@@ -65,6 +68,15 @@ namespace Chroma {
     inline const std::string PROPAGATIONID = "_propID";
     inline const std::string LIGHTID = "_lightID";
     inline const std::string DISABLESPAWNEFFECT = "_disableSpawnEffect";
+    inline const std::string NAMEFILTER = "_nameFilter";
+    inline const std::string RESET = "_reset";
+    inline const std::string STEP = "_step";
+    inline const std::string SPEED = "_speed";
+    inline const std::string SPEEDMULT = "_speedMult";
+    inline const std::string PROPMULT = "_propMult";
+    inline const std::string STEPMULT = "_stepMult";
+    inline const std::string PROP = "_prop";
+    inline const std::string ROTATION = "_rotation";
 
     void InstallHooks();
 }

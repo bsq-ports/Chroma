@@ -12,7 +12,7 @@
 #include "colorizer/SaberColorizer.hpp"
 #include "custom-types/shared/register.hpp"
 
-
+#include "ChromaRingsRotationEffect.hpp"
 #include "ChromaController.hpp"
 #include "ChromaGradientController.hpp"
 
@@ -101,7 +101,9 @@ extern "C" void load() {
             Chroma::LSEColorManager,
             Chroma::ChromaGradientController,
             Chroma::OCColorManager,
-            Chroma::BNCColorManager
+            Chroma::BNCColorManager,
+            Chroma::ChromaRingsRotationEffect,
+            Chroma::ChromaRotationEffect
     >();
 
     getLogger().info("Installed types");
