@@ -17,16 +17,20 @@ using namespace UnityEngine;
 void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, CustomBeatmapEventData* beatmapEventData) {
     LightColorizer::SetLastValue(monobehaviour, beatmapEventData->value);
 
-    std::optional<UnityEngine::Color> color;
+    std::optional<UnityEngine::Color> color = LegacyLightHelper::GetLegacyColor(beatmapEventData);
 
-    color = LegacyLightHelper::GetLegacyColor(beatmapEventData);
+    auto customData = beatmapEventData->customData;
+    if(customData) {
+        getLogger().debug("JSON data 1");
 
-    if(beatmapEventData->customData) {
-        rapidjson::Value* dynData = beatmapEventData->customData;
+        //TODO: FIX THE NULLPTR HERE THAT OCCURS
+        // NO PATTERN OR CAUSE RECOGNIZED YET
+        rapidjson::Value*& dynData = customData;
         if (il2cpp_functions::class_is_assignable_from(monobehaviour->klass, classof(LightSwitchEventEffect *))) {
             auto *lightSwitchEventEffect = reinterpret_cast<LightSwitchEventEffect *>(monobehaviour);
 
             if(dynData->HasMember("_lightID")) {
+                getLogger().debug("JSON data 2");
                 rapidjson::Value &lightIdData = dynData->FindMember("_lightID")->value;
                 std::vector<ILightWithId *> lights = LightColorizer::GetLights(lightSwitchEventEffect);
                 int lightCount = lights.size();
@@ -63,6 +67,7 @@ void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, C
             }
 
             if(dynData->HasMember("_propID")) {
+                getLogger().debug("JSON data 3");
                 rapidjson::Value& propIDData = dynData->FindMember("_propID")->value;
 
                 std::unordered_map<int, std::vector<ILightWithId *>> lights = LightColorizer::GetLightsPropagationGrouped(lightSwitchEventEffect);
