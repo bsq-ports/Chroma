@@ -83,7 +83,7 @@ DECLARE_CLASS_CODEGEN(Chroma, LSEColorManager, Il2CppObject,
 
                               void SetLastValue(int value);
 
-                              void SetActiveColors();
+                              void SetActiveColors() const;
 
                               void InitializeSOs(UnityEngine::MonoBehaviour *lse, const std::string& id, GlobalNamespace::SimpleColorSO *&sColorSO,
                               UnityEngine::Color& originalColor, GlobalNamespace::MultipliedColorSO *&mColorSO);

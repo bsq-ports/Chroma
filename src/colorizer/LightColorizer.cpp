@@ -233,10 +233,10 @@ namespace Chroma {
     }
 
     void LSEColorManager::SetLastValue(int value) {
-        _lastValue = value;
+        _lastValue = (float) value;
     }
 
-    void LSEColorManager::SetActiveColors() {
+    void LSEColorManager::SetActiveColors() const {
         // Replace with ProcessLightSwitchEvent
         if (_lastValue == 0) {
             return;

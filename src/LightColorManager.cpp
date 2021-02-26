@@ -22,12 +22,12 @@ void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, C
     color = LegacyLightHelper::GetLegacyColor(beatmapEventData);
 
     if(beatmapEventData->customData) {
-        rapidjson::Value &dynData = *beatmapEventData->customData;
+        rapidjson::Value* dynData = beatmapEventData->customData;
         if (il2cpp_functions::class_is_assignable_from(monobehaviour->klass, classof(LightSwitchEventEffect *))) {
             auto *lightSwitchEventEffect = reinterpret_cast<LightSwitchEventEffect *>(monobehaviour);
 
-            if(dynData.HasMember("_lightID")) {
-                rapidjson::Value &lightIdData = dynData["_lightID"];
+            if(dynData->HasMember("_lightID")) {
+                rapidjson::Value &lightIdData = dynData->FindMember("_lightID")->value;
                 std::vector<ILightWithId *> lights = LightColorizer::GetLights(lightSwitchEventEffect);
                 int lightCount = lights.size();
 
@@ -62,8 +62,8 @@ void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, C
                 }
             }
 
-            if(dynData.HasMember("_propID")) {
-                rapidjson::Value &propIDData = dynData["_propID"];
+            if(dynData->HasMember("_propID")) {
+                rapidjson::Value& propIDData = dynData->FindMember("_propID")->value;
 
                 std::unordered_map<int, std::vector<ILightWithId *>> lights = LightColorizer::GetLightsPropagationGrouped(lightSwitchEventEffect);
                 int lightCount = lights.size();
@@ -102,12 +102,12 @@ void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, C
 
             //gradientObject
             // FIXME, THIS IS VERY TEMP!!
-            if(dynData.HasMember("_lightGradient")) {
-                color = ChromaGradientController::AddGradient(&dynData["_lightGradient"], beatmapEventData->type, beatmapEventData->time);
+            if(dynData->HasMember("_lightGradient")) {
+                color = ChromaGradientController::AddGradient(&dynData->FindMember("_lightGradient")->value, beatmapEventData->type, beatmapEventData->time);
             }
         }
 
-        std::optional<UnityEngine::Color> colorData = ChromaUtils::ChromaUtilities::GetColorFromData(&dynData);
+        std::optional<UnityEngine::Color> colorData = ChromaUtils::ChromaUtilities::GetColorFromData(dynData);
         if (colorData){
             color = colorData;
             ChromaGradientController::CancelGradient(beatmapEventData->type);

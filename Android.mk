@@ -45,7 +45,7 @@ LOCAL_MODULE := custom-json-data
 LOCAL_EXPORT_C_INCLUDES := extern/custom-json-data
 LOCAL_SRC_FILES := extern/libcustom-json-data.so
 include $(PREBUILT_SHARED_LIBRARY)
-# Creating prebuilt for dependency: custom-types - version: 0.4.4
+# Creating prebuilt for dependency: custom-types - version: 0.4.7
 include $(CLEAR_VARS)
 LOCAL_MODULE := custom-types
 LOCAL_EXPORT_C_INCLUDES := extern/custom-types
