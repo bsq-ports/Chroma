@@ -11,44 +11,10 @@
 #include <string>
 #include <optional>
 
+#include "custom-types/shared/coroutine.hpp"
+
+
 // TODO: Document properly
-
-
-
-DECLARE_CLASS_INTERFACES(Chroma, ChangeColorCoroutine, "System", "Object", sizeof(Il2CppObject),
-                         il2cpp_utils::GetClassFromName("System.Collections", "IEnumerator"),
-
-                         DECLARE_CTOR(ctor, GlobalNamespace::Saber *instance, UnityEngine::Color color);
-
-                                 DECLARE_INSTANCE_FIELD(Il2CppObject*, current);
-                                 DECLARE_INSTANCE_FIELD(bool, hasWaited);
-
-                                 DECLARE_INSTANCE_FIELD(GlobalNamespace::Saber*, instance);
-                                 DECLARE_INSTANCE_FIELD(UnityEngine::Color, color);
-
-                                 DECLARE_OVERRIDE_METHOD(bool, MoveNext, il2cpp_utils::FindMethod("System.Collections", "IEnumerator", "MoveNext"));
-                                 DECLARE_OVERRIDE_METHOD(Il2CppObject*, get_Current, il2cpp_utils::FindMethod("System.Collections", "IEnumerator", "get_Current"));
-                                 DECLARE_OVERRIDE_METHOD(void, Reset, il2cpp_utils::FindMethod("System.Collections", "IEnumerator", "Reset"));
-
-                                 REGISTER_FUNCTION(ChangeColorEnumerator,
-                                 getLogger().debug("Registering ChangeColorEnumerator!");
-
-                                 REGISTER_FIELD(current);
-                                 REGISTER_FIELD(hasWaited);
-
-                                 REGISTER_FIELD(instance);
-                                 REGISTER_FIELD(color);
-
-                                 REGISTER_METHOD(ctor);
-
-                                 REGISTER_METHOD(MoveNext);
-                                 REGISTER_METHOD(get_Current);
-                                 REGISTER_METHOD(Reset);
-                         )
-)
-
-
-
 // TODO: Does this need to become a custom type?
 namespace Chroma {
     class SaberColorizer {
@@ -94,5 +60,5 @@ namespace Chroma {
     };
 }
 
-inline static std::unordered_map<int, System::Collections::IEnumerator*> coroutineSabers;
+inline static std::unordered_map<int, custom_types::Helpers::StandardCoroutine*> coroutineSabers;
 
