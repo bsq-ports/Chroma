@@ -11,6 +11,7 @@ void Chroma::InstallHooks() {
     Hooks::NoteCutEffectSpawner();
     Hooks::Saber();
     Hooks::SaberManager();
+    Hooks::SceneManager_Internal();
     Hooks::StandardLevelScenesTransitionSetupDataSO();
     Hooks::SceneManager_Internal();
     Hooks::ObstacleController();
