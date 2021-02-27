@@ -131,7 +131,7 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCall
             getLogger().debug("Getting the last values");
 
             float step = getValueOrDefault(dynData, STEP, rotationStep);
-            float prop = getValueOrDefault(dynData, PROP, originalRotationStep);
+            float prop = getValueOrDefault(dynData, PROP, originalRotationPropagationSpeed);
             float speed = getValueOrDefault(dynData, SPEED, originalRotationFlexySpeed);
             float rotation = getValueOrDefault(dynData, ROTATION, originalRotation);
 
