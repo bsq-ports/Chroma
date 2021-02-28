@@ -6,8 +6,6 @@
 #include "ChromaGradientController.hpp"
 #include "hooks/LightSwitchEventEffect.hpp"
 
-#include "beatsaber-hook/shared/rapidjson/include/rapidjson/document.h"
-
 
 using namespace Chroma;
 using namespace CustomJSONData;
@@ -19,13 +17,13 @@ void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, C
 
     std::optional<UnityEngine::Color> color = LegacyLightHelper::GetLegacyColor(beatmapEventData);
 
-    auto customData = beatmapEventData->customData;
-    if(customData) {
+
+    if(beatmapEventData->customData) {
         getLogger().debug("JSON data 1");
 
         //TODO: FIX THE NULLPTR HERE THAT OCCURS
         // NO PATTERN OR CAUSE RECOGNIZED YET
-        rapidjson::Value*& dynData = customData;
+        rapidjson::Value*& dynData = beatmapEventData->customData;
         if (il2cpp_functions::class_is_assignable_from(monobehaviour->klass, classof(LightSwitchEventEffect *))) {
             auto *lightSwitchEventEffect = reinterpret_cast<LightSwitchEventEffect *>(monobehaviour);
 
