@@ -13,6 +13,13 @@
 #include "GlobalNamespace/SetSaberGlowColor_PropertyTintColorPair.hpp"
 #include "GlobalNamespace/Parametric3SliceSpriteController.hpp"
 #include "GlobalNamespace/SaberManager.hpp"
+#include "GlobalNamespace/SaberModelController.hpp"
+#include "GlobalNamespace/SaberBurnMarkSparkles.hpp"
+#include "UnityEngine/LineRenderer.hpp"
+#include "UnityEngine/ParticleSystem.hpp"
+#include "UnityEngine/ParticleSystem_MainModule.hpp"
+#include "UnityEngine/Mathf.hpp"
+#include "UnityEngine/ParticleSystem_MinMaxGradient.hpp"
 #include "hooks/SaberManager.hpp"
 
 #include <unordered_map>
@@ -106,20 +113,11 @@ void OverrideColor(SetSaberFakeGlowColor* ssfgc, UnityEngine::Color color) {
 }
 
 
-// https://github.com/Auros/SiraUtil/blob/f40d4ca44f5e6632ed74606cb4d6676546f6f56e/SiraUtil/Sabers/SiraSaber.cs#L164
-custom_types::Helpers::Coroutine ChangeColorCoroutine(Saber *instance, UnityEngine::Color color) {
-    co_yield reinterpret_cast<enumeratorT*>(CRASH_UNLESS(il2cpp_utils::New<UnityEngine::WaitForSecondsRealtime*>(0.05f)));
 
+void ChangeColorCoroutine2(Saber *instance, UnityEngine::Color color) {
+    getLogger().debug("Coloring saber model %d", (int) instance->get_saberType());
 
-    getLogger().debug("Change color coroutine");
-    if (instance->get_isActiveAndEnabled()) {
-        // In th epc version, this starts another coroutine which does the color changing
-        // However, I believe we can get hopefully away without making another coroutine class since
-        // the wait time is set to 0 anyways
-
-        getLogger().debug("Coloring saber model %d",(int) instance->get_saberType());
-
-        auto *modelController = instance->get_gameObject()->GetComponentInChildren<SaberModelController *>(true);
+    auto *modelController = instance->get_gameObject()->GetComponentInChildren<SaberModelController *>(true);
 
 
 //        if (modelController is IColorable colorable)
@@ -127,28 +125,103 @@ custom_types::Helpers::Coroutine ChangeColorCoroutine(Saber *instance, UnityEngi
 //            colorable.SetColor(color);
 //        }
 
-        auto tintColor = modelController->initData->trailTintColor;
-        Array<SetSaberGlowColor *> *setSaberGlowColors = modelController->setSaberGlowColors;
-        Array<SetSaberFakeGlowColor *> *setSaberFakeGlowColors = modelController->setSaberFakeGlowColors;
-        TubeBloomPrePassLight *light = modelController->saberLight;
+    auto tintColor = modelController->initData->trailTintColor;
+    Array<SetSaberGlowColor *> *setSaberGlowColors = modelController->setSaberGlowColors;
+    Array<SetSaberFakeGlowColor *> *setSaberFakeGlowColors = modelController->setSaberFakeGlowColors;
 
-        modelController->saberTrail->color = (color * tintColor).get_linear();
+    modelController->saberTrail->color = (color * tintColor).get_linear();
 
-        for (int i = 0; i != setSaberGlowColors->Length(); i++)
-        {
-            OverrideColor(setSaberGlowColors->values[i], color);
-        }
-        for (int i = 0; i < setSaberFakeGlowColors->Length(); i++)
-        {
-            OverrideColor(setSaberFakeGlowColors->values[i], color);
-        }
-        if (light != nullptr)
-        {
-            light->color = color;
-        }
-
+    for (int i = 0; i != setSaberGlowColors->Length(); i++) {
+        OverrideColor(setSaberGlowColors->values[i], color);
     }
-    coroutineSabers.erase(instance->get_saberType().value);
+    for (int i = 0; i < setSaberFakeGlowColors->Length(); i++) {
+        OverrideColor(setSaberFakeGlowColors->values[i], color);
+    }
+    getLogger().debug("Model controller klass %s", modelController->klass->name);
+
+    TubeBloomPrePassLight *saberLight = modelController->saberLight;
+
+
+    if (saberLight) {
+        saberLight->color = color;
+    } else {
+        getLogger().debug("Saber light is null, should be normal right?");
+    }
+}
+
+float linearToGamma(float c) {
+    return 255.0f * std::pow(c/255.0f, 1/2.2f);
+}
+
+UnityEngine::Color getGamma(UnityEngine::Color color) {
+    return UnityEngine::Color(linearToGamma(color.r), linearToGamma(color.g), linearToGamma(color.b), color.a);
+}
+
+UnityEngine::Color getSaberColor(Saber* saber) {
+    auto* modelController = saber->get_gameObject()->GetComponentInChildren<SaberModelController*>(true);
+//    if (modelController is IColorable)
+//    {
+//        var colorable = modelController as IColorable;
+//        return colorable.Color;
+//    }
+
+    return getGamma(modelController->saberTrail->color); // smc.Accessors.TrailColor(ref Accessors.SaberTrail(ref smc)).gamma;
+
+}
+
+// https://github.com/Auros/SiraUtil/blob/f40d4ca44f5e6632ed74606cb4d6676546f6f56e/SiraUtil/Sabers/SiraSaber.cs#L164
+custom_types::Helpers::Coroutine ChangeColorCoroutine(Saber *saber, UnityEngine::Color color) {
+    co_yield reinterpret_cast<enumeratorT *>(CRASH_UNLESS(
+            il2cpp_utils::New<UnityEngine::WaitForSecondsRealtime *>(0.05f)));
+
+
+    getLogger().debug("Change color coroutine");
+    if (saber->get_isActiveAndEnabled()) {
+        // In the pc version, this starts another coroutine which does the color changing
+        // However, I believe we can get hopefully away without making another coroutine class since
+        // the wait time is set to 0 anyways
+
+        ChangeColorCoroutine2(saber, color);
+    }
+
+
+    UnityEngine::Color saberColor = getSaberColor(saber);
+    float h;
+    float s;
+    float ignored;
+    UnityEngine::Color::RGBToHSV(saberColor, h, s, ignored);
+    saberColor = UnityEngine::Color::HSVToRGB(h, s, 1.0f);
+
+    auto saberBurnMarkSparkles = saber->GetComponentInChildren<SaberBurnMarkSparkles *>();
+
+    if (saberBurnMarkSparkles) {
+        auto saberMarkPS = saberBurnMarkSparkles->burnMarksPS;
+
+        for (int i = 0; i < saberMarkPS->Length(); i++) {
+            auto sPS = saberMarkPS->values[i];
+
+            sPS->get_main().set_startColor(ParticleSystem::MinMaxGradient(saberColor));
+        }
+    }
+
+    auto saberBurnMarkArea = saber->GetComponentInChildren<SaberBurnMarkArea *>();
+    if (saberBurnMarkArea) {
+
+        auto lineRenderers = saberBurnMarkArea->lineRenderers;
+
+        for (int i = 0; i < lineRenderers->Length(); i++) {
+            auto lineRenderer = lineRenderers->values[i];
+
+            lineRenderer->set_startColor(saberColor);
+            lineRenderer->set_endColor(saberColor);
+            lineRenderer->set_positionCount(2);
+        }
+    }
+
+
+    coroutineSabers.erase(saber->get_saberType().value);
+
+    co_return;
 }
 
 // Must be down here to avoid compile issues
