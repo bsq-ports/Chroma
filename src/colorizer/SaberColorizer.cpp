@@ -26,13 +26,16 @@
 #include "utils/ChromaUtils.hpp"
 #include "colorizer/SaberColorizer.hpp"
 
+#include <dlfcn.h>
+#include <stdlib.h>
+
 using namespace GlobalNamespace;
 using namespace UnityEngine;
 using namespace System::Collections;
 using namespace custom_types::Helpers;
 using namespace Chroma;
 
-std::vector<std::optional<UnityEngine::Color>> SaberColorizer::SaberColorOverride = std::vector<std::optional<UnityEngine::Color>>(2, std::nullopt);
+std::vector<std::optional<UnityEngine::Color>> SaberColorizer::SaberColorOverride = {std::nullopt, std::nullopt};
 
 void SaberColorizer::SetSaberColor(int saberType, std::optional<UnityEngine::Color> color) {
     for (auto& bms : SaberColorizer::BSMColorManager::GetBSMColorManager(saberType)) {
@@ -226,8 +229,13 @@ custom_types::Helpers::Coroutine ChangeColorCoroutine(Saber *saber, UnityEngine:
 
 // Must be down here to avoid compile issues
 void SaberColorizer::BSMColorManager::SetSaberColor(std::optional<UnityEngine::Color> colorNullable) {
+    std::string envName = &"Chroma_colorSaber" [ _saberType];
+    std::string result = colorNullable ? "true" : "false";
+
+    setenv(envName.c_str(), result.c_str(), true);
     if (colorNullable)
     {
+        SaberColorOverride[_saberType] = colorNullable.value();
         auto _bsm = getSaber();
         auto runningCoro = coroutineSabers.find(_saberType);
         if (runningCoro != coroutineSabers.end()) {
@@ -240,6 +248,7 @@ void SaberColorizer::BSMColorManager::SetSaberColor(std::optional<UnityEngine::C
         _bsm->StartCoroutine(reinterpret_cast<enumeratorT*>(coro));
         coroutineSabers[_saberType] = coro;
     }
+    else SaberColorOverride[_saberType] = std::nullopt;
 }
 
 GlobalNamespace::Saber *SaberColorizer::BSMColorManager::getSaber() const {
