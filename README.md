@@ -3,7 +3,7 @@
 Core Chroma Mod for Quest
 
 # TODO:
-- [x] ~~Saber coloring is not working, no clue why~~ Fixed in 570914772f868e8a99338fbc1ddf18f0336daeaa
+- [x] ~~Saber coloring is not working, no clue why~~ Fixed in commit [5709147](https://github.com/nyamimi/Chroma/commit/570914772f868e8a99338fbc1ddf18f0336daeaa)
 - [ ] Qosmetics support
 - [ ] Chroma ring lights do not seem to work due to CJD not providing the customData or something else
 - [ ] Light positions in maps such as `Madeon - The Prince` are not correct (assuming the [video from Tempex](https://www.youtube.com/watch?v=I0G34tNpbPU) is the reference)
