@@ -21,8 +21,8 @@ using namespace Chroma;
 //
 //std::vector<SaberColorizer::BSMColorManager *> SaberColorizer::_bsmColorManagers;
 
-std::vector<std::optional<UnityEngine::Color>> NoteColorizer::NoteColorOverride = std::vector<std::optional<UnityEngine::Color>>(2, std::nullopt);
-std::vector<std::optional<UnityEngine::Color>> NoteColorizer::CNVColorManager::_globalColor = std::vector<std::optional<UnityEngine::Color>>(2, std::nullopt);
+std::unordered_map<int ,std::optional<UnityEngine::Color>> NoteColorizer::NoteColorOverride = {{0, std::nullopt}, {1, std::nullopt}};
+std::unordered_map<int ,std::optional<UnityEngine::Color>> NoteColorizer::CNVColorManager::_globalColor = {{0, std::nullopt}, {1, std::nullopt}};
 
 void NoteColorizer::Reset(GlobalNamespace::NoteController *nc) {
     auto m = CNVColorManager::GetCNVColorManager(nc);
@@ -91,24 +91,34 @@ void NoteColorizer::EnableNoteColorOverride(GlobalNamespace::NoteController *not
 
         if (customData->customData && customData->customData->value) {
             auto &dynData = *customData->customData->value;
-
+            getLogger().debug("Note color override");
 
             // TODO: Do these execute a similar or exact implementation of the PC version at
             // https://github.com/Aeroluna/Chroma/blob/e7a72f8b848c822d860361a027034218125af135/Chroma/Colorizer/NoteColorizer.cs#L71-L72
 
 
-            if (dynData.MemberCount() > 0) {
-//                PrintJSONValue(dynData);
-                NoteColorOverride[0] = ChromaUtils::ChromaUtilities::GetColorFromData(&dynData, "color0");
+            CustomData::NoteData* noteData = reinterpret_cast<CustomData::NoteData*>(customData->customData->associatedData['C']);
+
+            if (noteData != nullptr) {
+                NoteColorOverride[0] = noteData->_color0;
+                NoteColorOverride[1] = noteData->_color1;
             } else {
                 NoteColorOverride[0] = std::nullopt;
-            }
-
-            if (dynData.MemberCount() > 1) {
-                NoteColorOverride[1] = ChromaUtils::ChromaUtilities::GetColorFromData(&dynData, "color1");
-            } else {
                 NoteColorOverride[1] = std::nullopt;
             }
+
+//            if (dynData.MemberCount() > 0) {
+////                PrintJSONValue(dynData);
+//                NoteColorOverride[0] = ChromaUtils::ChromaUtilities::GetColorFromData(&dynData, "color0");
+//            } else {
+//                NoteColorOverride[0] = std::nullopt;
+//            }
+//
+//            if (dynData.MemberCount() > 1) {
+//                NoteColorOverride[1] = ChromaUtils::ChromaUtilities::GetColorFromData(&dynData, "color1");
+//            } else {
+//                NoteColorOverride[1] = std::nullopt;
+//            }
 
 
         }
@@ -168,6 +178,7 @@ NoteColorizer::CNVColorManager::CNVColorManager(GlobalNamespace::ColorNoteVisual
     _colorManager = cnv->colorManager;
     if (il2cpp_functions::class_is_assignable_from(nc->noteData->klass, classof(CustomJSONData::CustomNoteData*))) {
         _noteData = reinterpret_cast<CustomJSONData::CustomNoteData *>(nc->noteData);
+
         _noteData->customData->associatedData['C'] = new CustomData::NoteData {_globalColor[0], _globalColor[1]};
     }
 }

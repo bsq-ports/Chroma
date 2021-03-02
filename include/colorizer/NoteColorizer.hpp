@@ -18,7 +18,7 @@
 namespace Chroma {
     class NoteColorizer {
     private:
-        static std::vector<std::optional<UnityEngine::Color>> NoteColorOverride;
+        static std::unordered_map<int ,std::optional<UnityEngine::Color>> NoteColorOverride;
 
     public:
         static std::optional<UnityEngine::Color> getNoteColorOverride(int color);
@@ -41,7 +41,7 @@ namespace Chroma {
         {
         private:
          inline static int _colorID = -1;
-         static std::vector<std::optional<UnityEngine::Color>> _globalColor;
+         static std::unordered_map<int, std::optional<UnityEngine::Color>> _globalColor;
          GlobalNamespace::ColorNoteVisuals* _cnv;
          GlobalNamespace::NoteController* _nc;
          GlobalNamespace::ColorManager* _colorManager;
