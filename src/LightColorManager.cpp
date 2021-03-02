@@ -12,7 +12,7 @@ using namespace CustomJSONData;
 using namespace GlobalNamespace;
 using namespace UnityEngine;
 
-void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, CustomBeatmapEventData* beatmapEventData) {
+void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, CustomBeatmapEventData*& beatmapEventData) {
     LightColorizer::SetLastValue(monobehaviour, beatmapEventData->value);
 
     std::optional<UnityEngine::Color> color = LegacyLightHelper::GetLegacyColor(beatmapEventData);

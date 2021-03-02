@@ -6,6 +6,6 @@
 namespace Chroma {
     class LightColorManager {
     public:
-        static void ColorLightSwitch(UnityEngine::MonoBehaviour* monobehaviour, CustomJSONData::CustomBeatmapEventData* beatmapEventData);
+        static void ColorLightSwitch(UnityEngine::MonoBehaviour* monobehaviour, CustomJSONData::CustomBeatmapEventData*& beatmapEventData);
     };
 }
