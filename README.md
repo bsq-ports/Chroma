@@ -2,7 +2,7 @@
 
 Core Chroma Mod for Quest
 
-NOTE: This is a port of Chroma to the Quest, it is in no way associated with Aeroluna's Chroma mod for PC.
+### NOTE: This is a port of Chroma to the Quest, as such, it is in no way associated with Aeroluna. Please do not pester them about bugs, they are not associated with this port.
 
 # TODO:
 - [x] ~~Saber coloring is not working, no clue why~~ Fixed in commit [5709147](https://github.com/nyamimi/Chroma/commit/570914772f868e8a99338fbc1ddf18f0336daeaa)
