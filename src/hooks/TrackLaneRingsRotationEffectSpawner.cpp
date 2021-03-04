@@ -67,7 +67,7 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCall
                 rotationStep = (UnityEngine::Random::get_value() < 0.5f) ? originalRotationStep : 0.0f;
             }
 
-            auto &dynData = *customBeatmapEvent->customData;
+            auto &dynData = *customBeatmapEvent->customData->value;
             getLogger().debug("Got the data");
             auto selfName = to_utf8(csstrtostr(self->get_name()));
 
