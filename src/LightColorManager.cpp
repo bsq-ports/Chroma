@@ -17,13 +17,15 @@ void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, C
 
     std::optional<UnityEngine::Color> color = LegacyLightHelper::GetLegacyColor(beatmapEventData);
 
+    auto& customDataWrapper = beatmapEventData->customData;
 
-    if(beatmapEventData->customData) {
+    if(customDataWrapper && customDataWrapper->value) {
         getLogger().debug("JSON data 1");
 
         //TODO: FIX THE NULLPTR HERE THAT OCCURS
         // NO PATTERN OR CAUSE RECOGNIZED YET
-        rapidjson::Value*& dynData = beatmapEventData->customData;
+
+        rapidjson::Value* dynData = customDataWrapper->value;
         if (il2cpp_functions::class_is_assignable_from(monobehaviour->klass, classof(LightSwitchEventEffect *))) {
             auto *lightSwitchEventEffect = reinterpret_cast<LightSwitchEventEffect *>(monobehaviour);
 

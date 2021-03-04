@@ -17,10 +17,10 @@ MAKE_HOOK_OFFSETLESS(
     LightRotationEventEffect* self,
     CustomBeatmapEventData* beatmapEventData
 ) {
-    if (beatmapEventData->type == self->event && beatmapEventData->customData) {
+    if (beatmapEventData->type == self->event && beatmapEventData->customData && beatmapEventData->customData->value) {
         bool isLeftEvent = self->event == BeatmapEventType::Event12;
 
-        rapidjson::Value &dynData = *beatmapEventData->customData;
+        rapidjson::Value &dynData = *beatmapEventData->customData->value;
 
         bool lockPosition = dynData.HasMember(LOCKPOSITION) && dynData[LOCKPOSITION].GetBool();
 
