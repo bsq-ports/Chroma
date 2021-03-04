@@ -16,8 +16,8 @@
             }
         },
         {
-            "label": "Powershell Build",
-            "detail": "Builds the library using Powershell (recommended)",
+            "label": "PowerShell Build",
+            "detail": "Builds the library using PowerShell (recommended)",
             "type": "shell",
             "command": "./build.ps1",
             "windows": {
@@ -32,7 +32,7 @@
             }
         },
         {
-            "label": "Powershell Build and Copy",
+            "label": "PowerShell Build and Copy",
             "detail": "Builds and copies the library to the Quest using adb and force-quits Beat Saber",
             "type": "shell",
             "command": "./copy.ps1",
@@ -57,12 +57,6 @@
             "options": {
                 "env": {}
             }
-        },
-        {
-            "label": "Start logging",
-            "detail": "Records a log to log.txt using adb logcat",
-            "type": "shell",
-            "command": "./startlogging.bat"
         }
     ]
 }

@@ -11,12 +11,15 @@
   "platform": "Quest",
   "components": [
     {
-      "type": "HookMod",
+      "type": "HookModLibrary",
       "installAction": {
-        "installLibraryFile": "libchroma.so"
-      },
-      "uninstallAction": {
-        "removeLibraryFile": "libchroma.so"
+        "installLibraryFile": "libbeatsaber-hook_1_1_2.so"
+      }
+    },
+    {
+      "type": "HookModLibrary",
+      "installAction": {
+        "installLibraryFile": "libcustom-types.so"
       }
     },
     {
@@ -26,6 +29,15 @@
       },
       "uninstallAction": {
         "removeLibraryFile": "libcustom-json-data.so"
+      }
+    },
+    {
+      "type": "HookMod",
+      "installAction": {
+        "installLibraryFile": "libchroma.so"
+      },
+      "uninstallAction": {
+        "removeLibraryFile": "libchroma.so"
       }
     }
   ]
