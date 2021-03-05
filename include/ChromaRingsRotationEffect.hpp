@@ -37,11 +37,8 @@ public:
 
 DECLARE_CLASS_CODEGEN(Chroma, ChromaRingsRotationEffect, GlobalNamespace::TrackLaneRingsRotationEffect,
 public:
-                      std::vector<ChromaRotationEffect*> _activeRingRotationEffects;
-                            std::vector<ChromaRotationEffect*> _ringRotationEffectsPool;
-
-                            DECLARE_METHOD(void, AddRingRotationEffectF, float angle, float step, float propagationSpeed, float flexySpeed);
-                            DECLARE_METHOD(void, CopyValues, GlobalNamespace::TrackLaneRingsRotationEffect* trackLaneRingsRotationEffect);
+        std::vector<ChromaRotationEffect*> _activeRingRotationEffects;
+        std::vector<ChromaRotationEffect*> _ringRotationEffectsPool;
 
 
         DECLARE_INSTANCE_FIELD(GlobalNamespace::TrackLaneRingsManager*, _trackLaneRingsManager);
@@ -52,6 +49,12 @@ public:
         DECLARE_INSTANCE_FIELD_DEFAULT(int, _startupRotationPropagationSpeed, 1);
         DECLARE_INSTANCE_FIELD_DEFAULT(float, _startupRotationFlexySpeed, 0.5f);
 
+
+        DECLARE_METHOD(void, CopyValues, GlobalNamespace::TrackLaneRingsRotationEffect* trackLaneRingsRotationEffect);
+
+        DECLARE_METHOD(float, GetFirstRingRotationAngle);
+
+        DECLARE_METHOD(void, AddRingRotationEffectF, float angle, float step, float propagationSpeed, float flexySpeed);
         DECLARE_METHOD(void, AddRingRotationEffect, float angle, float step, int propagationSpeed, float flexySpeed);
 
         DECLARE_METHOD(void, Awake);
@@ -79,5 +82,6 @@ public:
 
             REGISTER_METHOD(SpawnRingRotationEffect);
             REGISTER_METHOD(RecycleRingRotationEffect);
+            REGISTER_METHOD(GetFirstRingRotationAngle);
         )
 )

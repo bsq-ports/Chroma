@@ -13,6 +13,7 @@ using namespace Chroma;
 using namespace CustomJSONData;
 using namespace GlobalNamespace;
 using namespace UnityEngine;
+using namespace ChromaUtils;
 
 MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffectSpawner_Start, void, GlobalNamespace::TrackLaneRingsRotationEffectSpawner* self) {
     auto* oldRotationEffect = self->trackLaneRingsRotationEffect;
@@ -21,7 +22,7 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffectSpawner_Start, void, GlobalName
     getLogger().debug("Copyying values now");
     newRotationEffect->CopyValues(oldRotationEffect);
 
-    self->trackLaneRingsRotationEffect = newRotationEffect;
+    self->trackLaneRingsRotationEffect = reinterpret_cast<TrackLaneRingsRotationEffect*>(newRotationEffect);
     TrackLaneRingsRotationEffectSpawner_Start(self);
 }
 
@@ -44,14 +45,49 @@ void TriggerRotation(
     reinterpret_cast<ChromaRingsRotationEffect*>(trackLaneRingsRotationEffect)->AddRingRotationEffectF(trackLaneRingsRotationEffect->GetFirstRingDestinationRotationAngle() + (rotation * (rotRight ? -1.0f : 1.0f)), rotationStep, rotationPropagationSpeed, rotationFlexySpeed);
 }
 
+
+
+// TODO:
+// This method is directly ported from TrackLaneRingsRotationEffectSpawner. It is required to be ported since for some inexplicable reason
+// using the original method causes CJD or something else to stop loading the map and it
+// just stays as limbo. Hopefully with time we can fix that and use that instead
+void origHandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(GlobalNamespace::TrackLaneRingsRotationEffectSpawner* self, BeatmapEventData* beatmapEventData) {
+    if (beatmapEventData->type != self->beatmapEventType)
+    {
+        return;
+    }
+    float step = 0.0f;
+
+    int originalRotationStepType = (int) self->rotationStepType;
+
+    if (originalRotationStepType == TrackLaneRingsRotationEffectSpawner::RotationStepType::Range0ToMax) {
+        step = UnityEngine::Random::Range(0.0f, self->rotationStep);
+    } else if (originalRotationStepType == TrackLaneRingsRotationEffectSpawner::RotationStepType::Range) {
+        step = UnityEngine::Random::Range(-self->rotationStep, self->rotationStep);
+    } else if (originalRotationStepType == TrackLaneRingsRotationEffectSpawner::RotationStepType::MaxOr0) {
+        step = (UnityEngine::Random::get_value() < 0.5f) ? self->rotationStep : 0.0f;
+    }
+    getLogger().debug("Track lane klass %s", self->trackLaneRingsRotationEffect->klass->name);
+
+    self->trackLaneRingsRotationEffect->AddRingRotationEffect(self->trackLaneRingsRotationEffect->GetFirstRingRotationAngle() + self->rotation * (float)((UnityEngine::Random::get_value() < 0.5f) ? 1 : -1), step, self->rotationPropagationSpeed, self->rotationFlexySpeed);
+}
+
 MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger, void, GlobalNamespace::TrackLaneRingsRotationEffectSpawner* self, CustomJSONData::CustomBeatmapEventData* beatmapEventData) {
 
-    getLogger().debug("Track lane rotation effect self %d beat %d and customData %d", self->beatmapEventType.value, beatmapEventData->type.value, beatmapEventData->customData ==
-            nullptr ? 0 : 1);
-//    if (il2cpp_functions::class_is_assignable_from(beatmapEventData->klass, classof(CustomJSONData::CustomBeatmapEventData*))) {
-        auto *customBeatmapEvent = reinterpret_cast<CustomBeatmapEventData *>(beatmapEventData);
+    // We use this since using return; will cause the method to stop running which is not ideal here
+    bool doReturn = true;
 
-        if (self->beatmapEventType.value == beatmapEventData->type.value && customBeatmapEvent->customData) {
+    getLogger().debug("Track lane rotation effect self %d beat %d and customData %d", self->beatmapEventType.value,
+                      beatmapEventData->type.value, beatmapEventData->customData != nullptr && beatmapEventData->customData->value != nullptr ? 0 : 1);
+//    if (il2cpp_functions::class_is_assignable_from(beatmapEventData->klass, classof(CustomJSONData::CustomBeatmapEventData*))) {
+    auto *customBeatmapEvent = reinterpret_cast<CustomBeatmapEventData *>(beatmapEventData);
+
+    // Use while loop so we can escape easily.
+    bool onceIf = true;
+    while (onceIf) {
+        onceIf = false;
+        if (self->beatmapEventType.value == beatmapEventData->type.value && customBeatmapEvent->customData &&
+            customBeatmapEvent->customData->value) {
             getLogger().debug("Doing stuff with custom Data");
             float rotationStep = 0.0f;
             float originalRotationStep = self->rotationStep;
@@ -73,9 +109,12 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCall
             auto selfName = to_utf8(csstrtostr(self->get_name()));
 
             auto nameFilter = dynData->FindMember(NAMEFILTER);
-            if (nameFilter != dynData->MemberEnd() && stringCompare(selfName, nameFilter->value.GetString()) == 0) {
+            if (nameFilter != dynData->MemberEnd() &&
+                ChromaUtilities::stringCompare(selfName, nameFilter->value.GetString()) == 0) {
                 getLogger().debug("Name filter ignored");
-                return;
+                doReturn = false;
+
+                break;
             }
 
             int dir;
@@ -104,7 +143,8 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCall
             if (reset != dynData->MemberEnd() && reset->value.GetBool()) {
                 getLogger().debug("Reset spawn, returning");
                 TriggerRotation(self->trackLaneRingsRotationEffect, rotRight, originalRotation, 0, 50, 50);
-                return;
+                doReturn = false;
+                break;
             }
 
             getLogger().debug("Getting the last values");
@@ -121,12 +161,20 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCall
             TriggerRotation(self->trackLaneRingsRotationEffect, rotRight, rotation, step * stepMult, prop * propMult,
                             speed * speedMult);
             getLogger().debug("Finished spawn, returning");
-            return;
+            doReturn = false;
         }
+    }
 //    }
-    getLogger().debug("Not a custom beat map");
-    TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);
+
+    if (doReturn) {
+        getLogger().debug("Not a custom beat map");
+
+        origHandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);
+//        TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);
+    }
+
 }
+
 
 
 

@@ -9,6 +9,7 @@ DEFINE_CLASS(ChromaRingsRotationEffect);
 DEFINE_CLASS(ChromaRotationEffect);
 
 void ChromaRingsRotationEffect::AddRingRotationEffect(float angle, float step, int propagationSpeed, float flexySpeed) {
+    getLogger().debug("Doing ring rotations now");
     AddRingRotationEffectF(angle, step, (float) propagationSpeed, flexySpeed);
 }
 
@@ -82,14 +83,17 @@ void ChromaRingsRotationEffect::FixedUpdate() {
         for (auto &it : iteratorsToDelete) {
             _activeRingRotationEffects.erase(it);
         }
+
+    getLogger().debug("Ended fixed update");
 }
 
 ChromaRotationEffect* ChromaRingsRotationEffect::SpawnRingRotationEffect() {
     ChromaRotationEffect* result;
     if (!_ringRotationEffectsPool.empty())
     {
-        result = _ringRotationEffectsPool[0];
-        _ringRotationEffectsPool.erase(_ringRotationEffectsPool.begin());
+        auto first = _ringRotationEffectsPool.begin();
+        result = *first;
+        _ringRotationEffectsPool.erase(first);
     }
     else
     {
@@ -101,4 +105,8 @@ ChromaRotationEffect* ChromaRingsRotationEffect::SpawnRingRotationEffect() {
 
 void ChromaRingsRotationEffect::RecycleRingRotationEffect(ChromaRotationEffect* ringRotationEffect) {
     _ringRotationEffectsPool.push_back(ringRotationEffect);
+}
+
+float ChromaRingsRotationEffect::GetFirstRingRotationAngle() {
+    return _trackLaneRingsManager->rings->values[0]->GetDestinationRotation();
 }
