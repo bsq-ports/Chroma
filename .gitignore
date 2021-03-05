@@ -44,6 +44,8 @@ out/
 ndkpath.txt
 *.zip
 *.txt
+log_unstripped.log
+*.log
 extern/
 Android.mk.backup
 qpm.shared.json
