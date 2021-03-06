@@ -91,8 +91,11 @@ void OCColorManager::ctor(GlobalNamespace::ObstacleController *oc) {
 
 OCColorManager *
 OCColorManager::GetOCColorManager(GlobalNamespace::ObstacleController *oc) {
+    if (!oc)
+        return nullptr;
+
     for (auto& n : ObstacleColorizer::_ocColorManagers) {
-        if (n->_oc == oc)
+        if (n && n->_oc == oc)
             return n;
     }
 
