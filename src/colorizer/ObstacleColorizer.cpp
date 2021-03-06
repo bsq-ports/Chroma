@@ -82,7 +82,7 @@ ObstacleColorizer::OCColorManager::OCColorManager(GlobalNamespace::ObstacleContr
     if (_color == nullptr)
     {
         // TODO: We might need custom type here
-        _color = ScriptableObject::CreateInstance<SimpleColorSO*>();
+        _color = SafePtr(ScriptableObject::CreateInstance<SimpleColorSO*>());
         _color->SetColor(_color_Original);
     }
 

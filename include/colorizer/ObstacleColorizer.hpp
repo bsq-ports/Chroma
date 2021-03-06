@@ -38,7 +38,7 @@ namespace Chroma {
             GlobalNamespace::ObstacleController* _oc;
             UnityEngine::Color _color_Original;
             // TODO: THIS MAY GET GC'ED. WE MAY NEED CUSTOM TYPES
-            GlobalNamespace::SimpleColorSO* _color;
+            SafePtr<GlobalNamespace::SimpleColorSO> _color;
             GlobalNamespace::StretchableObstacle* _stretchableObstacle;
             explicit OCColorManager(GlobalNamespace::ObstacleController* oc);
 
