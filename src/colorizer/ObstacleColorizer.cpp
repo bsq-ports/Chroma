@@ -16,9 +16,7 @@ using namespace UnityEngine;
 
 using namespace Chroma;
 
-std::optional<UnityEngine::Color> ObstacleColorizer::OCColorManager::_globalColor = std::nullopt;
-
-
+DEFINE_CLASS(Chroma::OCColorManager);
 
 void ObstacleColorizer::Reset(GlobalNamespace::ObstacleController *oc) {
     auto ocman = OCColorManager::GetOCColorManager(oc);
@@ -70,10 +68,13 @@ void ObstacleColorizer::ClearOCColorManagers() {
 }
 
 void ObstacleColorizer::OCStart(GlobalNamespace::ObstacleController *oc) {
+    getLogger().debug("Create oc");
     OCColorManager::CreateOCColorManager(oc);
 }
 
-ObstacleColorizer::OCColorManager::OCColorManager(GlobalNamespace::ObstacleController *oc) {
+
+
+void OCColorManager::ctor(GlobalNamespace::ObstacleController *oc) {
     _oc = oc;
     _stretchableObstacle = _oc->stretchableObstacle;
 
@@ -81,17 +82,16 @@ ObstacleColorizer::OCColorManager::OCColorManager(GlobalNamespace::ObstacleContr
 
     if (_color == nullptr)
     {
-        // TODO: We might need custom type here
-        _color = SafePtr(ScriptableObject::CreateInstance<SimpleColorSO*>());
+        _color = ScriptableObject::CreateInstance<SimpleColorSO*>();
         _color->SetColor(_color_Original);
     }
 
     oc->color = _color;
 }
 
-ObstacleColorizer::OCColorManager *
-ObstacleColorizer::OCColorManager::GetOCColorManager(GlobalNamespace::ObstacleController *oc) {
-    for (auto& n : _ocColorManagers) {
+OCColorManager *
+OCColorManager::GetOCColorManager(GlobalNamespace::ObstacleController *oc) {
+    for (auto& n : ObstacleColorizer::_ocColorManagers) {
         if (n->_oc == oc)
             return n;
     }
@@ -99,30 +99,30 @@ ObstacleColorizer::OCColorManager::GetOCColorManager(GlobalNamespace::ObstacleCo
     return nullptr;
 }
 
-ObstacleColorizer::OCColorManager *
-ObstacleColorizer::OCColorManager::CreateOCColorManager(GlobalNamespace::ObstacleController *oc) {
+OCColorManager *
+OCColorManager::CreateOCColorManager(GlobalNamespace::ObstacleController *oc) {
     if (GetOCColorManager(oc) != nullptr)
     {
         return nullptr;
     }
 
-    auto occm = new OCColorManager(oc);
-    _ocColorManagers.push_back(occm);
+    OCColorManager* occm = CRASH_UNLESS(il2cpp_utils::New<OCColorManager*>(oc));
+    ObstacleColorizer::_ocColorManagers.push_back(occm);
     return occm;
 }
 
-void ObstacleColorizer::OCColorManager::SetGlobalObstacleColor(std::optional<UnityEngine::Color> color) {
+void OCColorManager::SetGlobalObstacleColor(std::optional<UnityEngine::Color> color) {
     if (color)
     {
         _globalColor = color.value();
     }
 }
 
-void ObstacleColorizer::OCColorManager::ResetGlobal() {
+void OCColorManager::ResetGlobal() {
     _globalColor = std::nullopt;
 }
 
-void ObstacleColorizer::OCColorManager::Reset() {
+void OCColorManager::Reset() {
     if (_globalColor)
     {
         _color->SetColor(_globalColor.value());
@@ -133,14 +133,14 @@ void ObstacleColorizer::OCColorManager::Reset() {
     }
 }
 
-void ObstacleColorizer::OCColorManager::SetObstacleColor(std::optional<UnityEngine::Color> color) {
+void OCColorManager::SetObstacleColor(std::optional<UnityEngine::Color> color) {
     if (color)
     {
         _color->SetColor(color.value());
     }
 }
 
-void ObstacleColorizer::OCColorManager::SetActiveColors() {
+void OCColorManager::SetActiveColors() {
     ParametricBoxFrameController* obstacleFrame = _stretchableObstacle->obstacleFrame;
     ParametricBoxFakeGlowController* obstacleFakeGlow = _stretchableObstacle->obstacleFakeGlow;
     Array<MaterialPropertyBlockController *> *materialPropertyBlockControllers = _stretchableObstacle->materialPropertyBlockControllers;

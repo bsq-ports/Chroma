@@ -4,6 +4,7 @@
 
 #include "Chroma.hpp"
 #include "colorizer/LightColorizer.hpp"
+#include "colorizer/ObstacleColorizer.hpp"
 #include "colorizer/SaberColorizer.hpp"
 #include "custom-types/shared/register.hpp"
 
@@ -47,7 +48,8 @@ extern "C" void load() {
 
     custom_types::Register::RegisterTypes<
             Chroma::LSEColorManager,
-            Chroma::ChromaGradientController
+            Chroma::ChromaGradientController,
+            Chroma::OCColorManager
     >();
 
     getLogger().info("Installed types");
