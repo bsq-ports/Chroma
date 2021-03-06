@@ -3,12 +3,7 @@
 #include "ChromaController.hpp"
 
 #include "colorizer/NoteColorizer.hpp"
-#include "GlobalNamespace/ColorManager.hpp"
-#include "GlobalNamespace/ColorType.hpp"
-#include "GlobalNamespace/SaberType.hpp"
-#include "custom-json-data/shared/CustomBeatmapData.h"
 #include "utils/ChromaUtils.hpp"
-#include "UnityEngine/Color.hpp"
 
 using namespace GlobalNamespace;
 using namespace Chroma;
@@ -21,9 +16,9 @@ MAKE_HOOK_OFFSETLESS(ColorNoteVisuals_HandleNoteControllerDidInit, void, ColorNo
         auto *pCustomNoteData = reinterpret_cast<CustomJSONData::CustomNoteData *>(noteController->noteData);
 
         if (pCustomNoteData->customData && pCustomNoteData->customData->value) {
-            rapidjson::Value &dynData = *pCustomNoteData->customData->value;
+            rapidjson::Value* dynData = pCustomNoteData->customData->value;
 
-            std::optional<UnityEngine::Color> color = ChromaUtils::ChromaUtilities::GetColorFromData(&dynData);
+            std::optional<UnityEngine::Color> color = ChromaUtils::ChromaUtilities::GetColorFromData(dynData);
 
             if (color)
             {

@@ -17,16 +17,17 @@ MAKE_HOOK_OFFSETLESS(
     LightRotationEventEffect* self,
     CustomBeatmapEventData* beatmapEventData
 ) {
-    if (beatmapEventData->type == self->event && beatmapEventData->customData && beatmapEventData->customData->value) {
+    if (beatmapEventData->type == self->event) {
         bool isLeftEvent = self->event == BeatmapEventType::Event12;
 
-        rapidjson::Value &dynData = *beatmapEventData->customData->value;
+        bool isCustomData = beatmapEventData->customData && beatmapEventData->customData->value;
+        rapidjson::Value* dynData = isCustomData ? beatmapEventData->customData->value : nullptr;
 
-        bool lockPosition = dynData.HasMember(LOCKPOSITION) && dynData[LOCKPOSITION].GetBool();
+        bool lockPosition = isCustomData && dynData->HasMember(LOCKPOSITION) && dynData->FindMember(LOCKPOSITION)->value.GetBool();
 
-        float precisionSpeed = dynData.HasMember(PRECISESPEED) ? dynData[PRECISESPEED].GetFloat() : (float) beatmapEventData->value;
+        float precisionSpeed = isCustomData && dynData->HasMember(PRECISESPEED) ? dynData->FindMember(PRECISESPEED)->value.GetFloat() : (float) beatmapEventData->value;
 
-        int dir = dynData.HasMember(DIRECTION) ? dynData[DIRECTION].GetInt() : -1;
+        int dir = isCustomData && dynData->HasMember(DIRECTION) ? dynData->FindMember(DIRECTION)->value.GetInt() : -1;
 
         float direction = (Random::get_value() > 0.5f) ? 1.0f : -1.0f;
         switch (dir) {
