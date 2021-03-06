@@ -15,7 +15,15 @@ MAKE_HOOK_OFFSETLESS(
     ObstacleController_Init,
     void,
     ObstacleController* self,
-    CustomObstacleData* obstacleData
+    CustomObstacleData* obstacleData,
+    float worldRotation,
+    UnityEngine::Vector3 startPos,
+    UnityEngine::Vector3 midPos,
+    UnityEngine::Vector3 endPos,
+    float move1Duration,
+    float move2Duration,
+    float singleLineWidth,
+    float height
 ) {
     ObstacleColorizer::OCStart(self);
 
@@ -28,8 +36,10 @@ MAKE_HOOK_OFFSETLESS(
             ObstacleColorizer::Reset(self);
         }
     }
+
+    ObstacleController_Init(self, obstacleData, worldRotation, startPos, midPos, endPos, move1Duration, move2Duration, singleLineWidth, height);
 }
 
 void Chroma::Hooks::ObstacleController() {
-    INSTALL_HOOK_OFFSETLESS(getLogger(), ObstacleController_Init, il2cpp_utils::FindMethodUnsafe("", "ObstacleController", "Init", 1));
+    INSTALL_HOOK_OFFSETLESS(getLogger(), ObstacleController_Init, il2cpp_utils::FindMethodUnsafe("", "ObstacleController", "Init", 9));
 }

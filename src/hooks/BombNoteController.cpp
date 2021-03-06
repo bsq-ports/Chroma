@@ -15,7 +15,14 @@ MAKE_HOOK_OFFSETLESS(
     BombNoteController_Init,
     void,
     BombNoteController* self,
-    CustomNoteData* noteData
+    CustomNoteData* noteData,
+    float worldRotation,
+    UnityEngine::Vector3 moveStartPos,
+    UnityEngine::Vector3 moveEndPos,
+    UnityEngine::Vector3 jumpEndPos,
+    float moveDuration,
+    float jumpDuration,
+    float jumpGravity
 ) {
     BombColorizer::BNCStart(self);
 
@@ -30,8 +37,10 @@ MAKE_HOOK_OFFSETLESS(
     } else {
         BombColorizer::Reset(self);
     }
+
+    BombNoteController_Init(self, noteData, worldRotation, moveStartPos, moveEndPos, jumpEndPos, moveDuration, jumpDuration, jumpGravity);
 }
 
 void Chroma::Hooks::BombNoteController() {
-    INSTALL_HOOK_OFFSETLESS(getLogger(), BombNoteController_Init, il2cpp_utils::FindMethodUnsafe("", "BombNoteController", "Init", 1));
+    INSTALL_HOOK_OFFSETLESS(getLogger(), BombNoteController_Init, il2cpp_utils::FindMethodUnsafe("", "BombNoteController", "Init", 8));
 }
