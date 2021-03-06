@@ -17,18 +17,9 @@
       }
     },
     {
-      "type": "HookModLibrary",
-      "installAction": {
-        "installLibraryFile": "libcustom-types.so"
-      }
-    },
-    {
       "type": "HookMod",
       "installAction": {
         "installLibraryFile": "libcustom-json-data.so"
-      },
-      "uninstallAction": {
-        "removeLibraryFile": "libcustom-json-data.so"
       }
     },
     {
