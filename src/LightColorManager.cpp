@@ -17,7 +17,7 @@ void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, C
 
     std::optional<UnityEngine::Color> color = LegacyLightHelper::GetLegacyColor(beatmapEventData);
 
-    auto &customDataWrapper = beatmapEventData->customData;
+    auto customDataWrapper = beatmapEventData->customData;
 
     if(customDataWrapper && customDataWrapper->value) {
         getLogger().debug("JSON data 1");
