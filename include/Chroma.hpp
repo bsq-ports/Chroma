@@ -41,6 +41,8 @@ namespace Chroma {
         void Saber();
         void SaberManager();
         void StandardLevelScenesTransitionSetupDataSO();
+        void ObstacleController();
+        void BombNoteController();
     }
 
     namespace CustomData {
