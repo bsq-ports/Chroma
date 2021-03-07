@@ -15,6 +15,7 @@
 #include "GlobalNamespace/SaberManager.hpp"
 #include "GlobalNamespace/SaberModelController.hpp"
 #include "GlobalNamespace/SaberBurnMarkSparkles.hpp"
+#include "GlobalNamespace/ColorManager.hpp"
 #include "UnityEngine/LineRenderer.hpp"
 #include "UnityEngine/ParticleSystem.hpp"
 #include "UnityEngine/ParticleSystem_MainModule.hpp"
@@ -229,10 +230,6 @@ custom_types::Helpers::Coroutine ChangeColorCoroutine(Saber *saber, UnityEngine:
 
 // Must be down here to avoid compile issues
 void SaberColorizer::BSMColorManager::SetSaberColor(std::optional<UnityEngine::Color> colorNullable) {
-    std::string envName = &"Chroma_colorSaber" [ _saberType];
-    std::string result = colorNullable ? "true" : "false";
-
-    setenv(envName.c_str(), result.c_str(), true);
     if (colorNullable)
     {
         SaberColorOverride[_saberType] = colorNullable.value();
@@ -248,7 +245,30 @@ void SaberColorizer::BSMColorManager::SetSaberColor(std::optional<UnityEngine::C
         _bsm->StartCoroutine(reinterpret_cast<enumeratorT*>(coro));
         coroutineSabers[_saberType] = coro;
     }
-    else SaberColorOverride[_saberType] = std::nullopt;
+    // Reset color
+    else {
+        SaberColorOverride[_saberType] = std::nullopt;
+
+        if (Chroma::SaberManagerHolder::saberManager) {
+            auto _bsm = getSaber();
+
+            if (_bsm) {
+                auto runningCoro = coroutineSabers.find(_saberType);
+                if (runningCoro != coroutineSabers.end()) {
+                    _bsm->StopCoroutine(reinterpret_cast<enumeratorT *>(runningCoro->second));
+                    coroutineSabers.erase(runningCoro);
+                }
+
+                auto* modelController = _bsm->get_gameObject()->GetComponentInChildren<SaberModelController*>(true);
+
+                custom_types::Helpers::StandardCoroutine *coro = custom_types::Helpers::CoroutineHelper::New(
+                        ChangeColorCoroutine(_bsm, modelController->colorManager->ColorForSaberType(_saberType)));
+
+                _bsm->StartCoroutine(reinterpret_cast<enumeratorT *>(coro));
+                coroutineSabers[_saberType] = coro;
+            }
+        }
+    }
 }
 
 GlobalNamespace::Saber *SaberColorizer::BSMColorManager::getSaber() const {
