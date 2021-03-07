@@ -27,16 +27,16 @@ jobs:
       - name: Create ndkpath.txt
         run: echo ${{ steps.setup-ndk.outputs.ndk-path }} > ${GITHUB_WORKSPACE}/ndkpath.txt
 
-       - name: Cache QPM
-         id: cache-qpm
-         uses: actions/cache@v2
-         env:
-           cache-name: cache-qpm
-         with:
-           path: QPM
-           key: ${{ runner.os }}-${{ env.cache-name }}-2
-           restore-keys: |
-             ${{ runner.os }}-${{ env.cache-name }}-2
+      - name: Cache QPM
+        id: cache-qpm
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-qpm
+        with:
+          path: QPM
+          key: ${{ runner.os }}-${{ env.cache-name }}-2
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}-2
 
       - name: Get QPM
         if: steps.cache-qpm.outputs.cache-hit != 'true'
@@ -48,19 +48,19 @@ jobs:
           path: QPM
           repo: sc2ad/QuestPackageManager
 
-         - name: QPM Dependencies Cache
-           id: cache-qpm-deps
-           uses: actions/cache@v2
-           env:
-             cache-name: cache-qpm-deps
-           with:
-             path: ~/.config/QPM
-             key: ${{ runner.os }}-${{ env.cache-name }}
-             restore-keys: |
-               ${{ runner.os }}-${{ env.cache-name }}
+      - name: QPM Dependencies Cache
+        id: cache-qpm-deps
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-qpm-deps
+        with:
+          path: ~/.config/QPM
+          key: ${{ runner.os }}-${{ env.cache-name }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}
 
       - name: QPM Restore
-       if: steps.cache-qpm-deps.outputs.cache-hit != 'true'
+        if: steps.cache-qpm-deps.outputs.cache-hit != 'true'
         run: |
           chmod +x ./QPM/QPM
           ./QPM/QPM restore
