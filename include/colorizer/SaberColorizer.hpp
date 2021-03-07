@@ -22,7 +22,12 @@ namespace Chroma {
     class SaberColorizer {
 
     public:
+        inline static std::vector<std::function<void()>> saberCallbacks;
         static std::vector<std::optional<UnityEngine::Color>> SaberColorOverride;
+
+        static void registerCallback(std::function<void()> callback);
+
+        static void clearCallbacks();
 
         static void SetSaberColor(int saberType, UnityEngine::Color color);
 

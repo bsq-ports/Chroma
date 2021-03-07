@@ -5,6 +5,8 @@
 #include "utils.hpp"
 
 #include <optional>
+#include <functional>
+#include <utility>
 
 namespace Chroma {
 
@@ -37,6 +39,16 @@ namespace Chroma {
 
             if (function) {
                 function.value()(saberType, color);
+            }
+        }
+
+        /// This registers a callback that is called whenever the saber color changes
+        /// Do note however that every time a scene changes the callback is erased.
+        static void registerSaberCallback(std::function<void()> callback) {
+            auto function = CondDep::Find<void, std::function<void()>>("chroma", "registerSaberCallbackSafe");
+
+            if (function) {
+                function.value()(std::move(callback));
             }
         }
     };

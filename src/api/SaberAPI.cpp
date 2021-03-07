@@ -1,4 +1,6 @@
 #include "SaberAPI.hpp"
+
+#include <utility>
 #include "colorizer/SaberColorizer.hpp"
 
 #include "conditional-dependencies/shared/main.hpp"
@@ -34,4 +36,8 @@ EXPOSE_API(setSaberColorSafe, void, int saberType, std::optional<UnityEngine::Co
 
     SaberColorizer::SetSaberColor(saberType, color);
 
+}
+
+EXPOSE_API(registerSaberCallbackSafe, void, std::function<void()> callback) {
+    SaberColorizer::registerCallback(std::move(callback));
 }
