@@ -6,7 +6,9 @@
     "id": "chroma",
     "version": "0.1.0",
     "url": null,
-    "additionalData": {}
+    "additionalData": {
+      "headersOnly": true
+    }
   },
   "dependencies": [
     {
@@ -41,6 +43,11 @@
     {
       "id": "questui",
       "versionRange": "^0.6.4",
+      "additionalData": {}
+    },
+    {
+      "id": "conditional-dependencies",
+      "versionRange": "*",
       "additionalData": {}
     }
   ],
