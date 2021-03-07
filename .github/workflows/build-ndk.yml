@@ -1,0 +1,94 @@
+name: NDK build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        name: Checkout
+        with:
+          submodules: true
+          lfs: true
+      - name: Install Powershell
+        run: sudo apt-get install -y powershell
+
+      - name: Setup NDK
+        id: setup-ndk
+        uses: nttld/setup-ndk@v1.0.3
+        with:
+          ndk-version: r22
+
+      - name: Create ndkpath.txt
+        run: echo ${{ steps.setup-ndk.outputs.ndk-path }} > ${GITHUB_WORKSPACE}/ndkpath.txt
+
+       - name: Cache QPM
+         id: cache-qpm
+         uses: actions/cache@v2
+         env:
+           cache-name: cache-qpm
+         with:
+           path: QPM
+           key: ${{ runner.os }}-${{ env.cache-name }}-2
+           restore-keys: |
+             ${{ runner.os }}-${{ env.cache-name }}-2
+
+      - name: Get QPM
+        if: steps.cache-qpm.outputs.cache-hit != 'true'
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          workflow: main.yml
+          name: QPM-ubuntu-x64
+          path: QPM
+          repo: sc2ad/QuestPackageManager
+
+       - name: QPM Dependencies Cache
+         id: cache-qpm-deps
+         uses: actions/cache@v2
+         env:
+           cache-name: cache-qpm-deps
+         with:
+           path: ~/.config/QPM
+           key: ${{ runner.os }}-${{ env.cache-name }}
+           restore-keys: |
+             ${{ runner.os }}-${{ env.cache-name }}
+
+      - name: QPM Restore
+       if: steps.cache-qpm-deps.outputs.cache-hit != 'true'
+        run: |
+          chmod +x ./QPM/QPM
+          ./QPM/QPM restore
+      - name: test
+        run: |
+          ls ./QPM/QPM_Temp
+      - name: Build
+        run: |
+          cd ${GITHUB_WORKSPACE}
+          pwsh -Command ./build.ps1
+      - name: Get Library Name
+        id: libname
+        run: |
+          cd ./libs/arm64-v8a/
+          pattern="libchroma*.so"
+          files=( $pattern )
+          echo ::set-output name=NAME::"${files[0]}"
+      - name: Upload non-debug artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ steps.libname.outputs.NAME }}
+          path: ./libs/arm64-v8a/${{ steps.libname.outputs.NAME }}
+          if-no-files-found: error
+      - name: Upload debug artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: debug_${{ steps.libname.outputs.NAME }}
+          path: ./obj/local/arm64-v8a/${{ steps.libname.outputs.NAME }}
+          if-no-files-found: error
+    # TODO: Add auto-populating releases, auto update versions, auto publish package on release
