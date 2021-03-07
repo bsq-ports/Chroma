@@ -31,7 +31,6 @@ namespace Chroma {
             return std::nullopt;
         }
 
-        /// TODO: Will this work? The parameter is an optional, let's see in time
         /// Sets the saber color if the method was found.
         static void setSaberColorSafe(int saberType, std::optional<UnityEngine::Color> color) noexcept {
             auto function = CondDep::Find<void, int, std::optional<UnityEngine::Color>>("chroma", "setSaberColorSafe");
