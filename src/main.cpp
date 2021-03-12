@@ -109,4 +109,6 @@ extern "C" void load() {
     getLogger().info("Installed Chroma hooks!");
 
     setChromaEnv();
+
+    ChromaController::ChromaRequiredUpdate();
 }

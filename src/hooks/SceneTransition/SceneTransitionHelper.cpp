@@ -48,6 +48,7 @@ bool SceneTransitionHelper::BasicPatch(CustomBeatmapData* customBeatmapData) {
 
 //    ChromaController.ToggleChromaPatches((chromaRequirement || legacyOverride) && ChromaConfig.Instance.CustomColorEventsEnabled);
 
+    ChromaController::ChromaRequiredUpdate();
 
     return ChromaController::ChromaRequired();
 }

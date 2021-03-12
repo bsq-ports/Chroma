@@ -18,6 +18,7 @@ namespace Chroma {
     class ChromaController {
     private:
         inline static bool _ChromaLegacy = false;
+        inline static bool ChromaRequiredVar = true;
 
     public:
         // Return true if Chroma should color the sabers
@@ -25,6 +26,9 @@ namespace Chroma {
 
         // Return true if Chroma is required/suggested in a map
         static bool ChromaRequired();
+
+        // Set the variable state
+        static bool ChromaRequiredUpdate();
 
         // Return true if Chroma hooks should run
         static bool DoChromaHooks();

@@ -176,7 +176,7 @@ ChromaController::DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnCont
 
 void ChromaController::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene current,
                                             UnityEngine::SceneManagement::Scene _) {
-    ChromaController::ChromaRequiredCheck();
+    ChromaController::ChromaRequiredUpdate();
     if (strcmp(to_utf8(csstrtostr(current.get_name())).c_str(), "GameCore") == 0) {
         LightColorizer::ClearLSEColorManagers();
         ObstacleColorizer::ClearOCColorManagers();
@@ -186,9 +186,14 @@ void ChromaController::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene 
     }
 }
 
-bool ChromaController::ChromaRequired() {
+bool ChromaController::ChromaRequiredUpdate() {
     // 1 is true
-    return (strcmp(getenv("req_Chroma"), "1") == 0) || (strcmp(getenv("sug_Chroma"), "1") == 0);
+    auto reqVar = getenv("req_Chroma");
+    auto sugVar = getenv("sug_Chroma");
+
+    ChromaRequiredVar = (reqVar && strcmp(reqVar, "1") == 0) || (sugVar && strcmp(sugVar, "1") == 0);
+
+    return ChromaRequiredVar;
 }
 
 bool ChromaController::DoColorizerSabers() {
@@ -206,4 +211,8 @@ bool ChromaController::GetChromaLegacy() {
 
 bool ChromaController::DoChromaHooks() {
     return getChromaConfig().customColorEventsEnabled.GetValue() && (_ChromaLegacy || ChromaRequired());
+}
+
+bool ChromaController::ChromaRequired() {
+    return ChromaRequiredVar;
 }
