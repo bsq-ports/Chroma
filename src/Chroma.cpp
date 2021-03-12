@@ -12,6 +12,7 @@ void Chroma::InstallHooks() {
     Hooks::Saber();
     Hooks::SaberManager();
     Hooks::StandardLevelScenesTransitionSetupDataSO();
+    Hooks::SceneManager_Internal();
     Hooks::ObstacleController();
     Hooks::BombNoteController();
 }
