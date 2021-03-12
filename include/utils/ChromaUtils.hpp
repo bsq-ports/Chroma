@@ -15,12 +15,7 @@
 namespace ChromaUtils {
     class ChromaUtilities {
     public:
-        static bool IsModInstalled(std::string mod);
-
         static std::optional<UnityEngine::Color> GetColorFromData(rapidjson::Value* data, const std::string& member = Chroma::COLOR);
-
-        // internal
-        static void SetSongCoreCapability(std::string capability, bool enabled = true);
     };
 
     inline static std::string vectorStr(UnityEngine::Vector3 vector3) {
