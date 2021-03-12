@@ -17,6 +17,8 @@
 
 #include "ChromaConfig.hpp"
 
+#include <stdlib.h>
+
 using namespace Chroma;
 using namespace QuestUI;
 
@@ -30,6 +32,10 @@ Configuration& getConfig() {
 Logger& getLogger() {
     static auto* logger = new Logger(modInfo, LoggerOptions(false, true));
     return *logger;
+}
+
+void setChromaEnv() {
+    setenv("DisableChromaReq", getChromaConfig().customColorEventsEnabled.GetValue() ? "0" : "1", true);
 }
 
 void DidActivate(HMUI::ViewController* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling){
@@ -57,7 +63,13 @@ void DidActivate(HMUI::ViewController* self, bool firstActivation, bool addedToH
 
 //        BeatSaberUI::CreateText(boolGrid->get_transform(), "Preferences.", false);
         BeatSaberUI::AddHoverHint(AddConfigValueToggle(boolGrid->get_transform(), getChromaConfig().environmentEnhancementsEnabled)->get_gameObject(),"Toggles whether Chroma should modify the environment as specified by a map.");
-        BeatSaberUI::AddHoverHint(AddConfigValueToggle(boolGrid->get_transform(), getChromaConfig().customColorEventsEnabled)->get_gameObject(),"Disables custom colors for Chroma maps");
+        BeatSaberUI::AddHoverHint(
+        BeatSaberUI::CreateToggle(boolGrid->get_transform(), getChromaConfig().customColorEventsEnabled.GetName(), getChromaConfig().customColorEventsEnabled.GetValue(),
+        [](bool toggle) {
+            getChromaConfig().customColorEventsEnabled.SetValue(toggle);
+            setChromaEnv();
+        })->get_gameObject(), "Disables custom colors for Chroma maps. In other words, disables Chroma");
+
         BeatSaberUI::AddHoverHint(AddConfigValueToggle(boolGrid->get_transform(), getChromaConfig().buildings)->get_gameObject(),"Disables buildings in environments");
         BeatSaberUI::AddHoverHint(AddConfigValueToggle(boolGrid->get_transform(), getChromaConfig().backColumns)->get_gameObject(),"Disables back columns in environments");
         BeatSaberUI::AddHoverHint(AddConfigValueToggle(boolGrid->get_transform(), getChromaConfig().playersPlace)->get_gameObject(),"Unknown at present");
@@ -95,4 +107,6 @@ extern "C" void load() {
     getLogger().info("Installing Chroma hooks...");
     Chroma::InstallHooks();
     getLogger().info("Installed Chroma hooks!");
+
+    setChromaEnv();
 }
