@@ -40,6 +40,7 @@ namespace Chroma {
         void NoteCutEffectSpawner();
         void Saber();
         void SaberManager();
+        void SceneManager_Internal();
         void StandardLevelScenesTransitionSetupDataSO();
         void ObstacleController();
         void BombNoteController();
