@@ -17,16 +17,25 @@
 namespace Chroma {
     class ChromaController {
     private:
-        inline static bool _ChromaIsActive = false;
+        inline static bool _ChromaLegacy = false;
 
     public:
-        static bool ChromaIsActive();
+        // Return true if Chroma should color the sabers
         static bool DoColorizerSabers();
+
+        // Return true if Chroma is required/suggested in a map
+        static bool ChromaRequired();
+
+        // Return true if Chroma hooks should run
+        static bool DoChromaHooks();
+
+
+        // Quest internal stuff
+        static void SetChromaLegacy(bool v);
+        static bool GetChromaLegacy();
 
         inline static GlobalNamespace::BeatmapObjectSpawnController* BeatmapObjectSpawnController = nullptr;
         inline static GlobalNamespace::IAudioTimeSource* IAudioTimeSource = nullptr;
-
-        static void ToggleChromaPatches(bool val);
 
         // internal
         static void OnActiveSceneChanged(UnityEngine::SceneManagement::Scene current, UnityEngine::SceneManagement::Scene _);

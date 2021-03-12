@@ -27,22 +27,8 @@ void SceneTransitionHelper::Patch(CustomBeatmapData* customBeatmapData, Override
 }
 
 bool SceneTransitionHelper::BasicPatch(CustomBeatmapData* customBeatmapData) {
-    auto& dynData = *customBeatmapData->customData->value;
-
-
-//    bool lockPosition = dynData.HasMember("_lockPosition") ? dynData["_lockPosition"].GetBool() : false;
-
-    auto& requirements = dynData.FindMember("_requirements")->value;
-    auto& suggestions = dynData.FindMember("_suggestions")->value; // List<object>)Trees.at(customBeatmapData.beatmapCustomData, "_suggestions"))?.Cast<string>();
-
-
-
-    bool chromaRequirement = (getenv("req_Chroma")) || (suggestions.HasMember("Chroma"));
-
-
-
     // please let me remove this shit
-    bool legacyOverride;
+    bool legacyOverride = false;
 
     for (int i = 0; i < customBeatmapData->beatmapEventsData->items->Length(); i++) {
         if (customBeatmapData->beatmapEventsData->items->values[i]->value >=LegacyLightHelper::RGB_INT_OFFSET)
@@ -58,11 +44,12 @@ bool SceneTransitionHelper::BasicPatch(CustomBeatmapData* customBeatmapData) {
         getLogger().warning("Please do not use Legacy Chroma for new maps as it is deprecated and its functionality in future versions of Chroma cannot be guaranteed");
     }
 
+    ChromaController::SetChromaLegacy(legacyOverride);
+
 //    ChromaController.ToggleChromaPatches((chromaRequirement || legacyOverride) && ChromaConfig.Instance.CustomColorEventsEnabled);
 
-//    ChromaController::DoColorizerSabers = chromaRequirement && getChromaConfig().customColorEventsEnabled.GetValue();
 
-    return chromaRequirement;
+    return ChromaController::ChromaRequired();
 }
 
 //void Chroma::Hooks::SceneTransitionHelper() {

@@ -34,18 +34,20 @@ using namespace custom_types::Helpers;
 
 static bool hookInstalled = false;
 
-MAKE_HOOK_OFFSETLESS(ChromaController_NoteCutEvent, void,BeatmapObjectManager* self, NoteController* noteController, NoteCutInfo* noteCutInfo) {
+MAKE_HOOK_OFFSETLESS(ChromaController_NoteCutEvent, void, BeatmapObjectManager *self, NoteController *noteController,
+                     NoteCutInfo *noteCutInfo) {
     NoteColorizer::ColorizeSaber(noteController, noteCutInfo);
     ChromaController_NoteCutEvent(self, noteController, noteCutInfo);
 }
 
-custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnController *beatmapObjectSpawnController) {
+custom_types::Helpers::Coroutine
+ChromaController::DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnController *beatmapObjectSpawnController) {
     getLogger().debug("Waiting");
-    co_yield reinterpret_cast<enumeratorT*>(CRASH_UNLESS(il2cpp_utils::New<UnityEngine::WaitForEndOfFrame*>()));
+    co_yield reinterpret_cast<enumeratorT *>(CRASH_UNLESS(il2cpp_utils::New<UnityEngine::WaitForEndOfFrame *>()));
     getLogger().debug("Waited");
 
     Chroma::ChromaController::BeatmapObjectSpawnController = beatmapObjectSpawnController;
-    auto *beatmapObjectManager = reinterpret_cast<BeatmapObjectManager*>(beatmapObjectSpawnController->beatmapObjectSpawner);
+    auto *beatmapObjectManager = reinterpret_cast<BeatmapObjectManager *>(beatmapObjectSpawnController->beatmapObjectSpawner);
     BeatmapObjectCallbackController *coreSetup = beatmapObjectSpawnController->beatmapObjectCallbackController;
     Chroma::ChromaController::IAudioTimeSource = coreSetup->audioTimeSource;
 
@@ -60,7 +62,7 @@ custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(Global
     if (getChromaConfig().lightshowModifier.GetValue()) {
         auto list = reinterpret_cast<Generic::List_1<IReadonlyBeatmapData *> *>(beatmapData->get_beatmapLinesData());
         for (int i = 0; i < list->items->Length(); i++) {
-            BeatmapLineData *b = reinterpret_cast<BeatmapLineData*>(list->items->values[i]);
+            BeatmapLineData *b = reinterpret_cast<BeatmapLineData *>(list->items->values[i]);
 
             auto beatList = Generic::List_1<BeatmapObjectData *>::New_ctor();
 
@@ -172,19 +174,9 @@ custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(Global
 }
 
 
-
-bool ChromaController::ChromaIsActive() {
-    return _ChromaIsActive;
-}
-
-void ChromaController::ToggleChromaPatches(bool val) {
-
-}
-
 void ChromaController::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene current,
                                             UnityEngine::SceneManagement::Scene _) {
-    if (strcmp(to_utf8(csstrtostr(current.get_name())).c_str(), "GameCore") != 0)
-    {
+    if (strcmp(to_utf8(csstrtostr(current.get_name())).c_str(), "GameCore") != 0) {
         LightColorizer::ClearLSEColorManagers();
         ObstacleColorizer::ClearOCColorManagers();
         BombColorizer::ClearBNCColorManagers();
@@ -193,6 +185,24 @@ void ChromaController::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene 
     }
 }
 
+bool ChromaController::ChromaRequired() {
+    // 1 is true
+    return (strcmp(getenv("req_Chroma"), "1") == 0) || (strcmp(getenv("sug_Chroma"), "1") == 0);
+}
+
 bool ChromaController::DoColorizerSabers() {
-    return getChromaConfig().customColorEventsEnabled.GetValue() && (getenv("req_Chroma"));
+    return getChromaConfig().customColorEventsEnabled.GetValue() && ChromaRequired();
+}
+
+void ChromaController::SetChromaLegacy(bool v) {
+    _ChromaLegacy = v;
+}
+
+bool ChromaController::GetChromaLegacy() {
+    return _ChromaLegacy;
+}
+
+
+bool ChromaController::DoChromaHooks() {
+    return getChromaConfig().customColorEventsEnabled.GetValue() && (_ChromaLegacy || ChromaRequired());
 }
