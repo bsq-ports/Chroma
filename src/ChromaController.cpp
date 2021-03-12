@@ -176,7 +176,8 @@ ChromaController::DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnCont
 
 void ChromaController::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene current,
                                             UnityEngine::SceneManagement::Scene _) {
-    if (strcmp(to_utf8(csstrtostr(current.get_name())).c_str(), "GameCore") != 0) {
+    ChromaController::ChromaRequiredCheck();
+    if (strcmp(to_utf8(csstrtostr(current.get_name())).c_str(), "GameCore") == 0) {
         LightColorizer::ClearLSEColorManagers();
         ObstacleColorizer::ClearOCColorManagers();
         BombColorizer::ClearBNCColorManagers();
