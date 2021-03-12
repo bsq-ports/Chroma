@@ -1,4 +1,5 @@
 #include "Chroma.hpp"
+#include "ChromaController.hpp"
 
 #include "custom-json-data/shared/CustomBeatmapData.h"
 #include "GlobalNamespace/NoteCutCoreEffectsSpawner.hpp"
@@ -16,6 +17,11 @@ using namespace UnityEngine;
 using namespace Chroma;
 
 MAKE_HOOK_OFFSETLESS(NoteCutEffectSpawner_SpawnNoteCutEffect,void,NoteCutCoreEffectsSpawner* self, UnityEngine::Vector3 pos, GlobalNamespace::NoteController* noteController, GlobalNamespace::NoteCutInfo* noteCutInfo) {
+    // Do nothing if Chroma shouldn't run
+    if (!ChromaController::DoChromaHooks()) {
+        NoteCutEffectSpawner_SpawnNoteCutEffect(self, pos, noteController, noteCutInfo);
+        return;
+    }
     NoteColorizer::EnableNoteColorOverride(noteController);
     NoteCutEffectSpawner_SpawnNoteCutEffect(self, pos, noteController, noteCutInfo);
     NoteColorizer::DisableNoteColorOverride();

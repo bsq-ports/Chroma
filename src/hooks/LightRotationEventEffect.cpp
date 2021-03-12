@@ -1,4 +1,5 @@
 #include "Chroma.hpp"
+#include "ChromaController.hpp"
 
 #include "custom-json-data/shared/CustomBeatmapData.h"
 #include "GlobalNamespace/LightRotationEventEffect.hpp"
@@ -17,6 +18,12 @@ MAKE_HOOK_OFFSETLESS(
     LightRotationEventEffect* self,
     CustomBeatmapEventData* beatmapEventData
 ) {
+    // Do nothing if Chroma shouldn't run
+    if (!ChromaController::DoChromaHooks()) {
+        LightRotationEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);
+        return;
+    }
+
     if (beatmapEventData->type == self->event) {
         bool isLeftEvent = self->event == BeatmapEventType::Event12;
 

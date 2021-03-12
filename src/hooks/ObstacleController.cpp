@@ -1,5 +1,5 @@
-
 #include "Chroma.hpp"
+#include "ChromaController.hpp"
 
 #include "colorizer/ObstacleColorizer.hpp"
 #include "custom-json-data/shared/CustomBeatmapData.h"
@@ -25,6 +25,11 @@ MAKE_HOOK_OFFSETLESS(
     float singleLineWidth,
     float height
 ) {
+    // Do nothing if Chroma shouldn't run
+    if (!ChromaController::DoChromaHooks()) {
+        ObstacleController_Init(self, obstacleData, worldRotation, startPos, midPos, endPos, move1Duration, move2Duration, singleLineWidth, height);
+        return;
+    }
     ObstacleColorizer::OCStart(self);
 
     if(obstacleData->customData && obstacleData->customData->value) {

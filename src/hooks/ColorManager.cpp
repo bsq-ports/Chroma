@@ -12,6 +12,11 @@ using namespace GlobalNamespace;
 using namespace Chroma;
 
 MAKE_HOOK_OFFSETLESS(ColorManager_ColorForType, UnityEngine::Color, GlobalNamespace::ColorManager* self, GlobalNamespace::ColorType type) {
+    // Do nothing if Chroma shouldn't run
+    if (!ChromaController::DoChromaHooks()) {
+        return ColorManager_ColorForType(self, type);
+    }
+
     if (type == ColorType::ColorA || type == ColorType::ColorB){
         auto color = NoteColorizer::getNoteColorOverride(type);
 
@@ -24,6 +29,11 @@ MAKE_HOOK_OFFSETLESS(ColorManager_ColorForType, UnityEngine::Color, GlobalNamesp
 }
 
 MAKE_HOOK_OFFSETLESS(ColorManager_ColorForSaberType, UnityEngine::Color, GlobalNamespace::ColorManager* self, GlobalNamespace::SaberType type) {
+    // Do nothing if Chroma shouldn't run
+    if (!ChromaController::DoChromaHooks()) {
+        return ColorManager_ColorForSaberType(self, type);
+    }
+
     auto color = SaberColorizer::SaberColorOverride[(int)type];
     if (color)
     {
@@ -34,6 +44,11 @@ MAKE_HOOK_OFFSETLESS(ColorManager_ColorForSaberType, UnityEngine::Color, GlobalN
 }
 
 MAKE_HOOK_OFFSETLESS(ColorManager_EffectsColorForSaberType, UnityEngine::Color, GlobalNamespace::ColorManager* self, GlobalNamespace::SaberType type) {
+    // Do nothing if Chroma shouldn't run
+    if (!ChromaController::DoChromaHooks()) {
+        return ColorManager_EffectsColorForSaberType(self, type);
+    }
+
     auto color = self->ColorForSaberType(type);
 
     float h;

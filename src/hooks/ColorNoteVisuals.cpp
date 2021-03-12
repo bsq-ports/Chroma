@@ -9,6 +9,12 @@ using namespace GlobalNamespace;
 using namespace Chroma;
 
 MAKE_HOOK_OFFSETLESS(ColorNoteVisuals_HandleNoteControllerDidInit, void, ColorNoteVisuals* self, NoteController* noteController) {
+    // Do nothing if Chroma shouldn't run
+    if (!ChromaController::DoChromaHooks()) {
+        ColorNoteVisuals_HandleNoteControllerDidInit(self, noteController);
+        return;
+    }
+
     NoteColorizer::CNVStart(self, noteController);
 
 

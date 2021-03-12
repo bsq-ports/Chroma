@@ -1,5 +1,5 @@
-
 #include "Chroma.hpp"
+#include "ChromaController.hpp"
 
 #include "colorizer/BombColorizer.hpp"
 #include "custom-json-data/shared/CustomBeatmapData.h"
@@ -24,6 +24,12 @@ MAKE_HOOK_OFFSETLESS(
     float jumpDuration,
     float jumpGravity
 ) {
+    // Do nothing if Chroma shouldn't run
+    if (!ChromaController::DoChromaHooks()) {
+        BombNoteController_Init(self, noteData, worldRotation, moveStartPos, moveEndPos, jumpEndPos, moveDuration, jumpDuration, jumpGravity);
+        return;
+    }
+
     BombColorizer::BNCStart(self);
 
     std::optional<UnityEngine::Color> color = std::nullopt;

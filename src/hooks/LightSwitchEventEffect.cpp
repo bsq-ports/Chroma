@@ -1,4 +1,5 @@
 #include "Chroma.hpp"
+#include "ChromaController.hpp"
 
 #include <vector>
 #include <optional>
@@ -34,6 +35,12 @@ custom_types::Helpers::Coroutine WaitThenStart(LightSwitchEventEffect *instance,
 }
 
 MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_Start, void, LightSwitchEventEffect* self) {
+    // Do nothing if Chroma shouldn't run
+    if (!ChromaController::DoChromaHooks()) {
+        LightSwitchEventEffect_Start(self);
+        return;
+    }
+
     auto* coro = custom_types::Helpers::CoroutineHelper::New(WaitThenStart(self, self->event));
 
     self->StartCoroutine(reinterpret_cast<IEnumerator*>(coro));
@@ -42,6 +49,12 @@ MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_Start, void, LightSwitchEventEffect*
 }
 
 MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_SetColor, void, LightSwitchEventEffect* self, UnityEngine::Color color) {
+    // Do nothing if Chroma shouldn't run
+    if (!ChromaController::DoChromaHooks()) {
+        LightSwitchEventEffect_SetColor(self, color);
+        return;
+    }
+
     if (OverrideLightWithIdActivation){
         auto lights = OverrideLightWithIdActivation.value();
         for (auto & light : lights){
@@ -53,6 +66,12 @@ MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_SetColor, void, LightSwitchEventEffe
 }
 
 MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger, void, LightSwitchEventEffect* self, CustomBeatmapEventData* beatmapEventData) {
+    // Do nothing if Chroma shouldn't run
+    if (!ChromaController::DoChromaHooks()) {
+        LightSwitchEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);
+        return;
+    }
+
     if (beatmapEventData->type == self->event) {
         LightColorManager::ColorLightSwitch(self, beatmapEventData);
     }
