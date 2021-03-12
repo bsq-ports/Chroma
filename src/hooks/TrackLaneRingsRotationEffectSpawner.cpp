@@ -110,7 +110,7 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCall
 
             auto nameFilter = dynData->FindMember(NAMEFILTER);
             if (nameFilter != dynData->MemberEnd() &&
-                ChromaUtilities::stringCompare(selfName, nameFilter->value.GetString()) == 0) {
+                stringCompare(selfName, nameFilter->value.GetString()) == 0) {
                 getLogger().debug("Name filter ignored");
                 doReturn = false;
 
