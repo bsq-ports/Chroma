@@ -183,6 +183,12 @@ ChromaController::DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnCont
             getChromaConfig().environmentEnhancementsEnabled.GetValue()) {
             // Spaghetti code below until I can figure out a better way of doing this
             auto &dynData = *customBeatmap->customData->value;
+            getLogger().debug("Environment removal time");
+            PrintJSONValue(dynData);
+
+            // TODO: Ok here's the problem, this
+            // is getting the custom data of the Expert+ data
+            // I'm guessing we need info.dat somehow
             auto objectsToKill = dynData.FindMember(ENVIRONMENTREMOVAL);
             if (objectsToKill != dynData.MemberEnd()) {
                 auto gameObjects = Resources::FindObjectsOfTypeAll<GameObject *>();
@@ -194,10 +200,12 @@ ChromaController::DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnCont
                         for (int i = 0; i < gameObjects->Length(); i++) {
                             UnityEngine::GameObject *n = gameObjects->values[i];
 
-                            if (to_utf8(csstrtostr(n->get_name())).find(s) != std::string::npos) {
-                                if (strcmp(s, "TrackLaneRing") == 0 || strcmp(s, "Big") == 0)
+                            auto nName = to_utf8(csstrtostr(n->get_name()));
+                            if (nName.find(s) != std::string::npos) {
+                                if (strcmp(s, "TrackLaneRing") == 0 && nName.find("Big") != std::string::npos)
                                     continue;
 
+                                getLogger().debug("Setting %s to disabled", nName.c_str());
                                 n->SetActive(false);
                             }
                         }
@@ -208,15 +216,16 @@ ChromaController::DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnCont
 
                             auto gStr = to_utf8(csstrtostr(n->get_name()));
 
-                            auto sceneEnvironment = n->get_scene().get_name() != nullptr &&
-                                                    to_utf8(csstrtostr(n->get_scene().get_name())).find(
-                                                            "Environment");
+                            std::string sceneName = n->get_scene().get_name() ? to_utf8(csstrtostr(n->get_scene().get_name())) : "";
 
-                            auto sceneMenu = n->get_scene().get_name() != nullptr &&
-                                             to_utf8(csstrtostr(n->get_scene().get_name())).find(
-                                                     "Menu");
+                            auto sceneEnvironment = !sceneName.empty() &&
+                                                    sceneName.find("Environment") != std::string::npos;
+
+                            auto sceneMenu = !sceneName.empty() &&
+                                             sceneName.find("Menu") != std::string::npos;
 
                             if (gStr.find(s) != std::string::npos && sceneEnvironment && sceneMenu) {
+                                getLogger().debug("Setting %s to disabled else check", gStr.c_str());
                                 n->SetActive(false);
                             }
                         }
