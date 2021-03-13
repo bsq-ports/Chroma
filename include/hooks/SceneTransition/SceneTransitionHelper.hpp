@@ -9,6 +9,6 @@ namespace Chroma {
     public:
         static void Patch(CustomJSONData::CustomBeatmapData* difficultyBeatmap);
         static void Patch(CustomJSONData::CustomBeatmapData* difficultyBeatmap, GlobalNamespace::OverrideEnvironmentSettings*& overrideEnvironmentSettings);
-        static bool BasicPatch(CustomJSONData::CustomBeatmapData* customBeatmapData);
+        static bool BasicPatch(GlobalNamespace::BeatmapData* customBeatmapData);
     };
 }

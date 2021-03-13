@@ -29,11 +29,9 @@ MAKE_HOOK_OFFSETLESS(StandardLevelScenesTransitionSetupDataSO_Init,void,Standard
                      GlobalNamespace::ColorScheme* overrideColorScheme, GlobalNamespace::GameplayModifiers* gameplayModifiers,
                      GlobalNamespace::PlayerSpecificSettings* playerSpecificSettings, GlobalNamespace::PracticeSettings* practiceSettings,
                      ::Il2CppString* backButtonText, bool useTestNoteCutSoundEffects) {
-
-    if (difficultyBeatmap->customData && difficultyBeatmap->customData->value) {
-        SceneTransitionHelper::Patch(difficultyBeatmap, overrideEnvironmentSettings);
-    }
-    StandardLevelScenesTransitionSetupDataSO_Init(self, gameMode, difficultyBeatmap, overrideEnvironmentSettings,
+    auto settings = overrideEnvironmentSettings;
+    SceneTransitionHelper::Patch(difficultyBeatmap, settings);
+    StandardLevelScenesTransitionSetupDataSO_Init(self, gameMode, difficultyBeatmap, settings,
                                                   overrideColorScheme, gameplayModifiers,
                                                   playerSpecificSettings, practiceSettings, backButtonText,
                                                   useTestNoteCutSoundEffects);
