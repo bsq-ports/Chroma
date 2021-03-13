@@ -63,7 +63,8 @@ void ObstacleColorizer::SetAllActiveColors() {
 }
 
 void ObstacleColorizer::ClearOCColorManagers() {
-    ResetAllObstacleColors();
+    // TODO: Should we do this?
+    //    ResetAllObstacleColors();
     _ocColorManagers.clear();
 }
 
@@ -126,6 +127,8 @@ void OCColorManager::ResetGlobal() {
 }
 
 void OCColorManager::Reset() {
+    if (!_color) return;
+
     if (_globalColor)
     {
         _color->SetColor(_globalColor.value());
@@ -136,14 +139,14 @@ void OCColorManager::Reset() {
     }
 }
 
-void OCColorManager::SetObstacleColor(std::optional<UnityEngine::Color> color) {
+void OCColorManager::SetObstacleColor(std::optional<UnityEngine::Color> color) const {
     if (color)
     {
         _color->SetColor(color.value());
     }
 }
 
-void OCColorManager::SetActiveColors() {
+void OCColorManager::SetActiveColors() const {
     ParametricBoxFrameController* obstacleFrame = _stretchableObstacle->obstacleFrame;
     ParametricBoxFakeGlowController* obstacleFakeGlow = _stretchableObstacle->obstacleFakeGlow;
     Array<MaterialPropertyBlockController *> *materialPropertyBlockControllers = _stretchableObstacle->materialPropertyBlockControllers;

@@ -198,7 +198,7 @@ namespace Chroma {
         return lsecm;
     }
 
-    void LSEColorManager::Reset() {
+    void LSEColorManager::Reset() const {
         _lightColor0->SetColor(_lightColor0_Original);
         _lightColor1->SetColor(_lightColor1_Original);
         if (_supportBoostColor) {
@@ -210,7 +210,7 @@ namespace Chroma {
     void LSEColorManager::SetLightingColors(std::optional<UnityEngine::Color> Color0,
                                             std::optional<UnityEngine::Color> Color1,
                                             std::optional<UnityEngine::Color> Color0Boost,
-                                            std::optional<UnityEngine::Color> Color1Boost) {
+                                            std::optional<UnityEngine::Color> Color1Boost) const {
         if (Color0) {
             _lightColor0->SetColor(Color0.value());
         }

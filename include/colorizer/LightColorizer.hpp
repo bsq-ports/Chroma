@@ -75,11 +75,11 @@ DECLARE_CLASS_CODEGEN(Chroma, LSEColorManager, Il2CppObject,
 
                               static LSEColorManager *CreateLSEColorManager(UnityEngine::MonoBehaviour *lse, GlobalNamespace::BeatmapEventType type);
 
-                              void Reset();
+                              void Reset() const;
 
 
                               void SetLightingColors(std::optional<UnityEngine::Color> Color0, std::optional<UnityEngine::Color> Color1,
-                              std::optional<UnityEngine::Color> Color0Boost = std::nullopt, std::optional<UnityEngine::Color> Color1Boost = std::nullopt);
+                              std::optional<UnityEngine::Color> Color0Boost = std::nullopt, std::optional<UnityEngine::Color> Color1Boost = std::nullopt) const;
 
                               void SetLastValue(int value);
 

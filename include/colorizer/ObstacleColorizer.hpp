@@ -25,9 +25,10 @@ DECLARE_CLASS_CODEGEN(Chroma, OCColorManager, Il2CppObject,
                               static OCColorManager* CreateOCColorManager(GlobalNamespace::ObstacleController* oc);
                               static void SetGlobalObstacleColor(std::optional<UnityEngine::Color> color);
                               static void ResetGlobal();
-                              void Reset();
-                              void SetObstacleColor(std::optional<UnityEngine::Color> color);
-                              void SetActiveColors();
+                              void SetObstacleColor(std::optional<UnityEngine::Color> color) const;
+                              void SetActiveColors() const;
+
+                              DECLARE_METHOD(void, Reset);
 
                               DECLARE_INSTANCE_FIELD(GlobalNamespace::SimpleColorSO*, _color);
                               DECLARE_INSTANCE_FIELD(GlobalNamespace::StretchableObstacle*, _stretchableObstacle);
