@@ -1,3 +1,4 @@
+#include "ChromaController.hpp"
 #include "main.hpp"
 #include "Chroma.hpp"
 #include "GlobalNamespace/TrackLaneRingsRotationEffect.hpp"
@@ -5,8 +6,11 @@
 using namespace Chroma;
 
 MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffect_Start, void, GlobalNamespace::TrackLaneRingsRotationEffect* self) {
-    // TODO: Make this ONLY run with Chroma maps
-    // Essentially, here we cancel it. DO NOT call it
+    // Essentially, here we cancel the original method. DO NOT call it IF it's a Chroma map
+    if (!ChromaController::DoChromaHooks()) {
+        TrackLaneRingsRotationEffect_Start(self);
+        return;
+    }
 
 }
 

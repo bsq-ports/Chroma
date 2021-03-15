@@ -8,6 +8,7 @@
 #include "UnityEngine/GameObject.hpp"
 #include "custom-json-data/shared/CustomBeatmapData.h"
 #include <cstring>
+#include "ChromaController.hpp"
 
 using namespace Chroma;
 using namespace CustomJSONData;
@@ -16,6 +17,11 @@ using namespace UnityEngine;
 using namespace ChromaUtils;
 
 MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffectSpawner_Start, void, GlobalNamespace::TrackLaneRingsRotationEffectSpawner* self) {
+    if (!ChromaController::DoChromaHooks()) {
+        TrackLaneRingsRotationEffectSpawner_Start(self);
+        return;
+    }
+
     auto* oldRotationEffect = self->trackLaneRingsRotationEffect;
     getLogger().debug("Adding component");
     auto newRotationEffect = oldRotationEffect->get_gameObject()->AddComponent<ChromaRingsRotationEffect*>();
@@ -72,7 +78,12 @@ void origHandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(GlobalNames
     self->trackLaneRingsRotationEffect->AddRingRotationEffect(self->trackLaneRingsRotationEffect->GetFirstRingRotationAngle() + self->rotation * (float)((UnityEngine::Random::get_value() < 0.5f) ? 1 : -1), step, self->rotationPropagationSpeed, self->rotationFlexySpeed);
 }
 
-MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger, void, GlobalNamespace::TrackLaneRingsRotationEffectSpawner* self, CustomJSONData::CustomBeatmapEventData* beatmapEventData) {
+MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger, void, GlobalNamespace::TrackLaneRingsRotationEffectSpawner* self,
+                     CustomJSONData::CustomBeatmapEventData* beatmapEventData) {
+    if (!ChromaController::DoChromaHooks()) {
+        TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);
+        return;
+    }
 
     // We use this since using return; will cause the method to stop running which is not ideal here
     bool doReturn = true;

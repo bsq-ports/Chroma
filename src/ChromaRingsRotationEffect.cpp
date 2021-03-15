@@ -9,13 +9,11 @@ DEFINE_CLASS(ChromaRingsRotationEffect);
 DEFINE_CLASS(ChromaRotationEffect);
 
 void ChromaRingsRotationEffect::AddRingRotationEffect(float angle, float step, int propagationSpeed, float flexySpeed) {
-    getLogger().debug("Doing ring rotations now");
     AddRingRotationEffectF(angle, step, (float) propagationSpeed, flexySpeed);
 }
 
 void ChromaRingsRotationEffect::AddRingRotationEffectF(float angle, float step, float propagationSpeed,
                                                        float flexySpeed) {
-    getLogger().debug("Adding ring effect");
     ChromaRotationEffect* ringRotationEffect = ChromaRingsRotationEffect::SpawnRingRotationEffect();
     ringRotationEffect->ProgressPos = 0;
     ringRotationEffect->RotationAngle = angle;
@@ -27,13 +25,11 @@ void ChromaRingsRotationEffect::AddRingRotationEffectF(float angle, float step, 
 
 void ChromaRingsRotationEffect::CopyValues(
         GlobalNamespace::TrackLaneRingsRotationEffect *trackLaneRingsRotationEffect) {
-    getLogger().debug("Copying values");
     _trackLaneRingsManager = trackLaneRingsRotationEffect->trackLaneRingsManager;
     _startupRotationAngle = trackLaneRingsRotationEffect->startupRotationAngle;
     _startupRotationStep = trackLaneRingsRotationEffect->startupRotationStep;
     _startupRotationPropagationSpeed = trackLaneRingsRotationEffect->startupRotationPropagationSpeed;
     _startupRotationFlexySpeed = trackLaneRingsRotationEffect->startupRotationFlexySpeed;
-    getLogger().debug("Copied values");
 }
 
 void ChromaRingsRotationEffect::Awake() {
@@ -54,18 +50,13 @@ void ChromaRingsRotationEffect::Start() {
 void ChromaRingsRotationEffect::FixedUpdate() {
     auto rings = _trackLaneRingsManager->rings;
 
-//    getLogger().debug("Doing ring stuff %d pool %d", _activeRingRotationEffects.size(), _ringRotationEffectsPool.size());
-
     // Use this vector avoid deleting to the original vector while iterating through it
-    std::vector<std::vector<ChromaRotationEffect *>::iterator> iteratorsToDelete;
 
-    auto random = std::chrono::system_clock::now();
-    for (auto it = _activeRingRotationEffects.begin(); it != _activeRingRotationEffects.end(); it++) {
+    for (auto it = _activeRingRotationEffects.rbegin(); it != _activeRingRotationEffects.rend(); it++) {
         ChromaRotationEffect *ringRotationEffect = *it;
         int num = (int) ringRotationEffect->ProgressPos;
         ringRotationEffect->ProgressPos += ringRotationEffect->RotationPropagationSpeed;
         while ((float) num < ringRotationEffect->ProgressPos && num < rings->Length()) {
-            getLogger().debug("While loop %d", random);
             rings->values[num]->SetDestRotation(
                     ringRotationEffect->RotationAngle + ((float) num * ringRotationEffect->RotationStep),
                     ringRotationEffect->RotationFlexySpeed);
@@ -73,18 +64,10 @@ void ChromaRingsRotationEffect::FixedUpdate() {
         }
 
         if ((int) ringRotationEffect->ProgressPos >= rings->Length()) {
-            getLogger().debug("While loop %d", random);
             RecycleRingRotationEffect(ringRotationEffect);
-            iteratorsToDelete.push_back(it);
+            _activeRingRotationEffects.erase(std::next(it).base());
         }
     }
-
-    if (!iteratorsToDelete.empty())
-        for (auto &it : iteratorsToDelete) {
-            _activeRingRotationEffects.erase(it);
-        }
-
-    getLogger().debug("Ended fixed update");
 }
 
 ChromaRotationEffect* ChromaRingsRotationEffect::SpawnRingRotationEffect() {
