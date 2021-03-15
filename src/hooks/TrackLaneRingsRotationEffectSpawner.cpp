@@ -47,8 +47,11 @@ void TriggerRotation(
         float rotationPropagationSpeed,
         float rotationFlexySpeed)
 {
-    getLogger().debug("DOING TRIGGER ROTATION");
-    reinterpret_cast<ChromaRingsRotationEffect*>(trackLaneRingsRotationEffect)->AddRingRotationEffectF(trackLaneRingsRotationEffect->GetFirstRingDestinationRotationAngle() + (rotation * (rotRight ? -1.0f : 1.0f)), rotationStep, rotationPropagationSpeed, rotationFlexySpeed);
+    getLogger().debug("DOING TRIGGER ROTATION %s", trackLaneRingsRotationEffect->klass->name);
+
+    auto chromaRingRotation = reinterpret_cast<ChromaRingsRotationEffect*>(trackLaneRingsRotationEffect);
+
+    chromaRingRotation->AddRingRotationEffectF(chromaRingRotation->GetFirstRingDestinationRotationAngle() + (rotation * (rotRight ? -1.0f : 1.0f)), rotationStep, rotationPropagationSpeed, rotationFlexySpeed);
 }
 
 

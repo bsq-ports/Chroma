@@ -91,5 +91,9 @@ void ChromaRingsRotationEffect::RecycleRingRotationEffect(ChromaRotationEffect* 
 }
 
 float ChromaRingsRotationEffect::GetFirstRingRotationAngle() {
+    return _trackLaneRingsManager->rings->values[0]->GetRotation();
+}
+
+float ChromaRingsRotationEffect::GetFirstRingDestinationRotationAngle() {
     return _trackLaneRingsManager->rings->values[0]->GetDestinationRotation();
 }

@@ -53,6 +53,7 @@ public:
         DECLARE_METHOD(void, CopyValues, GlobalNamespace::TrackLaneRingsRotationEffect* trackLaneRingsRotationEffect);
 
         DECLARE_METHOD(float, GetFirstRingRotationAngle);
+        DECLARE_METHOD(float, GetFirstRingDestinationRotationAngle);
 
         DECLARE_METHOD(void, AddRingRotationEffectF, float angle, float step, float propagationSpeed, float flexySpeed);
         DECLARE_METHOD(void, AddRingRotationEffect, float angle, float step, int propagationSpeed, float flexySpeed);
@@ -83,5 +84,6 @@ public:
             REGISTER_METHOD(SpawnRingRotationEffect);
             REGISTER_METHOD(RecycleRingRotationEffect);
             REGISTER_METHOD(GetFirstRingRotationAngle);
+            REGISTER_METHOD(GetFirstRingDestinationRotationAngle);
         )
 )
