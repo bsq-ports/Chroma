@@ -79,8 +79,4 @@ namespace Chroma {
     inline const std::string ROTATION = "_rotation";
 
     void InstallHooks();
-
-    // TODO: Implement this so both hooks use this to run their code on
-    //  Chroma maps and set it if the map has Chroma as suggestion or requirement.
-    inline bool UseHooks = true;
 }
