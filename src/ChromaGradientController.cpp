@@ -95,7 +95,7 @@ UnityEngine::Color lerpUnclamped(UnityEngine::Color a, UnityEngine::Color b, flo
     return UnityEngine::Color(a.r + (b.r - a.r) * t, a.g + (b.g - a.g) * t, a.b + (b.b - a.b) * t, a.a + (b.a - a.a) * t);
 }
 
-UnityEngine::Color Chroma::ChromaGradientEvent::Interpolate() {
+UnityEngine::Color Chroma::ChromaGradientEvent::Interpolate() const {
     float normalTime = ChromaController::IAudioTimeSource->get_songTime() - _start;
     if (normalTime < 0)
     {

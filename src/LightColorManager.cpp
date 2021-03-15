@@ -69,7 +69,7 @@ void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, C
                     }
                 }
 
-                if (dynData && dynData->HasMember("_propID")) {
+                if (dynData->HasMember("_propID")) {
                     getLogger().debug("JSON data 3");
                     rapidjson::Value &propIDData = dynData->FindMember("_propID")->value;
 

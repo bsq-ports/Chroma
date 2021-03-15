@@ -76,7 +76,7 @@ MAKE_HOOK_OFFSETLESS(
 //    if (beatmapEventData->customData && beatmapEventData->customData->value) {
 
     bool isCustomData = beatmapEventData->customData && beatmapEventData->customData->value;
-    rapidjson::Value *dynData = isCustomData ? beatmapEventData->customData->value : nullptr;
+    auto dynData = isCustomData ? beatmapEventData->customData->value : nullptr;
 
 
 

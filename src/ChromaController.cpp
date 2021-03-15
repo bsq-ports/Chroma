@@ -190,7 +190,22 @@ ChromaController::DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnCont
             // is getting the custom data of the Expert+ data
             // I'm guessing we need info.dat somehow
             auto objectsToKill = dynData.FindMember(ENVIRONMENTREMOVAL);
-            if (objectsToKill != dynData.MemberEnd()) {
+
+
+            // TODO: This is essentially trying to create a value
+            // and add "GradientBackground" at all times. We should probably make a method for this instead
+            auto alloc = new rapidjson::MemoryPoolAllocator();
+            if (objectsToKill == dynData.MemberEnd()) {
+                rapidjson::Value v(rapidjson::StringRef(ENVIRONMENTREMOVAL.c_str()));
+                v.SetObject();
+                dynData.AddMember(rapidjson::StringRef(ENVIRONMENTREMOVAL), v, *alloc);
+                v.PushBack("GradientBackground", *alloc);
+                objectsToKill = dynData.FindMember(ENVIRONMENTREMOVAL);
+            } else {
+                objectsToKill->value.PushBack("GradientBackground", *alloc);
+            }
+
+            if (objectsToKill != dynData.MemberEnd() && !objectsToKill->value.Empty()) {
                 auto gameObjects = Resources::FindObjectsOfTypeAll<GameObject *>();
 
                 for (auto it = objectsToKill->value.MemberBegin(); it != objectsToKill->value.MemberEnd(); it++) {
@@ -252,6 +267,7 @@ ChromaController::DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnCont
 void ChromaController::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene current,
                                             UnityEngine::SceneManagement::Scene _) {
     if (strcmp(to_utf8(csstrtostr(current.get_name())).c_str(), "GameCore") == 0) {
+        ChromaController::SetChromaLegacy(false);
         LightColorizer::ClearLSEColorManagers();
         ObstacleColorizer::ClearOCColorManagers();
         BombColorizer::ClearBNCColorManagers();
@@ -282,5 +298,5 @@ bool ChromaController::GetChromaLegacy() {
 
 
 bool ChromaController::DoChromaHooks() {
-    return getChromaConfig().customColorEventsEnabled.GetValue() && (true || _ChromaLegacy || ChromaRequired());
+    return getChromaConfig().customColorEventsEnabled.GetValue() && (_ChromaLegacy || ChromaRequired());
 }

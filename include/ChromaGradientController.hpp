@@ -28,7 +28,7 @@ namespace Chroma {
 
         ChromaGradientEvent(UnityEngine::Color initcolor, UnityEngine::Color endcolor, float start, float duration, GlobalNamespace::BeatmapEventType eventType, ChromaUtils::Functions easing = ChromaUtils::Functions::easeLinear);
 
-        UnityEngine::Color Interpolate();
+        UnityEngine::Color Interpolate() const;
     };
 
     // internal
