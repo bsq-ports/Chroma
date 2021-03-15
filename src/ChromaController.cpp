@@ -25,6 +25,11 @@
 #include "LegacyLightHelper.hpp"
 #include "custom-types/shared/coroutine.hpp"
 
+#include "UnityEngine/Resources.hpp"
+
+#include "Chroma.hpp"
+#include "utils/ChromaUtils.hpp"
+
 #include <vector>
 
 using namespace Chroma;

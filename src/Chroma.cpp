@@ -11,8 +11,10 @@ void Chroma::InstallHooks() {
     Hooks::NoteCutEffectSpawner();
     Hooks::Saber();
     Hooks::SaberManager();
-    Hooks::StandardLevelScenesTransitionSetupDataSO();
     Hooks::SceneManager_Internal();
+    Hooks::StandardLevelScenesTransitionSetupDataSO();
     Hooks::ObstacleController();
     Hooks::BombNoteController();
+    Hooks::TrackLaneRingsRotationEffect();
+    Hooks::TrackLaneRingsRotationEffectSpawner();
 }
