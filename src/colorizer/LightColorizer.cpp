@@ -172,12 +172,26 @@ namespace Chroma {
                     list.push_back(light);
 
                     lightsPreGroup[z] = list;
+
                 }
+            }
+
+
+            std::unordered_map<int, std::vector<ILightWithId *>> lightsPreGroupFinal;
+
+            int i = 0;
+
+            auto it = lightsPreGroup.begin();
+            while (it != lightsPreGroup.end()) {
+                getLogger().debug("Doing the final grouping, prop id %d", i);
+                lightsPreGroupFinal[i] = it->second;
+                i++;
+                it++;
             }
 
             getLogger().debug("Done grouping, size %d", lightsPreGroup.size());
 
-            LightsPropagationGrouped = lightsPreGroup;
+            LightsPropagationGrouped = lightsPreGroupFinal;
         }
     }
 

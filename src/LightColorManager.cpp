@@ -45,7 +45,7 @@ void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, C
 
                             overrideLights.push_back(lights[lightIdLong]);
 
-                            OverrideLightWithIdActivation = std::make_optional(overrideLights);
+                            LightSwitchEventEffectHolder::OverrideLightWithIdActivation = std::make_optional(overrideLights);
                         }
                     } else {
                         // It's a list
@@ -65,7 +65,7 @@ void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, C
                             }
                         }
 
-                        OverrideLightWithIdActivation = std::make_optional(overrideLights);
+                        LightSwitchEventEffectHolder::OverrideLightWithIdActivation = std::make_optional(overrideLights);
                     }
                 }
 
@@ -82,10 +82,12 @@ void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, C
 
                     if (propIDData.IsInt64() || propIDData.IsInt()) {
                         auto propIdLong = propIDData.GetInt();
+                        getLogger().debug("It is an int prop %d %d", lightCount, propIdLong);
                         if (lightCount > propIdLong) {
-                            OverrideLightWithIdActivation = std::make_optional(lights[propIdLong]);
+                            LightSwitchEventEffectHolder::OverrideLightWithIdActivation = std::make_optional(lights[propIdLong]);
                         }
                     } else {
+                        getLogger().debug("It is a list prop");
                         // It's a list
                         auto propIDobjects = propIDData.GetObject();
                         std::vector<int> propIDArray;
@@ -105,7 +107,7 @@ void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, C
                             }
                         }
 
-                        OverrideLightWithIdActivation = std::make_optional(overrideLights);
+                        LightSwitchEventEffectHolder::OverrideLightWithIdActivation = std::make_optional(overrideLights);
                     }
                 }
 

@@ -26,6 +26,8 @@ using namespace UnityEngine;
 using namespace System::Collections;
 using namespace custom_types::Helpers;
 
+std::optional<std::vector<GlobalNamespace::ILightWithId *>> LightSwitchEventEffectHolder::OverrideLightWithIdActivation = std::nullopt;
+
 custom_types::Helpers::Coroutine WaitThenStart(LightSwitchEventEffect *instance, BeatmapEventType eventType) {
     CRASH_UNLESS(instance);
     co_yield reinterpret_cast<IEnumerator*>(CRASH_UNLESS(WaitForEndOfFrame::New_ctor()));
@@ -55,11 +57,15 @@ MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_SetColor, void, LightSwitchEventEffe
         return;
     }
 
-    if (OverrideLightWithIdActivation){
-        auto lights = OverrideLightWithIdActivation.value();
+    if (LightSwitchEventEffectHolder::OverrideLightWithIdActivation){
+        auto lights = LightSwitchEventEffectHolder::OverrideLightWithIdActivation.value();
+        getLogger().debug("Override light activation time %d", lights.size());
         for (auto & light : lights){
+            if (!light) continue;
+            getLogger().debug("Setting light %d", light->get_lightId());
             light->ColorWasSet(color);
         }
+        return;
     } else {
         LightSwitchEventEffect_SetColor(self, color);
     }
@@ -78,7 +84,7 @@ MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_HandleBeatmapObjectCallbackControlle
 
     LightSwitchEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);
 
-    OverrideLightWithIdActivation = std::nullopt;
+    LightSwitchEventEffectHolder::OverrideLightWithIdActivation = std::nullopt;
 }
 
 void Chroma::Hooks::LightSwitchEventEffect() {
