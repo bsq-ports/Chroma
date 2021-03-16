@@ -13,6 +13,10 @@ Core Chroma Mod for Quest
 - [ ] Noodle Support
 - [x] ~~Bomb and obstacle coloring~~ Implemented in [1f41a9ca](https://github.com/nyamimi/Chroma/commit/1f41a9ca80a5f44d15e4aa08e17f8dbcd9ef07a1)
 - [ ] Add multiplayer scene hooks
+- [ ] Add `info.dat` environment removal support
+- [ ] CJD Gc bugs
+- [ ] Fix ChromaLite support
+- [ ] Optimize wherever possible
 
 ## Credits and thank you
 
