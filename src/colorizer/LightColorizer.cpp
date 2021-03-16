@@ -140,9 +140,13 @@ namespace Chroma {
 
             auto lightList = lse->lightManager->lights->values[lse->lightsID];
             Array<ILightWithId *> *lightArray = lightList->items;
-            ILightWithId **ptrArray = lightArray->values;
 
-            Lights = std::vector<ILightWithId *>(ptrArray, ptrArray + ((int) lightList->get_Count()));
+            Lights = std::vector<ILightWithId *>(lightArray->Length());
+
+            for (int i = 0; i < lightList->get_Count(); i++) {
+                auto l = lightArray->values[i];
+                Lights.push_back(l);
+            }
 
             std::unordered_map<int, std::vector<ILightWithId *>> lightsPreGroup;
             for (auto& light : Lights) {
@@ -160,7 +164,7 @@ namespace Chroma {
                     // Not found
                     if (lightsPreGroup.find(z) == lightsPreGroup.end()) {
                         list = {};
-                    } else lightsPreGroup[z];
+                    } else list = lightsPreGroup[z];
 
                     list.push_back(light);
 
