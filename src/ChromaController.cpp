@@ -194,15 +194,18 @@ ChromaController::DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnCont
 
             // TODO: This is essentially trying to create a value
             // and add "GradientBackground" at all times. We should probably make a method for this instead
-            auto alloc = new rapidjson::MemoryPoolAllocator();
-            if (objectsToKill == dynData.MemberEnd()) {
-                rapidjson::Value v(rapidjson::StringRef(ENVIRONMENTREMOVAL.c_str()));
-                v.SetObject();
-                dynData.AddMember(rapidjson::StringRef(ENVIRONMENTREMOVAL), v, *alloc);
-                v.PushBack("GradientBackground", *alloc);
-                objectsToKill = dynData.FindMember(ENVIRONMENTREMOVAL);
-            } else {
-                objectsToKill->value.PushBack("GradientBackground", *alloc);
+            // TODO: Remove this if once this actually gets fixed
+            if (false) {
+                auto alloc = new rapidjson::MemoryPoolAllocator();
+                if (objectsToKill == dynData.MemberEnd()) {
+                    rapidjson::Value v(rapidjson::StringRef(ENVIRONMENTREMOVAL.c_str()));
+                    v.SetObject();
+                    dynData.AddMember(rapidjson::StringRef(ENVIRONMENTREMOVAL), v, *alloc);
+                    v.PushBack("GradientBackground", *alloc);
+                    objectsToKill = dynData.FindMember(ENVIRONMENTREMOVAL);
+                } else {
+                    objectsToKill->value.PushBack("GradientBackground", *alloc);
+                }
             }
 
             if (objectsToKill != dynData.MemberEnd() && !objectsToKill->value.Empty()) {
