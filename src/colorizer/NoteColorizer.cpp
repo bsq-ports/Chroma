@@ -131,25 +131,19 @@ void NoteColorizer::DisableNoteColorOverride() {
 }
 
 bool MatchesColorType(SaberType saberType, ColorType colorType){
-    static_assert(sizeof(ColorType) == sizeof(int));
-    getLogger().debug("%i saber %i saberA %i colorType %i colorTypeA", saberType.value, SaberType::_get_SaberA().value, colorType.value, ColorType::_get_ColorA().value);
     return (saberType.value == SaberType::SaberA && colorType.value == ColorType::ColorA)
     || (saberType.value == SaberType::SaberB && colorType.value == ColorType::ColorB);
 }
 
 
 void NoteColorizer::ColorizeSaber(GlobalNamespace::NoteController *noteController, GlobalNamespace::NoteCutInfo *noteCutInfo) {
-    // TODO: Actually implement this
-    getLogger().debug("Coloring sabers");
     if (ChromaController::DoColorizerSabers())
         {
         NoteData* noteData = noteController->noteData;
         auto saberType = noteCutInfo->saberType;
         auto colorType = noteData->colorType;
-        getLogger().debug("Oh wait I'm actually coloring them %d vs saber %d", colorType.value, saberType.value);
         if (MatchesColorType(saberType, colorType))
         {
-            getLogger().debug("Ok now time to color");
             UnityEngine::Color color = CNVColorManager::GetCNVColorManager(noteController)->ColorForCNVManager();
 
             SaberColorizer::SetSaberColor(saberType, color);

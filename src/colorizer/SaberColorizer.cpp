@@ -40,7 +40,6 @@ std::vector<std::optional<UnityEngine::Color>> SaberColorizer::SaberColorOverrid
 
 void SaberColorizer::SetSaberColor(int saberType, std::optional<UnityEngine::Color> color) {
     for (auto& bms : SaberColorizer::BSMColorManager::GetBSMColorManager(saberType)) {
-        getLogger().debug("Coloring a saber");
         bms->SetSaberColor(color);
     }
 }
@@ -74,9 +73,7 @@ SaberColorizer::BSMColorManager::BSMColorManager(GlobalNamespace::Saber *bsm, in
 std::vector<SaberColorizer::BSMColorManager *>SaberColorizer::BSMColorManager::GetBSMColorManager(int saberType) {
     std::vector<BSMColorManager *> saberColors;
 
-    getLogger().debug("Checking all the beat saber models %d", _bsmColorManagers.size());
     for (auto& man : _bsmColorManagers) {
-        getLogger().debug("Is %d also %d", man->_saberType, saberType);
         if (man->_saberType == saberType)
             saberColors.push_back(man);
     }
@@ -119,8 +116,6 @@ void OverrideColor(SetSaberFakeGlowColor* ssfgc, UnityEngine::Color color) {
 
 
 void ChangeColorCoroutine2(Saber *instance, UnityEngine::Color color) {
-    getLogger().debug("Coloring saber model %d", (int) instance->get_saberType());
-
     auto *modelController = instance->get_gameObject()->GetComponentInChildren<SaberModelController *>(true);
 
 
@@ -141,15 +136,12 @@ void ChangeColorCoroutine2(Saber *instance, UnityEngine::Color color) {
     for (int i = 0; i < setSaberFakeGlowColors->Length(); i++) {
         OverrideColor(setSaberFakeGlowColors->values[i], color);
     }
-    getLogger().debug("Model controller klass %s", modelController->klass->name);
 
     TubeBloomPrePassLight *saberLight = modelController->saberLight;
 
 
     if (saberLight) {
         saberLight->color = color;
-    } else {
-        getLogger().debug("Saber light is null, should be normal right?");
     }
 }
 
@@ -179,7 +171,6 @@ custom_types::Helpers::Coroutine ChangeColorCoroutine(Saber *saber, UnityEngine:
             il2cpp_utils::New<UnityEngine::WaitForSecondsRealtime *>(0.05f)));
 
 
-    getLogger().debug("Change color coroutine");
     if (saber->get_isActiveAndEnabled()) {
         // In the pc version, this starts another coroutine which does the color changing
         // However, I believe we can get hopefully away without making another coroutine class since
