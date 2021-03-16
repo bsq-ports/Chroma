@@ -145,6 +145,7 @@ namespace Chroma {
 
             for (int i = 0; i < lightList->get_Count(); i++) {
                 auto l = lightArray->values[i];
+                getLogger().debug("Adding light to list");
                 Lights.push_back(l);
             }
 
@@ -152,18 +153,20 @@ namespace Chroma {
             for (auto& light : Lights) {
                 if (!light) continue;
 
-                getLogger().debug("Doing light");
-
                 auto object = reinterpret_cast<Il2CppObject *>(light);
-                if (il2cpp_functions::class_is_assignable_from(object->klass, classof(MonoBehaviour *))) {
+
+                getLogger().debug("Doing light %s", object->klass->name);
+                if (il2cpp_functions::class_is_assignable_from(classof(MonoBehaviour *), object->klass)) {
                     auto monoBehaviour = reinterpret_cast<MonoBehaviour *>(object);
                     int z = UnityEngine::Mathf::RoundToInt(monoBehaviour->get_transform()->get_position().z);
+
+                    getLogger().debug("Grouping to %d", z);
 
                     std::vector<ILightWithId *> list;
 
                     // Not found
                     if (lightsPreGroup.find(z) == lightsPreGroup.end()) {
-                        list = {};
+                        list = std::vector<ILightWithId *>();
                     } else list = lightsPreGroup[z];
 
                     list.push_back(light);
@@ -171,6 +174,8 @@ namespace Chroma {
                     lightsPreGroup[z] = list;
                 }
             }
+
+            getLogger().debug("Done grouping, size %d", lightsPreGroup.size());
 
             LightsPropagationGrouped = lightsPreGroup;
         }
