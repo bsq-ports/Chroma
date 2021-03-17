@@ -31,7 +31,6 @@ std::optional<std::vector<GlobalNamespace::ILightWithId *>> LightSwitchEventEffe
 custom_types::Helpers::Coroutine WaitThenStart(LightSwitchEventEffect *instance, BeatmapEventType eventType) {
     CRASH_UNLESS(instance);
     co_yield reinterpret_cast<IEnumerator*>(CRASH_UNLESS(WaitForEndOfFrame::New_ctor()));
-    getLogger().debug("Doing coroutine stuff yay");
     LightColorizer::LSEStart(instance, eventType);
     co_return;
 }
@@ -59,10 +58,8 @@ MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_SetColor, void, LightSwitchEventEffe
 
     if (LightSwitchEventEffectHolder::OverrideLightWithIdActivation){
         auto lights = LightSwitchEventEffectHolder::OverrideLightWithIdActivation.value();
-        getLogger().debug("Override light activation time %d", lights.size());
         for (auto & light : lights){
             if (!light) continue;
-            getLogger().debug("Setting light %d", light->get_lightId());
             light->ColorWasSet(color);
         }
         return;

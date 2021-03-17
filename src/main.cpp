@@ -95,6 +95,14 @@ extern "C" void load() {
     QuestUI::Init();
     QuestUI::Register::RegisterModSettingsViewController(modInfo, DidActivate);
 
+    // This disables the useless debug logs on the release build
+    if (!DEBUGBUILD) {
+        getLogger().DisableContext(Chroma::ChromaLogger::LightColorizer);
+        getLogger().DisableContext(Chroma::ChromaLogger::ColorLightSwitch);
+        getLogger().DisableContext(Chroma::ChromaLogger::EnvironmentRemoval);
+        getLogger().DisableContext(Chroma::ChromaLogger::TrackLaneRings);
+    }
+
     getLogger().info("Installing types...");
 
     custom_types::Register::RegisterTypes<

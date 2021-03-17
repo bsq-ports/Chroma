@@ -45,11 +45,8 @@ MAKE_HOOK_OFFSETLESS(ChromaController_NoteCutEvent, void, BeatmapObjectManager *
     ChromaController_NoteCutEvent(self, noteController, noteCutInfo);
 }
 
-custom_types::Helpers::Coroutine
-ChromaController::DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnController *beatmapObjectSpawnController) {
-    getLogger().debug("Waiting");
+custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnController *beatmapObjectSpawnController) {
     co_yield reinterpret_cast<enumeratorT *>(CRASH_UNLESS(il2cpp_utils::New<UnityEngine::WaitForEndOfFrame *>()));
-    getLogger().debug("Waited");
 
     Chroma::ChromaController::BeatmapObjectSpawnController = beatmapObjectSpawnController;
     auto *beatmapObjectManager = reinterpret_cast<BeatmapObjectManager *>(beatmapObjectSpawnController->beatmapObjectSpawner);
@@ -182,8 +179,9 @@ ChromaController::DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnCont
         if (customBeatmap->customData && customBeatmap->customData->value &&
             getChromaConfig().environmentEnhancementsEnabled.GetValue()) {
             // Spaghetti code below until I can figure out a better way of doing this
+            static auto contextLogger = getLogger().WithContext(ChromaLogger::EnvironmentRemoval);
             auto &dynData = *customBeatmap->customData->value;
-            getLogger().debug("Environment removal time");
+            contextLogger.debug("Environment removal time");
             PrintJSONValue(dynData);
 
             // TODO: Ok here's the problem, this
@@ -196,7 +194,7 @@ ChromaController::DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnCont
             // and add "GradientBackground" at all times. We should probably make a method for this instead
             // TODO: Remove this if once this actually gets fixed
             if (false) {
-                auto alloc = new rapidjson::MemoryPoolAllocator();
+                static auto alloc = new rapidjson::MemoryPoolAllocator();
                 if (objectsToKill == dynData.MemberEnd()) {
                     rapidjson::Value v(rapidjson::StringRef(ENVIRONMENTREMOVAL.c_str()));
                     v.SetObject();
@@ -223,7 +221,7 @@ ChromaController::DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnCont
                                 if (strcmp(s, "TrackLaneRing") == 0 && nName.find("Big") != std::string::npos)
                                     continue;
 
-                                getLogger().debug("Setting %s to disabled", nName.c_str());
+                                contextLogger.debug("Setting %s to disabled", nName.c_str());
                                 n->SetActive(false);
                             }
                         }
@@ -243,7 +241,7 @@ ChromaController::DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnCont
                                              sceneName.find("Menu") != std::string::npos;
 
                             if (gStr.find(s) != std::string::npos && sceneEnvironment && sceneMenu) {
-                                getLogger().debug("Setting %s to disabled else check", gStr.c_str());
+                                contextLogger.debug("Setting %s to disabled else check", gStr.c_str());
                                 n->SetActive(false);
                             }
                         }
@@ -269,6 +267,7 @@ ChromaController::DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnCont
 
 void ChromaController::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene current,
                                             UnityEngine::SceneManagement::Scene _) {
+    getLogger().debug("Clear scene");
     if (strcmp(to_utf8(csstrtostr(current.get_name())).c_str(), "GameCore") == 0) {
         ChromaController::SetChromaLegacy(false);
         LightColorizer::ClearLSEColorManagers();

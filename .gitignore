@@ -127,3 +127,5 @@ discord.xml
 misc.xml
 vcs.xml
 .name
+
+perf.data

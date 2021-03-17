@@ -91,7 +91,6 @@ void NoteColorizer::EnableNoteColorOverride(GlobalNamespace::NoteController *not
 
         if (customData->customData && customData->customData->value) {
             auto &dynData = *customData->customData->value;
-            getLogger().debug("Note color override");
 
             // TODO: Do these execute a similar or exact implementation of the PC version at
             // https://github.com/Aeroluna/Chroma/blob/e7a72f8b848c822d860361a027034218125af135/Chroma/Colorizer/NoteColorizer.cs#L71-L72
@@ -106,21 +105,6 @@ void NoteColorizer::EnableNoteColorOverride(GlobalNamespace::NoteController *not
                 NoteColorOverride[0] = std::nullopt;
                 NoteColorOverride[1] = std::nullopt;
             }
-
-//            if (dynData.MemberCount() > 0) {
-////                PrintJSONValue(dynData);
-//                NoteColorOverride[0] = ChromaUtils::ChromaUtilities::GetColorFromData(&dynData, "color0");
-//            } else {
-//                NoteColorOverride[0] = std::nullopt;
-//            }
-//
-//            if (dynData.MemberCount() > 1) {
-//                NoteColorOverride[1] = ChromaUtils::ChromaUtilities::GetColorFromData(&dynData, "color1");
-//            } else {
-//                NoteColorOverride[1] = std::nullopt;
-//            }
-
-
         }
     }
 }

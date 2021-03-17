@@ -69,7 +69,6 @@ void ObstacleColorizer::ClearOCColorManagers() {
 }
 
 void ObstacleColorizer::OCStart(GlobalNamespace::ObstacleController *oc) {
-    getLogger().debug("Create oc");
     OCColorManager::CreateOCColorManager(oc);
 }
 

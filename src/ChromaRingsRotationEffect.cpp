@@ -14,7 +14,7 @@ void ChromaRingsRotationEffect::AddRingRotationEffect(float angle, float step, i
 
 void ChromaRingsRotationEffect::AddRingRotationEffectF(float angle, float step, float propagationSpeed,
                                                        float flexySpeed) {
-    ChromaRotationEffect* ringRotationEffect = ChromaRingsRotationEffect::SpawnRingRotationEffect();
+    ChromaRotationEffect* ringRotationEffect = SpawnRingRotationEffect();
     ringRotationEffect->ProgressPos = 0;
     ringRotationEffect->RotationAngle = angle;
     ringRotationEffect->RotationStep = step;
@@ -48,24 +48,28 @@ void ChromaRingsRotationEffect::Start() {
 }
 
 void ChromaRingsRotationEffect::FixedUpdate() {
-    auto rings = _trackLaneRingsManager->rings;
+    if (!_activeRingRotationEffects.empty()) {
+        auto rings = _trackLaneRingsManager->rings;
 
-    // Use this vector avoid deleting to the original vector while iterating through it
+        // Reverse iterate so we can delete while iterating
+        for (auto it = _activeRingRotationEffects.rbegin(); it != _activeRingRotationEffects.rend(); it++) {
+            ChromaRotationEffect *ringRotationEffect = *it;
+            int num = (int) ringRotationEffect->ProgressPos;
+            auto progressPos = ringRotationEffect->ProgressPos += ringRotationEffect->RotationPropagationSpeed;
 
-    for (auto it = _activeRingRotationEffects.rbegin(); it != _activeRingRotationEffects.rend(); it++) {
-        ChromaRotationEffect *ringRotationEffect = *it;
-        int num = (int) ringRotationEffect->ProgressPos;
-        ringRotationEffect->ProgressPos += ringRotationEffect->RotationPropagationSpeed;
-        while ((float) num < ringRotationEffect->ProgressPos && num < rings->Length()) {
-            rings->values[num]->SetDestRotation(
-                    ringRotationEffect->RotationAngle + ((float) num * ringRotationEffect->RotationStep),
-                    ringRotationEffect->RotationFlexySpeed);
-            num++;
-        }
+            int length = rings->Length();
 
-        if ((int) ringRotationEffect->ProgressPos >= rings->Length()) {
-            RecycleRingRotationEffect(ringRotationEffect);
-            _activeRingRotationEffects.erase(std::next(it).base());
+            while ((float) num < progressPos && num < length) {
+                rings->values[num]->SetDestRotation(
+                        ringRotationEffect->RotationAngle + ((float) num * ringRotationEffect->RotationStep),
+                        ringRotationEffect->RotationFlexySpeed);
+                num++;
+            }
+
+            if ((int) progressPos >= rings->Length()) {
+                RecycleRingRotationEffect(ringRotationEffect);
+                _activeRingRotationEffects.erase(std::next(it).base());
+            }
         }
     }
 }

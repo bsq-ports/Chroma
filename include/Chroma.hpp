@@ -55,6 +55,13 @@ namespace Chroma {
         };
     }
 
+    namespace ChromaLogger {
+        inline const std::string ColorLightSwitch = "ColorLightSwitch";
+        inline const std::string EnvironmentRemoval = "EnvironmentRemoval";
+        inline const std::string LightColorizer = "LightColorizer";
+        inline const std::string TrackLaneRings = "TrackLaneRings";
+    }
+
     inline const std::string DIRECTION = "_direction";
     inline const std::string ENVIRONMENTREMOVAL = "_environmentRemoval";
     inline const std::string COLOR = "_color";
