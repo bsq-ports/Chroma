@@ -27,9 +27,10 @@ void ChromaGradientController::ctor() {
 }
 
 Chroma::ChromaGradientController* ChromaGradientController::getInstance() {
-    if (_instance == nullptr || !_instance->get_isActiveAndEnabled())
+    auto str = il2cpp_utils::createcsstr("Chroma_GradientController");
+    if (_instance == nullptr || UnityEngine::GameObject::Find(str) == nullptr)
     {
-        _instance = UnityEngine::GameObject::New_ctor(il2cpp_utils::createcsstr("Chroma_GradientController"))->AddComponent<ChromaGradientController*>();
+        _instance = UnityEngine::GameObject::New_ctor(str)->AddComponent<ChromaGradientController*>();
     }
 
     return _instance;
@@ -69,21 +70,23 @@ UnityEngine::Color ChromaGradientController::AddGradient(rapidjson::Value* gradi
 }
 
 void Chroma::ChromaGradientController::Update() {
-    // Create a map iterator and point to beginning of map
-    auto it = Gradients.begin();
+    if (!Gradients.empty()) {
+        // Create a map iterator and point to beginning of map
+        auto it = Gradients.begin();
 
-    // Iterate over the map using Iterator till end.
-    while (it != Gradients.end()) {
-        // Accessing KEY from element pointed by it.
-        BeatmapEventType eventType = it->first;
-        // Accessing VALUE from element pointed by it.
-        // TODO: CRASH HERE DUE TO signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0xb8f00000fd8
-        UnityEngine::Color color = it->second->Interpolate();
+        // Iterate over the map using Iterator till end.
+        while (it != Gradients.end()) {
+            // Accessing KEY from element pointed by it.
+            BeatmapEventType eventType = it->first;
+            // Accessing VALUE from element pointed by it.
+            // TODO: CRASH HERE DUE TO signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0xb8f00000fd8
+            UnityEngine::Color color = it->second->Interpolate();
 
-        LightColorizer::SetLightingColors(eventType, color, color, color, color);
-        LightColorizer::SetActiveColors(eventType);
+            LightColorizer::SetLightingColors(eventType, color, color, color, color);
+            LightColorizer::SetActiveColors(eventType);
 
-        it++;
+            it++;
+        }
     }
 }
 
