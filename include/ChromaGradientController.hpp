@@ -34,18 +34,7 @@ namespace Chroma {
 
 }
 
-DECLARE_CLASS_CODEGEN(Chroma, ChromaGradientEventWrapper, Il2CppObject,
-public:
-        ChromaGradientEvent* chromaGradientEvent;
-
-        static ChromaGradientEventWrapper* CTOR(ChromaGradientEvent* chromaGradientEventPar);
-
-        REGISTER_FUNCTION(Chroma::ChromaGradientEventWrapper,
-
-                );
-        );
-
-typedef std::unordered_map<int, Chroma::ChromaGradientEventWrapper*> gradientMap;
+typedef std::unordered_map<int, Chroma::ChromaGradientEvent*> gradientMap;
 
 DECLARE_CLASS_CODEGEN(Chroma, ChromaGradientController, UnityEngine::MonoBehaviour,
                             private:

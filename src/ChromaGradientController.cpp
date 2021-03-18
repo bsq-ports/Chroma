@@ -12,7 +12,6 @@
 #include "UnityEngine/GameObject.hpp"
 
 DEFINE_CLASS(Chroma::ChromaGradientController);
-DEFINE_CLASS(Chroma::ChromaGradientEventWrapper);
 
 using namespace Chroma;
 using namespace GlobalNamespace;
@@ -22,13 +21,6 @@ using namespace System::Collections;
 //std::unordered_map<GlobalNamespace::BeatmapEventType, ChromaGradientEvent*> Chroma::ChromaGradientController::gradients = std::unordered_map<GlobalNamespace::BeatmapEventType, ChromaGradientEvent*>();
 
 Chroma::ChromaGradientController* ChromaGradientController::_instance = nullptr;
-
-ChromaGradientEventWrapper* ChromaGradientEventWrapper::CTOR(ChromaGradientEvent *chromaGradientEventPar) {
-    auto o = CRASH_UNLESS(il2cpp_utils::New<ChromaGradientEventWrapper*>());
-    o->chromaGradientEvent = chromaGradientEventPar;
-
-    return o;
-}
 
 void ChromaGradientController::ctor() {
     Gradients = gradientMap();
@@ -72,7 +64,7 @@ UnityEngine::Color ChromaGradientController::AddGradient(rapidjson::Value* gradi
     }
 
     auto* gradientEvent = new ChromaGradientEvent(initcolor, endcolor, time, duration, id, easing);
-    getInstance()->Gradients[id.value] = ChromaGradientEventWrapper::CTOR(gradientEvent);
+    getInstance()->Gradients[id.value] = gradientEvent;
     return gradientEvent->Interpolate();
 }
 
@@ -86,7 +78,7 @@ void Chroma::ChromaGradientController::Update() {
         BeatmapEventType eventType = it->first;
         // Accessing VALUE from element pointed by it.
         // TODO: CRASH HERE DUE TO signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0xb8f00000fd8
-        UnityEngine::Color color = it->second->chromaGradientEvent->Interpolate();
+        UnityEngine::Color color = it->second->Interpolate();
 
         LightColorizer::SetLightingColors(eventType, color, color, color, color);
         LightColorizer::SetActiveColors(eventType);
