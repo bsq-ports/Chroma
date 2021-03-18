@@ -34,7 +34,7 @@ namespace Chroma {
 
 }
 
-typedef std::unordered_map<int, Chroma::ChromaGradientEvent*> gradientMap;
+typedef std::unordered_map<int, Chroma::ChromaGradientEvent> gradientMap;
 
 DECLARE_CLASS_CODEGEN(Chroma, ChromaGradientController, UnityEngine::MonoBehaviour,
                             private:
