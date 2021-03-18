@@ -111,7 +111,8 @@ extern "C" void load() {
             Chroma::OCColorManager,
             Chroma::BNCColorManager,
             Chroma::ChromaRingsRotationEffect,
-            Chroma::ChromaRotationEffect
+            Chroma::ChromaRotationEffect,
+            Chroma::ChromaGradientEventWrapper
     >();
 
     getLogger().info("Installed types");

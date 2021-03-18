@@ -28,31 +28,44 @@ namespace Chroma {
 
         ChromaGradientEvent(UnityEngine::Color initcolor, UnityEngine::Color endcolor, float start, float duration, GlobalNamespace::BeatmapEventType eventType, ChromaUtils::Functions easing = ChromaUtils::Functions::easeLinear);
 
-        UnityEngine::Color Interpolate() const;
+        [[nodiscard]] UnityEngine::Color Interpolate() const;
     };
 
-    // internal
-    inline static auto Gradients = std::unordered_map<int, Chroma::ChromaGradientEvent*>();
+
 }
 
+DECLARE_CLASS_CODEGEN(Chroma, ChromaGradientEventWrapper, Il2CppObject,
+public:
+        ChromaGradientEvent* chromaGradientEvent;
 
+        static ChromaGradientEventWrapper* CTOR(ChromaGradientEvent* chromaGradientEventPar);
+
+        REGISTER_FUNCTION(Chroma::ChromaGradientEventWrapper,
+
+                );
+        );
+
+typedef std::unordered_map<int, Chroma::ChromaGradientEventWrapper*> gradientMap;
 
 DECLARE_CLASS_CODEGEN(Chroma, ChromaGradientController, UnityEngine::MonoBehaviour,
                             private:
-                              inline static Chroma::ChromaGradientController* _instance = nullptr;
-
-
+                                static Chroma::ChromaGradientController* _instance;
 public:
+                            // internal
+                            gradientMap Gradients;
+
                                 static UnityEngine::Color AddGradient(/*dynamic*/ rapidjson::Value* gradientObject, GlobalNamespace::BeatmapEventType id, float time);
                               DECLARE_METHOD(static Chroma::ChromaGradientController*, getInstance);
                               DECLARE_METHOD(static bool, IsGradientActive, GlobalNamespace::BeatmapEventType eventType);
                               DECLARE_METHOD(static void, CancelGradient, GlobalNamespace::BeatmapEventType eventType);
                               DECLARE_METHOD(void, Update);
+                              DECLARE_CTOR(ctor);
 
 
 
                               REGISTER_FUNCTION(Chroma::ChromaGradientController,
                                     getLogger().debug("Registering ChromaGradientController!");
+                              REGISTER_METHOD(ctor);
                               REGISTER_METHOD(getInstance);
                               REGISTER_METHOD(IsGradientActive);
                               REGISTER_METHOD(CancelGradient);

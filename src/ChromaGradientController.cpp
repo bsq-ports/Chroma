@@ -12,6 +12,7 @@
 #include "UnityEngine/GameObject.hpp"
 
 DEFINE_CLASS(Chroma::ChromaGradientController);
+DEFINE_CLASS(Chroma::ChromaGradientEventWrapper);
 
 using namespace Chroma;
 using namespace GlobalNamespace;
@@ -20,8 +21,21 @@ using namespace System::Collections;
 
 //std::unordered_map<GlobalNamespace::BeatmapEventType, ChromaGradientEvent*> Chroma::ChromaGradientController::gradients = std::unordered_map<GlobalNamespace::BeatmapEventType, ChromaGradientEvent*>();
 
+Chroma::ChromaGradientController* ChromaGradientController::_instance = nullptr;
+
+ChromaGradientEventWrapper* ChromaGradientEventWrapper::CTOR(ChromaGradientEvent *chromaGradientEventPar) {
+    auto o = CRASH_UNLESS(il2cpp_utils::New<ChromaGradientEventWrapper*>());
+    o->chromaGradientEvent = chromaGradientEventPar;
+
+    return o;
+}
+
+void ChromaGradientController::ctor() {
+    Gradients = gradientMap();
+}
+
 Chroma::ChromaGradientController* ChromaGradientController::getInstance() {
-    if (_instance == nullptr)
+    if (_instance == nullptr || !_instance->get_isActiveAndEnabled())
     {
         _instance = UnityEngine::GameObject::New_ctor(il2cpp_utils::createcsstr("Chroma_GradientController"))->AddComponent<ChromaGradientController*>();
     }
@@ -30,11 +44,11 @@ Chroma::ChromaGradientController* ChromaGradientController::getInstance() {
 }
 
 bool Chroma::ChromaGradientController::IsGradientActive(GlobalNamespace::BeatmapEventType eventType) {
-    return Gradients.find(eventType) != Gradients.end();
+    return getInstance()->Gradients.find(eventType) != getInstance()->Gradients.end();
 }
 
 void ChromaGradientController::CancelGradient(GlobalNamespace::BeatmapEventType eventType) {
-    Gradients.erase(eventType);
+    getInstance()->Gradients.erase(eventType);
 }
 
 UnityEngine::Color ChromaGradientController::AddGradient(rapidjson::Value* gradientObject,
@@ -58,7 +72,7 @@ UnityEngine::Color ChromaGradientController::AddGradient(rapidjson::Value* gradi
     }
 
     auto* gradientEvent = new ChromaGradientEvent(initcolor, endcolor, time, duration, id, easing);
-    Gradients[id.value] = gradientEvent;
+    getInstance()->Gradients[id.value] = ChromaGradientEventWrapper::CTOR(gradientEvent);
     return gradientEvent->Interpolate();
 }
 
@@ -71,7 +85,8 @@ void Chroma::ChromaGradientController::Update() {
         // Accessing KEY from element pointed by it.
         BeatmapEventType eventType = it->first;
         // Accessing VALUE from element pointed by it.
-        UnityEngine::Color color = it->second->Interpolate();
+        // TODO: CRASH HERE DUE TO signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0xb8f00000fd8
+        UnityEngine::Color color = it->second->chromaGradientEvent->Interpolate();
 
         LightColorizer::SetLightingColors(eventType, color, color, color, color);
         LightColorizer::SetActiveColors(eventType);
@@ -107,7 +122,7 @@ UnityEngine::Color Chroma::ChromaGradientEvent::Interpolate() const {
     }
     else
     {
-        Chroma::Gradients.erase(_event.value);
+        ChromaGradientController::getInstance()->Gradients.erase(_event.value);
         return _endcolor;
     }
 }
