@@ -16,9 +16,10 @@ using namespace GlobalNamespace;
 using namespace UnityEngine;
 using namespace ChromaUtils;
 
-static auto contextLogger = getLogger().WithContext(Chroma::ChromaLogger::TrackLaneRings);
+
 
 MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffectSpawner_Start, void, GlobalNamespace::TrackLaneRingsRotationEffectSpawner* self) {
+    static auto contextLogger = getLogger().WithContext(Chroma::ChromaLogger::TrackLaneRings);
     if (!ChromaController::DoChromaHooks()) {
         TrackLaneRingsRotationEffectSpawner_Start(self);
         return;
@@ -49,6 +50,7 @@ void TriggerRotation(
         float rotationPropagationSpeed,
         float rotationFlexySpeed)
 {
+    static auto contextLogger = getLogger().WithContext(Chroma::ChromaLogger::TrackLaneRings);
     contextLogger.debug("DOING TRIGGER ROTATION %s", trackLaneRingsRotationEffect->klass->name);
 
     auto chromaRingRotation = reinterpret_cast<ChromaRingsRotationEffect*>(trackLaneRingsRotationEffect);
@@ -63,6 +65,7 @@ void TriggerRotation(
 // using the original method causes CJD or something else to stop loading the map and it
 // just stays as limbo. Hopefully with time we can fix that and use that instead
 void origHandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(GlobalNamespace::TrackLaneRingsRotationEffectSpawner* self, BeatmapEventData* beatmapEventData) {
+    static auto contextLogger = getLogger().WithContext(Chroma::ChromaLogger::TrackLaneRings);
     if (beatmapEventData->type != self->beatmapEventType)
     {
         return;
@@ -99,14 +102,14 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCall
 //    if (il2cpp_functions::class_is_assignable_from(beatmapEventData->klass, classof(CustomJSONData::CustomBeatmapEventData*))) {
     auto *customBeatmapEvent = reinterpret_cast<CustomBeatmapEventData *>(beatmapEventData);
 
-
+    static auto contextLogger = getLogger().WithContext(Chroma::ChromaLogger::TrackLaneRings);
     if (self->beatmapEventType.value == beatmapEventData->type.value && customBeatmapEvent->customData &&
         customBeatmapEvent->customData->value) {
         contextLogger.debug("Doing stuff with custom Data");
         float rotationStep = 0.0f;
         float originalRotationStep = self->rotationStep;
         float originalRotation = self->rotation;
-        float originalRotationPropagationSpeed = self->rotationPropagationSpeed;
+        float originalRotationPropagationSpeed = (float) self->rotationPropagationSpeed;
         float originalRotationFlexySpeed = self->rotationFlexySpeed;
         int originalRotationStepType = (int) self->rotationStepType;
 

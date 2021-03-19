@@ -117,9 +117,10 @@ void LightColorizer::LSEStart(MonoBehaviour *monoBehaviour, BeatmapEventType bea
 
 
 namespace Chroma {
-    static auto contextLogger = getLogger().WithContext(ChromaLogger::LightColorizer);
 
     void LSEColorManager::ctor(MonoBehaviour *mono, BeatmapEventType type) {
+        static auto contextLogger = getLogger().WithContext(ChromaLogger::LightColorizer);
+
         _lse = mono;
         _type = type;
         InitializeSOs(mono, "_lightColor0", _lightColor0, _lightColor0_Original, _mLightColor0);
@@ -388,6 +389,7 @@ namespace Chroma {
             mColorSO->baseColor = sColorSO; //SetField("_baseColor", sColorSO);
         }
 
+        static auto contextLogger = getLogger().WithContext(ChromaLogger::LightColorizer);
         contextLogger.debug("Overwriting %s", id.c_str());
         if (il2cpp_functions::class_is_assignable_from(lse->klass, classof(LightSwitchEventEffect *))) {
             CRASH_UNLESS(mColorSO);
