@@ -38,7 +38,7 @@ namespace Chroma {
         inline static GlobalNamespace::IAudioTimeSource* IAudioTimeSource = nullptr;
 
         // internal
-        static void OnActiveSceneChanged(UnityEngine::SceneManagement::Scene current, UnityEngine::SceneManagement::Scene _);
+        static void OnActiveSceneChanged(UnityEngine::SceneManagement::Scene current);
 
         static custom_types::Helpers::Coroutine DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnController *beatmapObjectSpawnController);
     };

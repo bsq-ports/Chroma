@@ -14,7 +14,7 @@ using namespace UnityEngine;
 using namespace Chroma;
 
 MAKE_HOOK_OFFSETLESS(SceneManager_Internal_SceneLoaded, void, UnityEngine::SceneManagement::Scene scene, UnityEngine::SceneManagement::LoadSceneMode mode) {
-    ChromaController::OnActiveSceneChanged(scene, scene);
+    ChromaController::OnActiveSceneChanged(scene);
     SceneManager_Internal_SceneLoaded(scene, mode);
 }
 

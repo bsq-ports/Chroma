@@ -265,10 +265,10 @@ custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(Global
 }
 
 
-void ChromaController::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene current,
-                                            UnityEngine::SceneManagement::Scene _) {
-    getLogger().debug("Clear scene");
-    if (strcmp(to_utf8(csstrtostr(current.get_name())).c_str(), "GameCore") == 0) {
+void ChromaController::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene current) {
+    getLogger().debug("Clear scene %s", current.IsValid() ? "true" : "false");
+
+    if (current.IsValid() && to_utf8(csstrtostr(current.get_name())) == "GameCore") {
         ChromaController::SetChromaLegacy(false);
         LightColorizer::ClearLSEColorManagers();
         ObstacleColorizer::ClearOCColorManagers();
