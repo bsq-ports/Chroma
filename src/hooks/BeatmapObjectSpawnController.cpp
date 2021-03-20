@@ -11,7 +11,7 @@ using namespace GlobalNamespace;
 
 MAKE_HOOK_OFFSETLESS(BeatmapObjectSpawnController_Start, void, BeatmapObjectSpawnController* self) {
     // Do nothing if Chroma shouldn't run
-    if (!ChromaController::DoChromaHooks()) {
+    if (!ChromaController::GetChromaLegacy() && !ChromaController::DoChromaHooks()) {
         BeatmapObjectSpawnController_Start(self);
         return;
     }

@@ -60,5 +60,5 @@ UnityEngine::Color LegacyLightHelper::ColorFromInt(int rgb) {
     auto red = (float) ((rgb >> 16) & 0x0ff);
     auto green = (float) ((rgb >> 8) & 0x0ff);
     auto blue = (float ) (rgb & 0x0ff);
-    return UnityEngine::Color(red / 255.0f, green / 255.0f, blue / 255.0f);
+    return UnityEngine::Color(red / 255.0f, green / 255.0f, blue / 255.0f, 1);
 }

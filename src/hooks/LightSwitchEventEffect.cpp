@@ -37,7 +37,7 @@ custom_types::Helpers::Coroutine WaitThenStart(LightSwitchEventEffect *instance,
 
 MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_Start, void, LightSwitchEventEffect* self) {
     // Do nothing if Chroma shouldn't run
-    if (!ChromaController::DoChromaHooks()) {
+    if (!ChromaController::GetChromaLegacy() && !ChromaController::DoChromaHooks()) {
         LightSwitchEventEffect_Start(self);
         return;
     }
@@ -51,7 +51,7 @@ MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_Start, void, LightSwitchEventEffect*
 
 MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_SetColor, void, LightSwitchEventEffect* self, UnityEngine::Color color) {
     // Do nothing if Chroma shouldn't run
-    if (!ChromaController::DoChromaHooks()) {
+    if (!ChromaController::GetChromaLegacy() && !ChromaController::DoChromaHooks()) {
         LightSwitchEventEffect_SetColor(self, color);
         return;
     }
