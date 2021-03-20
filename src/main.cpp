@@ -95,14 +95,20 @@ extern "C" void load() {
     QuestUI::Init();
     QuestUI::Register::RegisterModSettingsViewController(modInfo, DidActivate);
 
+#if DEBUGB == 1
+    #warning "Removing debug messages"
+#else
+    #warning "Debug messages hooray"
+#endif
     // This disables the useless debug logs on the release build
-    if (!DEBUGBUILD) {
-        getLogger().DisableContext(Chroma::ChromaLogger::LightColorizer);
-        getLogger().DisableContext(Chroma::ChromaLogger::ColorLightSwitch);
-        getLogger().DisableContext(Chroma::ChromaLogger::EnvironmentRemoval);
-        getLogger().DisableContext(Chroma::ChromaLogger::TrackLaneRings);
-        getLogger().DisableContext(Chroma::ChromaLogger::ColorLightSwitch);
-    }
+#if DEBUGB == 1
+    getLogger().debug("Disabling annoying loggers in release build");
+    getLogger().DisableContext(Chroma::ChromaLogger::LightColorizer);
+    getLogger().DisableContext(Chroma::ChromaLogger::ColorLightSwitch);
+    getLogger().DisableContext(Chroma::ChromaLogger::EnvironmentRemoval);
+    getLogger().DisableContext(Chroma::ChromaLogger::TrackLaneRings);
+    getLogger().DisableContext(Chroma::ChromaLogger::ColorLightSwitch);
+#endif
 
     getLogger().info("Installing types...");
 

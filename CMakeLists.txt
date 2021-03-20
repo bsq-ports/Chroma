@@ -44,7 +44,6 @@ include_directories(.)
 set(CMAKE_CXX_STANDARD 20)
 
 add_compile_definitions("VERSION=\"0.1.0\"") #Modify this if you use it
-add_compile_definitions("DEBUGBUILD=\"false\"") #Modify this if you use it
 add_compile_definitions("__GNUC__")
 add_compile_definitions("__aarch64__")
 

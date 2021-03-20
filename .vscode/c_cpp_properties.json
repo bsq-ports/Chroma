@@ -5,7 +5,6 @@
         "VERSION=\"0.1.0\"",
         "__GNUC__",
         "__aarch64__",
-        "DEBUGBUILD=\"false\""
       ],
       "includePath": [
         "${workspaceFolder}/**",
