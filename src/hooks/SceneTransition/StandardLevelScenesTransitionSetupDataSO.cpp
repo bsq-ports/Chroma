@@ -24,19 +24,19 @@ using namespace UnityEngine;
 using namespace Chroma;
 
 MAKE_HOOK_OFFSETLESS(StandardLevelScenesTransitionSetupDataSO_Init,void,StandardLevelScenesTransitionSetupDataSO* self, ::Il2CppString* gameMode,
-                     BeatmapLevelSO::DifficultyBeatmap* difficultyBeatmap,
+                     BeatmapLevelSO::DifficultyBeatmap* difficultyBeatmap, GlobalNamespace::IPreviewBeatmapLevel* previewBeatmapLevel,
                      GlobalNamespace::OverrideEnvironmentSettings* overrideEnvironmentSettings,
                      GlobalNamespace::ColorScheme* overrideColorScheme, GlobalNamespace::GameplayModifiers* gameplayModifiers,
                      GlobalNamespace::PlayerSpecificSettings* playerSpecificSettings, GlobalNamespace::PracticeSettings* practiceSettings,
                      ::Il2CppString* backButtonText, bool useTestNoteCutSoundEffects) {
     auto settings = overrideEnvironmentSettings;
     SceneTransitionHelper::Patch(reinterpret_cast<IDifficultyBeatmap*>(difficultyBeatmap), settings);
-    StandardLevelScenesTransitionSetupDataSO_Init(self, gameMode, difficultyBeatmap, settings,
+    StandardLevelScenesTransitionSetupDataSO_Init(self, gameMode, difficultyBeatmap, previewBeatmapLevel, settings,
                                                   overrideColorScheme, gameplayModifiers,
                                                   playerSpecificSettings, practiceSettings, backButtonText,
                                                   useTestNoteCutSoundEffects);
 }
 
 void Chroma::Hooks::StandardLevelScenesTransitionSetupDataSO() {
-    INSTALL_HOOK_OFFSETLESS(getLogger(), StandardLevelScenesTransitionSetupDataSO_Init, il2cpp_utils::FindMethodUnsafe("", "StandardLevelScenesTransitionSetupDataSO", "Init", 9));
+    INSTALL_HOOK_OFFSETLESS(getLogger(), StandardLevelScenesTransitionSetupDataSO_Init, il2cpp_utils::FindMethodUnsafe("", "StandardLevelScenesTransitionSetupDataSO", "Init", 10));
 }

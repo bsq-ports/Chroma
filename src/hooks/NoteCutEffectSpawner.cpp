@@ -16,17 +16,17 @@ using namespace GlobalNamespace;
 using namespace UnityEngine;
 using namespace Chroma;
 
-MAKE_HOOK_OFFSETLESS(NoteCutEffectSpawner_SpawnNoteCutEffect,void,NoteCutCoreEffectsSpawner* self, UnityEngine::Vector3 pos, GlobalNamespace::NoteController* noteController, GlobalNamespace::NoteCutInfo* noteCutInfo) {
+MAKE_HOOK_OFFSETLESS(NoteCutEffectSpawner_SpawnNoteCutEffect,void,NoteCutCoreEffectsSpawner* self, GlobalNamespace::NoteCutInfo* noteCutInfo, GlobalNamespace::NoteController* noteController) {
     // Do nothing if Chroma shouldn't run
     if (!ChromaController::DoChromaHooks()) {
-        NoteCutEffectSpawner_SpawnNoteCutEffect(self, pos, noteController, noteCutInfo);
+        NoteCutEffectSpawner_SpawnNoteCutEffect(self, noteCutInfo, noteController);
         return;
     }
     NoteColorizer::EnableNoteColorOverride(noteController);
-    NoteCutEffectSpawner_SpawnNoteCutEffect(self, pos, noteController, noteCutInfo);
+    NoteCutEffectSpawner_SpawnNoteCutEffect(self, noteCutInfo, noteController);
     NoteColorizer::DisableNoteColorOverride();
 }
 
 void Chroma::Hooks::NoteCutEffectSpawner() {
-    INSTALL_HOOK_OFFSETLESS(getLogger(), NoteCutEffectSpawner_SpawnNoteCutEffect, il2cpp_utils::FindMethodUnsafe("", "NoteCutCoreEffectsSpawner", "SpawnNoteCutEffect", 3));
+    INSTALL_HOOK_OFFSETLESS(getLogger(), NoteCutEffectSpawner_SpawnNoteCutEffect, il2cpp_utils::FindMethodUnsafe("", "NoteCutCoreEffectsSpawner", "SpawnNoteCutEffect", 2));
 }

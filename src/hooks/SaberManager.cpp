@@ -1,4 +1,5 @@
 #include "main.hpp"
+#include "colorizer/SaberColorizer.hpp"
 #include "hooks/SaberManager.hpp"
 #include "Chroma.hpp"
 #include "ChromaController.hpp"
@@ -13,6 +14,10 @@ MAKE_HOOK_OFFSETLESS(SaberManager_Start, void, GlobalNamespace::SaberManager* se
     }
 
     SaberManagerHolder::saberManager = self;
+
+    SaberColorizer::BSMStart(self->leftSaber, self->leftSaber->get_saberType().value);
+    SaberColorizer::BSMStart(self->rightSaber, self->rightSaber->get_saberType().value);
+
     SaberManager_Start(self);
 }
 

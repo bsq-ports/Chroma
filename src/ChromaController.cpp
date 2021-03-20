@@ -59,7 +59,7 @@ custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(Global
 
     if (!hookInstalled) {
         INSTALL_HOOK_OFFSETLESS(getLogger(), ChromaController_NoteCutEvent,
-                                il2cpp_utils::FindMethodUnsafe("", "BeatmapObjectManager", "HandleNoteWasCut", 2));
+                                il2cpp_utils::FindMethodUnsafe("", "BeatmapObjectManager", "HandleNoteControllerNoteWasCut", 2));
         hookInstalled = true;
     }
 
@@ -284,7 +284,7 @@ bool ChromaController::ChromaRequired() {
     auto reqVar = getenv("req_Chroma");
     auto sugVar = getenv("sug_Chroma");
 
-    return (reqVar && strcmp(reqVar, "1") == 0) || (sugVar && strcmp(sugVar, "1") == 0);
+    return true;
 }
 
 bool ChromaController::DoColorizerSabers() {
