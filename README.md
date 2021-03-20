@@ -15,7 +15,7 @@ Core Chroma Mod for Quest
 - [ ] Add multiplayer scene hooks
 - [ ] Add `info.dat` environment removal support
 - [ ] CJD Gc bugs
-- [ ] Fix ChromaLite support
+- [x] Fix ChromaLite support
 - [ ] Optimize wherever possible
 
 ## Credits and thank you
