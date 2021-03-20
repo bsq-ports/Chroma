@@ -19,6 +19,8 @@ void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, C
 
     std::optional<UnityEngine::Color> color = LegacyLightHelper::GetLegacyColor(beatmapEventData);
 
+    contextLogger.debug("Color is legacy? %s", color ? "true" : "false");
+
     // TODO: WHY DOES THIS CAUSE A CRASH? WHY
     // signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x650084
     auto* customDataWrapper = beatmapEventData->customData;

@@ -10,7 +10,7 @@
 #include "GlobalNamespace/IDifficultyBeatmap.hpp"
 #include "GlobalNamespace/NoteController.hpp"
 #include "UnityEngine/Vector3.hpp"
-#include "GlobalNamespace/SaberType.hpp"
+#include "GlobalNamespace/BeatmapLevelSO.hpp"
 #include "colorizer/NoteColorizer.hpp"
 #include "UnityEngine/Random.hpp"
 #include "UnityEngine/Space.hpp"
@@ -24,13 +24,13 @@ using namespace UnityEngine;
 using namespace Chroma;
 
 MAKE_HOOK_OFFSETLESS(StandardLevelScenesTransitionSetupDataSO_Init,void,StandardLevelScenesTransitionSetupDataSO* self, ::Il2CppString* gameMode,
-                     CustomBeatmapData* difficultyBeatmap,
+                     BeatmapLevelSO::DifficultyBeatmap* difficultyBeatmap,
                      GlobalNamespace::OverrideEnvironmentSettings* overrideEnvironmentSettings,
                      GlobalNamespace::ColorScheme* overrideColorScheme, GlobalNamespace::GameplayModifiers* gameplayModifiers,
                      GlobalNamespace::PlayerSpecificSettings* playerSpecificSettings, GlobalNamespace::PracticeSettings* practiceSettings,
                      ::Il2CppString* backButtonText, bool useTestNoteCutSoundEffects) {
     auto settings = overrideEnvironmentSettings;
-    SceneTransitionHelper::Patch(difficultyBeatmap, settings);
+    SceneTransitionHelper::Patch(reinterpret_cast<IDifficultyBeatmap*>(difficultyBeatmap), settings);
     StandardLevelScenesTransitionSetupDataSO_Init(self, gameMode, difficultyBeatmap, settings,
                                                   overrideColorScheme, gameplayModifiers,
                                                   playerSpecificSettings, practiceSettings, backButtonText,

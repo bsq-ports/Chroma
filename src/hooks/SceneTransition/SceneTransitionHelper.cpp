@@ -6,6 +6,8 @@
 #include "LegacyLightHelper.hpp"
 #include "ChromaController.hpp"
 
+#include "GlobalNamespace/BeatmapDataSO.hpp"
+
 #include <cstdlib>
 
 using namespace CustomJSONData;
@@ -14,37 +16,37 @@ using namespace GlobalNamespace;
 using namespace UnityEngine;
 using namespace System::Collections;
 
-void SceneTransitionHelper::Patch(CustomBeatmapData *customBeatmapData) {
+void SceneTransitionHelper::Patch(GlobalNamespace::IDifficultyBeatmap* customBeatmapData) {
     SceneTransitionHelper::BasicPatch(customBeatmapData);
 }
 
-void SceneTransitionHelper::Patch(CustomBeatmapData* customBeatmapData, OverrideEnvironmentSettings*& overrideEnvironmentSettings) {
+void SceneTransitionHelper::Patch(GlobalNamespace::IDifficultyBeatmap* customBeatmapData, OverrideEnvironmentSettings*& overrideEnvironmentSettings) {
+
     bool chromaRequirement = SceneTransitionHelper::BasicPatch(customBeatmapData);
-    if (chromaRequirement && getChromaConfig().environmentEnhancementsEnabled.GetValue() &&
-    customBeatmapData->customData && customBeatmapData->customData->value && customBeatmapData->customData->value->HasMember("_environmentRemoval")) {
+    if (chromaRequirement && getChromaConfig().environmentEnhancementsEnabled.GetValue() && false)
+
+        //TODO: Actually implement this once info.dat information is retrievable
+        // && customBeatmapData->customData && customBeatmapData->customData->value && customBeatmapData->customData->value->HasMember("_environmentRemoval"))
+        {
         overrideEnvironmentSettings = nullptr;
     }
 }
 
-bool SceneTransitionHelper::BasicPatch(BeatmapData* customBeatmapData) {
+bool SceneTransitionHelper::BasicPatch(GlobalNamespace::IDifficultyBeatmap* customBeatmapData) {
     // please let me remove this shit
     bool legacyOverride = false;
 
-    auto beatmapEvents = customBeatmapData->beatmapEventsData->items;
+
+
+    auto beatmapEvents = customBeatmapData->get_beatmapData()->beatmapEventsData->items;
     auto length = beatmapEvents->Length();
-    getLogger().debug("Basic patch %d", length);
-    getLogger().debug("Beatmap class %s", customBeatmapData->klass->name);
+    getLogger().debug("Checking at most %d for ChromaLite notes", length);
     for (int i = 0; i < length; i++) {
         auto event = beatmapEvents->values[i];
 
-        getLogger().debug("Event %p", event);
+        if (!event) continue;
 
-        // TODO: Event->value is causing acrash
-        if (!event || !il2cpp_functions::class_is_assignable_from(event->klass, classof(BeatmapEventData*))) continue;
-
-        getLogger().debug("Event klass %s", event->klass->name);
-        getLogger().debug("Event value %d", event->value);
-        if (event != nullptr && event->value >= LegacyLightHelper::RGB_INT_OFFSET)
+        if (event->value >= LegacyLightHelper::RGB_INT_OFFSET)
             legacyOverride = true;
 
         if (legacyOverride)

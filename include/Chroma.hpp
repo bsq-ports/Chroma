@@ -56,10 +56,11 @@ namespace Chroma {
     }
 
     namespace ChromaLogger {
-        inline const std::string ColorLightSwitch = "ColorLightSwitch";
-        inline const std::string EnvironmentRemoval = "EnvironmentRemoval";
-        inline const std::string LightColorizer = "LightColorizer";
-        inline const std::string TrackLaneRings = "TrackLaneRings";
+        inline const char* ColorLightSwitch = "ColorLightSwitch";
+        inline const char* EnvironmentRemoval = "EnvironmentRemoval";
+        inline const char* LightColorizer = "LightColorizer";
+        inline const char* TrackLaneRings = "TrackLaneRings";
+        inline const char* LegacyLightColor = "LegacyLightColor";
     }
 
     inline const std::string DIRECTION = "_direction";

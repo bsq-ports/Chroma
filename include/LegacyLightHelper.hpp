@@ -17,11 +17,13 @@ namespace Chroma {
 // Please let me delete this whole class
     class LegacyLightHelper {
     public:
+        typedef std::unordered_map<int, std::vector<pair<float, UnityEngine::Color>>> ColorMap;
+
         //internal
         inline const static int RGB_INT_OFFSET = 2000000000;
 
         // internal
-        inline static std::unordered_map<int, std::vector<pair<float, UnityEngine::Color>>> LegacyColorEvents;
+        static ColorMap LegacyColorEvents;
 
         // internal
         static void Activate(const std::vector<GlobalNamespace::BeatmapEventData*>& eventData);

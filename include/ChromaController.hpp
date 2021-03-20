@@ -17,7 +17,7 @@
 namespace Chroma {
     class ChromaController {
     private:
-        inline static bool _ChromaLegacy = false;
+        static bool _ChromaLegacy;
 
     public:
         // Return true if Chroma should color the sabers

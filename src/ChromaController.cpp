@@ -252,10 +252,10 @@ custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(Global
     }
 
     auto list = reinterpret_cast<Generic::List_1<BeatmapEventData *> *>(beatmapData->get_beatmapEventsData());
-    std::vector<GlobalNamespace::BeatmapEventData *> eventData;
+    std::vector<GlobalNamespace::BeatmapEventData*> eventData;
 
     for (int i = 0; i < list->items->Length(); i++) {
-        eventData.push_back(list->items->values[i]);
+        eventData.emplace_back(list->items->values[i]);
     }
 
     // please let me kill legacy
@@ -266,10 +266,9 @@ custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(Global
 
 
 void ChromaController::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene current) {
-    getLogger().debug("Clear scene %s", current.IsValid() ? "true" : "false");
+    getLogger().debug("Clear scene");
 
     if (current.IsValid() && to_utf8(csstrtostr(current.get_name())) == "GameCore") {
-        ChromaController::SetChromaLegacy(false);
         LightColorizer::ClearLSEColorManagers();
         ObstacleColorizer::ClearOCColorManagers();
         BombColorizer::ClearBNCColorManagers();
@@ -290,7 +289,9 @@ bool ChromaController::DoColorizerSabers() {
     return getChromaConfig().customColorEventsEnabled.GetValue() && ChromaRequired();
 }
 
+bool ChromaController::_ChromaLegacy = false;
 void ChromaController::SetChromaLegacy(bool v) {
+    getLogger().debug("Set chroma legacy to %s", v ? "true" : "false");
     _ChromaLegacy = v;
 }
 
@@ -300,5 +301,5 @@ bool ChromaController::GetChromaLegacy() {
 
 
 bool ChromaController::DoChromaHooks() {
-    return getChromaConfig().customColorEventsEnabled.GetValue() && (_ChromaLegacy || ChromaRequired());
+    return getChromaConfig().customColorEventsEnabled.GetValue() && (ChromaRequired());
 }
