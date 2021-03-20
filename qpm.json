@@ -20,12 +20,12 @@
     },
     {
       "id": "custom-types",
-      "versionRange": ">=0.4.7<0.5.0",
+      "versionRange": ">=0.5.1",
       "additionalData": {}
     },
     {
       "id": "codegen",
-      "versionRange": "^0.6.2",
+      "versionRange": ">=0.7.0",
       "additionalData": {}
     },
     {
@@ -35,17 +35,17 @@
     },
     {
       "id": "config-utils",
-      "versionRange": "<0.3.0",
+      "versionRange": ">=0.3.1",
       "additionalData": {}
     },
     {
       "id": "questui",
-      "versionRange": "<0.5.0",
+      "versionRange": ">=0.5.0",
       "additionalData": {}
     },
     {
       "id": "bs-utils",
-      "versionRange": "<0.5.9",
+      "versionRange": ">=0.5.9",
       "additionalData": {}
     }
   ],

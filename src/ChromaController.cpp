@@ -3,6 +3,8 @@
 
 #include "GlobalNamespace/BeatmapObjectManager.hpp"
 #include "GlobalNamespace/IReadonlyBeatmapData.hpp"
+#include "GlobalNamespace/BeatmapObjectCallbackController.hpp"
+#include "GlobalNamespace/IBeatmapObjectCallbackController.hpp"
 #include "GlobalNamespace/BeatmapLineData.hpp"
 #include "GlobalNamespace/BeatmapObjectType.hpp"
 #include "GlobalNamespace/BeatmapObjectData.hpp"
@@ -50,7 +52,7 @@ custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(Global
 
     Chroma::ChromaController::BeatmapObjectSpawnController = beatmapObjectSpawnController;
     auto *beatmapObjectManager = reinterpret_cast<BeatmapObjectManager *>(beatmapObjectSpawnController->beatmapObjectSpawner);
-    BeatmapObjectCallbackController *coreSetup = beatmapObjectSpawnController->beatmapObjectCallbackController;
+    BeatmapObjectCallbackController *coreSetup = reinterpret_cast<BeatmapObjectCallbackController *>(beatmapObjectSpawnController->beatmapObjectCallbackController);
     Chroma::ChromaController::IAudioTimeSource = coreSetup->audioTimeSource;
 
     IReadonlyBeatmapData *beatmapData = coreSetup->beatmapData;

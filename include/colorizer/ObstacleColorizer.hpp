@@ -19,28 +19,27 @@ DECLARE_CLASS_CODEGEN(Chroma, OCColorManager, Il2CppObject,
                               inline static int _addColorID = -1;
                               inline static std::optional<UnityEngine::Color> _globalColor = std::nullopt;
                               UnityEngine::Color _color_Original;
+                              UnityEngine::Color _color;
 
 
                               static OCColorManager* GetOCColorManager(GlobalNamespace::ObstacleController* oc);
-                              static OCColorManager* CreateOCColorManager(GlobalNamespace::ObstacleController* oc);
+                              static OCColorManager* CreateOCColorManager(GlobalNamespace::ObstacleController* oc, UnityEngine::Color original);
                               static void SetGlobalObstacleColor(std::optional<UnityEngine::Color> color);
                               static void ResetGlobal();
-                              void SetObstacleColor(std::optional<UnityEngine::Color> color) const;
+                              void SetObstacleColor(std::optional<UnityEngine::Color> color);
                               void SetActiveColors() const;
 
                               DECLARE_METHOD(void, Reset);
 
-                              DECLARE_INSTANCE_FIELD(GlobalNamespace::SimpleColorSO*, _color);
                               DECLARE_INSTANCE_FIELD(GlobalNamespace::StretchableObstacle*, _stretchableObstacle);
                               DECLARE_INSTANCE_FIELD(GlobalNamespace::ObstacleController*, _oc);
 
-                              DECLARE_CTOR(ctor, GlobalNamespace::ObstacleController* oc);
+                              DECLARE_CTOR(ctor, GlobalNamespace::ObstacleController* oc, UnityEngine::Color original);
 
                               REGISTER_FUNCTION(Chroma::LSEColorManager,
                               getLogger().debug("Registering LSEColorManager!");
                               REGISTER_METHOD(ctor);
-
-                              REGISTER_FIELD(_color);
+                              
                               REGISTER_FIELD(_stretchableObstacle);
                               REGISTER_FIELD(_oc);
                                 )
@@ -62,7 +61,7 @@ namespace Chroma {
         /*
          * OC ColorSO holders
          */
-        static void OCStart(GlobalNamespace::ObstacleController* oc);
+        static void OCStart(GlobalNamespace::ObstacleController* oc, UnityEngine::Color original);
 
         inline static std::vector<OCColorManager*> _ocColorManagers  = {};
     };

@@ -2,6 +2,7 @@
 #include "ChromaController.hpp"
 
 #include "colorizer/ObstacleColorizer.hpp"
+#include "GlobalNamespace/ColorManager.hpp"
 #include "custom-json-data/shared/CustomBeatmapData.h"
 #include "GlobalNamespace/ObstacleController.hpp"
 #include "utils/ChromaUtils.hpp"
@@ -30,7 +31,7 @@ MAKE_HOOK_OFFSETLESS(
         ObstacleController_Init(self, obstacleData, worldRotation, startPos, midPos, endPos, move1Duration, move2Duration, singleLineWidth, height);
         return;
     }
-    ObstacleColorizer::OCStart(self);
+    ObstacleColorizer::OCStart(self, self->colorManager->get_obstaclesColor());
 
     if(obstacleData->customData && obstacleData->customData->value) {
         std::optional<UnityEngine::Color> color = ChromaUtilities::GetColorFromData(obstacleData->customData->value);
@@ -43,6 +44,8 @@ MAKE_HOOK_OFFSETLESS(
     }
 
     ObstacleController_Init(self, obstacleData, worldRotation, startPos, midPos, endPos, move1Duration, move2Duration, singleLineWidth, height);
+
+    ObstacleColorizer::SetActiveColors(self);
 }
 
 void Chroma::Hooks::ObstacleController() {
