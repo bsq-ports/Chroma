@@ -55,6 +55,7 @@ void SaberColorizer::SetAllSaberColors(std::optional<UnityEngine::Color> color0,
 }
 
 void SaberColorizer::ClearBSMColorManagers() {
+    SaberColorOverride = {std::nullopt, std::nullopt};
     _bsmColorManagers.clear();
 }
 
