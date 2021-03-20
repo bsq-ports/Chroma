@@ -152,6 +152,10 @@ namespace Chroma {
                 Lights.push_back(l);
             }
 
+            // Keep track of order
+            int index = 0;
+            std::unordered_map<int, int> insertionOrder;
+
             std::unordered_map<int, std::vector<ILightWithId *>> lightsPreGroup;
             for (auto& light : Lights) {
                 if (!light) continue;
@@ -167,10 +171,13 @@ namespace Chroma {
 
                     std::vector<ILightWithId *> list;
 
+                    auto it = lightsPreGroup.find(z);
                     // Not found
-                    if (lightsPreGroup.find(z) == lightsPreGroup.end()) {
+                    if (it == lightsPreGroup.end()) {
                         list = std::vector<ILightWithId *>();
-                    } else list = lightsPreGroup[z];
+                        insertionOrder[index] = z;
+                        index++;
+                    } else list = it->second;
 
                     list.push_back(light);
 
@@ -184,13 +191,23 @@ namespace Chroma {
 
             int i = 0;
 
-            auto it = lightsPreGroup.begin();
-            while (it != lightsPreGroup.end()) {
+            while (i <= index) {
                 contextLogger.debug("Doing the final grouping, prop id %d", i);
-                lightsPreGroupFinal[i] = it->second;
+                int z = insertionOrder[i];
+
+                lightsPreGroupFinal[i] = lightsPreGroup[z];
                 i++;
-                it++;
             }
+
+//            int i = 0;
+//
+//            auto it = lightsPreGroup.begin();
+//            while (it != lightsPreGroup.end()) {
+//                contextLogger.debug("Doing the final grouping, prop id %d", i);
+//                lightsPreGroupFinal[i] = it->second;
+//                i++;
+//                it++;
+//            }
 
             contextLogger.debug("Done grouping, size %d", lightsPreGroup.size());
 
