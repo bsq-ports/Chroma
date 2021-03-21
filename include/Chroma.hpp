@@ -9,6 +9,9 @@
 
 
 inline void PrintJSONValue(const rapidjson::Value &json) {
+    #if DEBUGB == 1
+        return;
+    #endif
     using namespace rapidjson;
 
     StringBuffer sb;
@@ -19,6 +22,9 @@ inline void PrintJSONValue(const rapidjson::Value &json) {
 }
 
 inline void PrintJSONValue(const rapidjson::Value* json) {
+    #if DEBUGB == 1
+        return;
+    #endif
     using namespace rapidjson;
 
     StringBuffer sb;

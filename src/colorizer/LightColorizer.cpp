@@ -148,7 +148,7 @@ namespace Chroma {
 
             for (int i = 0; i < lightList->get_Count(); i++) {
                 auto l = lightArray->values[i];
-                contextLogger.debug("Adding light to list");
+                debugSpamLog(contextLogger, "Adding light to list");
                 Lights.push_back(l);
             }
 
@@ -162,12 +162,12 @@ namespace Chroma {
 
                 auto object = reinterpret_cast<Il2CppObject *>(light);
 
-                contextLogger.debug("Doing light %s", object->klass->name);
+                debugSpamLog(contextLogger, "Doing light %s", object->klass->name);
                 if (il2cpp_functions::class_is_assignable_from(classof(MonoBehaviour *), object->klass)) {
                     auto monoBehaviour = reinterpret_cast<MonoBehaviour *>(object);
                     int z = UnityEngine::Mathf::RoundToInt(monoBehaviour->get_transform()->get_position().z);
 
-                    contextLogger.debug("Grouping to %d", z);
+                    debugSpamLog(contextLogger, "Grouping to %d", z);
 
                     std::vector<ILightWithId *> list;
 
@@ -192,7 +192,7 @@ namespace Chroma {
             int i = 0;
 
             while (i <= index) {
-                contextLogger.debug("Doing the final grouping, prop id %d", i);
+                debugSpamLog(contextLogger, "Doing the final grouping, prop id %d", i);
                 int z = insertionOrder[i];
 
                 lightsPreGroupFinal[i] = lightsPreGroup[z];
@@ -203,13 +203,13 @@ namespace Chroma {
 //
 //            auto it = lightsPreGroup.begin();
 //            while (it != lightsPreGroup.end()) {
-//                contextLogger.debug("Doing the final grouping, prop id %d", i);
+//                debugSpamLog(contextLogger, "Doing the final grouping, prop id %d", i);
 //                lightsPreGroupFinal[i] = it->second;
 //                i++;
 //                it++;
 //            }
 
-            contextLogger.debug("Done grouping, size %d", lightsPreGroup.size());
+            debugSpamLog(contextLogger, "Done grouping, size %d", lightsPreGroup.size());
 
             LightsPropagationGrouped = lightsPreGroupFinal;
         }
@@ -254,19 +254,24 @@ namespace Chroma {
                                             std::optional<UnityEngine::Color> Color1,
                                             std::optional<UnityEngine::Color> Color0Boost,
                                             std::optional<UnityEngine::Color> Color1Boost) const {
+        static auto contextLogger = getLogger().WithContext(ChromaLogger::LightColorizer);
+        debugSpamLog(contextLogger, "_lightColor0 is null %s", _lightColor0 ? "false" : "true");
         if (Color0) {
             _lightColor0->SetColor(Color0.value());
         }
 
+        debugSpamLog(contextLogger, "_lightColor1 is null %s", _lightColor1 ? "false" : "true");
         if (Color1) {
             _lightColor1->SetColor(Color1.value());
         }
 
         if (_supportBoostColor) {
+            debugSpamLog(contextLogger, "_lightColor0Boost is null %s", _lightColor0Boost ? "false" : "true");
             if (Color0Boost) {
                 _lightColor0Boost->SetColor(Color0Boost.value());
             }
 
+            debugSpamLog(contextLogger, "_lightColor1Boost is null %s", _lightColor1Boost ? "false" : "true");
             if (Color1Boost) {
                 _lightColor1Boost->SetColor(Color1Boost.value());
             }
@@ -407,7 +412,7 @@ namespace Chroma {
         }
 
         static auto contextLogger = getLogger().WithContext(ChromaLogger::LightColorizer);
-        contextLogger.debug("Overwriting %s", id.c_str());
+        debugSpamLog(contextLogger, "Overwriting %s", id.c_str());
         if (il2cpp_functions::class_is_assignable_from(lse->klass, classof(LightSwitchEventEffect *))) {
             CRASH_UNLESS(mColorSO);
             auto l1 = reinterpret_cast<LightSwitchEventEffect *>(lse);

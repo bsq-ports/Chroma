@@ -26,9 +26,9 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffectSpawner_Start, void, GlobalName
     }
 
     auto* oldRotationEffect = self->trackLaneRingsRotationEffect;
-    contextLogger.debug("Adding component");
+    debugSpamLog(contextLogger, "Adding component");
     auto newRotationEffect = oldRotationEffect->get_gameObject()->AddComponent<ChromaRingsRotationEffect*>();
-    contextLogger.debug("Copyying values now");
+    debugSpamLog(contextLogger, "Copyying values now");
     newRotationEffect->CopyValues(oldRotationEffect);
 
     self->trackLaneRingsRotationEffect = reinterpret_cast<TrackLaneRingsRotationEffect*>(newRotationEffect);
@@ -51,7 +51,7 @@ void TriggerRotation(
         float rotationFlexySpeed)
 {
     static auto contextLogger = getLogger().WithContext(Chroma::ChromaLogger::TrackLaneRings);
-    contextLogger.debug("DOING TRIGGER ROTATION %s", trackLaneRingsRotationEffect->klass->name);
+    debugSpamLog(contextLogger, "DOING TRIGGER ROTATION %s", trackLaneRingsRotationEffect->klass->name);
 
     auto chromaRingRotation = reinterpret_cast<ChromaRingsRotationEffect*>(trackLaneRingsRotationEffect);
 
@@ -81,7 +81,7 @@ void origHandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(GlobalNames
     } else if (originalRotationStepType == TrackLaneRingsRotationEffectSpawner::RotationStepType::MaxOr0) {
         step = (UnityEngine::Random::get_value() < 0.5f) ? self->rotationStep : 0.0f;
     }
-    contextLogger.debug("Track lane klass %s", self->trackLaneRingsRotationEffect->klass->name);
+    debugSpamLog(contextLogger, "Track lane klass %s", self->trackLaneRingsRotationEffect->klass->name);
 
     self->trackLaneRingsRotationEffect->AddRingRotationEffect(self->trackLaneRingsRotationEffect->GetFirstRingRotationAngle() + self->rotation * (float)((UnityEngine::Random::get_value() < 0.5f) ? 1 : -1), step, self->rotationPropagationSpeed, self->rotationFlexySpeed);
 }
@@ -95,7 +95,7 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCall
     }
 
 
-//    contextLogger.debug("Track lane rotation effect self %d beat %d and customData %d", self->beatmapEventType.value,
+//    debugSpamLog(contextLogger, "Track lane rotation effect self %d beat %d and customData %d", self->beatmapEventType.value,
 //                      beatmapEventData->type.value,
 //                      beatmapEventData->customData != nullptr && beatmapEventData->customData->value != nullptr ? 0 : 1);
 
@@ -105,7 +105,7 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCall
     static auto contextLogger = getLogger().WithContext(Chroma::ChromaLogger::TrackLaneRings);
     if (self->beatmapEventType.value == beatmapEventData->type.value && customBeatmapEvent->customData &&
         customBeatmapEvent->customData->value) {
-        contextLogger.debug("Doing stuff with custom Data");
+        debugSpamLog(contextLogger, "Doing stuff with custom Data");
         float rotationStep = 0.0f;
         float originalRotationStep = self->rotationStep;
         float originalRotation = self->rotation;
@@ -122,13 +122,13 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCall
         }
 
         auto dynData = customBeatmapEvent->customData->value;
-        contextLogger.debug("Got the data");
+        debugSpamLog(contextLogger, "Got the data");
         auto selfName = to_utf8(csstrtostr(self->get_name()));
 
         auto nameFilter = dynData->FindMember(NAMEFILTER);
         if (nameFilter != dynData->MemberEnd() &&
             stringCompare(selfName, nameFilter->value.GetString()) == 0) {
-            contextLogger.debug("Name filter ignored");
+            debugSpamLog(contextLogger, "Name filter ignored");
             return;
         }
 
@@ -156,12 +156,12 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCall
 
         auto reset = dynData->FindMember(RESET);
         if (reset != dynData->MemberEnd() && reset->value.GetBool()) {
-            contextLogger.debug("Reset spawn, returning");
+            debugSpamLog(contextLogger, "Reset spawn, returning");
             TriggerRotation(self->trackLaneRingsRotationEffect, rotRight, originalRotation, 0, 50, 50);
             return;
         }
 
-        contextLogger.debug("Getting the last values");
+        debugSpamLog(contextLogger, "Getting the last values");
 
         float step = getValueOrDefault(dynData, STEP, rotationStep);
         float prop = getValueOrDefault(dynData, PROP, originalRotationPropagationSpeed);
@@ -174,13 +174,13 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCall
 
         TriggerRotation(self->trackLaneRingsRotationEffect, rotRight, rotation, step * stepMult, prop * propMult,
                         speed * speedMult);
-        contextLogger.debug("Finished spawn, returning");
+        debugSpamLog(contextLogger, "Finished spawn, returning");
         return;
     }
 
 //    }
 
-    contextLogger.debug("Not a custom beat map");
+    debugSpamLog(contextLogger, "Not a custom beat map");
     origHandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);//        TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);
 
 }

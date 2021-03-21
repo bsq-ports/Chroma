@@ -12,6 +12,14 @@
 Configuration& getConfig();
 Logger& getLogger();
 
+#if DEBUGB == 0
+    #define debugSpamLog(context, ...) \
+    context.debug(__VA_ARGS__)
+#else
+    #define debugSpamLog(context, ...) \
+    ((void)0)
+#endif
+
 inline const std::string modName = "Chroma";
 
 static ModInfo modInfo;

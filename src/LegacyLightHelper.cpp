@@ -13,7 +13,7 @@ void LegacyLightHelper::Activate(const std::vector<GlobalNamespace::BeatmapEvent
     static auto contextLogger = getLogger().WithContext(ChromaLogger::LegacyLightColor);
 
     LegacyColorEvents.clear();
-    contextLogger.debug("Got the events, checking for legacy %d", eventData.size());
+    debugSpamLog(contextLogger, "Got the events, checking for legacy %d", eventData.size());
     for (auto& d : eventData)
     {
         // TODO: Should we do this or find the root of the nullptr and fix that instead?
@@ -21,7 +21,7 @@ void LegacyLightHelper::Activate(const std::vector<GlobalNamespace::BeatmapEvent
             continue;
         }
 
-        contextLogger.debug("Checking d %d %s", d->value, d->value >= RGB_INT_OFFSET ? "true" : "false");
+        debugSpamLog(contextLogger, "Checking d %d %s", d->value, d->value >= RGB_INT_OFFSET ? "true" : "false");
         if (d->value >= RGB_INT_OFFSET)
         {
             auto it = LegacyColorEvents.find(d->type);

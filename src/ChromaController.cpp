@@ -181,7 +181,7 @@ custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(Global
             // Spaghetti code below until I can figure out a better way of doing this
             static auto contextLogger = getLogger().WithContext(ChromaLogger::EnvironmentRemoval);
             auto &dynData = *customBeatmap->customData->value;
-            contextLogger.debug("Environment removal time");
+            debugSpamLog(contextLogger, "Environment removal time");
             PrintJSONValue(dynData);
 
             // TODO: Ok here's the problem, this
@@ -221,7 +221,7 @@ custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(Global
                                 if (strcmp(s, "TrackLaneRing") == 0 && nName.find("Big") != std::string::npos)
                                     continue;
 
-                                contextLogger.debug("Setting %s to disabled", nName.c_str());
+                                debugSpamLog(contextLogger, "Setting %s to disabled", nName.c_str());
                                 n->SetActive(false);
                             }
                         }
@@ -241,7 +241,7 @@ custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(Global
                                              sceneName.find("Menu") != std::string::npos;
 
                             if (gStr.find(s) != std::string::npos && sceneEnvironment && sceneMenu) {
-                                contextLogger.debug("Setting %s to disabled else check", gStr.c_str());
+                                debugSpamLog(contextLogger, "Setting %s to disabled else check", gStr.c_str());
                                 n->SetActive(false);
                             }
                         }

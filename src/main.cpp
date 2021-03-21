@@ -100,6 +100,8 @@ extern "C" void load() {
 #else
     #warning "Debug messages hooray"
 #endif
+
+    //TODO: This might be redundant now because of the macro, keep it to be safe?
     // This disables the useless debug logs on the release build
 #if DEBUGB == 1
     getLogger().debug("Disabling annoying loggers in release build");

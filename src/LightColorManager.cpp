@@ -19,14 +19,14 @@ void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, C
 
     std::optional<UnityEngine::Color> color = LegacyLightHelper::GetLegacyColor(beatmapEventData);
 
-    contextLogger.debug("Color is legacy? %s", color ? "true" : "false");
+    debugSpamLog(contextLogger, "Color is legacy? %s", color ? "true" : "false");
 
     // TODO: WHY DOES THIS CAUSE A CRASH? WHY
     // signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x650084
     auto* customDataWrapper = beatmapEventData->customData;
 
     if(customDataWrapper && customDataWrapper->value) {
-        contextLogger.debug("JSON data 1");
+        debugSpamLog(contextLogger, "JSON data 1");
 
 
         rapidjson::Value *dynData = beatmapEventData->customData->value;
@@ -37,7 +37,7 @@ void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, C
             if (!dynData->Empty()) {
 
                 if (dynData->HasMember("_lightID")) {
-                    contextLogger.debug("JSON data 2");
+                    debugSpamLog(contextLogger, "JSON data 2");
                     rapidjson::Value &lightIdData = dynData->FindMember("_lightID")->value;
                     std::vector<ILightWithId *> lights = LightColorizer::GetLights(lightSwitchEventEffect);
                     int lightCount = lights.size();
@@ -74,24 +74,24 @@ void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, C
                 }
 
                 if (dynData->HasMember("_propID")) {
-                    contextLogger.debug("JSON data 3");
+                    debugSpamLog(contextLogger, "JSON data 3");
                     rapidjson::Value &propIDData = dynData->FindMember("_propID")->value;
 
                     std::unordered_map<int, std::vector<ILightWithId *>> lights = LightColorizer::GetLightsPropagationGrouped(
                             lightSwitchEventEffect);
                     int lightCount = lights.size();
 
-                    contextLogger.debug("Prop id data is");
+                    debugSpamLog(contextLogger, "Prop id data is");
                     PrintJSONValue(propIDData);
 
                     if (propIDData.IsInt64() || propIDData.IsInt()) {
                         auto propIdLong = propIDData.GetInt();
-                        contextLogger.debug("It is an int prop %d %d", lightCount, propIdLong);
+                        debugSpamLog(contextLogger, "It is an int prop %d %d", lightCount, propIdLong);
                         if (lightCount > propIdLong) {
                             LightSwitchEventEffectHolder::OverrideLightWithIdActivation = std::make_optional(lights[propIdLong]);
                         }
                     } else {
-                        contextLogger.debug("It is a list prop");
+                        debugSpamLog(contextLogger, "It is a list prop");
                         // It's a list
                         auto propIDobjects = propIDData.GetObject();
                         std::vector<int> propIDArray;
