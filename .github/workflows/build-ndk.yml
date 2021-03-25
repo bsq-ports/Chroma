@@ -75,7 +75,6 @@ jobs:
             ${{ runner.os }}-qpm-
 
       - name: QPM Restore
-        if: steps.cache-qpm-deps.outputs.cache-hit != 'true'
         run: |
           chmod +x ./QPM/QPM
           ./QPM/QPM restore
