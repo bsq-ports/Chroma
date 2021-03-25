@@ -16,8 +16,21 @@ jobs:
           lfs: true
       - name: Install Powershell
         run: sudo apt-get install -y powershell
+        
+      - name: Cache Android NDK
+        id: cache-ndk
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-ndk
+          ndkname: android-ndk-r22
+        with:
+          path: ndk
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ env.ndkname }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}-${{ env.ndkname }}
 
       - name: Setup NDK
+        if: steps.cache-ndk.outputs.cache-hit != 'true'
         id: setup-ndk
         uses: nttld/setup-ndk@v1.0.3
         with:
