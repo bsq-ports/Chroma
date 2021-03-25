@@ -87,7 +87,7 @@ void origHandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(GlobalNames
 }
 
 MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger, void, GlobalNamespace::TrackLaneRingsRotationEffectSpawner* self,
-                     CustomJSONData::CustomBeatmapEventData* beatmapEventData) {
+                     BeatmapEventData* beatmapEventData) {
     if (!ChromaController::DoChromaHooks()) {
         TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self,
                                                                                                         beatmapEventData);
@@ -98,87 +98,87 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCall
 //    debugSpamLog(contextLogger, "Track lane rotation effect self %d beat %d and customData %d", self->beatmapEventType.value,
 //                      beatmapEventData->type.value,
 //                      beatmapEventData->customData != nullptr && beatmapEventData->customData->value != nullptr ? 0 : 1);
-
-//    if (il2cpp_functions::class_is_assignable_from(beatmapEventData->klass, classof(CustomJSONData::CustomBeatmapEventData*))) {
-    auto *customBeatmapEvent = reinterpret_cast<CustomBeatmapEventData *>(beatmapEventData);
-
     static auto contextLogger = getLogger().WithContext(Chroma::ChromaLogger::TrackLaneRings);
-    if (self->beatmapEventType.value == beatmapEventData->type.value && customBeatmapEvent->customData &&
-        customBeatmapEvent->customData->value) {
-        debugSpamLog(contextLogger, "Doing stuff with custom Data");
-        float rotationStep = 0.0f;
-        float originalRotationStep = self->rotationStep;
-        float originalRotation = self->rotation;
-        float originalRotationPropagationSpeed = (float) self->rotationPropagationSpeed;
-        float originalRotationFlexySpeed = self->rotationFlexySpeed;
-        int originalRotationStepType = (int) self->rotationStepType;
 
-        if (originalRotationStepType == TrackLaneRingsRotationEffectSpawner::RotationStepType::Range0ToMax) {
-            rotationStep = UnityEngine::Random::Range(0.0f, rotationStep);
-        } else if (originalRotationStepType == TrackLaneRingsRotationEffectSpawner::RotationStepType::Range) {
-            rotationStep = UnityEngine::Random::Range(-originalRotationStep, originalRotationStep);
-        } else if (originalRotationStepType == TrackLaneRingsRotationEffectSpawner::RotationStepType::MaxOr0) {
-            rotationStep = (UnityEngine::Random::get_value() < 0.5f) ? originalRotationStep : 0.0f;
-        }
+    if (il2cpp_functions::class_is_assignable_from(classof(CustomJSONData::CustomBeatmapEventData*), beatmapEventData->klass)) {
+        auto *customBeatmapEvent = reinterpret_cast<CustomBeatmapEventData *>(beatmapEventData);
 
-        auto dynData = customBeatmapEvent->customData->value;
-        debugSpamLog(contextLogger, "Got the data");
-        auto selfName = to_utf8(csstrtostr(self->get_name()));
 
-        auto nameFilter = dynData->FindMember(NAMEFILTER);
-        if (nameFilter != dynData->MemberEnd() &&
-            stringCompare(selfName, nameFilter->value.GetString()) == 0) {
-            debugSpamLog(contextLogger, "Name filter ignored");
-            return;
-        }
+        if (self->beatmapEventType.value == beatmapEventData->type.value && customBeatmapEvent->customData &&
+            customBeatmapEvent->customData->value && customBeatmapEvent->customData->value->IsObject()) {
+            debugSpamLog(contextLogger, "Doing stuff with custom Data");
+            float rotationStep = 0.0f;
+            float originalRotationStep = self->rotationStep;
+            float originalRotation = self->rotation;
+            auto originalRotationPropagationSpeed = (float) self->rotationPropagationSpeed;
+            float originalRotationFlexySpeed = self->rotationFlexySpeed;
+            int originalRotationStepType = (int) self->rotationStepType;
 
-        int dir;
-
-        auto dirV = dynData->FindMember(DIRECTION);
-
-        if (dirV == dynData->MemberEnd()) {
-            dir = -1;
-        } else dir = dirV->value.GetInt();
-
-        bool rotRight;
-        if (dir == -1) {
-            rotRight = UnityEngine::Random::get_value() < 0.5f;
-        } else {
-            rotRight = dir == 1;
-        }
-
-        auto counterSpinV = dynData->FindMember(COUNTERSPIN);
-        if (counterSpinV != dynData->MemberEnd() && counterSpinV->value.GetBool()) {
-            if (selfName.find("Big") == std::string::npos) {
-                rotRight = !rotRight;
+            if (originalRotationStepType == TrackLaneRingsRotationEffectSpawner::RotationStepType::Range0ToMax) {
+                rotationStep = UnityEngine::Random::Range(0.0f, rotationStep);
+            } else if (originalRotationStepType == TrackLaneRingsRotationEffectSpawner::RotationStepType::Range) {
+                rotationStep = UnityEngine::Random::Range(-originalRotationStep, originalRotationStep);
+            } else if (originalRotationStepType == TrackLaneRingsRotationEffectSpawner::RotationStepType::MaxOr0) {
+                rotationStep = (UnityEngine::Random::get_value() < 0.5f) ? originalRotationStep : 0.0f;
             }
-        }
 
-        auto reset = dynData->FindMember(RESET);
-        if (reset != dynData->MemberEnd() && reset->value.GetBool()) {
-            debugSpamLog(contextLogger, "Reset spawn, returning");
-            TriggerRotation(self->trackLaneRingsRotationEffect, rotRight, originalRotation, 0, 50, 50);
+            auto dynData = customBeatmapEvent->customData->value;
+            debugSpamLog(contextLogger, "Got the data");
+            auto selfName = to_utf8(csstrtostr(self->get_name()));
+
+            auto nameFilter = dynData->FindMember(NAMEFILTER);
+            if (nameFilter != dynData->MemberEnd() &&
+                stringCompare(selfName, nameFilter->value.GetString()) == 0) {
+                debugSpamLog(contextLogger, "Name filter ignored");
+                return;
+            }
+
+            int dir;
+
+            auto dirV = dynData->FindMember(DIRECTION);
+
+            if (dirV == dynData->MemberEnd()) {
+                dir = -1;
+            } else dir = dirV->value.GetInt();
+
+            bool rotRight;
+            if (dir == -1) {
+                rotRight = UnityEngine::Random::get_value() < 0.5f;
+            } else {
+                rotRight = dir == 1;
+            }
+
+            auto counterSpinV = dynData->FindMember(COUNTERSPIN);
+            if (counterSpinV != dynData->MemberEnd() && counterSpinV->value.GetBool()) {
+                if (selfName.find("Big") == std::string::npos) {
+                    rotRight = !rotRight;
+                }
+            }
+
+            auto reset = dynData->FindMember(RESET);
+            if (reset != dynData->MemberEnd() && reset->value.GetBool()) {
+                debugSpamLog(contextLogger, "Reset spawn, returning");
+                TriggerRotation(self->trackLaneRingsRotationEffect, rotRight, originalRotation, 0, 50, 50);
+                return;
+            }
+
+            debugSpamLog(contextLogger, "Getting the last values");
+
+            float step = getValueOrDefault(dynData, STEP, rotationStep);
+            float prop = getValueOrDefault(dynData, PROP, originalRotationPropagationSpeed);
+            float speed = getValueOrDefault(dynData, SPEED, originalRotationFlexySpeed);
+            float rotation = getValueOrDefault(dynData, ROTATION, originalRotation);
+
+            float stepMult = getValueOrDefault(dynData, STEPMULT, 1.0f);
+            float propMult = getValueOrDefault(dynData, PROPMULT, 1.0f);
+            float speedMult = getValueOrDefault(dynData, SPEEDMULT, 1.0f);
+
+            TriggerRotation(self->trackLaneRingsRotationEffect, rotRight, rotation, step * stepMult, prop * propMult,
+                            speed * speedMult);
+            debugSpamLog(contextLogger, "Finished spawn, returning");
             return;
         }
-
-        debugSpamLog(contextLogger, "Getting the last values");
-
-        float step = getValueOrDefault(dynData, STEP, rotationStep);
-        float prop = getValueOrDefault(dynData, PROP, originalRotationPropagationSpeed);
-        float speed = getValueOrDefault(dynData, SPEED, originalRotationFlexySpeed);
-        float rotation = getValueOrDefault(dynData, ROTATION, originalRotation);
-
-        float stepMult = getValueOrDefault(dynData, STEPMULT, 1.0f);
-        float propMult = getValueOrDefault(dynData, PROPMULT, 1.0f);
-        float speedMult = getValueOrDefault(dynData, SPEEDMULT, 1.0f);
-
-        TriggerRotation(self->trackLaneRingsRotationEffect, rotRight, rotation, step * stepMult, prop * propMult,
-                        speed * speedMult);
-        debugSpamLog(contextLogger, "Finished spawn, returning");
-        return;
     }
-
-//    }
 
     debugSpamLog(contextLogger, "Not a custom beat map");
     origHandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);//        TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);

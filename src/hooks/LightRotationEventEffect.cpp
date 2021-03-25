@@ -1,5 +1,6 @@
 #include "Chroma.hpp"
 #include "ChromaController.hpp"
+#include "utils/ChromaUtils.hpp"
 
 #include "custom-json-data/shared/CustomBeatmapData.h"
 #include "GlobalNamespace/LightRotationEventEffect.hpp"
@@ -11,12 +12,13 @@ using namespace CustomJSONData;
 using namespace GlobalNamespace;
 using namespace UnityEngine;
 using namespace Chroma;
+using namespace ChromaUtils;
 
 MAKE_HOOK_OFFSETLESS(
     LightRotationEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger,
     void,
     LightRotationEventEffect* self,
-    CustomBeatmapEventData* beatmapEventData
+    BeatmapEventData* beatmapEventData
 ) {
     // Do nothing if Chroma shouldn't run
     if (!ChromaController::DoChromaHooks()) {
@@ -24,24 +26,25 @@ MAKE_HOOK_OFFSETLESS(
         return;
     }
 
-    if (beatmapEventData->type == self->event) {
+
+    if (beatmapEventData->type == self->event && il2cpp_functions::class_is_assignable_from(classof(CustomBeatmapEventData*), beatmapEventData->klass)) {
+        auto* customBeatmapEvent = reinterpret_cast<CustomBeatmapEventData *>(beatmapEventData);
         bool isLeftEvent = self->event == BeatmapEventType::Event12;
 
-        bool isCustomData = beatmapEventData->customData && beatmapEventData->customData->value;
-        rapidjson::Value* dynData = isCustomData ? beatmapEventData->customData->value : nullptr;
+        bool isCustomData = customBeatmapEvent->customData && customBeatmapEvent->customData->value && customBeatmapEvent->customData->value->IsObject();
+        rapidjson::Value* dynData = isCustomData ? customBeatmapEvent->customData->value : nullptr;
 
-        bool lockPosition = isCustomData && dynData->HasMember(LOCKPOSITION) && dynData->FindMember(LOCKPOSITION)->value.GetBool();
+        bool lockPosition = getIfExists(dynData, LOCKPOSITION, false);
 
-        float precisionSpeed = isCustomData && dynData->HasMember(PRECISESPEED) ? dynData->FindMember(PRECISESPEED)->value.GetFloat() : (float) beatmapEventData->value;
+        float precisionSpeed = getIfExists(dynData, PRECISESPEED, (float) beatmapEventData->value);
 
-        int dir = isCustomData && dynData->HasMember(DIRECTION) ? dynData->FindMember(DIRECTION)->value.GetInt() : -1;
+        int dir = getIfExists(dynData, DIRECTION, -1);
 
         float direction = (Random::get_value() > 0.5f) ? 1.0f : -1.0f;
         switch (dir) {
         case 0:
             direction = isLeftEvent ? -1.0f : 1.0f;
             break;
-                
         case 1:
             direction = isLeftEvent ? 1.0f : -1.0f;
             break;

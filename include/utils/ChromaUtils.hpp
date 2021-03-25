@@ -55,5 +55,16 @@ namespace ChromaUtils {
         return -1;
     }
 
+    template<typename T>
+    T getIfExists(rapidjson::Value* val, const std::string& member, T def) {
+        if (!val || !val->IsObject() || val->Empty()) return def;
+
+        auto it = val->FindMember(member);
+
+        if (it == val->MemberEnd()) return def;
+
+        return it->value.Get<T>();
+    }
+
 
 }

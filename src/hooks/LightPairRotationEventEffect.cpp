@@ -16,7 +16,7 @@ using namespace UnityEngine;
 using namespace Chroma;
 using namespace ChromaUtils;
 
-static CustomBeatmapEventData* LastLightPairRotationEventEffectData;
+static BeatmapEventData* LastLightPairRotationEventEffectData;
 
 MAKE_HOOK_OFFSETLESS(
     LightPairRotationEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger,
@@ -65,73 +65,73 @@ MAKE_HOOK_OFFSETLESS(
         return;
     }
 
-    CustomBeatmapEventData *beatmapEventData = LastLightPairRotationEventEffectData;
+    auto beatmapEventData = LastLightPairRotationEventEffectData;
+    if (beatmapEventData && il2cpp_functions::class_is_assignable_from(classof(CustomBeatmapEventData*), beatmapEventData->klass)) {
+        auto *customBeatmapEvent = reinterpret_cast<CustomBeatmapEventData *>(beatmapEventData);
 
-    bool isLeftEvent = beatmapEventData->type == self->eventL;
+        bool isLeftEvent = beatmapEventData->type == self->eventL;
 
-    // rotationData
-    LightPairRotationEventEffect::RotationData *customRotationData = isLeftEvent ? self->rotationDataL
-                                                                                 : self->rotationDataR;
+        // rotationData
+        LightPairRotationEventEffect::RotationData *customRotationData = isLeftEvent ? self->rotationDataL
+                                                                                     : self->rotationDataR;
 
 //    if (beatmapEventData->customData && beatmapEventData->customData->value) {
 
-    bool isCustomData = beatmapEventData->customData && beatmapEventData->customData->value;
-    auto dynData = isCustomData ? beatmapEventData->customData->value : nullptr;
+        bool isCustomData = customBeatmapEvent->customData && customBeatmapEvent->customData->value;
+        auto dynData = isCustomData ? customBeatmapEvent->customData->value : nullptr;
 
 
 
 //        bool lockPosition = dynData.HasMember(LOCKPOSITION) && dynData[LOCKPOSITION].GetBool();
-    bool lockPosition =
-            isCustomData && dynData->HasMember(LOCKPOSITION) && dynData->FindMember(LOCKPOSITION)->value.GetBool();
+        bool lockPosition = getIfExists(dynData, LOCKPOSITION, false);
 
-    float precisionSpeed =
-            isCustomData && dynData->HasMember(PRECISESPEED) ? dynData->FindMember(PRECISESPEED)->value.GetFloat()
-                                                             : (float) beatmapEventData->value;
+        float precisionSpeed = getIfExists(dynData, PRECISESPEED, (float) beatmapEventData->value);
 
-    int dir = isCustomData && dynData->HasMember(DIRECTION) ? dynData->FindMember(DIRECTION)->value.GetInt() : -1;
+        int dir = getIfExists(dynData, DIRECTION, -1);
 
-    switch (dir) {
-        case 0:
-            direction = isLeftEvent ? -1.0f : 1.0f;
-            break;
+        switch (dir) {
+            case 0:
+                direction = isLeftEvent ? -1.0f : 1.0f;
+                break;
 
-        case 1:
-            direction = isLeftEvent ? 1.0f : -1.0f;
-            break;
-    }
-
-
-    //getLogger().debug("The time is: %d", beatmapEventData->time);
-    if (beatmapEventData->value == 0) {
-        customRotationData->enabled = false;
-        if (!lockPosition) {
-            customRotationData->rotationAngle = customRotationData->startRotationAngle;
-            customRotationData->transform->set_localRotation(quaternionMultiply(customRotationData->startRotation,
-                                                                                UnityEngine::Quaternion::Euler(
-                                                                                        vectorMultiply(
-                                                                                                self->rotationVector,
-                                                                                                customRotationData->startRotationAngle))));
-//                getLogger().debug("Doing rotation %d and local rot %d %d %d", customRotationData->rotationAngle, customRotationData->transform->get_localRotation().x,customRotationData->transform->get_localRotation().y,customRotationData->transform->get_localRotation().z);
-            //getLogger().debug("Pair | (beatmapEventData.value > 0) time = %d, localRotation = %s",
-            //                  beatmapEventData->time,
-            //                  quaternionStr(self->get_transform()->get_localRotation()).c_str());
+            case 1:
+                direction = isLeftEvent ? 1.0f : -1.0f;
+                break;
         }
-    } else if (beatmapEventData->value > 0) {
-        customRotationData->enabled = true;
-        customRotationData->rotationSpeed = precisionSpeed * 20.0f * direction;
-        //getLogger().debug("Doing rotation speed (%d) %d", beatmapEventData->value, customRotationData->rotationSpeed);
-        if (!lockPosition) {
-            float rotationAngle = startRotationOffset + customRotationData->startRotationAngle;
-            customRotationData->rotationAngle = rotationAngle;
-            customRotationData->transform->set_localRotation(quaternionMultiply(customRotationData->startRotation,
-                                                                                UnityEngine::Quaternion::Euler(
-                                                                                        vectorMultiply(
-                                                                                                self->rotationVector,
-                                                                                                rotationAngle))));
+
+
+        //getLogger().debug("The time is: %d", beatmapEventData->time);
+        if (beatmapEventData->value == 0) {
+            customRotationData->enabled = false;
+            if (!lockPosition) {
+                customRotationData->rotationAngle = customRotationData->startRotationAngle;
+                customRotationData->transform->set_localRotation(quaternionMultiply(customRotationData->startRotation,
+                                                                                    UnityEngine::Quaternion::Euler(
+                                                                                            vectorMultiply(
+                                                                                                    self->rotationVector,
+                                                                                                    customRotationData->startRotationAngle))));
 //                getLogger().debug("Doing rotation %d and local rot %d %d %d", customRotationData->rotationAngle, customRotationData->transform->get_localRotation().x,customRotationData->transform->get_localRotation().y,customRotationData->transform->get_localRotation().z);
-            //getLogger().debug("Pair | (beatmapEventData.value > 0) time = %d, localRotation = %s",
-            //                  beatmapEventData->time,
-            //                  quaternionStr(self->get_transform()->get_localRotation()).c_str());
+                //getLogger().debug("Pair | (beatmapEventData.value > 0) time = %d, localRotation = %s",
+                //                  beatmapEventData->time,
+                //                  quaternionStr(self->get_transform()->get_localRotation()).c_str());
+            }
+        } else if (beatmapEventData->value > 0) {
+            customRotationData->enabled = true;
+            customRotationData->rotationSpeed = precisionSpeed * 20.0f * direction;
+            //getLogger().debug("Doing rotation speed (%d) %d", beatmapEventData->value, customRotationData->rotationSpeed);
+            if (!lockPosition) {
+                float rotationAngle = startRotationOffset + customRotationData->startRotationAngle;
+                customRotationData->rotationAngle = rotationAngle;
+                customRotationData->transform->set_localRotation(quaternionMultiply(customRotationData->startRotation,
+                                                                                    UnityEngine::Quaternion::Euler(
+                                                                                            vectorMultiply(
+                                                                                                    self->rotationVector,
+                                                                                                    rotationAngle))));
+//                getLogger().debug("Doing rotation %d and local rot %d %d %d", customRotationData->rotationAngle, customRotationData->transform->get_localRotation().x,customRotationData->transform->get_localRotation().y,customRotationData->transform->get_localRotation().z);
+                //getLogger().debug("Pair | (beatmapEventData.value > 0) time = %d, localRotation = %s",
+                //                  beatmapEventData->time,
+                //                  quaternionStr(self->get_transform()->get_localRotation()).c_str());
+            }
         }
     }
 //    } else {

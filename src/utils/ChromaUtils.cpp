@@ -6,6 +6,8 @@ using namespace ChromaUtils;
 
 std::optional<UnityEngine::Color> ChromaUtilities::GetColorFromData(rapidjson::Value* data, const std::string& member)
 {
+    if (data->GetType() == rapidjson::kNullType || data->Empty()) return std::nullopt;
+
     rapidjson::Value::MemberIterator color = data->FindMember(member);
 
     if (color == data->MemberEnd())
