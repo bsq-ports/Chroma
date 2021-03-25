@@ -41,7 +41,6 @@ jobs:
         run: echo ${{ steps.setup-ndk.outputs.ndk-path }} > ${GITHUB_WORKSPACE}/ndkpath.txt
 
       - name: Get QPM
-        if: steps.cache-qpm.outputs.cache-hit != 'true'
         uses: dawidd6/action-download-artifact@v2
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
@@ -65,7 +64,6 @@ jobs:
             ${{ runner.os }}-qpm-
 
       - name: QPM Restore
-        if: steps.cache-qpm-deps.outputs.cache-hit != 'true'
         run: |
           chmod +x ./QPM/QPM
           ./QPM/QPM restore
