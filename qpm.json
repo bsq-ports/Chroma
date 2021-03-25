@@ -25,7 +25,7 @@
     },
     {
       "id": "codegen",
-      "versionRange": "*",
+      "versionRange": "^0.6.2",
       "additionalData": {}
     },
     {
@@ -40,7 +40,7 @@
     },
     {
       "id": "questui",
-      "versionRange": "*",
+      "versionRange": "<0.5.0",
       "additionalData": {}
     },
     {
