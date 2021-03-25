@@ -21,6 +21,7 @@
 #include "UnityEngine/ParticleSystem_MainModule.hpp"
 #include "UnityEngine/Mathf.hpp"
 #include "UnityEngine/ParticleSystem_MinMaxGradient.hpp"
+#include "UnityEngine/Resources.hpp"
 #include "hooks/SaberManager.hpp"
 
 #include <unordered_map>
@@ -69,6 +70,8 @@ void SaberColorizer::BSMStart(GlobalNamespace::Saber *bcm, int saberType) {
 
 SaberColorizer::BSMColorManager::BSMColorManager(GlobalNamespace::Saber *bsm, int saberType) {
     _saberType = saberType;
+    saberBurnMarkArea = UnityEngine::Resources::FindObjectsOfTypeAll<SaberBurnMarkArea*>()->values[0];
+    saberBurnMarkSparkles = UnityEngine::Resources::FindObjectsOfTypeAll<SaberBurnMarkSparkles*>()->values[0];
 }
 
 std::vector<SaberColorizer::BSMColorManager *>SaberColorizer::BSMColorManager::GetBSMColorManager(int saberType) {
@@ -167,7 +170,7 @@ UnityEngine::Color getSaberColor(Saber* saber) {
 }
 
 // https://github.com/Auros/SiraUtil/blob/f40d4ca44f5e6632ed74606cb4d6676546f6f56e/SiraUtil/Sabers/SiraSaber.cs#L164
-custom_types::Helpers::Coroutine ChangeColorCoroutine(Saber *saber, UnityEngine::Color color) {
+custom_types::Helpers::Coroutine ChangeColorCoroutine(Saber *saber, UnityEngine::Color color, SaberBurnMarkSparkles* saberBurnMarkSparkles, SaberBurnMarkArea* saberBurnMarkArea) {
     co_yield reinterpret_cast<enumeratorT *>(CRASH_UNLESS(
             il2cpp_utils::New<UnityEngine::WaitForSecondsRealtime *>(0.05f)));
 
@@ -188,31 +191,28 @@ custom_types::Helpers::Coroutine ChangeColorCoroutine(Saber *saber, UnityEngine:
     UnityEngine::Color::RGBToHSV(saberColor, h, s, ignored);
     saberColor = UnityEngine::Color::HSVToRGB(h, s, 1.0f);
 
-    auto saberBurnMarkSparkles = saber->GetComponentInChildren<SaberBurnMarkSparkles *>();
+
 
     if (saberBurnMarkSparkles) {
         auto saberMarkPS = saberBurnMarkSparkles->burnMarksPS;
 
-        for (int i = 0; i < saberMarkPS->Length(); i++) {
-            auto sPS = saberMarkPS->values[i];
+        auto sPS = saberMarkPS->values[(int) saber->get_saberType()];
 
-            sPS->get_main().set_startColor(ParticleSystem::MinMaxGradient(saberColor));
-        }
+        sPS->get_main().set_startColor(ParticleSystem::MinMaxGradient(saberColor));
     }
 
-    auto saberBurnMarkArea = saber->GetComponentInChildren<SaberBurnMarkArea *>();
+
     if (saberBurnMarkArea) {
 
         auto lineRenderers = saberBurnMarkArea->lineRenderers;
 
-        for (int i = 0; i < lineRenderers->Length(); i++) {
-            auto lineRenderer = lineRenderers->values[i];
+        auto lineRenderer = lineRenderers->values[(int) saber->get_saberType()];
 
-            lineRenderer->set_startColor(saberColor);
-            lineRenderer->set_endColor(saberColor);
-            lineRenderer->set_positionCount(2);
-        }
+        lineRenderer->set_startColor(saberColor);
+        lineRenderer->set_endColor(saberColor);
+        lineRenderer->set_positionCount(2);
     }
+
 
 
     coroutineSabers.erase(saber->get_saberType().value);
@@ -232,7 +232,9 @@ void SaberColorizer::BSMColorManager::SetSaberColor(std::optional<UnityEngine::C
             coroutineSabers.erase(runningCoro);
         }
 
-        custom_types::Helpers::StandardCoroutine* coro = custom_types::Helpers::CoroutineHelper::New(ChangeColorCoroutine(_bsm, colorNullable.value()));
+        custom_types::Helpers::StandardCoroutine* coro = custom_types::Helpers::CoroutineHelper::New(
+                ChangeColorCoroutine(_bsm, colorNullable.value(),saberBurnMarkSparkles, saberBurnMarkArea)
+                );
 
         _bsm->StartCoroutine(reinterpret_cast<enumeratorT*>(coro));
         coroutineSabers[_saberType] = coro;
@@ -254,7 +256,9 @@ void SaberColorizer::BSMColorManager::SetSaberColor(std::optional<UnityEngine::C
                 auto* modelController = _bsm->get_gameObject()->GetComponentInChildren<SaberModelController*>(true);
 
                 custom_types::Helpers::StandardCoroutine *coro = custom_types::Helpers::CoroutineHelper::New(
-                        ChangeColorCoroutine(_bsm, modelController->colorManager->ColorForSaberType(_saberType)));
+                        ChangeColorCoroutine(_bsm, modelController->colorManager->ColorForSaberType(_saberType),
+                                             saberBurnMarkSparkles, saberBurnMarkArea)
+                                             );
 
                 _bsm->StartCoroutine(reinterpret_cast<enumeratorT *>(coro));
                 coroutineSabers[_saberType] = coro;

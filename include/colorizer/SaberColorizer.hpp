@@ -3,6 +3,7 @@
 #include "UnityEngine/MonoBehaviour.hpp"
 #include "GlobalNamespace/BeatmapEventType.hpp"
 #include "GlobalNamespace/SaberBurnMarkArea.hpp"
+#include "GlobalNamespace/SaberBurnMarkSparkles.hpp"
 #include "GlobalNamespace/SaberType.hpp"
 #include "GlobalNamespace/Saber.hpp"
 #include "custom-types/shared/types.hpp"
@@ -22,8 +23,6 @@ namespace Chroma {
     public:
         static std::vector<std::optional<UnityEngine::Color>> SaberColorOverride;
 
-        static GlobalNamespace::SaberBurnMarkArea *SaberBurnMarkArea;
-
         static void SetSaberColor(int saberType, std::optional<UnityEngine::Color> color);
 
         static void
@@ -40,6 +39,9 @@ namespace Chroma {
         class BSMColorManager {
         private:
             int _saberType;
+
+            inline static GlobalNamespace::SaberBurnMarkArea *saberBurnMarkArea = nullptr;
+            inline static GlobalNamespace::SaberBurnMarkSparkles* saberBurnMarkSparkles = nullptr;
 
             BSMColorManager(GlobalNamespace::Saber *bsm, int saberType);
 
