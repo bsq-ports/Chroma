@@ -1,5 +1,6 @@
 #pragma once
 
+#include "main.hpp"
 
 #include "GlobalNamespace/SimpleColorSO.hpp"
 #include "GlobalNamespace/MultipliedColorSO.hpp"
