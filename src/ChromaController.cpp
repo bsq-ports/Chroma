@@ -284,7 +284,7 @@ bool ChromaController::ChromaRequired() {
     auto reqVar = getenv("req_Chroma");
     auto sugVar = getenv("sug_Chroma");
 
-    return true;
+    return (reqVar && strcmp(reqVar, "1") == 0) || (sugVar && strcmp(sugVar, "1") == 0);
 }
 
 bool ChromaController::DoColorizerSabers() {

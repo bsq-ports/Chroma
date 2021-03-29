@@ -206,11 +206,16 @@ custom_types::Helpers::Coroutine ChangeColorCoroutine(Saber *saber, UnityEngine:
 
         auto lineRenderers = saberBurnMarkArea->lineRenderers;
 
-        auto lineRenderer = lineRenderers->values[(int) saber->get_saberType()];
+        // TODO: Find out if this breaks saber burn marks
+        if (lineRenderers) {
+            auto lineRenderer = lineRenderers->values[(int) saber->get_saberType()];
 
-        lineRenderer->set_startColor(saberColor);
-        lineRenderer->set_endColor(saberColor);
-        lineRenderer->set_positionCount(2);
+            if (lineRenderer) {
+                lineRenderer->set_startColor(saberColor);
+                lineRenderer->set_endColor(saberColor);
+                lineRenderer->set_positionCount(2);
+            }
+        }
     }
 
 
