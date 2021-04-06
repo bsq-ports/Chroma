@@ -141,8 +141,9 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCall
                 dir = -1;
             } else dir = dirV->value.GetInt();
 
+            // https://github.com/Aeroluna/Chroma/commit/3900969d3fef1eaeea745bcfc23c61bfbe525586#diff-e83fa5da7e2e725f2cfb2ee5a6d6a085b2065a95e0d4757e01fe3c29f0fa4024
             bool rotRight;
-            if (dir == -1) {
+            if (dir != -1) {
                 rotRight = UnityEngine::Random::get_value() < 0.5f;
             } else {
                 rotRight = dir == 1;
