@@ -14,6 +14,8 @@
   ],
   "libraryFiles": [
     "libbeatsaber-hook_1_2_4.so",
+    "libbeatsaber-hook_1_2_3.so",
+    "libbeatsaber-hook_1_1_6.so",
     "libquestui.so",
     "libbs-utils.so"
   ],
