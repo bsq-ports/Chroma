@@ -1,0 +1,32 @@
+{
+  "_QPVersion": "0.1.1",
+  "name": "Chroma",
+  "id": "chroma",
+  "author": "Aeroluna",
+  "porter": "FernTheDev, nyamimi~",
+  "version": "0.1.0",
+  "packageId": "com.beatgames.beatsaber",
+  "packageVersion": "1.14.0",
+  "description": "Colors!",
+  "modFiles": [
+    "libchroma.so",
+    "libcustom-json-data.so"
+  ],
+  "libraryFiles": [
+    "libbeatsaber-hook_1_2_4.so",
+    "libquestui.so",
+    "libbs-utils.so"
+  ],
+  "dependencies": [
+    {
+      "id": "custom-types",
+      "version": ">=0.5.1",
+      "downloadIfMissing": "https://github.com/sc2ad/Il2CppQuestTypePatching/releases/download/v0.5.1/custom-types_v0.5.1.qmod"
+    },
+    {
+      "id": "codegen",
+      "version": ">=0.7.0",
+      "downloadIfMissing": "https://github.com/sc2ad/BeatSaber-Quest-Codegen/releases/download/v0.7.0/Codegen_v0.7.0.qmod"
+    }
+  ]
+}
