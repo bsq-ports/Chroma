@@ -73,7 +73,16 @@ void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, B
 
                             for (auto lightId : lightIDArray) {
                                 if (lightCount > lightId) {
-                                    overrideLights.push_back(lights[lightId]);
+
+                                    if (lightId > 0 && lights.size() > lightId) {
+                                        auto l = lights[lightId];
+                                        if (l) {
+                                            overrideLights.push_back(l);
+                                        }
+                                    } else {
+                                        getLogger().warning("Light ID %d is larger or less than 0; vector size %d", lightId, lights.size());
+                                    }
+
                                 }
                             }
 
