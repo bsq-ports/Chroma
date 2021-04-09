@@ -8,25 +8,25 @@
 
 DECLARE_CONFIG(ChromaConfig,
 
-        DECLARE_VALUE(customColorEventsEnabled, bool, "Custom Color Events", true);
-        DECLARE_VALUE(lightshowModifier, bool, "Lightshow Modifier", false);
-        DECLARE_VALUE(environmentEnhancementsEnabled, bool, "Environment Enhancements", true);
-        DECLARE_VALUE(playersPlace, bool, "Players Place", false);
-        DECLARE_VALUE(spectrograms, bool, "Spectrograms ", false);
+        CONFIG_VALUE(customColorEventsEnabled, bool, "Custom Color Events", true);
+        CONFIG_VALUE(lightshowModifier, bool, "Lightshow Modifier", false);
+        CONFIG_VALUE(environmentEnhancementsEnabled, bool, "Environment Enhancements", true);
+        CONFIG_VALUE(playersPlace, bool, "Players Place", false);
+        CONFIG_VALUE(spectrograms, bool, "Spectrograms ", false);
 
-        DECLARE_VALUE(backColumns, bool, "Back Columns", false);
-        DECLARE_VALUE(buildings, bool, "Buildings ", false);
+        CONFIG_VALUE(backColumns, bool, "Back Columns", false);
+        CONFIG_VALUE(buildings, bool, "Buildings ", false);
 
-        INIT_FUNCTION(
+        CONFIG_INIT_FUNCTION(
 
-            INIT_VALUE(customColorEventsEnabled);
-            INIT_VALUE(lightshowModifier);
-            INIT_VALUE(environmentEnhancementsEnabled);
-            INIT_VALUE(playersPlace);
-            INIT_VALUE(spectrograms);
+            CONFIG_INIT_VALUE(customColorEventsEnabled);
+            CONFIG_INIT_VALUE(lightshowModifier);
+            CONFIG_INIT_VALUE(environmentEnhancementsEnabled);
+            CONFIG_INIT_VALUE(playersPlace);
+            CONFIG_INIT_VALUE(spectrograms);
 
-            INIT_VALUE(backColumns);
-            INIT_VALUE(buildings);
+            CONFIG_INIT_VALUE(backColumns);
+            CONFIG_INIT_VALUE(buildings);
 
             )
 )

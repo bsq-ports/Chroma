@@ -16,7 +16,7 @@ using namespace UnityEngine;
 
 using namespace Chroma;
 
-DEFINE_CLASS(Chroma::BNCColorManager);
+DEFINE_TYPE(Chroma::BNCColorManager);
 
 std::optional<UnityEngine::Color> BNCColorManager::_globalColor = std::nullopt;
 

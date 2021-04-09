@@ -49,12 +49,13 @@ public:
                               DECLARE_METHOD(static void, CancelGradient, GlobalNamespace::BeatmapEventType eventType);
                               DECLARE_METHOD(void, Update);
                               DECLARE_CTOR(ctor);
-
+                              DECLARE_SIMPLE_DTOR(ChromaGradientController);
 
 
                               REGISTER_FUNCTION(Chroma::ChromaGradientController,
                                     getLogger().debug("Registering ChromaGradientController!");
                               REGISTER_METHOD(ctor);
+                              REGISTER_SIMPLE_DTOR;
                               REGISTER_METHOD(getInstance);
                               REGISTER_METHOD(IsGradientActive);
                               REGISTER_METHOD(CancelGradient);

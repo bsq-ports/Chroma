@@ -96,30 +96,32 @@ DECLARE_CLASS_CODEGEN(Chroma, LSEColorManager, Il2CppObject,
                               DECLARE_INSTANCE_FIELD(UnityEngine::Color, _lightColor0Boost_Original);
                               DECLARE_INSTANCE_FIELD(UnityEngine::Color, _lightColor1Boost_Original);
 
-                              DECLARE_INSTANCE_FIELD_DEFAULT(GlobalNamespace::SimpleColorSO*, _lightColor0, nullptr);
-                              DECLARE_INSTANCE_FIELD_DEFAULT(GlobalNamespace::SimpleColorSO*, _lightColor1, nullptr);
-                              DECLARE_INSTANCE_FIELD_DEFAULT(GlobalNamespace::SimpleColorSO*, _lightColor0Boost, nullptr);
-                              DECLARE_INSTANCE_FIELD_DEFAULT(GlobalNamespace::SimpleColorSO*, _lightColor1Boost, nullptr);
+                              DECLARE_INSTANCE_FIELD(GlobalNamespace::SimpleColorSO*, _lightColor0);
+                              DECLARE_INSTANCE_FIELD(GlobalNamespace::SimpleColorSO*, _lightColor1);
+                              DECLARE_INSTANCE_FIELD(GlobalNamespace::SimpleColorSO*, _lightColor0Boost);
+                              DECLARE_INSTANCE_FIELD(GlobalNamespace::SimpleColorSO*, _lightColor1Boost);
 
-                              DECLARE_INSTANCE_FIELD_DEFAULT(GlobalNamespace::MultipliedColorSO*, _mLightColor0, nullptr);
-                              DECLARE_INSTANCE_FIELD_DEFAULT(GlobalNamespace::MultipliedColorSO*, _mHighlightColor0, nullptr);
-                              DECLARE_INSTANCE_FIELD_DEFAULT(GlobalNamespace::MultipliedColorSO*, _mLightColor1, nullptr);
-                              DECLARE_INSTANCE_FIELD_DEFAULT(GlobalNamespace::MultipliedColorSO*, _mHighlightColor1, nullptr);
+                              DECLARE_INSTANCE_FIELD(GlobalNamespace::MultipliedColorSO*, _mLightColor0);
+                              DECLARE_INSTANCE_FIELD(GlobalNamespace::MultipliedColorSO*, _mHighlightColor0);
+                              DECLARE_INSTANCE_FIELD(GlobalNamespace::MultipliedColorSO*, _mLightColor1);
+                              DECLARE_INSTANCE_FIELD(GlobalNamespace::MultipliedColorSO*, _mHighlightColor1);
 
-                              DECLARE_INSTANCE_FIELD_DEFAULT(GlobalNamespace::MultipliedColorSO*, _mLightColor0Boost, nullptr);
-                              DECLARE_INSTANCE_FIELD_DEFAULT(GlobalNamespace::MultipliedColorSO*, _mHighlightColor0Boost, nullptr);
-                              DECLARE_INSTANCE_FIELD_DEFAULT(GlobalNamespace::MultipliedColorSO*, _mLightColor1Boost, nullptr);
-                              DECLARE_INSTANCE_FIELD_DEFAULT(GlobalNamespace::MultipliedColorSO*, _mHighlightColor1Boost, nullptr);
+                              DECLARE_INSTANCE_FIELD(GlobalNamespace::MultipliedColorSO*, _mLightColor0Boost);
+                              DECLARE_INSTANCE_FIELD(GlobalNamespace::MultipliedColorSO*, _mHighlightColor0Boost);
+                              DECLARE_INSTANCE_FIELD(GlobalNamespace::MultipliedColorSO*, _mLightColor1Boost);
+                              DECLARE_INSTANCE_FIELD(GlobalNamespace::MultipliedColorSO*, _mHighlightColor1Boost);
 
                               DECLARE_INSTANCE_FIELD(bool, _supportBoostColor);
 
                               DECLARE_INSTANCE_FIELD(float, _lastValue);
 
+                              DECLARE_SIMPLE_DTOR(LSEColorManager);
                               DECLARE_CTOR(ctor, UnityEngine::MonoBehaviour* mono, GlobalNamespace::BeatmapEventType type);
 
                               REGISTER_FUNCTION(Chroma::LSEColorManager,
                               getLogger().debug("Registering LSEColorManager!");
                               REGISTER_METHOD(ctor);
+                              REGISTER_SIMPLE_DTOR;
 
                               REGISTER_FIELD(_lse);
                               REGISTER_FIELD(_type);

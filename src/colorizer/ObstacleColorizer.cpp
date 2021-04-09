@@ -16,7 +16,7 @@ using namespace UnityEngine;
 
 using namespace Chroma;
 
-DEFINE_CLASS(Chroma::OCColorManager);
+DEFINE_TYPE(Chroma::OCColorManager);
 
 void ObstacleColorizer::Reset(GlobalNamespace::ObstacleController *oc) {
     auto ocman = OCColorManager::GetOCColorManager(oc);

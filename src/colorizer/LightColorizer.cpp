@@ -22,7 +22,7 @@ using namespace Chroma;
 // TODO: Is this the proper equivalent of HashSet<LSEColorManager>?
 static std::vector<Chroma::LSEColorManager *> lseColorManagers;
 
-DEFINE_CLASS(Chroma::LSEColorManager);
+DEFINE_TYPE(Chroma::LSEColorManager);
 
 void LightColorizer::Reset(MonoBehaviour *behaviour) {
     LSEColorManager* manager = Chroma::LSEColorManager::GetLSEColorManager(behaviour);

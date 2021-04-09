@@ -15,24 +15,24 @@
 
 DECLARE_CLASS_CODEGEN(Chroma, ChromaRotationEffect, Il2CppObject,
 public:
-        DECLARE_INSTANCE_FIELD_DEFAULT(float, RotationAngle, 0.0f);
+        DECLARE_INSTANCE_FIELD(float, RotationAngle);
 
-        DECLARE_INSTANCE_FIELD_DEFAULT(float, RotationStep, 0.0f);
+        DECLARE_INSTANCE_FIELD(float, RotationStep);
 
-        DECLARE_INSTANCE_FIELD_DEFAULT(float, RotationFlexySpeed, 0.0f);
+        DECLARE_INSTANCE_FIELD(float, RotationFlexySpeed);
 
-        DECLARE_INSTANCE_FIELD_DEFAULT(float, RotationPropagationSpeed, 0.0f);
+        DECLARE_INSTANCE_FIELD(float, RotationPropagationSpeed);
 
-        DECLARE_INSTANCE_FIELD_DEFAULT(float, ProgressPos, 0.0f);
+        DECLARE_INSTANCE_FIELD(float, ProgressPos);
 
         REGISTER_FUNCTION(ChromaRotationEffect,
-                          REGISTER_FIELD(RotationAngle);
-        REGISTER_FIELD(RotationStep);
-        REGISTER_FIELD(RotationFlexySpeed);
-        REGISTER_FIELD(RotationPropagationSpeed);
-        REGISTER_FIELD(ProgressPos);
+            REGISTER_FIELD(RotationAngle);
+            REGISTER_FIELD(RotationStep);
+            REGISTER_FIELD(RotationFlexySpeed);
+            REGISTER_FIELD(RotationPropagationSpeed);
+            REGISTER_FIELD(ProgressPos);
 
-                          )
+      )
 )
 
 DECLARE_CLASS_CODEGEN(Chroma, ChromaRingsRotationEffect, GlobalNamespace::TrackLaneRingsRotationEffect,
@@ -44,12 +44,13 @@ public:
         DECLARE_INSTANCE_FIELD(GlobalNamespace::TrackLaneRingsManager*, _trackLaneRingsManager);
         DECLARE_INSTANCE_FIELD(float, _startupRotationAngle);
 
-        DECLARE_INSTANCE_FIELD_DEFAULT(float, _startupRotationStep, 10.0f);
+        DECLARE_INSTANCE_FIELD(float, _startupRotationStep);
 
-        DECLARE_INSTANCE_FIELD_DEFAULT(int, _startupRotationPropagationSpeed, 1);
-        DECLARE_INSTANCE_FIELD_DEFAULT(float, _startupRotationFlexySpeed, 0.5f);
+        DECLARE_INSTANCE_FIELD(int, _startupRotationPropagationSpeed);
+        DECLARE_INSTANCE_FIELD(float, _startupRotationFlexySpeed);
 
-
+        DECLARE_CTOR(ctor);
+        DECLARE_SIMPLE_DTOR(ChromaRingsRotationEffect);
         DECLARE_METHOD(void, CopyValues, GlobalNamespace::TrackLaneRingsRotationEffect* trackLaneRingsRotationEffect);
 
         DECLARE_METHOD(float, GetFirstRingRotationAngle);
@@ -66,7 +67,9 @@ public:
         DECLARE_METHOD(void, RecycleRingRotationEffect, ChromaRotationEffect* ringRotationEffect);
 
         REGISTER_FUNCTION(ChromaRingsRotationEffect,
-                getLogger().debug("Registering ChromaRingsRotationEffect!");
+            getLogger().debug("Registering ChromaRingsRotationEffect!");
+            REGISTER_METHOD(ctor);
+            REGISTER_SIMPLE_DTOR;
             REGISTER_METHOD(AddRingRotationEffect);
             REGISTER_METHOD(AddRingRotationEffectF);
             REGISTER_METHOD(CopyValues);
