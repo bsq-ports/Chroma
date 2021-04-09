@@ -18,6 +18,12 @@
 #include "beatsaber-hook/shared/config/rapidjson-utils.hpp"
 
 namespace Chroma {
+    struct ChromaGradientEvent;
+}
+
+typedef std::unordered_map<int, Chroma::ChromaGradientEvent> gradientMap;
+
+namespace Chroma {
     struct ChromaGradientEvent {
         UnityEngine::Color _initcolor;
         UnityEngine::Color _endcolor;
@@ -28,13 +34,13 @@ namespace Chroma {
 
         ChromaGradientEvent(UnityEngine::Color initcolor, UnityEngine::Color endcolor, float start, float duration, GlobalNamespace::BeatmapEventType eventType, ChromaUtils::Functions easing = ChromaUtils::Functions::easeLinear);
 
-        [[nodiscard]] UnityEngine::Color Interpolate() const;
+        [[nodiscard]] UnityEngine::Color Interpolate(gradientMap::iterator &it, bool &modified) const;
     };
 
 
 }
 
-typedef std::unordered_map<int, Chroma::ChromaGradientEvent> gradientMap;
+
 
 DECLARE_CLASS_CODEGEN(Chroma, ChromaGradientController, UnityEngine::MonoBehaviour,
                             private:

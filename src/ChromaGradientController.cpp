@@ -66,7 +66,11 @@ UnityEngine::Color ChromaGradientController::AddGradient(rapidjson::Value* gradi
 
     auto gradientEvent = ChromaGradientEvent(initcolor, endcolor, time, duration, id, easing);
     getInstance()->Gradients.emplace(id.value, gradientEvent);
-    return gradientEvent.Interpolate();
+
+    auto it = getInstance()->Gradients.find(id.value);
+    bool ignored = false;
+
+    return gradientEvent.Interpolate(it, ignored);
 }
 
 void Chroma::ChromaGradientController::Update() {
@@ -76,16 +80,19 @@ void Chroma::ChromaGradientController::Update() {
 
         // Iterate over the map using Iterator till end.
         while (it != Gradients.end()) {
+
+            bool modified = false;
             // Accessing KEY from element pointed by it.
             BeatmapEventType eventType = it->first;
             // Accessing VALUE from element pointed by it.
             // TODO: CRASH HERE DUE TO signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0xb8f00000fd8
-            UnityEngine::Color color = it->second.Interpolate();
+            UnityEngine::Color color = it->second.Interpolate(it, modified);
 
             LightColorizer::SetLightingColors(eventType, color, color, color, color);
             LightColorizer::SetActiveColors(eventType);
 
-            it++;
+            if (!modified)
+                it++;
         }
     }
 }
@@ -105,7 +112,8 @@ UnityEngine::Color lerpUnclamped(UnityEngine::Color a, UnityEngine::Color b, flo
     return UnityEngine::Color(a.r + (b.r - a.r) * t, a.g + (b.g - a.g) * t, a.b + (b.b - a.b) * t, a.a + (b.a - a.a) * t);
 }
 
-UnityEngine::Color Chroma::ChromaGradientEvent::Interpolate() const {
+UnityEngine::Color Chroma::ChromaGradientEvent::Interpolate(gradientMap::iterator &it, bool &modified) const {
+    modified = false;
     float normalTime = ChromaController::IAudioTimeSource->get_songTime() - _start;
     if (normalTime < 0)
     {
@@ -117,7 +125,8 @@ UnityEngine::Color Chroma::ChromaGradientEvent::Interpolate() const {
     }
     else
     {
-        ChromaGradientController::getInstance()->Gradients.erase(_event.value);
+        modified = true;
+        it = ChromaGradientController::getInstance()->Gradients.erase(it);
         return _endcolor;
     }
 }
