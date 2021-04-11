@@ -9,10 +9,7 @@ DEFINE_TYPE(ChromaRingsRotationEffect);
 DEFINE_TYPE(ChromaRotationEffect);
 
 void ChromaRingsRotationEffect::ctor() {
-//    INVOKE_CTOR(ChromaRingsRotationEffect);
-    _startupRotationAngle = 10.0f;
-    _startupRotationPropagationSpeed = 1;
-    _startupRotationFlexySpeed = 0.5;
+    INVOKE_CTOR();
 }
 
 void ChromaRingsRotationEffect::AddRingRotationEffect(float angle, float step, int propagationSpeed, float flexySpeed) {

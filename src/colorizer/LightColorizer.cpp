@@ -119,6 +119,7 @@ void LightColorizer::LSEStart(MonoBehaviour *monoBehaviour, BeatmapEventType bea
 namespace Chroma {
 
     void LSEColorManager::ctor(MonoBehaviour *mono, BeatmapEventType type) {
+//        INVOKE_CTOR(LSEColorManager);
         static auto contextLogger = getLogger().WithContext(ChromaLogger::LightColorizer);
 
         _lse = mono;

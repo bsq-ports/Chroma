@@ -62,90 +62,90 @@ typedef std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId *>> Li
 // We use custom types here to avoid GC deleting our variables
 DECLARE_CLASS_CODEGEN(Chroma, LSEColorManager, Il2CppObject,
 
-                      public:
-                              std::vector<GlobalNamespace::ILightWithId *> Lights = {};
+        public:
+            std::vector<GlobalNamespace::ILightWithId *> Lights = {};
 
-                              // 2d array of ILightWithId*
-                              LightGroupMap LightsPropagationGrouped;
+            // 2d array of ILightWithId*
+            LightGroupMap LightsPropagationGrouped;
 
-                              // TODO: Is this the proper return type?
-                              static std::vector<LSEColorManager *> GetLSEColorManager(GlobalNamespace::BeatmapEventType type);
+            // TODO: Is this the proper return type?
+            static std::vector<LSEColorManager *> GetLSEColorManager(GlobalNamespace::BeatmapEventType type);
 
-                              static LSEColorManager *GetLSEColorManager(UnityEngine::MonoBehaviour *m);
+            static LSEColorManager *GetLSEColorManager(UnityEngine::MonoBehaviour *m);
 
-                              static LSEColorManager *CreateLSEColorManager(UnityEngine::MonoBehaviour *lse, GlobalNamespace::BeatmapEventType type);
+            static LSEColorManager *CreateLSEColorManager(UnityEngine::MonoBehaviour *lse, GlobalNamespace::BeatmapEventType type);
 
-                              void Reset() const;
+            void Reset() const;
 
 
-                              void SetLightingColors(std::optional<UnityEngine::Color> Color0, std::optional<UnityEngine::Color> Color1,
-                              std::optional<UnityEngine::Color> Color0Boost = std::nullopt, std::optional<UnityEngine::Color> Color1Boost = std::nullopt) const;
+            void SetLightingColors(std::optional<UnityEngine::Color> Color0, std::optional<UnityEngine::Color> Color1,
+            std::optional<UnityEngine::Color> Color0Boost = std::nullopt, std::optional<UnityEngine::Color> Color1Boost = std::nullopt) const;
 
-                              void SetLastValue(int value);
+            void SetLastValue(int value);
 
-                              void SetActiveColors() const;
+            void SetActiveColors() const;
 
-                              void InitializeSOs(UnityEngine::MonoBehaviour *lse, const std::string& id, GlobalNamespace::SimpleColorSO *&sColorSO,
-                              UnityEngine::Color& originalColor, GlobalNamespace::MultipliedColorSO *&mColorSO);
+            void InitializeSOs(UnityEngine::MonoBehaviour *lse, const std::string& id, GlobalNamespace::SimpleColorSO *&sColorSO,
+            UnityEngine::Color& originalColor, GlobalNamespace::MultipliedColorSO *&mColorSO);
 
-                              DECLARE_INSTANCE_FIELD(UnityEngine::MonoBehaviour *, _lse);
-                              DECLARE_INSTANCE_FIELD(GlobalNamespace::BeatmapEventType, _type);
+            DECLARE_INSTANCE_FIELD(UnityEngine::MonoBehaviour *, _lse);
+            DECLARE_INSTANCE_FIELD(GlobalNamespace::BeatmapEventType, _type);
 
-                              DECLARE_INSTANCE_FIELD(UnityEngine::Color, _lightColor0_Original);
-                              DECLARE_INSTANCE_FIELD(UnityEngine::Color, _lightColor1_Original);
-                              DECLARE_INSTANCE_FIELD(UnityEngine::Color, _lightColor0Boost_Original);
-                              DECLARE_INSTANCE_FIELD(UnityEngine::Color, _lightColor1Boost_Original);
+            DECLARE_INSTANCE_FIELD(UnityEngine::Color, _lightColor0_Original);
+            DECLARE_INSTANCE_FIELD(UnityEngine::Color, _lightColor1_Original);
+            DECLARE_INSTANCE_FIELD(UnityEngine::Color, _lightColor0Boost_Original);
+            DECLARE_INSTANCE_FIELD(UnityEngine::Color, _lightColor1Boost_Original);
 
-                              DECLARE_INSTANCE_FIELD(GlobalNamespace::SimpleColorSO*, _lightColor0);
-                              DECLARE_INSTANCE_FIELD(GlobalNamespace::SimpleColorSO*, _lightColor1);
-                              DECLARE_INSTANCE_FIELD(GlobalNamespace::SimpleColorSO*, _lightColor0Boost);
-                              DECLARE_INSTANCE_FIELD(GlobalNamespace::SimpleColorSO*, _lightColor1Boost);
+            DECLARE_INSTANCE_FIELD(GlobalNamespace::SimpleColorSO*, _lightColor0);
+            DECLARE_INSTANCE_FIELD(GlobalNamespace::SimpleColorSO*, _lightColor1);
+            DECLARE_INSTANCE_FIELD(GlobalNamespace::SimpleColorSO*, _lightColor0Boost);
+            DECLARE_INSTANCE_FIELD(GlobalNamespace::SimpleColorSO*, _lightColor1Boost);
 
-                              DECLARE_INSTANCE_FIELD(GlobalNamespace::MultipliedColorSO*, _mLightColor0);
-                              DECLARE_INSTANCE_FIELD(GlobalNamespace::MultipliedColorSO*, _mHighlightColor0);
-                              DECLARE_INSTANCE_FIELD(GlobalNamespace::MultipliedColorSO*, _mLightColor1);
-                              DECLARE_INSTANCE_FIELD(GlobalNamespace::MultipliedColorSO*, _mHighlightColor1);
+            DECLARE_INSTANCE_FIELD(GlobalNamespace::MultipliedColorSO*, _mLightColor0);
+            DECLARE_INSTANCE_FIELD(GlobalNamespace::MultipliedColorSO*, _mHighlightColor0);
+            DECLARE_INSTANCE_FIELD(GlobalNamespace::MultipliedColorSO*, _mLightColor1);
+            DECLARE_INSTANCE_FIELD(GlobalNamespace::MultipliedColorSO*, _mHighlightColor1);
 
-                              DECLARE_INSTANCE_FIELD(GlobalNamespace::MultipliedColorSO*, _mLightColor0Boost);
-                              DECLARE_INSTANCE_FIELD(GlobalNamespace::MultipliedColorSO*, _mHighlightColor0Boost);
-                              DECLARE_INSTANCE_FIELD(GlobalNamespace::MultipliedColorSO*, _mLightColor1Boost);
-                              DECLARE_INSTANCE_FIELD(GlobalNamespace::MultipliedColorSO*, _mHighlightColor1Boost);
+            DECLARE_INSTANCE_FIELD(GlobalNamespace::MultipliedColorSO*, _mLightColor0Boost);
+            DECLARE_INSTANCE_FIELD(GlobalNamespace::MultipliedColorSO*, _mHighlightColor0Boost);
+            DECLARE_INSTANCE_FIELD(GlobalNamespace::MultipliedColorSO*, _mLightColor1Boost);
+            DECLARE_INSTANCE_FIELD(GlobalNamespace::MultipliedColorSO*, _mHighlightColor1Boost);
 
-                              DECLARE_INSTANCE_FIELD(bool, _supportBoostColor);
+            DECLARE_INSTANCE_FIELD(bool, _supportBoostColor);
 
-                              DECLARE_INSTANCE_FIELD(float, _lastValue);
+            DECLARE_INSTANCE_FIELD(float, _lastValue);
 
-                              DECLARE_SIMPLE_DTOR(LSEColorManager);
-                              DECLARE_CTOR(ctor, UnityEngine::MonoBehaviour* mono, GlobalNamespace::BeatmapEventType type);
+            DECLARE_SIMPLE_DTOR();
+            DECLARE_CTOR(ctor, UnityEngine::MonoBehaviour* mono, GlobalNamespace::BeatmapEventType type);
 
-                              REGISTER_FUNCTION(Chroma::LSEColorManager,
-                              getLogger().debug("Registering LSEColorManager!");
-                              REGISTER_METHOD(ctor);
-                              REGISTER_SIMPLE_DTOR;
+            REGISTER_FUNCTION(
+                getLogger().debug("Registering LSEColorManager!");
+                REGISTER_METHOD(ctor);
+                REGISTER_SIMPLE_DTOR();
 
-                              REGISTER_FIELD(_lse);
-                              REGISTER_FIELD(_type);
+                REGISTER_FIELD(_lse);
+                REGISTER_FIELD(_type);
 
-                              REGISTER_FIELD(_lightColor0_Original);
-                              REGISTER_FIELD(_lightColor1_Original);
-                              REGISTER_FIELD(_lightColor0Boost_Original);
-                              REGISTER_FIELD(_lightColor1Boost_Original);
+                REGISTER_FIELD(_lightColor0_Original);
+                REGISTER_FIELD(_lightColor1_Original);
+                REGISTER_FIELD(_lightColor0Boost_Original);
+                REGISTER_FIELD(_lightColor1Boost_Original);
 
-                              REGISTER_FIELD(_lightColor0);
-                              REGISTER_FIELD(_lightColor1);
-                              REGISTER_FIELD(_lightColor0Boost);
-                              REGISTER_FIELD(_lightColor1Boost);
+                REGISTER_FIELD(_lightColor0);
+                REGISTER_FIELD(_lightColor1);
+                REGISTER_FIELD(_lightColor0Boost);
+                REGISTER_FIELD(_lightColor1Boost);
 
-                              REGISTER_FIELD(_mLightColor0);
-                              REGISTER_FIELD(_mHighlightColor0);
-                              REGISTER_FIELD(_mLightColor1);
-                              REGISTER_FIELD(_mHighlightColor1);
+                REGISTER_FIELD(_mLightColor0);
+                REGISTER_FIELD(_mHighlightColor0);
+                REGISTER_FIELD(_mLightColor1);
+                REGISTER_FIELD(_mHighlightColor1);
 
-                              REGISTER_FIELD(_mLightColor0Boost);
-                              REGISTER_FIELD(_mHighlightColor0Boost);
-                              REGISTER_FIELD(_mLightColor1Boost);
-                              REGISTER_FIELD(_mHighlightColor1Boost);
-                      )
+                REGISTER_FIELD(_mLightColor0Boost);
+                REGISTER_FIELD(_mHighlightColor0Boost);
+                REGISTER_FIELD(_mLightColor1Boost);
+                REGISTER_FIELD(_mHighlightColor1Boost);
+            )
 )
 
 

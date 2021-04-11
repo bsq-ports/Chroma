@@ -36,13 +36,13 @@ DECLARE_CLASS_CODEGEN(Chroma, OCColorManager, Il2CppObject,
 
                               DECLARE_CTOR(ctor, GlobalNamespace::ObstacleController* oc, UnityEngine::Color original);
 
-                              REGISTER_FUNCTION(Chroma::LSEColorManager,
+                              REGISTER_FUNCTION(
                               getLogger().debug("Registering LSEColorManager!");
                               REGISTER_METHOD(ctor);
                               
                               REGISTER_FIELD(_stretchableObstacle);
                               REGISTER_FIELD(_oc);
-                                )
+                              )
 )
 
 
