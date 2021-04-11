@@ -17,7 +17,7 @@ EXPOSE_API(getObstacleControllerColorSafe, int, ObstacleController* obstacleCont
 
     if (!ocm) return -1;
 
-    auto color = ocm->_color->color;
+    auto color = ocm->_color;
 
     int rgba = Chroma::ColourManager::ColourToInt(color);
 
