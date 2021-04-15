@@ -9,13 +9,18 @@ Colors!
 - [ ] Qosmetics support
 - [x] ~~Chroma ring lights do not seem to work due to CJD not providing the customData or something else~~ Ring lights work though they are still unstable. Solution is ugly
 - [x] ~~Light positions in maps such as `Madeon - The Prince` are not correct (assuming the [video from Tempex](https://www.youtube.com/watch?v=I0G34tNpbPU) is the reference)~~ Fixed in commit [2500809](https://github.com/nyamimi/Chroma/commit/2500809f1082134ee148b46c0744b303da583bf9)
-- [ ] Random crash due to retrieving [custom JSON data nullptr](https://github.com/nyamimi/Chroma/blob/c36d5fd48254008786a07c3a2419eac590fc2961/src/hooks/LightSwitchEventEffect.cpp#L57) weirdly
+- [x] Random crash due to retrieving [custom JSON data nullptr](https://github.com/nyamimi/Chroma/blob/c36d5fd48254008786a07c3a2419eac590fc2961/src/hooks/LightSwitchEventEffect.cpp#L57) weirdly
 - [ ] Noodle Support
 - [x] ~~Bomb and obstacle coloring~~ Implemented in [1f41a9ca](https://github.com/nyamimi/Chroma/commit/1f41a9ca80a5f44d15e4aa08e17f8dbcd9ef07a1)
 - [ ] Add multiplayer scene hooks
 - [ ] Add `info.dat` environment removal support
-- [ ] CJD Gc bugs
+- [x] CJD Gc bugs
 - [x] Fix ChromaLite support
+- [ ] Merge 1.14 update and later commits:
+  - [ ] Do [LightID rework](https://github.com/Aeroluna/Chroma/commit/a8fc978b282af145c6ed263bfcce3485a31bb039) with rapidjson and somehow get json files in game
+  - [ ] Add noodle support
+  - [ ] Port over [these commits dear lord](https://github.com/BinaryElement/Chroma/compare/24452837a71867688a739a9f1297cd4b5efcaa77...Aeroluna:master) 
+    
 - [ ] Optimize wherever possible
 
 ## Credits and Thank You

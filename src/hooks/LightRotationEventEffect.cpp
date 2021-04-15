@@ -8,6 +8,8 @@
 #include "UnityEngine/Space.hpp"
 #include "UnityEngine/Transform.hpp"
 
+#include "ChromaEventData.hpp"
+
 using namespace CustomJSONData;
 using namespace GlobalNamespace;
 using namespace UnityEngine;
@@ -26,45 +28,48 @@ MAKE_HOOK_OFFSETLESS(
         return;
     }
 
+    auto chromaIt = ChromaEventDataManager::ChromaEventDatas.find(beatmapEventData);
 
-    if (beatmapEventData->type == self->event && il2cpp_functions::class_is_assignable_from(classof(CustomBeatmapEventData*), beatmapEventData->klass)) {
-        auto* customBeatmapEvent = reinterpret_cast<CustomBeatmapEventData *>(beatmapEventData);
-        bool isLeftEvent = self->event == BeatmapEventType::Event12;
+    // Not found
+    if (chromaIt == ChromaEventDataManager::ChromaEventDatas.end()) {
+        LightRotationEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);
+        return;
+    }
 
-        bool isCustomData = customBeatmapEvent->customData && customBeatmapEvent->customData->value && customBeatmapEvent->customData->value->IsObject();
-        rapidjson::Value* dynData = isCustomData ? customBeatmapEvent->customData->value : nullptr;
+    auto chromaData = std::static_pointer_cast<ChromaLaserSpeedEventData>(chromaIt->second);
 
-        bool lockPosition = getIfExists(dynData, LOCKPOSITION, false);
 
-        float precisionSpeed = getIfExists(dynData, PRECISESPEED, (float) beatmapEventData->value);
+    bool isLeftEvent = self->event == BeatmapEventType::Event12;
 
-        int dir = getIfExists(dynData, DIRECTION, -1);
 
-        float direction = (Random::get_value() > 0.5f) ? 1.0f : -1.0f;
-        switch (dir) {
+    bool lockPosition = chromaData->LockPosition;
+
+    float precisionSpeed = chromaData->PreciseSpeed;
+
+    int dir = chromaData->Direction;
+
+    float direction = (Random::get_value() > 0.5f) ? 1.0f : -1.0f;
+    switch (dir) {
         case 0:
             direction = isLeftEvent ? -1.0f : 1.0f;
             break;
         case 1:
             direction = isLeftEvent ? 1.0f : -1.0f;
             break;
-        }
+    }
 
-        if (beatmapEventData->value == 0) {
-            self->set_enabled(false);
-            if (!lockPosition) {
-                self->get_transform()->set_localRotation(self->startRotation);
-            }
-        } else if (beatmapEventData->value > 0) {
-            self->set_enabled(true);
-            self->rotationSpeed = precisionSpeed * 20.0f * direction;
-            if (!lockPosition) {
-                self->get_transform()->set_localRotation(self->startRotation);
-                self->get_transform()->Rotate(self->rotationVector, Random::Range(0.0f, 180.0f), Space::Self);
-            }
+    if (beatmapEventData->value == 0) {
+        self->set_enabled(false);
+        if (!lockPosition) {
+            self->get_transform()->set_localRotation(self->startRotation);
         }
-    } else {
-        LightRotationEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);
+    } else if (beatmapEventData->value > 0) {
+        self->set_enabled(true);
+        self->rotationSpeed = precisionSpeed * 20.0f * direction;
+        if (!lockPosition) {
+            self->get_transform()->set_localRotation(self->startRotation);
+            self->get_transform()->Rotate(self->rotationVector, Random::Range(0.0f, 180.0f), Space::Self);
+        }
     }
 }
 

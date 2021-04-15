@@ -26,7 +26,7 @@ using namespace UnityEngine;
 using namespace System::Collections;
 using namespace custom_types::Helpers;
 
-std::optional<std::vector<GlobalNamespace::ILightWithId *>> LightSwitchEventEffectHolder::OverrideLightWithIdActivation = std::nullopt;
+
 
 custom_types::Helpers::Coroutine WaitThenStart(LightSwitchEventEffect *instance, BeatmapEventType eventType) {
     CRASH_UNLESS(instance);
@@ -56,12 +56,19 @@ MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_SetColor, void, LightSwitchEventEffe
         return;
     }
 
-    if (LightSwitchEventEffectHolder::OverrideLightWithIdActivation){
-        auto lights = LightSwitchEventEffectHolder::OverrideLightWithIdActivation.value();
+    if (LightSwitchEventEffectHolder::LightIDOverride){
+        auto lights = LightSwitchEventEffectHolder::LightIDOverride.value();
+
+        // TODO: https://github.com/Aeroluna/Chroma/commit/a8fc978b282af145c6ed263bfcce3485a31bb039#diff-cb9d6e4e838e56a6d827e7121a5846a8685381e0f7594e598a33e6b7f097cc98R36-R43
+
         for (auto & light : lights){
             if (!light) continue;
             light->ColorWasSet(color);
         }
+        LightSwitchEventEffectHolder::LightIDOverride = std::nullopt;
+
+        LightSwitchEventEffectHolder::LegacyLightOverride = std::nullopt;
+
         return;
     } else {
         LightSwitchEventEffect_SetColor(self, color);
@@ -75,13 +82,16 @@ MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_HandleBeatmapObjectCallbackControlle
         return;
     }
 
+
+
     if (beatmapEventData->type == self->event) {
+        LightColorizer::SetLastValue(self, beatmapEventData->value);
         LightColorManager::ColorLightSwitch(self, beatmapEventData);
     }
 
     LightSwitchEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);
 
-    LightSwitchEventEffectHolder::OverrideLightWithIdActivation = std::nullopt;
+    LightSwitchEventEffectHolder::LightIDOverride = std::nullopt;
 }
 
 void Chroma::Hooks::LightSwitchEventEffect() {

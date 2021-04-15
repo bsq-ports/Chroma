@@ -17,6 +17,8 @@
 
 #include "beatsaber-hook/shared/config/rapidjson-utils.hpp"
 
+#include "ChromaEventData.hpp"
+
 namespace Chroma {
     struct ChromaGradientEvent;
 }
@@ -49,7 +51,7 @@ DECLARE_CLASS_CODEGEN(Chroma, ChromaGradientController, UnityEngine::MonoBehavio
         // internal
         gradientMap Gradients;
 
-        static UnityEngine::Color AddGradient(/*dynamic*/ rapidjson::Value* gradientObject, GlobalNamespace::BeatmapEventType id, float time);
+        static UnityEngine::Color AddGradient(ChromaLightEventData::GradientObjectData gradientObject, GlobalNamespace::BeatmapEventType id, float time);
         DECLARE_METHOD(static Chroma::ChromaGradientController*, getInstance);
         DECLARE_METHOD(static bool, IsGradientActive, GlobalNamespace::BeatmapEventType eventType);
         DECLARE_METHOD(static void, CancelGradient, GlobalNamespace::BeatmapEventType eventType);

@@ -285,7 +285,7 @@ namespace Chroma {
 
     void LSEColorManager::SetActiveColors() const {
         // Replace with ProcessLightSwitchEvent
-        if (_lastValue == 0) {
+        if (_lastValue <= 0) {
             return;
         }
 

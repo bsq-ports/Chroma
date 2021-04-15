@@ -16,6 +16,7 @@ namespace ChromaUtils {
     class ChromaUtilities {
     public:
         static std::optional<UnityEngine::Color> GetColorFromData(rapidjson::Value* data, const std::string& member = Chroma::COLOR);
+        static std::optional<UnityEngine::Color> GetColorFromData(rapidjson::Value& data, const std::string& member = Chroma::COLOR);
     };
 
     inline static std::string vectorStr(UnityEngine::Vector3 vector3) {
@@ -66,5 +67,18 @@ namespace ChromaUtils {
         return it->value.Get<T>();
     }
 
+    template<typename T>
+    std::optional<T> getIfExists(rapidjson::Value* val, const std::string& member) {
+        if (!val || !val->IsObject() || val->Empty()) return std::nullopt;
+
+        auto it = val->FindMember(member);
+
+        if (it == val->MemberEnd()) return std::nullopt;
+
+        return it->value.Get<T>();
+    }
+
 
 }
+
+#define ASSIGNMENT_CHECK(ParentType, ChildOrInstanceType) il2cpp_functions::class_is_assignable_from(ParentType, ChildOrInstanceType)

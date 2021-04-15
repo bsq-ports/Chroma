@@ -44,25 +44,14 @@ void ChromaGradientController::CancelGradient(GlobalNamespace::BeatmapEventType 
     getInstance()->Gradients.erase(eventType);
 }
 
-UnityEngine::Color ChromaGradientController::AddGradient(rapidjson::Value* gradientObject,
+UnityEngine::Color ChromaGradientController::AddGradient(ChromaLightEventData::GradientObjectData gradientObject,
                                                          GlobalNamespace::BeatmapEventType id, float time) {
     CancelGradient(id);
 
-    float duration = gradientObject->FindMember(Chroma::DURATION)->value.GetFloat(); // Trees.at(gradientObject, DURATION);
-    UnityEngine::Color initcolor = ChromaUtils::ChromaUtilities::GetColorFromData(gradientObject, STARTCOLOR).value();
-    UnityEngine::Color endcolor = ChromaUtils::ChromaUtilities::GetColorFromData(gradientObject, ENDCOLOR).value();
-    std::string easingString = std::string(gradientObject->FindMember(EASING)->value.GetString());
-    ChromaUtils::Functions easing;
-
-    if (easingString.empty())
-    {
-        easing = ChromaUtils::Functions::easeLinear;
-
-    } else {
-        auto s = ChromaUtils::FUNCTION_NAMES;
-
-        easing = (ChromaUtils::Functions) s[easingString];
-    }
+    float duration = gradientObject.Duration;
+    Color initcolor = gradientObject.StartColor;
+    Color endcolor = gradientObject.EndColor;
+    Functions easing = gradientObject.Easing;
 
     auto gradientEvent = ChromaGradientEvent(initcolor, endcolor, time, duration, id, easing);
     getInstance()->Gradients.emplace(id.value, gradientEvent);

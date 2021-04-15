@@ -7,6 +7,8 @@
 #include "GlobalNamespace/ObstacleController.hpp"
 #include "utils/ChromaUtils.hpp"
 
+#include "ChromaObjectData.hpp"
+
 using namespace CustomJSONData;
 using namespace GlobalNamespace;
 using namespace Chroma;
@@ -16,7 +18,7 @@ MAKE_HOOK_OFFSETLESS(
     ObstacleController_Init,
     void,
     ObstacleController* self,
-    CustomObstacleData* obstacleData,
+    ObstacleData* obstacleData,
     float worldRotation,
     UnityEngine::Vector3 startPos,
     UnityEngine::Vector3 midPos,
@@ -33,15 +35,17 @@ MAKE_HOOK_OFFSETLESS(
     }
     ObstacleColorizer::OCStart(self, self->colorManager->get_obstaclesColor());
 
-    if(obstacleData->customData && obstacleData->customData->value) {
-        std::optional<UnityEngine::Color> color = ChromaUtilities::GetColorFromData(obstacleData->customData->value);
+    auto chromaData = (ChromaObjectDataManager::ChromaObjectDatas[obstacleData]);
+    auto color = chromaData->Color;
 
-        if (color) {
-            ObstacleColorizer::SetObstacleColor(self, color);
-        } else {
-            ObstacleColorizer::Reset(self);
-        }
+
+
+    if (color) {
+        ObstacleColorizer::SetObstacleColor(self, color);
+    } else {
+        ObstacleColorizer::Reset(self);
     }
+
 
     ObstacleController_Init(self, obstacleData, worldRotation, startPos, midPos, endPos, move1Duration, move2Duration, singleLineWidth, height);
 

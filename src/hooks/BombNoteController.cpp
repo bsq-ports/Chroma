@@ -6,6 +6,8 @@
 #include "GlobalNamespace/BombNoteController.hpp"
 #include "utils/ChromaUtils.hpp"
 
+#include "ChromaObjectData.hpp"
+
 using namespace CustomJSONData;
 using namespace GlobalNamespace;
 using namespace Chroma;
@@ -32,11 +34,8 @@ MAKE_HOOK_OFFSETLESS(
 
     BombColorizer::BNCStart(self);
 
-    std::optional<UnityEngine::Color> color = std::nullopt;
-
-    if(noteData->customData && noteData->customData->value) {
-        color = ChromaUtilities::GetColorFromData(noteData->customData->value);
-    }
+    auto chromaData = ChromaObjectDataManager::ChromaObjectDatas[noteData];
+    auto color = chromaData->Color;
 
     if (color) {
         BombColorizer::SetBombColor(self, color);

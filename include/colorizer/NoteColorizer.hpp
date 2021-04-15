@@ -7,6 +7,7 @@
 #include "GlobalNamespace/ColorManager.hpp"
 #include "custom-json-data/shared/CustomBeatmapData.h"
 #include "UnityEngine/Shader.hpp"
+#include "ChromaObjectData.hpp"
 #include <vector>
 #include <string>
 #include <optional>
@@ -41,7 +42,8 @@ namespace Chroma {
         {
         private:
          inline static int _colorID = -1;
-         static std::unordered_map<int, std::optional<UnityEngine::Color>> _globalColor;
+         std::shared_ptr<ChromaNoteData> _chromaData;
+
          GlobalNamespace::ColorNoteVisuals* _cnv;
          GlobalNamespace::NoteController* _nc;
          GlobalNamespace::ColorManager* _colorManager;
@@ -50,6 +52,8 @@ namespace Chroma {
          CNVColorManager(GlobalNamespace::ColorNoteVisuals* cnv, GlobalNamespace::NoteController* nc);
 
         public:
+            static std::unordered_map<int, std::optional<UnityEngine::Color>> GlobalColor;
+
             static CNVColorManager* GetCNVColorManager(GlobalNamespace::NoteController* nc);
 
             static CNVColorManager* CreateCNVColorManager(GlobalNamespace::ColorNoteVisuals* cnv, GlobalNamespace::NoteController* nc);

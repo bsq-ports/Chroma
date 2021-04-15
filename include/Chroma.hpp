@@ -48,6 +48,7 @@ namespace Chroma {
         void SceneManager_Internal();
         void StandardLevelScenesTransitionSetupDataSO();
         void ObstacleController();
+        void ParticleSystemEventEffect();
         void BombNoteController();
         void TrackLaneRingsRotationEffect();
         void TrackLaneRingsRotationEffectSpawner();
@@ -90,6 +91,7 @@ namespace Chroma {
     inline const std::string STEPMULT = "_stepMult";
     inline const std::string PROP = "_prop";
     inline const std::string ROTATION = "_rotation";
+    inline const std::string LIGHTGRADIENT = "_lightGradient";
 
     void InstallHooks();
 }

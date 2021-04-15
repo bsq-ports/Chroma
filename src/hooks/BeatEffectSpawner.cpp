@@ -9,6 +9,7 @@
 #include "custom-json-data/shared/CustomBeatmapData.h"
 
 #include "colorizer/NoteColorizer.hpp"
+#include "ChromaObjectData.hpp"
 
 using namespace Chroma;
 using namespace GlobalNamespace;
@@ -20,23 +21,11 @@ MAKE_HOOK_OFFSETLESS(BeatEffectSpawner_HandleNoteDidStartJumpColorizer, void, Be
         return;
     }
 
-    if (noteController->noteData && il2cpp_functions::class_is_assignable_from(noteController->noteData->klass, classof(CustomJSONData::CustomNoteData*))) {
-        auto *pCustomNoteData = reinterpret_cast<CustomJSONData::CustomNoteData *>(noteController->noteData);
+    auto chromaData = std::static_pointer_cast<ChromaNoteData>(ChromaObjectDataManager::ChromaObjectDatas[noteController->noteData]);
+    std::optional<bool> disable = chromaData->DisableSpawnEffect;
 
-        if (pCustomNoteData->customData && pCustomNoteData->customData->value) {
-//            getLogger().debug("I could disable notes");
-            rapidjson::Value &dynData = *pCustomNoteData->customData->value;
-
-            if (dynData.HasMember(DISABLESPAWNEFFECT)) {
-                bool disable = dynData[DISABLESPAWNEFFECT].GetBool();
-
-                if (disable) {
-                    return;
-                }
-            }
-
-        }
-
+    if (disable && disable.value()) {
+        return;
     }
 
     NoteColorizer::EnableNoteColorOverride(noteController);

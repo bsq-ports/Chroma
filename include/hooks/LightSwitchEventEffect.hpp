@@ -8,5 +8,6 @@
 
 class LightSwitchEventEffectHolder {
     public:
-        static std::optional<std::vector<GlobalNamespace::ILightWithId *>> OverrideLightWithIdActivation;
+        inline static std::optional<std::vector<GlobalNamespace::ILightWithId *>> LightIDOverride = std::nullopt;
+        inline static std::optional<std::vector<GlobalNamespace::ILightWithId *>> LegacyLightOverride = std::nullopt;
 };

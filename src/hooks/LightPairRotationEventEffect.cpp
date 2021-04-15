@@ -9,6 +9,7 @@
 #include "UnityEngine/Quaternion.hpp"
 #include "UnityEngine/Transform.hpp"
 #include "utils/ChromaUtils.hpp"
+#include "ChromaEventData.hpp"
 
 using namespace CustomJSONData;
 using namespace GlobalNamespace;
@@ -61,35 +62,38 @@ MAKE_HOOK_OFFSETLESS(
 ) {
     // Do nothing if Chroma shouldn't run
     if (!ChromaController::DoChromaHooks()) {
-        LightPairRotationEventEffect_UpdateRotationData(self, beatmapEventDataValue, rotationData, startRotationOffset, direction);
+        LightPairRotationEventEffect_UpdateRotationData(self, beatmapEventDataValue, rotationData, startRotationOffset,
+                                                        direction);
         return;
     }
 
+
     auto beatmapEventData = LastLightPairRotationEventEffectData;
-    if (beatmapEventData && il2cpp_functions::class_is_assignable_from(classof(CustomBeatmapEventData*), beatmapEventData->klass)) {
-        auto *customBeatmapEvent = reinterpret_cast<CustomBeatmapEventData *>(beatmapEventData);
+    auto chromaIt = ChromaEventDataManager::ChromaEventDatas.find(beatmapEventData);
 
-        bool isLeftEvent = beatmapEventData->type == self->eventL;
+    // Not found
+    if (chromaIt == ChromaEventDataManager::ChromaEventDatas.end()) {
+        LightPairRotationEventEffect_UpdateRotationData(self, beatmapEventDataValue, rotationData, startRotationOffset,
+                                                        direction);
+        return;
+    }
 
-        // rotationData
-        LightPairRotationEventEffect::RotationData *customRotationData = isLeftEvent ? self->rotationDataL
-                                                                                     : self->rotationDataR;
+    auto chromaData = std::static_pointer_cast<ChromaLaserSpeedEventData>(chromaIt->second);
 
-//    if (beatmapEventData->customData && beatmapEventData->customData->value) {
+    bool isLeftEvent = beatmapEventData->type == self->eventL;
 
-        bool isCustomData = customBeatmapEvent->customData && customBeatmapEvent->customData->value;
-        auto dynData = isCustomData ? customBeatmapEvent->customData->value : nullptr;
-
+    // rotationData
+    LightPairRotationEventEffect::RotationData *customRotationData = isLeftEvent ? self->rotationDataL
+                                                                                 : self->rotationDataR;
 
 
-//        bool lockPosition = dynData.HasMember(LOCKPOSITION) && dynData[LOCKPOSITION].GetBool();
-        bool lockPosition = getIfExists(dynData, LOCKPOSITION, false);
 
-        float precisionSpeed = getIfExists(dynData, PRECISESPEED, (float) beatmapEventData->value);
+    bool lockPosition = chromaData->LockPosition;
+    bool precisionSpeed = chromaData->PreciseSpeed;
+    std::optional<int> dir = chromaData->Direction;
 
-        int dir = getIfExists(dynData, DIRECTION, -1);
-
-        switch (dir) {
+    if (dir) {
+        switch (dir.value()) {
             case 0:
                 direction = isLeftEvent ? -1.0f : 1.0f;
                 break;
@@ -98,45 +102,38 @@ MAKE_HOOK_OFFSETLESS(
                 direction = isLeftEvent ? 1.0f : -1.0f;
                 break;
         }
+    }
 
 
-        //getLogger().debug("The time is: %d", beatmapEventData->time);
-        if (beatmapEventData->value == 0) {
-            customRotationData->enabled = false;
-            if (!lockPosition) {
-                customRotationData->rotationAngle = customRotationData->startRotationAngle;
-                customRotationData->transform->set_localRotation(quaternionMultiply(customRotationData->startRotation,
-                                                                                    UnityEngine::Quaternion::Euler(
-                                                                                            vectorMultiply(
-                                                                                                    self->rotationVector,
-                                                                                                    customRotationData->startRotationAngle))));
-//                getLogger().debug("Doing rotation %d and local rot %d %d %d", customRotationData->rotationAngle, customRotationData->transform->get_localRotation().x,customRotationData->transform->get_localRotation().y,customRotationData->transform->get_localRotation().z);
-                //getLogger().debug("Pair | (beatmapEventData.value > 0) time = %d, localRotation = %s",
-                //                  beatmapEventData->time,
-                //                  quaternionStr(self->get_transform()->get_localRotation()).c_str());
-            }
-        } else if (beatmapEventData->value > 0) {
-            customRotationData->enabled = true;
-            customRotationData->rotationSpeed = precisionSpeed * 20.0f * direction;
-            //getLogger().debug("Doing rotation speed (%d) %d", beatmapEventData->value, customRotationData->rotationSpeed);
-            if (!lockPosition) {
-                float rotationAngle = startRotationOffset + customRotationData->startRotationAngle;
-                customRotationData->rotationAngle = rotationAngle;
-                customRotationData->transform->set_localRotation(quaternionMultiply(customRotationData->startRotation,
-                                                                                    UnityEngine::Quaternion::Euler(
-                                                                                            vectorMultiply(
-                                                                                                    self->rotationVector,
-                                                                                                    rotationAngle))));
-//                getLogger().debug("Doing rotation %d and local rot %d %d %d", customRotationData->rotationAngle, customRotationData->transform->get_localRotation().x,customRotationData->transform->get_localRotation().y,customRotationData->transform->get_localRotation().z);
-                //getLogger().debug("Pair | (beatmapEventData.value > 0) time = %d, localRotation = %s",
-                //                  beatmapEventData->time,
-                //                  quaternionStr(self->get_transform()->get_localRotation()).c_str());
-            }
+    //getLogger().debug("The time is: %d", beatmapEventData->time);
+    if (beatmapEventData->value == 0) {
+        customRotationData->enabled = false;
+        if (!lockPosition) {
+            customRotationData->rotationAngle = customRotationData->startRotationAngle;
+            customRotationData->transform->set_localRotation(
+                    quaternionMultiply(customRotationData->startRotation,
+                                       UnityEngine::Quaternion::Euler(
+                                           vectorMultiply(self->rotationVector,customRotationData->startRotationAngle)
+                                       ))
+                   );
+        }
+    } else if (beatmapEventData->value > 0) {
+        customRotationData->enabled = true;
+        customRotationData->rotationSpeed = precisionSpeed * 20.0f * direction;
+        //getLogger().debug("Doing rotation speed (%d) %d", beatmapEventData->value, customRotationData->rotationSpeed);
+        if (!lockPosition) {
+            float rotationAngle = startRotationOffset + customRotationData->startRotationAngle;
+            customRotationData->rotationAngle = rotationAngle;
+            customRotationData->transform->set_localRotation(
+                    quaternionMultiply(customRotationData->startRotation,
+                                       UnityEngine::Quaternion::Euler(
+                                               vectorMultiply(self->rotationVector,rotationAngle)
+                                               )
+                                       ));
         }
     }
-//    } else {
-//        LightPairRotationEventEffect_UpdateRotationData(self, beatmapEventDataValue, rotationData, startRotationOffset, direction);
-//    }
+
+    // TODO: Do we ever call original?
 }
 
 void Chroma::Hooks::LightPairRotationEventEffect() {

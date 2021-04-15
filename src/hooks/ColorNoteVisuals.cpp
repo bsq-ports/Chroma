@@ -17,28 +17,14 @@ MAKE_HOOK_OFFSETLESS(ColorNoteVisuals_HandleNoteControllerDidInit, void, ColorNo
 
     NoteColorizer::CNVStart(self, noteController);
 
+    auto chromaData = std::static_pointer_cast<ChromaNoteData>(ChromaObjectDataManager::ChromaObjectDatas[noteController->noteData]);
 
-    if (noteController->noteData && il2cpp_functions::class_is_assignable_from(noteController->noteData->klass, classof(CustomJSONData::CustomNoteData*))) {
-        auto *pCustomNoteData = reinterpret_cast<CustomJSONData::CustomNoteData *>(noteController->noteData);
+    auto color = chromaData->Color;
 
-        if (pCustomNoteData->customData && pCustomNoteData->customData->value) {
-            rapidjson::Value* dynData = pCustomNoteData->customData->value;
-
-            std::optional<UnityEngine::Color> color = ChromaUtils::ChromaUtilities::GetColorFromData(dynData);
-
-            if (color)
-            {
-                NoteColorizer::SetNoteColors(noteController, color.value(), color.value());
-                pCustomNoteData->customData->associatedData['C'] = new CustomData::NoteData {
-                    color.value(),
-                    color.value()
-                };
-            }
-            else
-            {
-                NoteColorizer::Reset(noteController);
-            }
-        }
+    if (color) {
+        NoteColorizer::SetNoteColors(noteController, color.value(), color.value());
+    } else {
+        NoteColorizer::Reset(noteController);
     }
 
     NoteColorizer::EnableNoteColorOverride(noteController);
