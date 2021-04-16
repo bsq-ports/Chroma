@@ -12,6 +12,8 @@
 #include "lighting/ChromaEventData.hpp"
 #include "ChromaObjectData.hpp"
 
+#include "System/Diagnostics/StackTrace.hpp"
+
 using namespace Chroma;
 
 MAKE_HOOK_OFFSETLESS(BeatmapDataTransformHelper_CreateTransformedBeatmapData, GlobalNamespace::IReadonlyBeatmapData*, GlobalNamespace::BeatmapDataTransformHelper* self,
@@ -24,11 +26,17 @@ MAKE_HOOK_OFFSETLESS(BeatmapDataTransformHelper_CreateTransformedBeatmapData, Gl
 
     // Essentially, here we cancel the original method. DO NOT call it IF it's a Chroma map
     if (!ChromaController::DoChromaHooks()) {
-        return result;
+        return (GlobalNamespace::IReadonlyBeatmapData*) result;
     }
 
-    ChromaObjectDataManager::deserialize(beatmapData);
-    ChromaEventDataManager::deserialize(beatmapData);
+//    auto* stackTrace = System::Diagnostics::StackTrace::New_ctor();
+//
+//    getLogger().debug("Frames: %d", stackTrace->frames->Length());
+
+//    if (!stackTrace->GetFrame(2)->GetMethod()->get_Name()->Contains(il2cpp_utils::createcsstr("MultiplayerConnectedPlayerInstaller"))) {
+        ChromaObjectDataManager::deserialize(result);
+        ChromaEventDataManager::deserialize(result);
+//    }
 
     return result;
 }

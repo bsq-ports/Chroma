@@ -12,6 +12,8 @@ using namespace ChromaUtils;
 void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatmapData* beatmapData) {
     ChromaEventDatas.clear();
 
+    static auto contextLogger = getLogger().WithContext(ChromaLogger::ObjectDataDeserialize);
+
     auto beatmapDataCast = reinterpret_cast<GlobalNamespace::BeatmapData*>(beatmapData);
     auto beatmapEvents = reinterpret_cast<System::Collections::Generic::List_1<GlobalNamespace::BeatmapEventData*>*>(beatmapDataCast->get_beatmapEventsData());
 
@@ -22,8 +24,7 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
 
             auto *customBeatmapEvent = reinterpret_cast<CustomJSONData::CustomBeatmapEventData *>(event);
 
-            bool isCustomData = customBeatmapEvent->customData && customBeatmapEvent->customData->value && customBeatmapEvent->customData->value->IsObject();
-            rapidjson::Value* dynData = isCustomData ? customBeatmapEvent->customData->value : nullptr;
+            rapidjson::Value* dynData = customBeatmapEvent->customData->value;
 
             switch ((int) customBeatmapEvent->type) {
                 case 0:
@@ -33,51 +34,69 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
                 case 4: {
                     std::optional<ChromaLightEventData::GradientObjectData> gradientObject = std::nullopt;
 
-                    auto gradientJSON = dynData->FindMember(LIGHTGRADIENT);
-                    if (gradientJSON != dynData->MemberEnd()) {
-                        float duration = gradientJSON->value.FindMember(
-                                Chroma::DURATION)->value.GetFloat(); // Trees.at(gradientObject, DURATION);
+                    debugSpamLog(contextLogger, "Light gradient");
 
-                        UnityEngine::Color initcolor = ChromaUtils::ChromaUtilities::GetColorFromData(
-                                gradientJSON->value,
-                                STARTCOLOR).value();
+                    auto empty = !dynData || dynData->MemberCount() == 0;
 
-                        UnityEngine::Color endcolor = ChromaUtils::ChromaUtilities::GetColorFromData(
-                                gradientJSON->value,
-                                ENDCOLOR).value();
+                    if (!empty) {
+                        auto gradientJSON = dynData->FindMember(LIGHTGRADIENT);
+                        if (gradientJSON != dynData->MemberEnd()) {
+                            auto &gValue = gradientJSON->value;
 
-                        std::string easingString = std::string(
-                                gradientJSON->value.FindMember(EASING)->value.GetString());
+                            float duration = gValue.FindMember(
+                                    Chroma::DURATION)->value.GetFloat(); // Trees.at(gradientObject, DURATION);
 
-                        ChromaUtils::Functions easing;
+                            UnityEngine::Color initcolor = ChromaUtils::ChromaUtilities::GetColorFromData(gValue,
+                                                                                                          STARTCOLOR).value();
 
-                        if (easingString.empty()) {
-                            easing = ChromaUtils::Functions::easeLinear;
-                        } else {
-                            auto s = ChromaUtils::FUNCTION_NAMES;
-                            easing = (ChromaUtils::Functions) s[easingString];
+                            UnityEngine::Color endcolor = ChromaUtils::ChromaUtilities::GetColorFromData(gValue,
+                                                                                                         ENDCOLOR).value();
+
+                            std::string easingString = std::string(gValue.FindMember(EASING)->value.GetString());
+
+                            ChromaUtils::Functions easing;
+
+                            if (easingString.empty()) {
+                                easing = ChromaUtils::Functions::easeLinear;
+                            } else {
+                                auto s = ChromaUtils::FUNCTION_NAMES;
+                                easing = (ChromaUtils::Functions) s[easingString];
+                            }
+
+                            gradientObject = std::make_optional(ChromaLightEventData::GradientObjectData{
+                                    duration,
+                                    initcolor,
+                                    endcolor,
+                                    easing
+                            });
                         }
-
-                        gradientObject = std::make_optional(ChromaLightEventData::GradientObjectData{
-                                duration,
-                                initcolor,
-                                endcolor,
-                                easing
-                        });
                     }
 
-                    auto lightId = dynData->FindMember(LIGHTID);
-                    auto propId = dynData->FindMember(PROPAGATIONID);
+                    std::optional<rapidjson::Value *> lightIdOpt;
+                    std::optional<rapidjson::Value *> propIdOpt;
+
+                    // rapidjson really wants us to do empty checks why
+                    if (!empty) {
+                        debugSpamLog(contextLogger, "Light ID");
+                        auto lightId = dynData->FindMember(LIGHTID);
+                        auto propId = dynData->FindMember(PROPAGATIONID);
+                        debugSpamLog(contextLogger, "Done ");
+
+                        lightIdOpt = lightId == dynData->MemberEnd() ? std::nullopt : std::make_optional(
+                                &lightId->value);
+
+
+                        propIdOpt = propId == dynData->MemberEnd() ? std::nullopt : std::make_optional(
+                                &propId->value);
+                    }
 
                     auto chromaLightEvent = new ChromaLightEventData();
-                    chromaLightEvent->LightID = lightId == dynData->MemberEnd() ? std::nullopt : std::make_optional(
-                            &lightId->value);
-                    chromaLightEvent->PropID = propId == dynData->MemberEnd() ? std::nullopt : std::make_optional(
-                            &propId->value);
+                    chromaLightEvent->LightID = lightIdOpt;
+                    chromaLightEvent->PropID = propIdOpt;
                     chromaLightEvent->ColorData = ChromaUtilities::GetColorFromData(dynData);
                     chromaLightEvent->GradientObject = gradientObject;
 
-                    chromaEventData = std::shared_ptr<ChromaEventData>(chromaLightEvent);
+                    chromaEventData = std::shared_ptr<ChromaLightEventData>(chromaLightEvent);
                     break;
                 }
                 case 8:
@@ -121,7 +140,7 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
                     chromaRingRotationEventData->SpeedMult = speedMult;
 
 
-                    chromaEventData = std::shared_ptr<ChromaEventData>(chromaRingRotationEventData);
+                    chromaEventData = std::shared_ptr<ChromaRingRotationEventData>(chromaRingRotationEventData);
 
                     break;
                 }
@@ -134,7 +153,7 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
                                                                           customBeatmapEvent->value);
                     chromaLaserSpeedEventData->Direction = getIfExists(dynData, DIRECTION, -1);
 
-                    chromaEventData = std::shared_ptr<ChromaEventData>(chromaLaserSpeedEventData);
+                    chromaEventData = std::shared_ptr<ChromaLaserSpeedEventData>(chromaLaserSpeedEventData);
                     break;
                 }
                 default:

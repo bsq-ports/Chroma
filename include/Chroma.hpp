@@ -23,6 +23,7 @@ inline void PrintJSONValue(const rapidjson::Value &json) {
 
 inline void PrintJSONValue(const rapidjson::Value* json) {
     #if DEBUGB == 1
+        #warning No JSON printing
         return;
     #endif
     using namespace rapidjson;
@@ -31,7 +32,7 @@ inline void PrintJSONValue(const rapidjson::Value* json) {
     PrettyWriter<StringBuffer> writer(sb);
     json->Accept(writer);
     auto str = sb.GetString();
-    getLogger().info("%s", str);
+    getLogger().info("json %s", str);
 }
 
 namespace Chroma {
@@ -68,6 +69,7 @@ namespace Chroma {
         inline const char* LightColorizer = "LightColorizer";
         inline const char* TrackLaneRings = "TrackLaneRings";
         inline const char* LegacyLightColor = "LegacyLightColor";
+        inline const char* ObjectDataDeserialize = "ObjectDataDeserialize";
     }
 
     inline const std::string DIRECTION = "_direction";

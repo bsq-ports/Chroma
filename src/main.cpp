@@ -110,6 +110,7 @@ extern "C" void load() {
     getLogger().DisableContext(Chroma::ChromaLogger::EnvironmentRemoval);
     getLogger().DisableContext(Chroma::ChromaLogger::TrackLaneRings);
     getLogger().DisableContext(Chroma::ChromaLogger::ColorLightSwitch);
+    getLogger().DisableContext(Chroma::ChromaLogger::ObjectDataDeserialize);
 #endif
 
     getLogger().info("Installing types...");

@@ -65,9 +65,10 @@ MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_SetColor, void, LightSwitchEventEffe
             if (!light) continue;
             light->ColorWasSet(color);
         }
-        LightSwitchEventEffectHolder::LightIDOverride = std::nullopt;
+        // TODO: Uncomment when LightID rework
+        //        LightSwitchEventEffectHolder::LightIDOverride = std::nullopt;
 
-        LightSwitchEventEffectHolder::LegacyLightOverride = std::nullopt;
+
 
         return;
     } else {
@@ -91,6 +92,7 @@ MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_HandleBeatmapObjectCallbackControlle
 
     LightSwitchEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);
 
+    // TODO: Remove
     LightSwitchEventEffectHolder::LightIDOverride = std::nullopt;
 }
 
