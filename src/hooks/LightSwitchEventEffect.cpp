@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <optional>
-#include "LightColorManager.hpp"
+#include "lighting/LightColorManager.hpp"
 #include "custom-json-data/shared/CustomBeatmapData.h"
 #include "System/Collections/Generic/IEnumerator_1.hpp"
 #include "colorizer/LightColorizer.hpp"

@@ -11,7 +11,7 @@
 
 namespace Chroma {
 
-    enum class DataType {
+    enum class ObjectDataType {
         Note,
         Object,
         Noodle
@@ -19,12 +19,12 @@ namespace Chroma {
 
     class ChromaObjectData {
     public:
-        const DataType dataType;
+        const ObjectDataType dataType;
         std::optional<UnityEngine::Color> Color;
 
-        ChromaObjectData() : dataType(DataType::Object){};
+        ChromaObjectData() : dataType(ObjectDataType::Object){};
 
-        explicit ChromaObjectData(DataType dataType1) : dataType(dataType1) {};
+        explicit ChromaObjectData(ObjectDataType dataType1) : dataType(dataType1) {};
     };
 
     class ChromaObjectDataManager {
@@ -38,7 +38,7 @@ namespace Chroma {
     class ChromaNoteData : public ChromaObjectData
     {
     public:
-        ChromaNoteData() : ChromaObjectData(DataType::Note) {};
+        ChromaNoteData() : ChromaObjectData(ObjectDataType::Note) {};
 
         std::optional<UnityEngine::Color> Color0;
         std::optional<UnityEngine::Color> Color1;

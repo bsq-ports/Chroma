@@ -1,4 +1,4 @@
-#include "ChromaGradientController.hpp"
+#include "lighting/ChromaGradientController.hpp"
 
 #include "GlobalNamespace/BeatmapObjectSpawnController.hpp"
 

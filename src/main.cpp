@@ -12,9 +12,9 @@
 #include "colorizer/SaberColorizer.hpp"
 #include "custom-types/shared/register.hpp"
 
-#include "ChromaRingsRotationEffect.hpp"
+#include "lighting/ChromaRingsRotationEffect.hpp"
 #include "ChromaController.hpp"
-#include "ChromaGradientController.hpp"
+#include "lighting/ChromaGradientController.hpp"
 
 #include "ChromaConfig.hpp"
 

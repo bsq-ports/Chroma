@@ -2,6 +2,7 @@
 
 void Chroma::InstallHooks() {
     Hooks::BeatEffectSpawner();
+    Hooks::BeatmapDataTransformHelper();
     Hooks::BeatmapObjectSpawnController();
     Hooks::ColorManager();
     Hooks::ColorNoteVisuals();
@@ -14,6 +15,7 @@ void Chroma::InstallHooks() {
     Hooks::StandardLevelScenesTransitionSetupDataSO();
     Hooks::ObstacleController();
     Hooks::BombNoteController();
+    Hooks::ParticleSystemEventEffect();
     Hooks::TrackLaneRingsRotationEffect();
     Hooks::TrackLaneRingsRotationEffectSpawner();
 }

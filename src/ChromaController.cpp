@@ -24,7 +24,7 @@
 #include "colorizer/ObstacleColorizer.hpp"
 #include "colorizer/BombColorizer.hpp"
 #include "colorizer/LightColorizer.hpp"
-#include "LegacyLightHelper.hpp"
+#include "lighting/LegacyLightHelper.hpp"
 #include "custom-types/shared/coroutine.hpp"
 
 #include <vector>

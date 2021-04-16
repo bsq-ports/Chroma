@@ -3,13 +3,13 @@
 #include "utils/ChromaUtils.hpp"
 #include "GlobalNamespace/TrackLaneRingsRotationEffectSpawner.hpp"
 #include "GlobalNamespace/TrackLaneRingsRotationEffect.hpp"
-#include "ChromaRingsRotationEffect.hpp"
+#include "lighting/ChromaRingsRotationEffect.hpp"
 #include "UnityEngine/Random.hpp"
 #include "UnityEngine/GameObject.hpp"
 #include "custom-json-data/shared/CustomBeatmapData.h"
 #include <cstring>
 #include "ChromaController.hpp"
-#include "ChromaEventData.hpp"
+#include "lighting/ChromaEventData.hpp"
 
 using namespace Chroma;
 using namespace CustomJSONData;

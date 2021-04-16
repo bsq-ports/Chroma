@@ -1,4 +1,4 @@
-#include "ChromaEventData.hpp"
+#include "lighting/ChromaEventData.hpp"
 
 #include "GlobalNamespace/BeatmapData.hpp"
 #include "System/Collections/Generic/List_1.hpp"

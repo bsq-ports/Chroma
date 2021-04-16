@@ -9,7 +9,7 @@
 #include "UnityEngine/Quaternion.hpp"
 #include "UnityEngine/Transform.hpp"
 #include "utils/ChromaUtils.hpp"
-#include "ChromaEventData.hpp"
+#include "lighting/ChromaEventData.hpp"
 
 using namespace CustomJSONData;
 using namespace GlobalNamespace;

@@ -1,11 +1,11 @@
 #include "Chroma.hpp"
-#include "LightColorManager.hpp"
+#include "lighting/LightColorManager.hpp"
 #include "colorizer/LightColorizer.hpp"
-#include "LegacyLightHelper.hpp"
+#include "lighting/LegacyLightHelper.hpp"
 #include "utils/ChromaUtils.hpp"
-#include "ChromaGradientController.hpp"
+#include "lighting/ChromaGradientController.hpp"
 #include "hooks/LightSwitchEventEffect.hpp"
-#include "ChromaEventData.hpp"
+#include "lighting/ChromaEventData.hpp"
 
 using namespace Chroma;
 using namespace CustomJSONData;

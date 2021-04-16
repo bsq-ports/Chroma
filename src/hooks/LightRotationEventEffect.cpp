@@ -8,7 +8,7 @@
 #include "UnityEngine/Space.hpp"
 #include "UnityEngine/Transform.hpp"
 
-#include "ChromaEventData.hpp"
+#include "lighting/ChromaEventData.hpp"
 
 using namespace CustomJSONData;
 using namespace GlobalNamespace;

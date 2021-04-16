@@ -12,7 +12,7 @@
 #include <experimental/coroutine>
 
 #include "ChromaObjectData.hpp"
-#include "LightColorManager.hpp"
+#include "lighting/LightColorManager.hpp"
 
 using namespace CustomJSONData;
 using namespace GlobalNamespace;
@@ -64,5 +64,5 @@ MAKE_HOOK_OFFSETLESS(
 
 void Chroma::Hooks::ParticleSystemEventEffect() {
     INSTALL_HOOK_OFFSETLESS(getLogger(), ParticleSystemEventEffect_Start, il2cpp_utils::FindMethodUnsafe("", "ParticleSystemEventEffect", "Start", 0));
-    INSTALL_HOOK_OFFSETLESS(getLogger(), ParticleSystemEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger, il2cpp_utils::FindMethodUnsafe("", "HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger", "Start", 0));
+    INSTALL_HOOK_OFFSETLESS(getLogger(), ParticleSystemEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger, il2cpp_utils::FindMethodUnsafe("", "ParticleSystemEventEffect", "HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger", 1));
 }

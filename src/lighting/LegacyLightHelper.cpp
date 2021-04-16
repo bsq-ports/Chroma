@@ -1,4 +1,4 @@
-#include "LegacyLightHelper.hpp"
+#include "lighting/LegacyLightHelper.hpp"
 #include "main.hpp"
 #include "Chroma.hpp"
 

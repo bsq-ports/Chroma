@@ -37,6 +37,7 @@ inline void PrintJSONValue(const rapidjson::Value* json) {
 namespace Chroma {
     namespace Hooks {
         void BeatEffectSpawner();
+        void BeatmapDataTransformHelper();
         void BeatmapObjectSpawnController();
         void ColorManager();
         void ColorNoteVisuals();

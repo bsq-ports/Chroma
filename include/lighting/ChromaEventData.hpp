@@ -14,7 +14,7 @@ using namespace ChromaUtils;
 
 namespace Chroma {
 
-    enum class DataType {
+    enum class EventDataType {
         LIGHT,
         RING,
         LASER_SPEED
@@ -22,9 +22,9 @@ namespace Chroma {
 
     class ChromaEventData {
     public:
-        const DataType dataType;
+        const EventDataType dataType;
 
-        explicit ChromaEventData(DataType dataType1) : dataType(dataType1) {};
+        explicit ChromaEventData(EventDataType dataType1) : dataType(dataType1) {};
     };
 
     class ChromaEventDataManager {
@@ -38,7 +38,7 @@ namespace Chroma {
 
     class ChromaLightEventData : public ChromaEventData {
     public:
-        ChromaLightEventData() : ChromaEventData(DataType::LIGHT) {};
+        ChromaLightEventData() : ChromaEventData(EventDataType::LIGHT) {};
 
         std::optional<rapidjson::Value*> LightID;
 
@@ -61,7 +61,7 @@ namespace Chroma {
 
     class ChromaRingRotationEventData : public ChromaEventData {
     public:
-        ChromaRingRotationEventData() : ChromaEventData(DataType::RING) {};
+        ChromaRingRotationEventData() : ChromaEventData(EventDataType::RING) {};
         std::optional<std::string> NameFilter;
 
         std::optional<int> Direction;
@@ -87,7 +87,7 @@ namespace Chroma {
 
     class ChromaLaserSpeedEventData : public ChromaEventData {
     public:
-        ChromaLaserSpeedEventData() : ChromaEventData(DataType::LASER_SPEED) {};
+        ChromaLaserSpeedEventData() : ChromaEventData(EventDataType::LASER_SPEED) {};
 
         bool LockPosition;
 

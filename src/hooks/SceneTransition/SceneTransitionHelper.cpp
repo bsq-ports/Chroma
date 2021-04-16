@@ -3,7 +3,7 @@
 #include <vector>
 #include <optional>
 
-#include "LegacyLightHelper.hpp"
+#include "lighting/LegacyLightHelper.hpp"
 #include "ChromaController.hpp"
 
 #include "GlobalNamespace/BeatmapDataSO.hpp"

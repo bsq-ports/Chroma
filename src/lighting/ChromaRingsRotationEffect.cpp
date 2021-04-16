@@ -1,4 +1,4 @@
-#include "ChromaRingsRotationEffect.hpp"
+#include "lighting/ChromaRingsRotationEffect.hpp"
 #include "GlobalNamespace/TrackLaneRingsRotationEffect_RingRotationEffect.hpp"
 #include "GlobalNamespace/TrackLaneRing.hpp"
 
