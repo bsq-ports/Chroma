@@ -16,6 +16,7 @@
 #include "UnityEngine/WaitForEndOfFrame.hpp"
 #include "GlobalNamespace/ILightWithId.hpp"
 #include "hooks/LightSwitchEventEffect.hpp"
+#include "lighting/LightIDTableManager.hpp"
 
 #include <experimental/coroutine>
 
@@ -56,24 +57,53 @@ MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_SetColor, void, LightSwitchEventEffe
         return;
     }
 
+
     if (LightSwitchEventEffectHolder::LightIDOverride){
-        auto lights = LightSwitchEventEffectHolder::LightIDOverride.value();
+        auto lights = LightColorizer::GetLights(self);
 
-        // TODO: https://github.com/Aeroluna/Chroma/commit/a8fc978b282af145c6ed263bfcce3485a31bb039#diff-cb9d6e4e838e56a6d827e7121a5846a8685381e0f7594e598a33e6b7f097cc98R36-R43
+        int type = self->event;
+        std::vector<int> newIds;
 
-        for (auto & light : lights){
+        for (auto id : LightSwitchEventEffectHolder::LightIDOverride.value()) {
+            auto newId = LightIDTableManager::GetActiveTableValue(type, id);
+
+            if (newId) {
+                newIds.push_back(newId.value());
+            } else {
+                newIds.push_back(id);
+            }
+        }
+
+        for (auto id : newIds) {
+            if (id < 0 || id > lights.size()) {
+                getLogger().warning("Type %d does not contain id %d", type, id);
+            } else {
+                auto l = lights[id];
+                if (l->get_isRegistered()) {
+                    l->ColorWasSet(color);
+                }
+            }
+        }
+        LightSwitchEventEffectHolder::LightIDOverride = std::nullopt;
+
+        return;
+    }
+
+    if (LightSwitchEventEffectHolder::LegacyLightOverride) {
+        auto lights = LightSwitchEventEffectHolder::LegacyLightOverride.value();
+
+        for (auto &light : lights) {
             if (!light) continue;
             light->ColorWasSet(color);
         }
-        // TODO: Uncomment when LightID rework
-        //        LightSwitchEventEffectHolder::LightIDOverride = std::nullopt;
 
-
+        LightSwitchEventEffectHolder::LegacyLightOverride = std::nullopt;
 
         return;
-    } else {
-        LightSwitchEventEffect_SetColor(self, color);
     }
+
+    LightSwitchEventEffect_SetColor(self, color);
+
 }
 
 MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger, void, LightSwitchEventEffect* self, CustomBeatmapEventData* beatmapEventData) {

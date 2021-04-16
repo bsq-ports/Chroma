@@ -17,7 +17,7 @@ Colors!
 - [x] CJD Gc bugs
 - [x] Fix ChromaLite support
 - [ ] Merge 1.14 update and later commits:
-  - [ ] Do [LightID rework](https://github.com/Aeroluna/Chroma/commit/a8fc978b282af145c6ed263bfcce3485a31bb039) with rapidjson and somehow get json files in game
+  - [x] Do [LightID rework](https://github.com/Aeroluna/Chroma/commit/a8fc978b282af145c6ed263bfcce3485a31bb039) with rapidjson and somehow get json files in game
   - [ ] Add noodle support
   - [ ] Port over [these commits dear lord](https://github.com/BinaryElement/Chroma/compare/24452837a71867688a739a9f1297cd4b5efcaa77...Aeroluna:master) 
     

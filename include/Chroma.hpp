@@ -23,7 +23,6 @@ inline void PrintJSONValue(const rapidjson::Value &json) {
 
 inline void PrintJSONValue(const rapidjson::Value* json) {
     #if DEBUGB == 1
-        #warning No JSON printing
         return;
     #endif
     using namespace rapidjson;

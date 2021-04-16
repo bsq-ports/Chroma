@@ -60,13 +60,8 @@ namespace ChromaUtils {
     T getIfExists(rapidjson::Value* val, const std::string& member, T def) {
         if (!val || !val->IsObject() || val->Empty()) return def;
 
-        getLogger().info("Find not optional member %s", member.c_str());
         auto it = val->FindMember(member);
-
-        getLogger().info("Member not optional end", member.c_str());
         if (it == val->MemberEnd()) return def;
-
-        getLogger().info("Get not optional");
         return it->value.Get<T>();
     }
 
@@ -74,13 +69,10 @@ namespace ChromaUtils {
     std::optional<T> getIfExists(rapidjson::Value*& val, const std::string& member) {
         if (!val ||  val->MemberCount() == 0 || !val->IsObject()) return std::nullopt;
 
-        getLogger().info("Find member %s", member.c_str());
         auto it = val->FindMember(member);
-
-        getLogger().info("Member end", member.c_str());
         if (it == val->MemberEnd()) return std::nullopt;
 
-        getLogger().info("Get");
+
         return it->value.Get<T>();
     }
 

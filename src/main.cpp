@@ -18,7 +18,8 @@
 
 #include "ChromaConfig.hpp"
 
-#include <stdlib.h>
+#include <cstdlib>
+#include "lighting/LightIDTableManager.hpp"
 
 using namespace Chroma;
 using namespace QuestUI;
@@ -129,6 +130,8 @@ extern "C" void load() {
     getLogger().info("Installing Chroma hooks...");
     Chroma::InstallHooks();
     getLogger().info("Installed Chroma hooks!");
+
+    LightIDTableManager::InitTable();
 
     setChromaEnv();
 }

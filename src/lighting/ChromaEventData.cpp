@@ -18,11 +18,11 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
     auto beatmapEvents = reinterpret_cast<System::Collections::Generic::List_1<GlobalNamespace::BeatmapEventData*>*>(beatmapDataCast->get_beatmapEventsData());
 
     for (int i = 0; i < beatmapEvents->items->Length(); i++) {
-        auto event = beatmapEvents->items->values[i];
-        if (event && ASSIGNMENT_CHECK(classof(CustomJSONData::CustomBeatmapEventData*), event->klass)) {
+        auto beatmapEventData = beatmapEvents->items->values[i];
+        if (beatmapEventData && ASSIGNMENT_CHECK(classof(CustomJSONData::CustomBeatmapEventData *), beatmapEventData->klass)) {
             std::shared_ptr<ChromaEventData> chromaEventData;
 
-            auto *customBeatmapEvent = reinterpret_cast<CustomJSONData::CustomBeatmapEventData *>(event);
+            auto *customBeatmapEvent = reinterpret_cast<CustomJSONData::CustomBeatmapEventData *>(beatmapEventData);
 
             rapidjson::Value* dynData = customBeatmapEvent->customData->value;
 
@@ -101,11 +101,7 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
                 }
                 case 8:
                 case 9: {
-                    auto nameFilter = dynData->FindMember(NAMEFILTER);
-
                     // https://github.com/Aeroluna/Chroma/commit/3900969d3fef1eaeea745bcfc23c61bfbe525586#diff-e83fa5da7e2e725f2cfb2ee5a6d6a085b2065a95e0d4757e01fe3c29f0fa4024
-
-
 
                     std::optional<std::string> NameFilter = getIfExists<std::string>(dynData, NAMEFILTER);
                     std::optional<bool> reset = getIfExists<bool>(dynData, RESET);
@@ -149,8 +145,7 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
                     auto chromaLaserSpeedEventData = new ChromaLaserSpeedEventData();
 
                     chromaLaserSpeedEventData->LockPosition = getIfExists(dynData, LOCKPOSITION, false);
-                    chromaLaserSpeedEventData->PreciseSpeed = getIfExists(dynData, PRECISESPEED,
-                                                                          customBeatmapEvent->value);
+                    chromaLaserSpeedEventData->PreciseSpeed = getIfExists(dynData, PRECISESPEED, beatmapEventData->value);
                     chromaLaserSpeedEventData->Direction = getIfExists(dynData, DIRECTION, -1);
 
                     chromaEventData = std::shared_ptr<ChromaLaserSpeedEventData>(chromaLaserSpeedEventData);
@@ -159,7 +154,7 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
                 default:
                     continue;
             }
-            ChromaEventDatas[event] = chromaEventData;
+            ChromaEventDatas[beatmapEventData] = chromaEventData;
         }
     }
 }

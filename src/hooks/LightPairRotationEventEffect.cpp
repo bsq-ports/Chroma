@@ -69,6 +69,8 @@ MAKE_HOOK_OFFSETLESS(
 
 
     auto beatmapEventData = LastLightPairRotationEventEffectData;
+    bool isLeftEvent = beatmapEventData->type == self->eventL;
+
     auto chromaIt = ChromaEventDataManager::ChromaEventDatas.find(beatmapEventData);
 
     // Not found
@@ -80,29 +82,28 @@ MAKE_HOOK_OFFSETLESS(
 
     auto chromaData = std::static_pointer_cast<ChromaLaserSpeedEventData>(chromaIt->second);
 
-    bool isLeftEvent = beatmapEventData->type == self->eventL;
+
 
     // rotationData
     LightPairRotationEventEffect::RotationData *customRotationData = isLeftEvent ? self->rotationDataL
                                                                                  : self->rotationDataR;
 
 
-
     bool lockPosition = chromaData->LockPosition;
-    bool precisionSpeed = chromaData->PreciseSpeed;
-    std::optional<int> dir = chromaData->Direction;
+    float precisionSpeed = chromaData->PreciseSpeed;
+    int dir = chromaData->Direction;
 
-    if (dir) {
-        switch (dir.value()) {
-            case 0:
-                direction = isLeftEvent ? -1.0f : 1.0f;
-                break;
 
-            case 1:
-                direction = isLeftEvent ? 1.0f : -1.0f;
-                break;
-        }
+    switch (dir) {
+        case 0:
+            direction = isLeftEvent ? -1.0f : 1.0f;
+            break;
+
+        case 1:
+            direction = isLeftEvent ? 1.0f : -1.0f;
+            break;
     }
+
 
 
     //getLogger().debug("The time is: %d", beatmapEventData->time);
@@ -113,9 +114,10 @@ MAKE_HOOK_OFFSETLESS(
             customRotationData->transform->set_localRotation(
                     quaternionMultiply(customRotationData->startRotation,
                                        UnityEngine::Quaternion::Euler(
-                                           vectorMultiply(self->rotationVector,customRotationData->startRotationAngle)
+                                               vectorMultiply(self->rotationVector,
+                                                              customRotationData->startRotationAngle)
                                        ))
-                   );
+            );
         }
     } else if (beatmapEventData->value > 0) {
         customRotationData->enabled = true;
@@ -127,13 +129,11 @@ MAKE_HOOK_OFFSETLESS(
             customRotationData->transform->set_localRotation(
                     quaternionMultiply(customRotationData->startRotation,
                                        UnityEngine::Quaternion::Euler(
-                                               vectorMultiply(self->rotationVector,rotationAngle)
-                                               )
-                                       ));
+                                               vectorMultiply(self->rotationVector, rotationAngle)
+                                       )
+                    ));
         }
     }
-
-    // TODO: Do we ever call original?
 }
 
 void Chroma::Hooks::LightPairRotationEventEffect() {

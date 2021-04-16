@@ -5,8 +5,12 @@
 
 #include "lighting/LegacyLightHelper.hpp"
 #include "ChromaController.hpp"
+#include "lighting/LightIDTableManager.hpp"
 
 #include "GlobalNamespace/BeatmapDataSO.hpp"
+#include "GlobalNamespace/BeatmapEnvironmentHelper.hpp"
+#include "GlobalNamespace/EnvironmentInfoSO.hpp"
+
 
 #include <cstdlib>
 
@@ -22,6 +26,8 @@ void SceneTransitionHelper::Patch(GlobalNamespace::IDifficultyBeatmap* customBea
 
 void SceneTransitionHelper::Patch(GlobalNamespace::IDifficultyBeatmap* customBeatmapData, OverrideEnvironmentSettings*& overrideEnvironmentSettings) {
 
+
+
     bool chromaRequirement = SceneTransitionHelper::BasicPatch(customBeatmapData);
     if (chromaRequirement && getChromaConfig().environmentEnhancementsEnabled.GetValue() && false)
 
@@ -33,6 +39,10 @@ void SceneTransitionHelper::Patch(GlobalNamespace::IDifficultyBeatmap* customBea
 }
 
 bool SceneTransitionHelper::BasicPatch(GlobalNamespace::IDifficultyBeatmap* customBeatmapData) {
+    auto environmentInfo = BeatmapEnvironmentHelper::GetEnvironmentInfo(customBeatmapData);
+
+    LightIDTableManager::SetEnvironment(to_utf8(csstrtostr(environmentInfo->serializedName)));
+
     // please let me remove this shit
     bool legacyOverride = false;
 
