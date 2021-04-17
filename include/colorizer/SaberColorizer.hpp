@@ -4,6 +4,7 @@
 #include "GlobalNamespace/BeatmapEventType.hpp"
 #include "GlobalNamespace/SaberBurnMarkArea.hpp"
 #include "GlobalNamespace/SaberBurnMarkSparkles.hpp"
+#include "UnityEngine/Color.hpp"
 #include "GlobalNamespace/SaberType.hpp"
 #include "GlobalNamespace/Saber.hpp"
 #include "custom-types/shared/types.hpp"
@@ -23,7 +24,7 @@ namespace Chroma {
     public:
         static std::vector<std::optional<UnityEngine::Color>> SaberColorOverride;
 
-        static void SetSaberColor(int saberType, std::optional<UnityEngine::Color> color);
+        static void SetSaberColor(int saberType, UnityEngine::Color color);
 
         static void
         SetAllSaberColors(std::optional<UnityEngine::Color> color0, std::optional<UnityEngine::Color> color1);
@@ -39,6 +40,8 @@ namespace Chroma {
         class BSMColorManager {
         private:
             int _saberType;
+            UnityEngine::Color _lastColor;
+
 
             inline static GlobalNamespace::SaberBurnMarkArea *saberBurnMarkArea = nullptr;
             inline static GlobalNamespace::SaberBurnMarkSparkles* saberBurnMarkSparkles = nullptr;
@@ -48,16 +51,16 @@ namespace Chroma {
             [[nodiscard]] GlobalNamespace::Saber* getSaber() const;
 
         public:
-            static std::vector<BSMColorManager *> GetBSMColorManager(int saberType);
+            static BSMColorManager* GetBSMColorManager(int saberType);
 
             static BSMColorManager *
             CreateBSMColorManager(GlobalNamespace::Saber *bsm, int saberType);
 
-            void SetSaberColor(std::optional<UnityEngine::Color> colorNullable);
+            void SetSaberColor(UnityEngine::Color color);
         };
 
     private:
-        inline static std::vector<BSMColorManager *> _bsmColorManagers;
+        inline static std::unordered_map<int, BSMColorManager *> _bsmColorManagers;
 
     };
 }

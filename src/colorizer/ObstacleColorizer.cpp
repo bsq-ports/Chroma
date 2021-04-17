@@ -30,24 +30,24 @@ void ObstacleColorizer::ResetAllObstacleColors() {
 
     for (auto& ocColorManager : _ocColorManagers)
     {
-        ocColorManager->Reset();
+        ocColorManager.second->Reset();
     }
 }
 
 void
-ObstacleColorizer::SetObstacleColor(GlobalNamespace::ObstacleController *oc, std::optional<UnityEngine::Color> color) {
+ObstacleColorizer::SetObstacleColor(GlobalNamespace::ObstacleController *oc, UnityEngine::Color color) {
     auto ocman = OCColorManager::GetOCColorManager(oc);
 
     if (ocman)
         ocman->SetObstacleColor(color);
 }
 
-void ObstacleColorizer::SetAllObstacleColors(std::optional<UnityEngine::Color> color) {
+void ObstacleColorizer::SetAllObstacleColors(UnityEngine::Color color) {
     OCColorManager::SetGlobalObstacleColor(color);
 
     for (auto& ocColorManager : _ocColorManagers)
     {
-        ocColorManager->Reset();
+        ocColorManager.second->Reset();
     }
 }
 
@@ -58,7 +58,7 @@ void ObstacleColorizer::SetActiveColors(GlobalNamespace::ObstacleController *oc)
 void ObstacleColorizer::SetAllActiveColors() {
     for (auto& ocColorManager : _ocColorManagers)
     {
-        ocColorManager->SetActiveColors();
+        ocColorManager.second->SetActiveColors();
     }
 }
 
@@ -89,8 +89,8 @@ OCColorManager::GetOCColorManager(GlobalNamespace::ObstacleController *oc) {
         return nullptr;
 
     for (auto& n : ObstacleColorizer::_ocColorManagers) {
-        if (n && n->_oc == oc)
-            return n;
+        if (n.second && n.second->_oc == oc)
+            return n.second;
     }
 
     return nullptr;
@@ -104,15 +104,12 @@ OCColorManager::CreateOCColorManager(GlobalNamespace::ObstacleController *oc, Un
     }
 
     OCColorManager* occm = CRASH_UNLESS(il2cpp_utils::New<OCColorManager*>(oc, original));
-    ObstacleColorizer::_ocColorManagers.push_back(occm);
+    ObstacleColorizer::_ocColorManagers[oc] = occm;
     return occm;
 }
 
-void OCColorManager::SetGlobalObstacleColor(std::optional<UnityEngine::Color> color) {
-    if (color)
-    {
-        _globalColor = color.value();
-    }
+void OCColorManager::SetGlobalObstacleColor(UnityEngine::Color color) {
+    _globalColor = color;
 }
 
 void OCColorManager::ResetGlobal() {
@@ -120,28 +117,26 @@ void OCColorManager::ResetGlobal() {
 }
 
 void OCColorManager::Reset() {
-    if (_globalColor)
-    {
-        _color = _globalColor.value();
-    }
-    else
-    {
-        _color = _color_Original;
-    }
+    _color = std::nullopt;
 }
 
-void OCColorManager::SetObstacleColor(std::optional<UnityEngine::Color> color) {
-    if (color)
-    {
-        _color = color.value();
-    }
+void OCColorManager::SetObstacleColor(UnityEngine::Color color) {
+
+    _color = color;
+
 }
 
 void OCColorManager::SetActiveColors() const {
+    Color finalColor = _color.value_or(_globalColor.value_or(_color_Original));
+
     ParametricBoxFrameController* obstacleFrame = _stretchableObstacle->obstacleFrame;
+
+    if (finalColor == obstacleFrame->color) return;
+
+
     ParametricBoxFakeGlowController* obstacleFakeGlow = _stretchableObstacle->obstacleFakeGlow;
     Array<MaterialPropertyBlockController *> *materialPropertyBlockControllers = _stretchableObstacle->materialPropertyBlockControllers;
-    UnityEngine::Color finalColor = _color;
+
     obstacleFrame->color = finalColor;
     obstacleFrame->Refresh();
     obstacleFakeGlow->color = finalColor;

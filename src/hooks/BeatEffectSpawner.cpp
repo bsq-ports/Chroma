@@ -1,10 +1,12 @@
 #include "Chroma.hpp"
 
 #include "ChromaController.hpp"
+#include "utils/ChromaUtils.hpp"
 
 #include "GlobalNamespace/BeatEffectSpawner.hpp"
 #include "GlobalNamespace/BeatmapObjectSpawnController.hpp"
 #include "GlobalNamespace/NoteController.hpp"
+#include "GlobalNamespace/MultiplayerConnectedPlayerNoteController.hpp"
 
 #include "custom-json-data/shared/CustomBeatmapData.h"
 
@@ -16,7 +18,7 @@ using namespace GlobalNamespace;
 
 MAKE_HOOK_OFFSETLESS(BeatEffectSpawner_HandleNoteDidStartJumpColorizer, void, BeatEffectSpawner* self, NoteController* noteController) {
     // Do nothing if Chroma shouldn't run
-    if (!ChromaController::DoChromaHooks()) {
+    if (!ChromaController::DoChromaHooks() || ASSIGNMENT_CHECK(classof(MultiplayerConnectedPlayerNoteController*), noteController->klass)) {
         BeatEffectSpawner_HandleNoteDidStartJumpColorizer(self, noteController);
         return;
     }

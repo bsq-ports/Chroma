@@ -32,7 +32,7 @@ void BombColorizer::ResetAllBombColors() {
 
     for (auto& bncColorManager : _bncColorManagers)
     {
-        bncColorManager->Reset();
+        bncColorManager.second->Reset();
     }
 }
 
@@ -48,7 +48,7 @@ void BombColorizer::SetAllBombColors(std::optional<UnityEngine::Color> color) {
 
     for (auto& bncColorManager : _bncColorManagers)
     {
-        bncColorManager->Reset();
+        bncColorManager.second->Reset();
     }
 }
 
@@ -76,8 +76,8 @@ void BNCColorManager::ctor(GlobalNamespace::BombNoteController *nc) {
 
 BNCColorManager *BNCColorManager::GetBNCColorManager(GlobalNamespace::BombNoteController *nc) {
     for (auto& n : BombColorizer::_bncColorManagers) {
-        if (n->_nc == nc)
-            return n;
+        if (n.second->_nc == nc)
+            return n.second;
     }
 
     return nullptr;
@@ -91,7 +91,7 @@ BNCColorManager::CreateBNCColorManager(GlobalNamespace::BombNoteController *nc) 
     }
 
     auto* bnccm = CRASH_UNLESS(il2cpp_utils::New<BNCColorManager*>(nc));
-    BombColorizer::_bncColorManagers.push_back(bnccm);
+    BombColorizer::_bncColorManagers[nc] = bnccm;
     return bnccm;
 }
 
@@ -117,7 +117,7 @@ void BNCColorManager::Reset() {
 }
 
 void BNCColorManager::SetBombColor(std::optional<UnityEngine::Color> color) const {
-    if (color)
+    if (color && color.value() != _bombMaterial->GetColor(il2cpp_utils::createcsstr("_SimpleColor")))
     {
         _bombMaterial->SetColor(il2cpp_utils::createcsstr("_SimpleColor"), color.value());
     }

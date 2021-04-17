@@ -19,14 +19,14 @@ DECLARE_CLASS_CODEGEN(Chroma, OCColorManager, Il2CppObject,
                               inline static int _addColorID = -1;
                               inline static std::optional<UnityEngine::Color> _globalColor = std::nullopt;
                               UnityEngine::Color _color_Original;
-                              UnityEngine::Color _color;
+                              std::optional<UnityEngine::Color> _color;
 
 
                               static OCColorManager* GetOCColorManager(GlobalNamespace::ObstacleController* oc);
                               static OCColorManager* CreateOCColorManager(GlobalNamespace::ObstacleController* oc, UnityEngine::Color original);
-                              static void SetGlobalObstacleColor(std::optional<UnityEngine::Color> color);
+                              static void SetGlobalObstacleColor(UnityEngine::Color color);
                               static void ResetGlobal();
-                              void SetObstacleColor(std::optional<UnityEngine::Color> color);
+                              void SetObstacleColor(UnityEngine::Color color);
                               void SetActiveColors() const;
 
                               DECLARE_METHOD(void, Reset);
@@ -52,8 +52,8 @@ namespace Chroma {
     public:
         static void Reset(GlobalNamespace::ObstacleController* oc);
         static void ResetAllObstacleColors();
-        static void SetObstacleColor(GlobalNamespace::ObstacleController* oc, std::optional<UnityEngine::Color> color);
-        static void SetAllObstacleColors(std::optional<UnityEngine::Color> color);
+        static void SetObstacleColor(GlobalNamespace::ObstacleController* oc, UnityEngine::Color color);
+        static void SetAllObstacleColors(UnityEngine::Color color);
         static void SetActiveColors(GlobalNamespace::ObstacleController* oc);
         static void SetAllActiveColors();
         static void ClearOCColorManagers();
@@ -63,6 +63,6 @@ namespace Chroma {
          */
         static void OCStart(GlobalNamespace::ObstacleController* oc, UnityEngine::Color original);
 
-        inline static std::vector<OCColorManager*> _ocColorManagers  = {};
+        inline static std::unordered_map<GlobalNamespace::ObstacleController*, OCColorManager*> _ocColorManagers  = {};
     };
 }

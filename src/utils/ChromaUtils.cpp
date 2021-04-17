@@ -10,7 +10,7 @@ std::optional<UnityEngine::Color> ChromaUtilities::GetColorFromData(rapidjson::V
 
     rapidjson::Value::MemberIterator color = data->FindMember(member);
 
-    if (color == data->MemberEnd() || color->value.MemberCount() < 3)
+    if (color == data->MemberEnd())
         return std::nullopt;
 
 

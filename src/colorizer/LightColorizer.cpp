@@ -1,4 +1,6 @@
 #include "Chroma.hpp"
+#include "beatsaber-hook/shared/utils/il2cpp-utils.hpp"
+#include "beatsaber-hook/shared/utils/typedefs-array.hpp"
 
 #include "custom-json-data/shared/CustomBeatmapData.h"
 #include "GlobalNamespace/LightPairRotationEventEffect.hpp"
@@ -10,6 +12,8 @@
 #include <unordered_map>
 
 #include "colorizer/LightColorizer.hpp"
+#include "GlobalNamespace/TrackLaneRingsManager.hpp"
+#include "GlobalNamespace/TrackLaneRing.hpp"
 
 
 
@@ -20,7 +24,7 @@ using namespace UnityEngine;
 using namespace Chroma;
 
 // TODO: Is this the proper equivalent of HashSet<LSEColorManager>?
-static std::vector<Chroma::LSEColorManager *> lseColorManagers;
+static std::unordered_map<MonoBehaviour*, Chroma::LSEColorManager *> lseColorManagers;
 
 DEFINE_TYPE(Chroma::LSEColorManager);
 
@@ -34,7 +38,7 @@ void LightColorizer::Reset(MonoBehaviour *behaviour) {
 
 void LightColorizer::ResetAllLightingColors() {
     for (auto& manager : lseColorManagers) {
-        manager->Reset();
+        manager.second->Reset();
     }
 }
 
@@ -59,7 +63,7 @@ void LightColorizer::SetLightingColors(BeatmapEventType beatmapEventType, std::o
 void LightColorizer::SetAllLightingColors(std::optional<UnityEngine::Color> Color0, std::optional<UnityEngine::Color> Color1,
                                           std::optional<UnityEngine::Color> Color0Boost, std::optional<UnityEngine::Color> Color1Boost) {
     for (auto& manager : lseColorManagers) {
-        manager->SetLightingColors(Color0, Color1, Color0Boost, Color1Boost);
+        manager.second->SetLightingColors(Color0, Color1, Color0Boost, Color1Boost);
     }
 }
 
@@ -72,7 +76,7 @@ void LightColorizer::SetActiveColors(BeatmapEventType lse) {
 void LightColorizer::SetAllActiveColors() {
     for (auto& lseColorManager : lseColorManagers)
     {
-        lseColorManager->SetActiveColors();
+        lseColorManager.second->SetActiveColors();
     }
 }
 
@@ -158,6 +162,9 @@ namespace Chroma {
             std::unordered_map<int, int> insertionOrder;
 
             std::unordered_map<int, std::vector<ILightWithId *>> lightsPreGroup;
+
+            auto managers = UnityEngine::Object::FindObjectsOfType<TrackLaneRingsManager*>();
+
             for (auto& light : Lights) {
                 if (!light) continue;
 
@@ -167,6 +174,25 @@ namespace Chroma {
                 if (il2cpp_functions::class_is_assignable_from(classof(MonoBehaviour *), object->klass)) {
                     auto monoBehaviour = reinterpret_cast<MonoBehaviour *>(object);
                     int z = UnityEngine::Mathf::RoundToInt(monoBehaviour->get_transform()->get_position().z);
+
+                    auto ring = monoBehaviour->GetComponentInParent<TrackLaneRing*>();
+
+                    if (ring) {
+
+                        TrackLaneRingsManager* mngr;
+
+                        for (int i = 0; i < managers->Length(); i++) {
+                            auto m = managers->values[i];
+                            if (m->rings->IndexOf(ring) >= 0) {
+                                mngr = m;
+                                break;
+                            }
+                        }
+
+                        if (mngr != nullptr)
+                            z = 1000 + mngr->rings->IndexOf(ring);
+
+                    }
 
                     debugSpamLog(contextLogger, "Grouping to %d", z);
 
@@ -220,8 +246,8 @@ namespace Chroma {
         std::vector<LSEColorManager *> colorManagers;
 
         for (auto& man : lseColorManagers) {
-            if (man->_type == type)
-                colorManagers.push_back(man);
+            if (man.second->_type == type)
+                colorManagers.push_back(man.second);
         }
 
         return colorManagers;
@@ -229,8 +255,8 @@ namespace Chroma {
 
     LSEColorManager *LSEColorManager::GetLSEColorManager(MonoBehaviour *m) {
         for (auto& man : lseColorManagers) {
-            if (man->_lse == m)
-                return man;
+            if (man.second->_lse == m)
+                return man.second;
         }
 
         return nullptr;
@@ -238,7 +264,7 @@ namespace Chroma {
 
     LSEColorManager *LSEColorManager::CreateLSEColorManager(MonoBehaviour *lse, BeatmapEventType type) {
         LSEColorManager * lsecm = CRASH_UNLESS(il2cpp_utils::New<LSEColorManager *>(lse, type));
-        lseColorManagers.push_back(lsecm);
+        lseColorManagers[lse] = lsecm;
         return lsecm;
     }
 

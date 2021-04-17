@@ -58,7 +58,7 @@ namespace Chroma {
          * NC ColorSO holders
          */
         static void BNCStart(GlobalNamespace::BombNoteController* bnc);
-        inline static std::vector<BNCColorManager*> _bncColorManagers = {};
+        inline static std::unordered_map<GlobalNamespace::BombNoteController*, BNCColorManager*> _bncColorManagers = {};
     };
 }
 

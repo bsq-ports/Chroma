@@ -37,9 +37,10 @@ custom_types::Helpers::Coroutine WaitThenStart(LightSwitchEventEffect *instance,
 }
 
 MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_Start, void, LightSwitchEventEffect* self) {
+    LightSwitchEventEffect_Start(self);
+
     // Do nothing if Chroma shouldn't run
     if (!ChromaController::GetChromaLegacy() && !ChromaController::DoChromaHooks()) {
-        LightSwitchEventEffect_Start(self);
         return;
     }
 
@@ -47,7 +48,6 @@ MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_Start, void, LightSwitchEventEffect*
 
     self->StartCoroutine(reinterpret_cast<IEnumerator*>(coro));
 
-    LightSwitchEventEffect_Start(self);
 }
 
 MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_SetColor, void, LightSwitchEventEffect* self, UnityEngine::Color color) {
@@ -121,9 +121,6 @@ MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_HandleBeatmapObjectCallbackControlle
     }
 
     LightSwitchEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);
-
-    // TODO: Remove
-    LightSwitchEventEffectHolder::LightIDOverride = std::nullopt;
 }
 
 void Chroma::Hooks::LightSwitchEventEffect() {

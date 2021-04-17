@@ -71,7 +71,7 @@ namespace Chroma {
             void SetActiveColors();
     };
     private:
-        inline static std::vector<CNVColorManager*> _cnvColorManagers = {};
+        inline static std::unordered_map<GlobalNamespace::NoteController*, CNVColorManager*> _cnvColorManagers = {};
     };
 }
 

@@ -9,6 +9,24 @@
 
 using namespace ChromaUtils;
 
+std::optional<float> getIfExistsFloatOpt(rapidjson::Value*& val, const std::string& member) {
+    if (!val ||  val->MemberCount() == 0 || !val->IsObject()) return std::nullopt;
+
+    auto it = val->FindMember(member);
+    if (it == val->MemberEnd()) return std::nullopt;
+
+
+    return it->value.GetFloat();
+}
+
+float getIfExistsFloat(rapidjson::Value* val, const std::string& member, float def) {
+    if (!val || !val->IsObject() || val->Empty()) return def;
+
+    auto it = val->FindMember(member);
+    if (it == val->MemberEnd()) return def;
+    return it->value.GetFloat();
+}
+
 void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatmapData* beatmapData) {
     ChromaEventDatas.clear();
 
@@ -43,8 +61,7 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
                         if (gradientJSON != dynData->MemberEnd()) {
                             auto &gValue = gradientJSON->value;
 
-                            float duration = gValue.FindMember(
-                                    Chroma::DURATION)->value.GetFloat(); // Trees.at(gradientObject, DURATION);
+                            float duration = gValue.FindMember(Chroma::DURATION)->value.GetFloat(); // Trees.at(gradientObject, DURATION);
 
                             UnityEngine::Color initcolor = ChromaUtils::ChromaUtilities::GetColorFromData(gValue,
                                                                                                           STARTCOLOR).value();
@@ -109,14 +126,14 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
 
 
                     std::optional<bool> direction = getIfExists<bool>(dynData, DIRECTION);
-                    std::optional<float> step = getIfExists<float>(dynData, STEP);
-                    std::optional<float> prop = getIfExists<float>(dynData, PROP);
-                    std::optional<float> speed = getIfExists<float>(dynData, SPEED);
-                    std::optional<float> rotation = getIfExists<float>(dynData, ROTATION);
+                    std::optional<float> step = getIfExistsFloatOpt(dynData, STEP);
+                    std::optional<float> prop = getIfExistsFloatOpt(dynData, PROP);
+                    std::optional<float> speed = getIfExistsFloatOpt(dynData, SPEED);
+                    std::optional<float> rotation = getIfExistsFloatOpt(dynData, ROTATION);
 
-                    auto stepMult = getIfExists<float>(dynData, STEPMULT, 1.0f);
-                    auto propMult = getIfExists<float>(dynData, PROPMULT, 1.0f);
-                    auto speedMult = getIfExists<float>(dynData, SPEEDMULT, 1.0f);
+                    auto stepMult = getIfExistsFloat(dynData, STEPMULT, 1.0f);
+                    auto propMult = getIfExistsFloat(dynData, PROPMULT, 1.0f);
+                    auto speedMult = getIfExistsFloat(dynData, SPEEDMULT, 1.0f);
 
                     auto chromaRingRotationEventData = new ChromaRingRotationEventData();
 
@@ -144,8 +161,8 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
                 case 13: {
                     auto chromaLaserSpeedEventData = new ChromaLaserSpeedEventData();
 
-                    chromaLaserSpeedEventData->LockPosition = getIfExists(dynData, LOCKPOSITION, false);
-                    chromaLaserSpeedEventData->PreciseSpeed = getIfExists(dynData, PRECISESPEED, beatmapEventData->value);
+                    chromaLaserSpeedEventData->LockPosition = getIfExists<bool>(dynData, LOCKPOSITION, false);
+                    chromaLaserSpeedEventData->PreciseSpeed = getIfExistsFloat(dynData, PRECISESPEED, (float) beatmapEventData->value);
                     chromaLaserSpeedEventData->Direction = getIfExists(dynData, DIRECTION, -1);
 
                     chromaEventData = std::shared_ptr<ChromaLaserSpeedEventData>(chromaLaserSpeedEventData);

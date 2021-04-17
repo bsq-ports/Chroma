@@ -2,6 +2,8 @@
 
 #include "ChromaController.hpp"
 
+#include "GlobalNamespace/MultiplayerConnectedPlayerNoteController.hpp"
+
 #include "colorizer/NoteColorizer.hpp"
 #include "utils/ChromaUtils.hpp"
 
@@ -10,7 +12,7 @@ using namespace Chroma;
 
 MAKE_HOOK_OFFSETLESS(ColorNoteVisuals_HandleNoteControllerDidInit, void, ColorNoteVisuals* self, NoteController* noteController) {
     // Do nothing if Chroma shouldn't run
-    if (!ChromaController::DoChromaHooks()) {
+    if (!ChromaController::DoChromaHooks() || ASSIGNMENT_CHECK(classof(MultiplayerConnectedPlayerNoteController*), noteController->klass)) {
         ColorNoteVisuals_HandleNoteControllerDidInit(self, noteController);
         return;
     }

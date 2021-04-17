@@ -19,17 +19,19 @@ void SetLegacyPropIdOverride(std::vector<ILightWithId*> lights) {
 void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, BeatmapEventData* beatmapEventData) {
     static auto contextLogger = getLogger().WithContext(ChromaLogger::ColorLightSwitch);
 
-    // Aero thinks legacy was a mistake. I think a Quest port was a bigger mistake.
-    std::optional<UnityEngine::Color> color = LegacyLightHelper::GetLegacyColor(beatmapEventData);
-
-    debugSpamLog(contextLogger, "Color is legacy? %s", color ? "true" : "false");
-
     auto chromaIt = ChromaEventDataManager::ChromaEventDatas.find(beatmapEventData);
 
 
     if (chromaIt == ChromaEventDataManager::ChromaEventDatas.end()) {
         return;
     }
+
+    // Aero thinks legacy was a mistake. I think a Quest port was a bigger mistake.
+    std::optional<UnityEngine::Color> color = LegacyLightHelper::GetLegacyColor(beatmapEventData);
+
+    debugSpamLog(contextLogger, "Color is legacy? %s", color ? "true" : "false");
+
+
 
     auto chromaData = std::static_pointer_cast<ChromaLightEventData>(chromaIt->second);
     if (il2cpp_functions::class_is_assignable_from(monobehaviour->klass, classof(LightSwitchEventEffect *))) {

@@ -39,19 +39,27 @@ using namespace Chroma;
 
 std::vector<std::optional<UnityEngine::Color>> SaberColorizer::SaberColorOverride = {std::nullopt, std::nullopt};
 
-void SaberColorizer::SetSaberColor(int saberType, std::optional<UnityEngine::Color> color) {
-    for (auto& bms : SaberColorizer::BSMColorManager::GetBSMColorManager(saberType)) {
-        bms->SetSaberColor(color);
-    }
+void SaberColorizer::SetSaberColor(int saberType, UnityEngine::Color color) {
+    auto scm = SaberColorizer::BSMColorManager::GetBSMColorManager(saberType);
+
+    if (scm)
+        scm->SetSaberColor(color);
 }
 
 void SaberColorizer::SetAllSaberColors(std::optional<UnityEngine::Color> color0, std::optional<UnityEngine::Color> color1) {
-    for (auto& bms : SaberColorizer::BSMColorManager::GetBSMColorManager(SaberType::SaberA)) {
-        bms->SetSaberColor(color0);
+
+    if (color0) {
+        auto scm = SaberColorizer::BSMColorManager::GetBSMColorManager(SaberType::SaberA);
+
+        if (scm)
+            scm->SetSaberColor(color0.value());
     }
 
-    for (auto& bms : SaberColorizer::BSMColorManager::GetBSMColorManager(SaberType::SaberB)) {
-        bms->SetSaberColor(color1);
+    if (color1) {
+        auto scm = SaberColorizer::BSMColorManager::GetBSMColorManager(SaberType::SaberB);
+
+        if (scm)
+            scm->SetSaberColor(color1.value());
     }
 }
 
@@ -74,22 +82,22 @@ SaberColorizer::BSMColorManager::BSMColorManager(GlobalNamespace::Saber *bsm, in
     saberBurnMarkSparkles = UnityEngine::Resources::FindObjectsOfTypeAll<SaberBurnMarkSparkles*>()->values[0];
 }
 
-std::vector<SaberColorizer::BSMColorManager *>SaberColorizer::BSMColorManager::GetBSMColorManager(int saberType) {
+SaberColorizer::BSMColorManager* SaberColorizer::BSMColorManager::GetBSMColorManager(int saberType) {
     std::vector<BSMColorManager *> saberColors;
 
     for (auto& man : _bsmColorManagers) {
-        if (man->_saberType == saberType)
-            saberColors.push_back(man);
+        if (man.second->_saberType == saberType)
+            return man.second;
     }
 
-    return saberColors;
+    return nullptr;
 }
 
 SaberColorizer::BSMColorManager* SaberColorizer::BSMColorManager::CreateBSMColorManager(GlobalNamespace::Saber *bsm,
                                                                                          int saberType) {
     getLogger().debug("Creating a beat saber model manager");
     auto* bsmcm = new BSMColorManager(bsm, saberType);
-    _bsmColorManagers.push_back(bsmcm);
+    _bsmColorManagers[saberType] = bsmcm;
     return bsmcm;
 }
 
@@ -116,8 +124,6 @@ void OverrideColor(SetSaberFakeGlowColor* ssfgc, UnityEngine::Color color) {
     sliceSpriteController->color = color * ssfgc->tintColor;
     sliceSpriteController->Refresh();
 }
-
-
 
 void ChangeColorCoroutine2(Saber *instance, UnityEngine::Color color) {
     auto *modelController = instance->get_gameObject()->GetComponentInChildren<SaberModelController *>(true);
@@ -226,50 +232,27 @@ custom_types::Helpers::Coroutine ChangeColorCoroutine(Saber *saber, UnityEngine:
 }
 
 // Must be down here to avoid compile issues
-void SaberColorizer::BSMColorManager::SetSaberColor(std::optional<UnityEngine::Color> colorNullable) {
-    if (colorNullable)
-    {
-        SaberColorOverride[_saberType] = colorNullable.value();
-        auto _bsm = getSaber();
-        auto runningCoro = coroutineSabers.find(_saberType);
-        if (runningCoro != coroutineSabers.end()) {
-            _bsm->StopCoroutine(reinterpret_cast<enumeratorT *>(runningCoro->second));
-            coroutineSabers.erase(runningCoro);
-        }
-
-        custom_types::Helpers::StandardCoroutine* coro = custom_types::Helpers::CoroutineHelper::New(
-                ChangeColorCoroutine(_bsm, colorNullable.value(),saberBurnMarkSparkles, saberBurnMarkArea)
-                );
-
-        _bsm->StartCoroutine(reinterpret_cast<enumeratorT*>(coro));
-        coroutineSabers[_saberType] = coro;
+void SaberColorizer::BSMColorManager::SetSaberColor(UnityEngine::Color color) {
+    if (color == _lastColor) {
+        return;
     }
-    // Reset color
-    else {
-        SaberColorOverride[_saberType] = std::nullopt;
 
-        if (Chroma::SaberManagerHolder::saberManager) {
-            auto _bsm = getSaber();
-
-            if (_bsm) {
-                auto runningCoro = coroutineSabers.find(_saberType);
-                if (runningCoro != coroutineSabers.end()) {
-                    _bsm->StopCoroutine(reinterpret_cast<enumeratorT *>(runningCoro->second));
-                    coroutineSabers.erase(runningCoro);
-                }
-
-                auto* modelController = _bsm->get_gameObject()->GetComponentInChildren<SaberModelController*>(true);
-
-                custom_types::Helpers::StandardCoroutine *coro = custom_types::Helpers::CoroutineHelper::New(
-                        ChangeColorCoroutine(_bsm, modelController->colorManager->ColorForSaberType(_saberType),
-                                             saberBurnMarkSparkles, saberBurnMarkArea)
-                                             );
-
-                _bsm->StartCoroutine(reinterpret_cast<enumeratorT *>(coro));
-                coroutineSabers[_saberType] = coro;
-            }
-        }
+    _lastColor = color;
+    SaberColorOverride[_saberType] = color;
+    auto _bsm = getSaber();
+    auto runningCoro = coroutineSabers.find(_saberType);
+    if (runningCoro != coroutineSabers.end()) {
+        _bsm->StopCoroutine(reinterpret_cast<enumeratorT *>(runningCoro->second));
+        coroutineSabers.erase(runningCoro);
     }
+
+    custom_types::Helpers::StandardCoroutine *coro = custom_types::Helpers::CoroutineHelper::New(
+            ChangeColorCoroutine(_bsm, color, saberBurnMarkSparkles, saberBurnMarkArea)
+    );
+
+    _bsm->StartCoroutine(reinterpret_cast<enumeratorT *>(coro));
+    coroutineSabers[_saberType] = coro;
+
 }
 
 GlobalNamespace::Saber *SaberColorizer::BSMColorManager::getSaber() const {

@@ -37,7 +37,7 @@ void NoteColorizer::ResetAllNotesColors() {
 
     for (auto cnvColorManager : _cnvColorManagers)
     {
-        cnvColorManager->Reset();
+        cnvColorManager.second->Reset();
     }
 }
 
@@ -54,7 +54,7 @@ NoteColorizer::SetAllNoteColors(std::optional<UnityEngine::Color> color0, std::o
 
     for (auto cnvColorManager : _cnvColorManagers)
     {
-        cnvColorManager->Reset();
+        cnvColorManager.second->Reset();
     }
 }
 
@@ -65,7 +65,7 @@ void NoteColorizer::SetActiveColors(GlobalNamespace::NoteController *nc) {
 void NoteColorizer::SetAllActiveColors() {
     for (auto cnvColorManager : _cnvColorManagers)
     {
-        cnvColorManager->SetActiveColors();
+        cnvColorManager.second->SetActiveColors();
     }
 }
 
@@ -163,8 +163,8 @@ NoteColorizer::CNVColorManager *
 NoteColorizer::CNVColorManager::GetCNVColorManager(GlobalNamespace::NoteController *nc) {
 
     for (auto& n : _cnvColorManagers) {
-        if (n->_nc == nc)
-            return n;
+        if (n.second->_nc == nc)
+            return n.second;
     }
 
     return nullptr;
@@ -194,7 +194,7 @@ NoteColorizer::CNVColorManager::CreateCNVColorManager(GlobalNamespace::ColorNote
     }
 
     auto* cnvcm = new CNVColorManager(cnv, nc);
-    _cnvColorManagers.push_back(cnvcm);
+    _cnvColorManagers[nc] = cnvcm;
     return cnvcm;
 }
 
@@ -250,6 +250,10 @@ void NoteColorizer::CNVColorManager::SetActiveColors() {
     ColorNoteVisuals *colorNoteVisuals = _cnv;
 
     UnityEngine::Color noteColor = ColorForCNVManager();
+
+    if (noteColor == colorNoteVisuals->noteColor) {
+        return;
+    }
 
     SpriteRenderer* arrowGlowSpriteRenderer = colorNoteVisuals->arrowGlowSpriteRenderer;
     SpriteRenderer* circleGlowSpriteRenderer = colorNoteVisuals->circleGlowSpriteRenderer;

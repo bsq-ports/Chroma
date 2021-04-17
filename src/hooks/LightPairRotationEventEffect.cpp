@@ -69,7 +69,6 @@ MAKE_HOOK_OFFSETLESS(
 
 
     auto beatmapEventData = LastLightPairRotationEventEffectData;
-    bool isLeftEvent = beatmapEventData->type == self->eventL;
 
     auto chromaIt = ChromaEventDataManager::ChromaEventDatas.find(beatmapEventData);
 
@@ -83,7 +82,7 @@ MAKE_HOOK_OFFSETLESS(
     auto chromaData = std::static_pointer_cast<ChromaLaserSpeedEventData>(chromaIt->second);
 
 
-
+    bool isLeftEvent = beatmapEventData->type == self->eventL;
     // rotationData
     LightPairRotationEventEffect::RotationData *customRotationData = isLeftEvent ? self->rotationDataL
                                                                                  : self->rotationDataR;

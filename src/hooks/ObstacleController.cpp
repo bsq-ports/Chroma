@@ -5,6 +5,7 @@
 #include "GlobalNamespace/ColorManager.hpp"
 #include "custom-json-data/shared/CustomBeatmapData.h"
 #include "GlobalNamespace/ObstacleController.hpp"
+#include "GlobalNamespace/MultiplayerConnectedPlayerObstacleController.hpp"
 #include "utils/ChromaUtils.hpp"
 
 #include "ChromaObjectData.hpp"
@@ -29,7 +30,7 @@ MAKE_HOOK_OFFSETLESS(
     float height
 ) {
     // Do nothing if Chroma shouldn't run
-    if (!ChromaController::DoChromaHooks()) {
+    if (!ChromaController::DoChromaHooks() || ASSIGNMENT_CHECK(classof(MultiplayerConnectedPlayerObstacleController*), self->klass)) {
         ObstacleController_Init(self, obstacleData, worldRotation, startPos, midPos, endPos, move1Duration, move2Duration, singleLineWidth, height);
         return;
     }
@@ -41,7 +42,7 @@ MAKE_HOOK_OFFSETLESS(
 
 
     if (color) {
-        ObstacleColorizer::SetObstacleColor(self, color);
+        ObstacleColorizer::SetObstacleColor(self, color.value());
     } else {
         ObstacleColorizer::Reset(self);
     }
