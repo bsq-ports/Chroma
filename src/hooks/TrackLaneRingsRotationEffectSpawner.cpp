@@ -106,8 +106,7 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCall
 
         // Not found
         if (chromaIt == ChromaEventDataManager::ChromaEventDatas.end()) {
-            TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self,
-                                                                                                            beatmapEventData);
+            origHandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);
             return;
         }
 
@@ -188,7 +187,6 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCall
 
     debugSpamLog(contextLogger, "Not a custom beat map");
     origHandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);//        TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);
-
 }
 
 
