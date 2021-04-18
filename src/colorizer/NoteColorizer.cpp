@@ -221,8 +221,6 @@ void NoteColorizer::CNVColorManager::Reset() {
 
 void NoteColorizer::CNVColorManager::SetNoteColors(std::optional<UnityEngine::Color> color0, std::optional<UnityEngine::Color> color1) {
     if (color0 || color1) {
-        CustomData::NoteData *noteData = static_cast<CustomData::NoteData *>(_noteData->customData->associatedData['C']);
-
         if (color0) {
             _chromaData->Color0 = color0.value();
         }

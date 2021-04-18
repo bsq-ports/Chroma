@@ -182,9 +182,8 @@ custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(Global
             getChromaConfig().environmentEnhancementsEnabled.GetValue()) {
             // Spaghetti code below until I can figure out a better way of doing this
             static auto contextLogger = getLogger().WithContext(ChromaLogger::EnvironmentRemoval);
-            auto &dynData = *customBeatmap->customData->value;
-            debugSpamLog(contextLogger, "Environment removal time");
-            PrintJSONValue(dynData);
+            auto &dynData = customBeatmap->customData->value->get();
+
 
             // TODO: Ok here's the problem, this
             // is getting the custom data of the Expert+ data

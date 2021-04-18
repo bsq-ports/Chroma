@@ -41,14 +41,14 @@ void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, B
         auto lightMember = chromaData->LightID;
         if (lightMember) {
             debugSpamLog(contextLogger, "JSON data 2");
-            rapidjson::Value *&lightIdData = lightMember.value();
+            rapidjson::Value &lightIdData = *lightMember;
 
-            if (lightIdData->IsInt() || lightIdData->IsInt64()) {
-                auto lightIdLong = lightIdData->GetInt();
+            if (lightIdData.IsInt() || lightIdData.IsInt64()) {
+                auto lightIdLong = lightIdData.GetInt();
                 LightSwitchEventEffectHolder::LightIDOverride = std::make_optional(std::vector<int>{lightIdLong});
             } else {
                 // It's a list
-                auto lightIDobjects = lightIdData->GetObject();
+                auto lightIDobjects = lightIdData.GetObject();
                 std::vector<int> lightIDArray;
 
                 for (auto &lightId : lightIDobjects) {
@@ -65,7 +65,7 @@ void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, B
         auto propMember = chromaData->PropID;
         if (propMember) {
             debugSpamLog(contextLogger, "JSON data 3");
-            rapidjson::Value *propIDData = propMember.value();
+            rapidjson::Value& propIDData = *propMember;
 
             std::unordered_map<int, std::vector<ILightWithId *>> lights = LightColorizer::GetLightsPropagationGrouped(
                     lightSwitchEventEffect);
@@ -74,8 +74,8 @@ void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, B
             debugSpamLog(contextLogger, "Prop id data is");
             PrintJSONValue(propIDData);
 
-            if (propIDData->IsInt64() || propIDData->IsInt()) {
-                auto propIdLong = propIDData->GetInt();
+            if (propIDData.IsInt64() || propIDData.IsInt()) {
+                auto propIdLong = propIDData.GetInt();
                 debugSpamLog(contextLogger, "It is an int prop %d %d", lightCount, propIdLong);
                 if (lightCount > propIdLong) {
                     SetLegacyPropIdOverride(lights[propIdLong]);
@@ -83,7 +83,7 @@ void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, B
             } else {
                 debugSpamLog(contextLogger, "It is a list prop");
                 // It's a list
-                auto propIDobjects = propIDData->GetObject();
+                auto propIDobjects = propIDData.GetObject();
                 std::vector<int> propIDArray;
 
 

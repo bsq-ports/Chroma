@@ -15,7 +15,7 @@
 namespace ChromaUtils {
     class ChromaUtilities {
     public:
-        static std::optional<UnityEngine::Color> GetColorFromData(rapidjson::Value* data, const std::string& member = Chroma::COLOR);
+        static std::optional<UnityEngine::Color> GetColorFromData(std::optional<std::reference_wrapper<rapidjson::Value>> data, const std::string& member = Chroma::COLOR);
         static std::optional<UnityEngine::Color> GetColorFromData(rapidjson::Value& data, const std::string& member = Chroma::COLOR);
     };
 
@@ -57,20 +57,20 @@ namespace ChromaUtils {
     }
 
     template<typename T>
-    T getIfExists(rapidjson::Value* val, const std::string& member, T def) {
-        if (!val || !val->IsObject() || val->Empty()) return def;
+    T getIfExists(std::optional<std::reference_wrapper<rapidjson::Value>> val, const std::string& member, T def) {
+        if (!val || !val->get().IsObject() || val->get().Empty()) return def;
 
-        auto it = val->FindMember(member);
-        if (it == val->MemberEnd()) return def;
+        auto it = val->get().FindMember(member);
+        if (it == val->get().MemberEnd()) return def;
         return it->value.Get<T>();
     }
 
     template<typename T>
-    std::optional<T> getIfExists(rapidjson::Value*& val, const std::string& member) {
-        if (!val ||  val->MemberCount() == 0 || !val->IsObject()) return std::nullopt;
+    std::optional<T> getIfExists(std::optional<std::reference_wrapper<rapidjson::Value>> val, const std::string& member) {
+        if (!val || !val->get().IsObject() || val->get().Empty()) return std::nullopt;
 
-        auto it = val->FindMember(member);
-        if (it == val->MemberEnd()) return std::nullopt;
+        auto it = val->get().FindMember(member);
+        if (it == val->get().MemberEnd()) return std::nullopt;
 
 
         return it->value.Get<T>();

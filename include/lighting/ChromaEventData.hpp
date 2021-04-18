@@ -40,9 +40,9 @@ namespace Chroma {
     public:
         ChromaLightEventData() : ChromaEventData(EventDataType::LIGHT) {};
 
-        std::optional<rapidjson::Value*> LightID;
+        std::optional<std::reference_wrapper<rapidjson::Value>> LightID;
 
-        std::optional<rapidjson::Value*> PropID;
+        std::optional<std::reference_wrapper<rapidjson::Value>> PropID;
 
         std::optional<UnityEngine::Color> ColorData;
 

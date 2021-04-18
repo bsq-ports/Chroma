@@ -9,21 +9,21 @@
 
 using namespace ChromaUtils;
 
-std::optional<float> getIfExistsFloatOpt(rapidjson::Value*& val, const std::string& member) {
-    if (!val ||  val->MemberCount() == 0 || !val->IsObject()) return std::nullopt;
+std::optional<float> getIfExistsFloatOpt(std::optional<std::reference_wrapper<rapidjson::Value>> val, const std::string& member) {
+    if (!val ||  val->get().MemberCount() == 0 || !val->get().IsObject()) return std::nullopt;
 
-    auto it = val->FindMember(member);
-    if (it == val->MemberEnd()) return std::nullopt;
+    auto it = val->get().FindMember(member);
+    if (it == val->get().MemberEnd()) return std::nullopt;
 
 
     return it->value.GetFloat();
 }
 
-float getIfExistsFloat(rapidjson::Value* val, const std::string& member, float def) {
-    if (!val || !val->IsObject() || val->Empty()) return def;
+float getIfExistsFloat(std::optional<std::reference_wrapper<rapidjson::Value>> val, const std::string& member, float def) {
+    if (!val || !val->get().IsObject() || val->get().Empty()) return def;
 
-    auto it = val->FindMember(member);
-    if (it == val->MemberEnd()) return def;
+    auto it = val->get().FindMember(member);
+    if (it == val->get().MemberEnd()) return def;
     return it->value.GetFloat();
 }
 
@@ -42,7 +42,7 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
 
             auto *customBeatmapEvent = reinterpret_cast<CustomJSONData::CustomBeatmapEventData *>(beatmapEventData);
 
-            rapidjson::Value* dynData = customBeatmapEvent->customData->value;
+            std::optional<std::reference_wrapper<rapidjson::Value>> optionalDynData = customBeatmapEvent->customData->value;
 
             switch ((int) customBeatmapEvent->type) {
                 case 0:
@@ -54,11 +54,12 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
 
                     debugSpamLog(contextLogger, "Light gradient");
 
-                    auto empty = !dynData || dynData->MemberCount() == 0;
 
-                    if (!empty) {
-                        auto gradientJSON = dynData->FindMember(LIGHTGRADIENT);
-                        if (gradientJSON != dynData->MemberEnd()) {
+
+                    if (optionalDynData) {
+                        rapidjson::Value& unwrappedData = *optionalDynData;
+                        auto gradientJSON = unwrappedData.FindMember(LIGHTGRADIENT);
+                        if (gradientJSON != unwrappedData.MemberEnd()) {
                             auto &gValue = gradientJSON->value;
 
                             float duration = gValue.FindMember(Chroma::DURATION)->value.GetFloat(); // Trees.at(gradientObject, DURATION);
@@ -89,28 +90,29 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
                         }
                     }
 
-                    std::optional<rapidjson::Value *> lightIdOpt;
-                    std::optional<rapidjson::Value *> propIdOpt;
+                    std::optional<std::reference_wrapper<rapidjson::Value>> lightIdOpt;
+                    std::optional<std::reference_wrapper<rapidjson::Value>> propIdOpt;
 
                     // rapidjson really wants us to do empty checks why
-                    if (!empty) {
+                    if (optionalDynData) {
+                        rapidjson::Value& unwrappedData = *optionalDynData;
                         debugSpamLog(contextLogger, "Light ID");
-                        auto lightId = dynData->FindMember(LIGHTID);
-                        auto propId = dynData->FindMember(PROPAGATIONID);
+                        auto lightId = unwrappedData.FindMember(LIGHTID);
+                        auto propId = unwrappedData.FindMember(PROPAGATIONID);
                         debugSpamLog(contextLogger, "Done ");
 
-                        lightIdOpt = lightId == dynData->MemberEnd() ? std::nullopt : std::make_optional(
-                                &lightId->value);
+                        lightIdOpt = lightId == unwrappedData.MemberEnd() ? std::nullopt : std::make_optional(
+                                std::ref(lightId->value));
 
 
-                        propIdOpt = propId == dynData->MemberEnd() ? std::nullopt : std::make_optional(
-                                &propId->value);
+                        propIdOpt = propId == unwrappedData.MemberEnd() ? std::nullopt : std::make_optional(
+                                std::ref(propId->value));
                     }
 
                     auto chromaLightEvent = new ChromaLightEventData();
                     chromaLightEvent->LightID = lightIdOpt;
                     chromaLightEvent->PropID = propIdOpt;
-                    chromaLightEvent->ColorData = ChromaUtilities::GetColorFromData(dynData);
+                    chromaLightEvent->ColorData = ChromaUtilities::GetColorFromData(optionalDynData);
                     chromaLightEvent->GradientObject = gradientObject;
 
                     chromaEventData = std::shared_ptr<ChromaLightEventData>(chromaLightEvent);
@@ -120,20 +122,20 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
                 case 9: {
                     // https://github.com/Aeroluna/Chroma/commit/3900969d3fef1eaeea745bcfc23c61bfbe525586#diff-e83fa5da7e2e725f2cfb2ee5a6d6a085b2065a95e0d4757e01fe3c29f0fa4024
 
-                    std::optional<std::string> NameFilter = getIfExists<std::string>(dynData, NAMEFILTER);
-                    std::optional<bool> reset = getIfExists<bool>(dynData, RESET);
-                    std::optional<bool> counterSpin = getIfExists<bool>(dynData, COUNTERSPIN);
+                    std::optional<std::string> NameFilter = getIfExists<std::string>(optionalDynData, NAMEFILTER);
+                    std::optional<bool> reset = getIfExists<bool>(optionalDynData, RESET);
+                    std::optional<bool> counterSpin = getIfExists<bool>(optionalDynData, COUNTERSPIN);
 
 
-                    std::optional<bool> direction = getIfExists<bool>(dynData, DIRECTION);
-                    std::optional<float> step = getIfExistsFloatOpt(dynData, STEP);
-                    std::optional<float> prop = getIfExistsFloatOpt(dynData, PROP);
-                    std::optional<float> speed = getIfExistsFloatOpt(dynData, SPEED);
-                    std::optional<float> rotation = getIfExistsFloatOpt(dynData, ROTATION);
+                    std::optional<bool> direction = getIfExists<bool>(optionalDynData, DIRECTION);
+                    std::optional<float> step = getIfExistsFloatOpt(optionalDynData, STEP);
+                    std::optional<float> prop = getIfExistsFloatOpt(optionalDynData, PROP);
+                    std::optional<float> speed = getIfExistsFloatOpt(optionalDynData, SPEED);
+                    std::optional<float> rotation = getIfExistsFloatOpt(optionalDynData, ROTATION);
 
-                    auto stepMult = getIfExistsFloat(dynData, STEPMULT, 1.0f);
-                    auto propMult = getIfExistsFloat(dynData, PROPMULT, 1.0f);
-                    auto speedMult = getIfExistsFloat(dynData, SPEEDMULT, 1.0f);
+                    auto stepMult = getIfExistsFloat(optionalDynData, STEPMULT, 1.0f);
+                    auto propMult = getIfExistsFloat(optionalDynData, PROPMULT, 1.0f);
+                    auto speedMult = getIfExistsFloat(optionalDynData, SPEEDMULT, 1.0f);
 
                     auto chromaRingRotationEventData = new ChromaRingRotationEventData();
 
@@ -161,9 +163,9 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
                 case 13: {
                     auto chromaLaserSpeedEventData = new ChromaLaserSpeedEventData();
 
-                    chromaLaserSpeedEventData->LockPosition = getIfExists<bool>(dynData, LOCKPOSITION, false);
-                    chromaLaserSpeedEventData->PreciseSpeed = getIfExistsFloat(dynData, PRECISESPEED, (float) beatmapEventData->value);
-                    chromaLaserSpeedEventData->Direction = getIfExists(dynData, DIRECTION, -1);
+                    chromaLaserSpeedEventData->LockPosition = getIfExists<bool>(optionalDynData, LOCKPOSITION, false);
+                    chromaLaserSpeedEventData->PreciseSpeed = getIfExistsFloat(optionalDynData, PRECISESPEED, (float) beatmapEventData->value);
+                    chromaLaserSpeedEventData->Direction = getIfExists(optionalDynData, DIRECTION, -1);
 
                     chromaEventData = std::shared_ptr<ChromaLaserSpeedEventData>(chromaLaserSpeedEventData);
                     break;
