@@ -60,6 +60,8 @@ MAKE_HOOK_OFFSETLESS(
         LightColorizer::SetLastValue(self, beatmapEventData->value);
         LightColorManager::ColorLightSwitch(self, beatmapEventData);
     }
+
+    ParticleSystemEventEffect_Start(self);
 }
 
 void Chroma::Hooks::ParticleSystemEventEffect() {
