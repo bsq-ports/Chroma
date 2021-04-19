@@ -34,7 +34,7 @@ void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, B
 
 
     auto chromaData = std::static_pointer_cast<ChromaLightEventData>(chromaIt->second);
-    if (il2cpp_functions::class_is_assignable_from(monobehaviour->klass, classof(LightSwitchEventEffect *))) {
+    if (ASSIGNMENT_CHECK(classof(LightSwitchEventEffect *), monobehaviour->klass)) {
         auto *lightSwitchEventEffect = reinterpret_cast<LightSwitchEventEffect *>(monobehaviour);
 
 
@@ -45,7 +45,7 @@ void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, B
 
             if (lightIdData.IsInt() || lightIdData.IsInt64()) {
                 auto lightIdLong = lightIdData.GetInt();
-                LightSwitchEventEffectHolder::LightIDOverride = std::make_optional(std::vector<int>{lightIdLong});
+                LightSwitchEventEffectHolder::LightIDOverride = std::make_optional(std::vector<int>{(int) lightIdLong});
             } else {
                 // It's a list
                 auto lightIDobjects = lightIdData.GetObject();
@@ -54,8 +54,6 @@ void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, B
                 for (auto &lightId : lightIDobjects) {
                     lightIDArray.push_back(lightId.value.GetInt());
                 }
-
-                std::vector<ILightWithId *> overrideLights;
 
                 LightSwitchEventEffectHolder::LightIDOverride = std::make_optional(lightIDArray);
             }

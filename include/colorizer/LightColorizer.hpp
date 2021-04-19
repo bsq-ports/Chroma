@@ -46,7 +46,7 @@ namespace Chroma {
         static void SetLastValue(UnityEngine::MonoBehaviour *monoBehaviour, int val);
 
         // Returns array of ILightWithId*
-        static std::vector<GlobalNamespace::ILightWithId *> GetLights(GlobalNamespace::LightSwitchEventEffect *lse);
+        static std::unordered_map<int, GlobalNamespace::ILightWithId *> GetLights(GlobalNamespace::LightSwitchEventEffect *lse);
 
         // Returns 2d array of ILightWithId*
         static std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId *>>
@@ -63,7 +63,7 @@ typedef std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId *>> Li
 DECLARE_CLASS_CODEGEN(Chroma, LSEColorManager, Il2CppObject,
 
         public:
-            std::vector<GlobalNamespace::ILightWithId *> Lights = {};
+            std::unordered_map<int, GlobalNamespace::ILightWithId*> Lights = {};
 
             // 2d array of ILightWithId*
             LightGroupMap LightsPropagationGrouped;

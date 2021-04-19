@@ -75,10 +75,9 @@ void BNCColorManager::ctor(GlobalNamespace::BombNoteController *nc) {
 }
 
 BNCColorManager *BNCColorManager::GetBNCColorManager(GlobalNamespace::BombNoteController *nc) {
-    for (auto& n : BombColorizer::_bncColorManagers) {
-        if (n.second->_nc == nc)
-            return n.second;
-    }
+    auto it = BombColorizer::_bncColorManagers.find(nc);
+
+    if (it != BombColorizer::_bncColorManagers.end()) return it->second;
 
     return nullptr;
 }

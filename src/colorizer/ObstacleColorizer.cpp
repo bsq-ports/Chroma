@@ -88,10 +88,9 @@ OCColorManager::GetOCColorManager(GlobalNamespace::ObstacleController *oc) {
     if (!oc)
         return nullptr;
 
-    for (auto& n : ObstacleColorizer::_ocColorManagers) {
-        if (n.second && n.second->_oc == oc)
-            return n.second;
-    }
+    auto it = ObstacleColorizer::_ocColorManagers.find(oc);
+
+    if (it != ObstacleColorizer::_ocColorManagers.end()) return it->second;
 
     return nullptr;
 }

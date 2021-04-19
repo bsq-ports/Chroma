@@ -83,12 +83,9 @@ SaberColorizer::BSMColorManager::BSMColorManager(GlobalNamespace::Saber *bsm, in
 }
 
 SaberColorizer::BSMColorManager* SaberColorizer::BSMColorManager::GetBSMColorManager(int saberType) {
-    std::vector<BSMColorManager *> saberColors;
+    auto it = _bsmColorManagers.find(saberType);
 
-    for (auto& man : _bsmColorManagers) {
-        if (man.second->_saberType == saberType)
-            return man.second;
-    }
+    if (it != _bsmColorManagers.end()) return it->second;
 
     return nullptr;
 }

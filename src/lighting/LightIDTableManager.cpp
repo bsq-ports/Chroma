@@ -72,6 +72,7 @@ void LightIDTableManager::SetEnvironment(std::string environmentName) {
         getLogger().warning("Table not found for %s", environmentName.c_str());
         activeTable = std::nullopt;
     } else {
+        getLogger().debug("Set the environment as %s", environmentName.c_str());
         activeTable = environmentName;
     }
 }
@@ -81,10 +82,11 @@ std::optional<int> LightIDTableManager::GetActiveTableValue(int type, int id) {
     {
         auto table = lightIdTable[activeTable.value()];
 
-        auto it = table[type].find(id);
+        auto typeTable = table[type];
 
-        if (it != table[type].end()) {
-            getLogger().info("Found the light!");
+        auto it = typeTable.find(id);
+
+        if (it != typeTable.end()) {
             return it->second;
         } else {
             getLogger().warning("Unable to find value for type %d and id %d.", type, id);

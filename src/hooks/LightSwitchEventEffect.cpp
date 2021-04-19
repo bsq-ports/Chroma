@@ -58,7 +58,7 @@ MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_SetColor, void, LightSwitchEventEffe
     }
 
 
-    if (LightSwitchEventEffectHolder::LightIDOverride){
+    if (LightSwitchEventEffectHolder::LightIDOverride) {
         auto lights = LightColorizer::GetLights(self);
 
         int type = self->event;
@@ -74,16 +74,20 @@ MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_SetColor, void, LightSwitchEventEffe
             }
         }
 
+
         for (auto id : newIds) {
             if (id < 0 || id > lights.size()) {
                 getLogger().warning("Type %d does not contain id %d", type, id);
             } else {
                 auto l = lights[id];
-                if (l->get_isRegistered()) {
-                    l->ColorWasSet(color);
+                if (l) {
+                    if (l->get_isRegistered()) {
+                        l->ColorWasSet(color);
+                    }
                 }
             }
         }
+
         LightSwitchEventEffectHolder::LightIDOverride = std::nullopt;
 
         return;

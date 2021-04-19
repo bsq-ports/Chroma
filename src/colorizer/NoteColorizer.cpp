@@ -152,7 +152,7 @@ NoteColorizer::CNVColorManager::CNVColorManager(GlobalNamespace::ColorNoteVisual
 
     _chromaData = std::static_pointer_cast<ChromaNoteData>(ChromaObjectDataManager::ChromaObjectDatas[nc->noteData]);
 
-    if (il2cpp_functions::class_is_assignable_from(nc->noteData->klass, classof(CustomJSONData::CustomNoteData*))) {
+    if (ASSIGNMENT_CHECK(classof(CustomJSONData::CustomNoteData*), nc->noteData->klass)) {
         _noteData = reinterpret_cast<CustomJSONData::CustomNoteData *>(nc->noteData);
 
         _noteData->customData->associatedData['C'] = new CustomData::NoteData {GlobalColor[0], GlobalColor[1]};
@@ -161,11 +161,9 @@ NoteColorizer::CNVColorManager::CNVColorManager(GlobalNamespace::ColorNoteVisual
 
 NoteColorizer::CNVColorManager *
 NoteColorizer::CNVColorManager::GetCNVColorManager(GlobalNamespace::NoteController *nc) {
+    auto it = _cnvColorManagers.find(nc);
 
-    for (auto& n : _cnvColorManagers) {
-        if (n.second->_nc == nc)
-            return n.second;
-    }
+    if (it != _cnvColorManagers.end()) return it->second;
 
     return nullptr;
 }
@@ -176,7 +174,7 @@ NoteColorizer::CNVColorManager::CreateCNVColorManager(GlobalNamespace::ColorNote
     CNVColorManager *cnvColorManager = GetCNVColorManager(nc);
     if (cnvColorManager != nullptr)
     {
-        if (il2cpp_functions::class_is_assignable_from(nc->noteData->klass, classof(CustomNoteData*))) {
+        if (ASSIGNMENT_CHECK(classof(CustomJSONData::CustomNoteData*), nc->noteData->klass)) {
             auto *customData = reinterpret_cast<CustomNoteData *>(nc->noteData);
             cnvColorManager->_noteData = customData;
 
