@@ -103,15 +103,6 @@ namespace ChromaUtils {
     {
         return a + (b - a) * Clamp01(t);
     }
-
-    UnityEngine::Vector3 vectorMultiply(UnityEngine::Vector3 vector, float m) {
-        return UnityEngine::Vector3(vector.x * m, vector.y * m, vector.z * m);
-    }
-
-    UnityEngine::Quaternion quaternionMultiply(UnityEngine::Quaternion lhs, UnityEngine::Quaternion rhs)
-    {
-        return UnityEngine::Quaternion(lhs.w * rhs.x + lhs.x * rhs.w + lhs.y * rhs.z - lhs.z * rhs.y, lhs.w * rhs.y + lhs.y * rhs.w + lhs.z * rhs.x - lhs.x * rhs.z, lhs.w * rhs.z + lhs.z * rhs.w + lhs.x * rhs.y - lhs.y * rhs.x, lhs.w * rhs.w - lhs.x * rhs.x - lhs.y * rhs.y - lhs.z * rhs.z);
-    }
 }
 
 #define ASSIGNMENT_CHECK(ParentType, ChildOrInstanceType) il2cpp_functions::class_is_assignable_from(ParentType, ChildOrInstanceType)
