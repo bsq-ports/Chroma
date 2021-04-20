@@ -192,12 +192,34 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                     }
 
                     if (localPosition) {
-                        transform->set_localPosition(localPosition.value());
+                        transform->set_localPosition(localPosition.value() * noteLinesDistance);
                     }
 
                     if (localRotation) {
                         transform->set_localEulerAngles(localRotation.value());
                     }
+
+                    // Handle TrackLaneRing
+                    auto trackLaneRing = gameObject->GetComponent<GlobalNamespace::TrackLaneRing*>();
+                    if (trackLaneRing != nullptr)
+                    {
+                        if (position || localPosition)
+                        {
+                            trackLaneRing->positionOffset = transform->get_position();
+
+                            float zPosition = transform->get_position().z;
+                            trackLaneRing->prevRotZ = zPosition;
+                            trackLaneRing->posZ = zPosition;
+                        }
+
+                        if (rotation || localRotation)
+                        {
+                            float zRotation = transform->get_rotation().z;
+                            trackLaneRing->prevRotZ = zRotation;
+                            trackLaneRing->rotZ = zRotation;
+                        }
+                    }
+
 
                     if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {
                         getLogger().info("ID [\"%s\"] using method [%s] found:", id.c_str(), lookupString.c_str());

@@ -16,6 +16,7 @@ void Chroma::InstallHooks() {
     Hooks::SaberManager();
     Hooks::SceneManager_Internal();
     Hooks::StandardLevelScenesTransitionSetupDataSO();
+    Hooks::TrackLaneRing();
     Hooks::TrackLaneRingsManager();
     Hooks::TrackLaneRingsPositionStepEffectSpawner();
     Hooks::TrackLaneRingsRotationEffect();

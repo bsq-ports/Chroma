@@ -4,6 +4,7 @@
 #include <optional>
 
 #include "UnityEngine/Vector3.hpp"
+#include "GlobalNamespace/TrackLaneRing.hpp"
 
 #include "custom-json-data/shared/CustomBeatmapData.h"
 
@@ -28,6 +29,8 @@ namespace Chroma {
         static void GetAllGameObjects();
 
     public:
+        inline static std::unordered_map<GlobalNamespace::TrackLaneRing*, bool> SkipRingUpdate;
+
         static void Init(CustomJSONData::CustomBeatmapData* customBeatmapData, float noteLinesDistance);
 
 
