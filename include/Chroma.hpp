@@ -45,6 +45,7 @@ namespace Chroma {
         void LightPairRotationEventEffect();
         void LightRotationEventEffect();
         void LightSwitchEventEffect();
+        void LightWithIdManager();
         void NoteCutEffectSpawner();
         void ObstacleController();
         void ParticleSystemEventEffect();

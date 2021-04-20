@@ -10,6 +10,7 @@ void Chroma::InstallHooks() {
     Hooks::LightPairRotationEventEffect();
     Hooks::LightRotationEventEffect();
     Hooks::LightSwitchEventEffect();
+    Hooks::LightWithIdManager();
     Hooks::NoteCutEffectSpawner();
     Hooks::ObstacleController();
     Hooks::ParticleSystemEventEffect();
