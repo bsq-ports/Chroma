@@ -10,9 +10,15 @@
 #include "GlobalNamespace/LightRotationEventEffect.hpp"
 #include "GlobalNamespace/LightPairRotationEventEffect.hpp"
 #include "GlobalNamespace/ParticleSystemEventEffect.hpp"
+#include "GlobalNamespace/Mirror.hpp"
+#include "GlobalNamespace/MirrorRendererSO.hpp"
+
 
 #include "UnityEngine/Vector3.hpp"
 #include "UnityEngine/ParticleSystem.hpp"
+#include "UnityEngine/GameObject.hpp"
+#include "UnityEngine/Object.hpp"
+#include "UnityEngine/Material.hpp"
 
 #include "System/Collections/Generic/List_1.hpp"
 
@@ -126,6 +132,18 @@ Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root,
 
         if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {
             getLogger().info("Initialized ParticleSystemEventEffect");
+        }
+    }
+
+    auto mirror = root->GetComponent<Mirror*>();
+    if (mirror != nullptr)
+    {
+        mirror->mirrorRenderer = UnityEngine::Object::Instantiate(mirror->mirrorRenderer);
+        mirror->mirrorMaterial = UnityEngine::Object::Instantiate(mirror->mirrorMaterial);
+
+
+        if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {
+            getLogger().info("Initialized Mirror");
         }
     }
 
