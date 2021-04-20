@@ -15,7 +15,6 @@
 
 #include "System/Action.hpp"
 #include "ChromaConfig.hpp"
-#include "bs-utils/shared/utils.hpp"
 #include "custom-json-data/shared/CustomBeatmapData.h"
 
 #include "main.hpp"
@@ -64,61 +63,6 @@ custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(Global
         INSTALL_HOOK_OFFSETLESS(getLogger(), ChromaController_NoteCutEvent,
                                 il2cpp_utils::FindMethodUnsafe("", "BeatmapObjectManager", "HandleNoteControllerNoteWasCut", 2));
         hookInstalled = true;
-    }
-
-    if (getChromaConfig().lightshowModifier.GetValue()) {
-        auto list = reinterpret_cast<Generic::List_1<IReadonlyBeatmapData *> *>(beatmapData->get_beatmapLinesData());
-        for (int i = 0; i < list->items->Length(); i++) {
-            auto *b = reinterpret_cast<BeatmapLineData *>(list->items->values[i]);
-
-            auto beatList = Generic::List_1<BeatmapObjectData *>::New_ctor();
-
-            for (int j = 0; j < b->beatmapObjectsData->items->Length(); j++) {
-                auto o = b->beatmapObjectsData->items->values[j];
-                if (o->get_beatmapObjectType() != BeatmapObjectType::Note)
-                    beatList->Add(o);
-            }
-
-            b->beatmapObjectsData = beatList;
-        }
-
-        Array<Saber *> *sabers = UnityEngine::Resources::FindObjectsOfTypeAll<GlobalNamespace::Saber *>();
-
-        for (int i = 0; i < sabers->Length(); i++) {
-            Saber *saber = sabers->values[i];
-            saber->get_gameObject()->SetActive(false);
-        }
-
-
-        bs_utils::Submission::disable(modInfo);
-
-        if (getChromaConfig().playersPlace.GetValue()) {
-            auto o = GameObject::Find(il2cpp_utils::createcsstr("PlayersPlace"));
-
-            if (o)
-                o->SetActive(false);
-        }
-
-        if (getChromaConfig().spectrograms.GetValue()) {
-            auto o = GameObject::Find(il2cpp_utils::createcsstr("Spectrograms"));
-
-            if (o)
-                o->SetActive(false);
-        }
-
-        if (getChromaConfig().backColumns.GetValue()) {
-            auto o = GameObject::Find(il2cpp_utils::createcsstr("BackColumns"));
-
-            if (o)
-                o->SetActive(false);
-        }
-
-        if (getChromaConfig().buildings.GetValue()) {
-            auto o = GameObject::Find(il2cpp_utils::createcsstr("Buildings"));
-
-            if (o)
-                o->SetActive(false);
-        }
     }
 
     if (DoChromaHooks() && getChromaConfig().environmentEnhancementsEnabled.GetValue()) {

@@ -71,11 +71,6 @@ void DidActivate(HMUI::ViewController* self, bool firstActivation, bool addedToH
             getChromaConfig().customColorEventsEnabled.SetValue(toggle);
             setChromaEnv();
         })->get_gameObject(), "Disables custom colors for Chroma maps. In other words, disables Chroma");
-
-        BeatSaberUI::AddHoverHint(AddConfigValueToggle(boolGrid->get_transform(), getChromaConfig().buildings)->get_gameObject(),"Disables buildings in environments");
-        BeatSaberUI::AddHoverHint(AddConfigValueToggle(boolGrid->get_transform(), getChromaConfig().backColumns)->get_gameObject(),"Disables back columns in environments");
-        BeatSaberUI::AddHoverHint(AddConfigValueToggle(boolGrid->get_transform(), getChromaConfig().playersPlace)->get_gameObject(),"Unknown at present");
-        BeatSaberUI::AddHoverHint(AddConfigValueToggle(boolGrid->get_transform(), getChromaConfig().spectrograms)->get_gameObject(),"Unknown at present");
     }
 }
 
