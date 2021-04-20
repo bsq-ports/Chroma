@@ -37,7 +37,7 @@ LOCAL_MODULE := modloader
 LOCAL_EXPORT_C_INCLUDES := extern/modloader
 LOCAL_SRC_FILES := extern/libmodloader.so
 include $(PREBUILT_SHARED_LIBRARY)
-# Creating prebuilt for dependency: custom-json-data - version: 0.5.0
+# Creating prebuilt for dependency: custom-json-data - version: 0.5.1
 include $(CLEAR_VARS)
 LOCAL_MODULE := custom-json-data
 LOCAL_EXPORT_C_INCLUDES := extern/custom-json-data
