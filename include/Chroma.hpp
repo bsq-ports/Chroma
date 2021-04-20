@@ -48,6 +48,7 @@ namespace Chroma {
         void LightWithIdManager();
         void NoteCutEffectSpawner();
         void ObstacleController();
+        void ParametricBoxController();
         void ParticleSystemEventEffect();
         void SaberManager();
         void SceneManager_Internal();

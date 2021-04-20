@@ -9,6 +9,7 @@
 #include "utils/ChromaUtils.hpp"
 #include "lighting/environment_enhancements/LegacyEnvironmentRemoval.hpp"
 #include "lighting/environment_enhancements/ComponentInitializer.hpp"
+#include "lighting/environment_enhancements/ParametricBoxControllerParameters.hpp"
 
 #include <concepts>
 #include <regex>
@@ -134,6 +135,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
 
             SkipRingUpdate.clear();
             RingRotationOffsets.clear();
+            ParametricBoxControllerParameters::TransformParameters.clear();
 
             auto environmentDataObject = environmentData->value.GetArray();
 
@@ -245,6 +247,21 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                         if (rotation || localRotation) {
                             RingRotationOffsets[trackLaneRing] = transform->get_eulerAngles();
                             trackLaneRing->rotZ = 0;
+                        }
+                    }
+
+                    // Handle ParametricBoxController
+                    auto parametricBoxController = gameObject->GetComponent<GlobalNamespace::ParametricBoxController*>();
+                    if (parametricBoxController != nullptr)
+                    {
+                        if (position || localPosition)
+                        {
+                            ParametricBoxControllerParameters::SetTransformPosition(parametricBoxController, transform->get_localPosition());
+                        }
+
+                        if (scale)
+                        {
+                            ParametricBoxControllerParameters::SetTransformScale(parametricBoxController, transform->get_localScale());
                         }
                     }
 

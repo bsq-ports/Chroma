@@ -13,6 +13,7 @@ void Chroma::InstallHooks() {
     Hooks::LightWithIdManager();
     Hooks::NoteCutEffectSpawner();
     Hooks::ObstacleController();
+    Hooks::ParametricBoxController();
     Hooks::ParticleSystemEventEffect();
     Hooks::SaberManager();
     Hooks::SceneManager_Internal();
