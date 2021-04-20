@@ -30,19 +30,6 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRing_FixedUpdateRing, void, GlobalNamespace::Track
         return;
     }
 
-    if (!EnvironmentEnhancementManager::SkipRingUpdate.empty())
-    {
-        auto it = EnvironmentEnhancementManager::SkipRingUpdate.find(self);
-
-        if (it != EnvironmentEnhancementManager::SkipRingUpdate.end()) {
-            auto doSkip = it->second;
-
-            if (doSkip) {
-                return;
-            }
-        }
-    }
-
     self->prevRotZ = self->rotZ;
     self->rotZ = Lerp(self->rotZ, self->destRotZ, fixedDeltaTime * self->rotationSpeed);
     self->prevPosZ = self->posZ;
@@ -56,30 +43,16 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRing_LateUpdateRing, void, GlobalNamespace::TrackL
         return;
     }
 
-    if (!EnvironmentEnhancementManager::SkipRingUpdate.empty())
-    {
-        auto it = EnvironmentEnhancementManager::SkipRingUpdate.find(self);
-
-        if (it != EnvironmentEnhancementManager::SkipRingUpdate.end()) {
-            auto doSkip = it->second;
-
-            if (doSkip) {
-                return;
-            }
-        }
-
-    }
-
     UnityEngine::Quaternion rotation = UnityEngine::Quaternion::get_identity();
 
     auto it2 = EnvironmentEnhancementManager::RingRotationOffsets.find(self);
 
     if (it2 != EnvironmentEnhancementManager::RingRotationOffsets.end())
     {
-        rotation = UnityEngine::Quaternion::Euler(it2->second);
+        rotation = it2->second;
     }
 
-        float interpolatedZPos = self->prevPosZ + ((self->posZ - self->prevPosZ) * interpolationFactor);
+    float interpolatedZPos = self->prevPosZ + ((self->posZ - self->prevPosZ) * interpolationFactor);
     UnityEngine::Vector3 positionZOffset = rotation * UnityEngine::Vector3::get_forward() * interpolatedZPos;
     UnityEngine::Vector3 pos = self->positionOffset + positionZOffset;
 

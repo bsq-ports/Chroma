@@ -133,7 +133,6 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
         if (environmentData != dynData.MemberEnd()) {
             GetAllGameObjects();
 
-            SkipRingUpdate.clear();
             RingRotationOffsets.clear();
             ParametricBoxControllerParameters::TransformParameters.clear();
 
@@ -245,7 +244,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                         }
 
                         if (rotation || localRotation) {
-                            RingRotationOffsets[trackLaneRing] = transform->get_eulerAngles();
+                            RingRotationOffsets[trackLaneRing] = transform->get_localRotation();
                             trackLaneRing->rotZ = 0;
                         }
                     }
