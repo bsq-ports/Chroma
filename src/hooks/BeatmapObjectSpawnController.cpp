@@ -10,17 +10,16 @@ using namespace custom_types::Helpers;
 using namespace GlobalNamespace;
 
 MAKE_HOOK_OFFSETLESS(BeatmapObjectSpawnController_Start, void, BeatmapObjectSpawnController* self) {
+    BeatmapObjectSpawnController_Start(self);
+
     // Do nothing if Chroma shouldn't run
     if (!ChromaController::GetChromaLegacy() && !ChromaController::DoChromaHooks()) {
-        BeatmapObjectSpawnController_Start(self);
         return;
     }
 
     auto delayedStartCoro = CoroutineHelper::New(Chroma::ChromaController::DelayedStartEnumerator(self));
 
     self->StartCoroutine(reinterpret_cast<enumeratorT*>(delayedStartCoro));
-
-    BeatmapObjectSpawnController_Start(self);
 }
 
 void Chroma::Hooks::BeatmapObjectSpawnController() {

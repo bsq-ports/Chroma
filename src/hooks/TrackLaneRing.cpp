@@ -35,7 +35,7 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRing_FixedUpdateRing, void, GlobalNamespace::Track
 MAKE_HOOK_OFFSETLESS(TrackLaneRing_LateUpdateRing, void, GlobalNamespace::TrackLaneRing* self, float interpolationFactor) {
     // Do nothing if Chroma shouldn't run
     if (!ChromaController::DoChromaHooks()) {
-        TrackLaneRing_FixedUpdateRing(self, interpolationFactor);
+        TrackLaneRing_LateUpdateRing(self, interpolationFactor);
         return;
     }
 

@@ -26,7 +26,7 @@ MAKE_HOOK_OFFSETLESS(BeatmapDataTransformHelper_CreateTransformedBeatmapData, Gl
 
     // Essentially, here we cancel the original method. DO NOT call it IF it's a Chroma map
     if (!ChromaController::DoChromaHooks()) {
-        return (GlobalNamespace::IReadonlyBeatmapData*) result;
+        return result;
     }
 
 //    auto* stackTrace = System::Diagnostics::StackTrace::New_ctor();

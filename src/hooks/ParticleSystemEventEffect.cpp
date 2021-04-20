@@ -51,7 +51,7 @@ MAKE_HOOK_OFFSETLESS(
 ) {
     // Do nothing if Chroma shouldn't run
     if (!ChromaController::DoChromaHooks()) {
-        ParticleSystemEventEffect_Start(self);
+        ParticleSystemEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);
         return;
     }
 
@@ -61,7 +61,7 @@ MAKE_HOOK_OFFSETLESS(
         LightColorManager::ColorLightSwitch(self, beatmapEventData);
     }
 
-    ParticleSystemEventEffect_Start(self);
+    ParticleSystemEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);
 }
 
 void Chroma::Hooks::ParticleSystemEventEffect() {
