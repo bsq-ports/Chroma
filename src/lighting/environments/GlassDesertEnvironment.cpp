@@ -46,7 +46,9 @@ EnvironmentLightDataT GlassDesertEnvironment::getEnvironmentLights() {
                                 {8, 4},
                                 {9, 7},
                                 {10, 8},
-                        }},
+                        }},{4, {
+
+                        }}
             }
     );
 

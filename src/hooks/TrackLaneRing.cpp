@@ -1,13 +1,17 @@
 #include "main.hpp"
 #include "Chroma.hpp"
 #include "ChromaController.hpp"
+#include "utils/ChromaUtils.hpp"
 
 #include "hooks/TrackLaneRingsManager.hpp"
 #include "lighting/environment_enhancements/EnvironmentEnhancementManager.hpp"
 
 #include "GlobalNamespace/TrackLaneRing.hpp"
 
+#include "UnityEngine/Quaternion.hpp"
+
 using namespace Chroma;
+using namespace ChromaUtils;
 
 MAKE_HOOK_OFFSETLESS(TrackLaneRing_FixedUpdateRing, void, GlobalNamespace::TrackLaneRing* self, float fixedDeltaTime) {
     // Do nothing if Chroma shouldn't run
@@ -29,7 +33,10 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRing_FixedUpdateRing, void, GlobalNamespace::Track
         }
     }
 
-    TrackLaneRing_FixedUpdateRing(self, fixedDeltaTime);
+    self->prevRotZ = self->rotZ;
+    self->rotZ = Lerp(self->rotZ, self->destRotZ, fixedDeltaTime * self->rotationSpeed);
+    self->prevPosZ = self->posZ;
+    self->posZ = Lerp(self->posZ, self->destPosZ, fixedDeltaTime * self->moveSpeed);
 }
 
 MAKE_HOOK_OFFSETLESS(TrackLaneRing_LateUpdateRing, void, GlobalNamespace::TrackLaneRing* self, float interpolationFactor) {
@@ -53,7 +60,25 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRing_LateUpdateRing, void, GlobalNamespace::TrackL
 
     }
 
-    TrackLaneRing_LateUpdateRing(self, interpolationFactor);
+    UnityEngine::Quaternion rotation = UnityEngine::Quaternion::get_identity();
+
+    auto it2 = EnvironmentEnhancementManager::RingRotationOffsets.find(self);
+
+    if (it2 != EnvironmentEnhancementManager::RingRotationOffsets.end())
+    {
+        rotation = UnityEngine::Quaternion::Euler(it2->second);
+    }
+
+        float interpolatedZPos = self->prevPosZ + ((self->posZ - self->prevPosZ) * interpolationFactor);
+    UnityEngine::Vector3 positionZOffset = rotation * UnityEngine::Vector3::get_forward() * interpolatedZPos;
+    UnityEngine::Vector3 pos = self->positionOffset + positionZOffset;
+
+    float interpolatedZRot = self->prevRotZ + ((self->rotZ - self->prevRotZ) * interpolationFactor);
+    auto rotationZOffset = UnityEngine::Quaternion::AngleAxis(interpolatedZRot, UnityEngine::Vector3::get_forward());
+    UnityEngine::Quaternion rot = rotation * rotationZOffset;
+
+    self->transform->set_localRotation(rot);
+    self->transform->set_localPosition(pos);
 }
 
 void Hooks::TrackLaneRing() {

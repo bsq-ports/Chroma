@@ -109,6 +109,9 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
         if (environmentData != dynData.MemberEnd()) {
             GetAllGameObjects();
 
+            SkipRingUpdate.clear();
+            RingRotationOffsets.clear();
+
             auto environmentDataObject = environmentData->value.GetArray();
 
             for (auto& gameObjectDataVal : environmentDataObject) {
@@ -158,14 +161,16 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                             auto newGameObject = UnityEngine::Object::Instantiate(gameObject);
                             SceneManager::MoveGameObjectToScene(newGameObject, scene);
                             newGameObject->get_transform()->SetParent(parent, true);
-                            ComponentInitializer::InitializeComponents(newGameObject->get_transform(), gameObject->get_transform());
-                            auto newGameObjectInfo = GameObjectInfo(newGameObject);
-                            gameObjectInfos.push_back(newGameObjectInfo);
+
+                            ComponentInitializer::InitializeComponents(newGameObject->get_transform(), gameObject->get_transform(), gameObjectInfos);
+                            for (auto &o : _gameObjectInfos) {
+                                if (o.GameObject == newGameObject)
+                                    gameObjectInfos.push_back(o);
+                            }
+
+
                         }
                     }
-
-                    for (auto& o : gameObjectInfos)
-                        _gameObjectInfos.push_back(o);
                 } else {
                     gameObjectInfos = foundObjects;
                 }
@@ -205,7 +210,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                     {
                         if (position || localPosition)
                         {
-                            trackLaneRing->positionOffset = transform->get_position();
+                            trackLaneRing->positionOffset = transform->get_localPosition();
 
                             float zPosition = transform->get_position().z;
                             trackLaneRing->prevRotZ = zPosition;
@@ -214,6 +219,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
 
                         if (rotation || localRotation)
                         {
+                            RingRotationOffsets[trackLaneRing] = transform->get_eulerAngles();
                             float zRotation = transform->get_rotation().z;
                             trackLaneRing->prevRotZ = zRotation;
                             trackLaneRing->rotZ = zRotation;

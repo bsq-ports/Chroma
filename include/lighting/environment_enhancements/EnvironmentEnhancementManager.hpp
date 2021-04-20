@@ -30,6 +30,7 @@ namespace Chroma {
 
     public:
         inline static std::unordered_map<GlobalNamespace::TrackLaneRing*, bool> SkipRingUpdate;
+        inline static std::unordered_map<GlobalNamespace::TrackLaneRing*, UnityEngine::Vector3> RingRotationOffsets;
 
         static void Init(CustomJSONData::CustomBeatmapData* customBeatmapData, float noteLinesDistance);
 

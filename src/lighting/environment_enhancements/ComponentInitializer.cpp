@@ -23,7 +23,7 @@ using namespace GlobalNamespace;
 using namespace Chroma;
 
 void
-Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root, UnityEngine::Transform *original) {
+Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root, UnityEngine::Transform *original, std::vector<GameObjectInfo> gameObjectInfos) {
     auto lightWithIdMonoBehaviour = root->GetComponent<LightWithIdMonoBehaviour*>();
     if (lightWithIdMonoBehaviour != nullptr)
     {
@@ -129,6 +129,9 @@ Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root,
         }
     }
 
+    GameObjectInfo gameObjectInfo = GameObjectInfo(root->get_gameObject());
+    gameObjectInfos.push_back(gameObjectInfo);
+
     for (int i = 0; i < root->get_childCount(); i++)
     {
         auto transform = root->GetChild(i);
@@ -138,6 +141,6 @@ Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root,
         }
 
         int index = transform->GetSiblingIndex();
-        InitializeComponents(transform, original->GetChild(index));
+        InitializeComponents(transform, original->GetChild(index), gameObjectInfos);
     }
 }
