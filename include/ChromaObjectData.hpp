@@ -40,9 +40,6 @@ namespace Chroma {
     public:
         ChromaNoteData() : ChromaObjectData(ObjectDataType::Note) {};
 
-        std::optional<UnityEngine::Color> Color0;
-        std::optional<UnityEngine::Color> Color1;
-
         std::optional<bool> DisableSpawnEffect;
     };
 

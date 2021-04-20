@@ -91,14 +91,14 @@ void NoteColorizer::EnableNoteColorOverride(GlobalNamespace::NoteController *not
 
     auto noteChromaData = std::static_pointer_cast<ChromaNoteData>(chromaData);
 
-    if (noteChromaData->Color0) {
-        NoteColorOverride[0] = noteChromaData->Color0;
+    if (noteChromaData->Color) {
+        NoteColorOverride[0] = noteChromaData->Color;
     } else {
         NoteColorOverride[0] = CNVColorManager::GlobalColor[0];
     }
 
-    if (noteChromaData->Color1) {
-        NoteColorOverride[1] = noteChromaData->Color1;
+    if (noteChromaData->Color) {
+        NoteColorOverride[1] = noteChromaData->Color;
     } else {
         NoteColorOverride[1] = CNVColorManager::GlobalColor[1];
     }
@@ -214,19 +214,17 @@ void NoteColorizer::CNVColorManager::ResetGlobal() {
 }
 
 void NoteColorizer::CNVColorManager::Reset() {
-    _noteData->customData->associatedData['C'] = new CustomData::NoteData {std::nullopt, std::nullopt};
+    _chromaData->Color = std::nullopt;
 }
 
 void NoteColorizer::CNVColorManager::SetNoteColors(std::optional<UnityEngine::Color> color0, std::optional<UnityEngine::Color> color1) {
-    if (color0 || color1) {
-        if (color0) {
-            _chromaData->Color0 = color0.value();
+    switch (_noteData->colorType) {
+        case GlobalNamespace::ColorType::ColorA: {
+            _chromaData->Color= color0;
         }
-
-        if (color1) {
-            _chromaData->Color1 = color1.value();
+        case GlobalNamespace::ColorType::ColorB: {
+            _chromaData->Color= color1;
         }
-
     }
 }
 
