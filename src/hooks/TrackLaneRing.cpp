@@ -13,6 +13,16 @@
 using namespace Chroma;
 using namespace ChromaUtils;
 
+MAKE_HOOK_OFFSETLESS(TrackLaneRing_Init, void, GlobalNamespace::TrackLaneRing* self, UnityEngine::Vector3 position, UnityEngine::Vector3 positionOffset) {
+    TrackLaneRing_Init(self, position, positionOffset);
+    // Do nothing if Chroma shouldn't run
+    if (!ChromaController::DoChromaHooks()) {
+        return;
+    }
+
+    self->posZ = position.z;
+}
+
 MAKE_HOOK_OFFSETLESS(TrackLaneRing_FixedUpdateRing, void, GlobalNamespace::TrackLaneRing* self, float fixedDeltaTime) {
     // Do nothing if Chroma shouldn't run
     if (!ChromaController::DoChromaHooks()) {

@@ -147,31 +147,20 @@ void LightColorizer::RegisterLight(UnityEngine::MonoBehaviour *lightWithId) {
             monomanager->Lights[monomanager->Lights.size()] = reinterpret_cast<ILightWithId*>(monoBehaviour);
 
     } else if (ASSIGNMENT_CHECK(classof(LightWithIds*), lightWithId->klass)) {
-        auto lightWithIds = reinterpret_cast<LightWithIds*>(lightWithId);
-        LightWithIdManager* lightManager;
+        auto lightWithIds = reinterpret_cast<LightWithIds *>(lightWithId);
 
-        for (auto& o : lseColorManagers) {
-            if (o.first) {
-                lightManager = o.second->lightManager;
-                break;
-            }
+
+        auto lightsWithIdArray = lightWithIds->lightIntensityData;
+
+
+        for (int i = 0; i < lightsWithIdArray->Length(); i++) {
+            auto light = reinterpret_cast<ILightWithId *>(lightsWithIdArray->values[i]);
+            auto manager = LSEColorManager::GetLSEColorManager((light->get_lightId() - 1)).front();
+
+            LightIDTableManager::RegisterIndex(light->get_lightId() - 1, manager->Lights.size());
+            manager->Lights[manager->Lights.size()] = light;
         }
 
-        if (lightManager) {
-            lightWithIds->lightManager = lightManager;
-
-
-            auto lightsWithIdArray = lightWithIds->lightIntensityData;
-
-
-            for (int i = 0; i < lightsWithIdArray->Length(); i++) {
-                auto light = reinterpret_cast<ILightWithId*>(lightsWithIdArray->values[i]);
-                auto manager = LSEColorManager::GetLSEColorManager((light->get_lightId() - 1)).front();
-
-                LightIDTableManager::RegisterIndex(light->get_lightId() - 1, manager->Lights.size());
-                manager->Lights[manager->Lights.size()] = light;
-            }
-        }
     }
 }
 
@@ -202,7 +191,7 @@ namespace Chroma {
                           _mHighlightColor1Boost);
             _supportBoostColor = true;
 
-            lightManager = lse->lightManager;
+            auto lightManager = lse->lightManager;
             System::Collections::Generic::List_1<GlobalNamespace::ILightWithId *> *lightList = lightManager->lights->values[lse->lightsID];
             Array<ILightWithId *> *lightArray = lightList->items;
 

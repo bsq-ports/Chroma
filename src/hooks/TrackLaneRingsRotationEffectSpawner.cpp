@@ -6,6 +6,7 @@
 #include "lighting/ChromaRingsRotationEffect.hpp"
 #include "UnityEngine/Random.hpp"
 #include "UnityEngine/GameObject.hpp"
+#include "UnityEngine/Object.hpp"
 #include "custom-json-data/shared/CustomBeatmapData.h"
 #include <cstring>
 #include "ChromaController.hpp"
@@ -26,13 +27,17 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffectSpawner_Start, void, GlobalName
         return;
     }
 
-    auto* oldRotationEffect = self->trackLaneRingsRotationEffect;
-    debugSpamLog(contextLogger, "Adding component");
-    auto newRotationEffect = oldRotationEffect->get_gameObject()->AddComponent<ChromaRingsRotationEffect*>();
-    debugSpamLog(contextLogger, "Copyying values now");
-    newRotationEffect->CopyValues(oldRotationEffect);
+    if (self->trackLaneRingsRotationEffect->klass == classof(TrackLaneRingsRotationEffect*)) {
+        auto *oldRotationEffect = self->trackLaneRingsRotationEffect;
+        debugSpamLog(contextLogger, "Adding component");
+        auto newRotationEffect = oldRotationEffect->get_gameObject()->AddComponent<ChromaRingsRotationEffect *>();
+        debugSpamLog(contextLogger, "Copyying values now");
+        newRotationEffect->CopyValues(oldRotationEffect);
 
-    self->trackLaneRingsRotationEffect = reinterpret_cast<TrackLaneRingsRotationEffect*>(newRotationEffect);
+        UnityEngine::Object::Destroy(oldRotationEffect);
+
+        self->trackLaneRingsRotationEffect = reinterpret_cast<TrackLaneRingsRotationEffect *>(newRotationEffect);
+    }
     TrackLaneRingsRotationEffectSpawner_Start(self);
 }
 

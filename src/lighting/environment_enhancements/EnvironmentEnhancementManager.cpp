@@ -85,7 +85,7 @@ void EnvironmentEnhancementManager::GetAllGameObjects() {
         if (gameObject) {
             auto sceneName = gameObject->get_scene().get_name();
 
-            if (sceneName && sceneName->Contains(il2cpp_utils::createcsstr("Environment")) && !sceneName->Contains(il2cpp_utils::createcsstr("Menu")) || gameObject->GetComponent<GlobalNamespace::TrackLaneRing*>()) {
+            if (sceneName && (sceneName->Contains(il2cpp_utils::createcsstr("Environment")) && !sceneName->Contains(il2cpp_utils::createcsstr("Menu")) || gameObject->GetComponent<GlobalNamespace::TrackLaneRing*>())) {
                 gameObjectsVec.push_back(gameObject);
             }
         }
@@ -105,6 +105,8 @@ void EnvironmentEnhancementManager::GetAllGameObjects() {
     }
 
     for (auto& gameObject : gameObjectsVec2) {
+        if (!gameObject) continue;
+
         _gameObjectInfos.emplace_back(gameObject);
 
         // seriously what the fuck beat games
@@ -118,10 +120,12 @@ void EnvironmentEnhancementManager::GetAllGameObjects() {
 
 void
 EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBeatmapData, float noteLinesDistance) {
+    getLogger().debug("Custom beat map %p", customBeatmapData);
+    getLogger().debug("Custom beat map custom data %p", customBeatmapData->customData);
     auto customDynWrapper = customBeatmapData->customData->value;
     if (customDynWrapper) {
 
-        rapidjson::Value& dynData = *customDynWrapper;
+        rapidjson::Value &dynData = *customDynWrapper;
 
         auto environmentData = dynData.FindMember(ENVIRONMENT);
 
@@ -134,7 +138,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
 
             auto environmentDataObject = environmentData->value.GetArray();
 
-            for (auto& gameObjectDataVal : environmentDataObject) {
+            for (auto &gameObjectDataVal : environmentDataObject) {
                 auto idMember = gameObjectDataVal.FindMember(IDVAR);
 
                 std::string id = idMember == gameObjectDataVal.MemberEnd() ? "" : idMember->value.GetString();
@@ -148,7 +152,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                     lookupMethod = LookupMethod::Regex;
                 } else if (strcmp(lookupString.c_str(), "exact") == 0) {
                     lookupMethod = LookupMethod::Exact;
-                }else if (strcmp(lookupString.c_str(), "contains") == 0) {
+                } else if (strcmp(lookupString.c_str(), "contains") == 0) {
                     lookupMethod = LookupMethod::Contains;
                 }
 
@@ -166,8 +170,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                 std::vector<GameObjectInfo> gameObjectInfos;
 
                 if (dupeAmount) {
-                    for (const auto& gameObjectInfo : foundObjects)
-                    {
+                    for (const auto &gameObjectInfo : foundObjects) {
                         if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {
                             getLogger().info("Duplicating [%s]:", gameObjectInfo.FullID.c_str());
                         }
@@ -176,13 +179,21 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                         auto parent = gameObject->get_transform()->get_parent();
                         auto scene = gameObject->get_scene();
 
-                        for (int i = 0; i < dupeAmount.value(); i++)
-                        {
+                        for (int i = 0; i < dupeAmount.value(); i++) {
+                            std::vector<std::shared_ptr<IComponentData>> componentDatas;
+                            ComponentInitializer::PrefillComponentsData(gameObject->get_transform(),
+                                                                        componentDatas);
                             auto newGameObject = UnityEngine::Object::Instantiate(gameObject);
+                            ComponentInitializer::PostfillComponentsData(newGameObject->get_transform(),
+                                                                         gameObject->get_transform(),
+                                                                         componentDatas);
+
                             SceneManager::MoveGameObjectToScene(newGameObject, scene);
                             newGameObject->get_transform()->SetParent(parent, true);
 
-                            ComponentInitializer::InitializeComponents(newGameObject->get_transform(), gameObject->get_transform(), gameObjectInfos);
+                            ComponentInitializer::InitializeComponents(newGameObject->get_transform(),
+                                                                       gameObject->get_transform(), gameObjectInfos,
+                                                                       componentDatas);
                             for (auto &o : _gameObjectInfos) {
                                 if (o.GameObject == newGameObject)
                                     gameObjectInfos.push_back(o);
@@ -195,7 +206,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                     gameObjectInfos = foundObjects;
                 }
 
-                for (auto& gameObjectInfo : gameObjectInfos) {
+                for (auto &gameObjectInfo : gameObjectInfos) {
                     auto gameObject = gameObjectInfo.GameObject;
 
                     if (active) {
@@ -225,24 +236,14 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                     }
 
                     // Handle TrackLaneRing
-                    auto trackLaneRing = gameObject->GetComponent<GlobalNamespace::TrackLaneRing*>();
-                    if (trackLaneRing != nullptr)
-                    {
-                        if (position || localPosition)
-                        {
+                    auto trackLaneRing = gameObject->GetComponent<GlobalNamespace::TrackLaneRing *>();
+                    if (trackLaneRing != nullptr) {
+                        if (position || localPosition) {
                             trackLaneRing->positionOffset = transform->get_localPosition();
-
-                            float zPosition = transform->get_position().z;
-                            trackLaneRing->prevRotZ = zPosition;
-                            trackLaneRing->posZ = zPosition;
                         }
 
-                        if (rotation || localRotation)
-                        {
+                        if (rotation || localRotation) {
                             RingRotationOffsets[trackLaneRing] = transform->get_eulerAngles();
-                            float zRotation = transform->get_rotation().z;
-                            trackLaneRing->prevRotZ = zRotation;
-                            trackLaneRing->rotZ = zRotation;
                         }
                     }
 
@@ -250,7 +251,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                     if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {
                         getLogger().info("ID [\"%s\"] using method [%s] found:", id.c_str(), lookupString.c_str());
 
-                        for (const auto& o : foundObjects) {
+                        for (const auto &o : foundObjects) {
                             getLogger().info("%s", o.FullID.c_str());
                         }
 
@@ -260,8 +261,8 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
             }
         }
     }
-
     LegacyEnvironmentRemoval::Init(customBeatmapData);
+
 }
 
 void EnvironmentEnhancementManager::GetChildRecursive(UnityEngine::Transform *gameObject,

@@ -27,6 +27,10 @@ void ChromaRingsRotationEffect::AddRingRotationEffectF(float angle, float step, 
     _activeRingRotationEffects.push_back(ringRotationEffect);
 }
 
+void ChromaRingsRotationEffect::SetNewRingManager(GlobalNamespace::TrackLaneRingsManager *trackLaneRingsManager) {
+    _trackLaneRingsManager = trackLaneRingsManager;
+}
+
 void ChromaRingsRotationEffect::CopyValues(
         GlobalNamespace::TrackLaneRingsRotationEffect *trackLaneRingsRotationEffect) {
     _trackLaneRingsManager = trackLaneRingsRotationEffect->trackLaneRingsManager;

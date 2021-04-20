@@ -1,17 +1,20 @@
-#include "lighting/environment_enhancements/ComponentInitializer.hpp"
 #include "main.hpp"
+#include "lighting/environment_enhancements/ComponentInitializer.hpp"
+#include "lighting/environment_enhancements/EnvironmentEnhancementManager.hpp"
 #include "colorizer/LightColorizer.hpp"
 #include "hooks/TrackLaneRingsManager.hpp"
 
 #include "GlobalNamespace/LightWithIdMonoBehaviour.hpp"
 #include "GlobalNamespace/LightWithIds.hpp"
 #include "GlobalNamespace/TrackLaneRing.hpp"
+#include "GlobalNamespace/TrackLaneRingsManager.hpp"
 #include "GlobalNamespace/Spectrogram.hpp"
 #include "GlobalNamespace/LightRotationEventEffect.hpp"
 #include "GlobalNamespace/LightPairRotationEventEffect.hpp"
 #include "GlobalNamespace/ParticleSystemEventEffect.hpp"
 #include "GlobalNamespace/Mirror.hpp"
 #include "GlobalNamespace/MirrorRendererSO.hpp"
+#include "GlobalNamespace/TrackLaneRingsRotationEffect.hpp"
 
 
 #include "UnityEngine/Vector3.hpp"
@@ -29,45 +32,81 @@ using namespace GlobalNamespace;
 using namespace Chroma;
 
 void
-Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root, UnityEngine::Transform *original, std::vector<GameObjectInfo> gameObjectInfos) {
+Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root, UnityEngine::Transform *original, std::vector<GameObjectInfo> gameObjectInfos, std::vector<std::shared_ptr<IComponentData>>& componentDatas) {
     auto lightWithIdMonoBehaviour = root->GetComponent<LightWithIdMonoBehaviour*>();
     if (lightWithIdMonoBehaviour != nullptr)
     {
+        auto originalLight = original->GetComponent<LightWithIdMonoBehaviour*>();
+        lightWithIdMonoBehaviour->lightManager = originalLight->lightManager;
         LightColorizer::RegisterLight(lightWithIdMonoBehaviour);
     }
 
     auto lightWithIds = root->GetComponent<LightWithIds*>();
     if (lightWithIds != nullptr)
     {
+        auto originalLight = original->GetComponent<LightWithIds*>();
+        lightWithIdMonoBehaviour->lightManager = originalLight->lightManager;
         LightColorizer::RegisterLight(lightWithIds);
     }
 
     auto trackLaneRing = root->GetComponent<TrackLaneRing*>();
     if (trackLaneRing != nullptr)
     {
-        trackLaneRing->Init(UnityEngine::Vector3::get_zero(), root->get_position());
-
         auto originalRing = original->GetComponent<TrackLaneRing*>();
 
+        auto ringIt = EnvironmentEnhancementManager::RingRotationOffsets.find(originalRing);
+
+        if (ringIt != EnvironmentEnhancementManager::RingRotationOffsets.end())
+            EnvironmentEnhancementManager::RingRotationOffsets[trackLaneRing] = ringIt->second;
+
+
+        TrackLaneRingsManager* managerToAdd;
         for (auto& manager : RingManagers) {
-            auto rings = manager->rings;
 
-            if (rings->Contains(originalRing)) {
-                System::Collections::Generic::List_1<GlobalNamespace::TrackLaneRing *> *newRingList = System::Collections::Generic::List_1<GlobalNamespace::TrackLaneRing *>::New_ctor();;
+            std::optional<std::shared_ptr<TrackLaneRingsManagerComponentData>> componentData;
+            for (auto& componentDataC : componentDatas) {
+                if (componentDataC->getComponentType() == ComponentType::TrackLaneRingsManager) {
+                    auto trackLaneData = std::static_pointer_cast<TrackLaneRingsManagerComponentData>(componentDataC);
 
-                for (int i = 0; i < rings->Length(); i++) {
-                    newRingList->Add(rings->values[i]);
+                    if (trackLaneData->OldTrackLaneRingsManager == manager) {
+                        componentData = std::make_optional(trackLaneData);
+                        break;
+                    }
+                }
+            }
+
+            if (componentData) {
+                managerToAdd = componentData.value()->NewTrackLaneRingsManager;
+            } else {
+                auto managerRef = manager;
+
+                auto rings = managerRef->rings;
+                if (rings->Contains(originalRing))
+                    managerToAdd = manager;
+            }
+
+            if (managerToAdd) {
+                auto rings = managerToAdd->rings;
+
+
+                System::Collections::Generic::List_1<GlobalNamespace::TrackLaneRing *> *newRingList = System::Collections::Generic::List_1<GlobalNamespace::TrackLaneRing *>::New_ctor();
+
+                if (rings) {
+                    for (int i = 0; i < rings->Length(); i++) {
+                        newRingList->Add(rings->values[i]);
+                    }
                 }
 
                 newRingList->Add(trackLaneRing);
 
-                manager->rings = newRingList->ToArray();
+                managerToAdd->rings = newRingList->ToArray();
 
                 if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {
                     getLogger().info("Initialized TrackLaneRing");
                 }
 
                 break;
+
             }
         }
     }
@@ -155,6 +194,57 @@ Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root,
         auto transform = root->GetChild(i);
 
         int index = transform->GetSiblingIndex();
-        InitializeComponents(transform, original->GetChild(index), gameObjectInfos);
+        InitializeComponents(transform, original->GetChild(index), gameObjectInfos, componentDatas);
+    }
+}
+
+void
+ComponentInitializer::PrefillComponentsData(UnityEngine::Transform *root, std::vector<std::shared_ptr<IComponentData>>& componentDatas) {
+    SkipAwake = true;
+
+    auto *trackLaneRingsManager = root->GetComponent<GlobalNamespace::TrackLaneRingsManager *>();
+    if (trackLaneRingsManager != nullptr) {
+        std::shared_ptr<TrackLaneRingsManagerComponentData> manager{};
+        manager->OldTrackLaneRingsManager = trackLaneRingsManager;
+        componentDatas.push_back(manager);
+    }
+
+    for (int i = 0; i < root->get_childCount(); i++) {
+        auto transform = root->GetChild(i);
+        PrefillComponentsData(transform, componentDatas);
+    }
+}
+
+void
+ComponentInitializer::PostfillComponentsData(UnityEngine::Transform *root, UnityEngine::Transform* original, std::vector<std::shared_ptr<IComponentData>>& componentDatas) {
+    SkipAwake = false;
+
+    auto trackLaneRingsManager = root->GetComponent<GlobalNamespace::TrackLaneRingsManager*>();
+    if (trackLaneRingsManager != nullptr)
+    {
+        auto originalManager = original->GetComponent<TrackLaneRingsManager*>();
+
+        for (auto& componentData : componentDatas) {
+            if (componentData->getComponentType() == ComponentType::TrackLaneRingsManager) {
+                auto trackLaneData = std::static_pointer_cast<TrackLaneRingsManagerComponentData>(componentData);
+
+                if (trackLaneData->OldTrackLaneRingsManager == originalManager) {
+                    trackLaneData->NewTrackLaneRingsManager = trackLaneRingsManager;
+                }
+            }
+        }
+    }
+
+    auto rotationEffect = root->GetComponent<GlobalNamespace::TrackLaneRingsRotationEffect*>();
+    if (rotationEffect != nullptr)
+    {
+        UnityEngine::Object::Destroy(rotationEffect);
+    }
+
+
+    for (int i = 0; i < root->get_childCount(); i++) {
+        auto transform = root->GetChild(i);
+        auto index = transform->GetSiblingIndex();
+        PostfillComponentsData(transform, original->GetChild(index), componentDatas);
     }
 }

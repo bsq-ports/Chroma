@@ -99,7 +99,6 @@ DECLARE_CLASS_CODEGEN(Chroma, LSEColorManager, Il2CppObject,
             UnityEngine::Color& originalColor, GlobalNamespace::MultipliedColorSO *&mColorSO);
 
             DECLARE_INSTANCE_FIELD(UnityEngine::MonoBehaviour *, _lse);
-            DECLARE_INSTANCE_FIELD(GlobalNamespace::LightWithIdManager*, lightManager);
             DECLARE_INSTANCE_FIELD(GlobalNamespace::BeatmapEventType, _type);
 
             DECLARE_INSTANCE_FIELD(UnityEngine::Color, _lightColor0_Original);

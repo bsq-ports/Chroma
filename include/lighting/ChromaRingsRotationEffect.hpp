@@ -6,6 +6,7 @@
 #include "GlobalNamespace/BeatmapEventType.hpp"
 #include "GlobalNamespace/SimpleColorSO.hpp"
 #include "GlobalNamespace/MultipliedColorSO.hpp"
+#include "GlobalNamespace/TrackLaneRingsManager.hpp"
 #include <vector>
 #include <string>
 #include <optional>
@@ -58,6 +59,8 @@ public:
 
         DECLARE_METHOD(void, AddRingRotationEffectF, float angle, float step, float propagationSpeed, float flexySpeed);
         DECLARE_METHOD(void, AddRingRotationEffect, float angle, float step, int propagationSpeed, float flexySpeed);
+
+        DECLARE_METHOD(void, SetNewRingManager, GlobalNamespace::TrackLaneRingsManager* trackLaneRingsManager);
 
         DECLARE_METHOD(void, Awake);
         DECLARE_METHOD(void, Start);

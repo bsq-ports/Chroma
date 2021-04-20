@@ -2,6 +2,7 @@
 #include "Chroma.hpp"
 #include "ChromaController.hpp"
 
+#include "lighting/environment_enhancements/ComponentInitializer.hpp"
 #include "hooks/TrackLaneRingsManager.hpp"
 
 #include "GlobalNamespace/TrackLaneRingsManager.hpp"
@@ -12,6 +13,10 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRingsManager_Awake, void, GlobalNamespace::TrackLa
     // Do nothing if Chroma shouldn't run
     if (!ChromaController::DoChromaHooks()) {
         TrackLaneRingsManager_Awake(self);
+        return;
+    }
+
+    if (ComponentInitializer::SkipAwake) {
         return;
     }
 
