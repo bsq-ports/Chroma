@@ -43,16 +43,35 @@ void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, B
             debugSpamLog(contextLogger, "JSON data 2");
             rapidjson::Value &lightIdData = *lightMember;
 
-            if (lightIdData.IsInt() || lightIdData.IsInt64()) {
-                auto lightIdLong = lightIdData.GetInt();
+            if (lightIdData.IsInt() || lightIdData.IsInt64() || lightIdData.IsUint() || lightIdData.IsUint64()) {
+                auto lightIdLong = lightIdData.GetInt64();
+                debugSpamLog(contextLogger, "LightID int %d", lightIdLong);
                 LightSwitchEventEffectHolder::LightIDOverride = std::make_optional(std::vector<int>{(int) lightIdLong});
-            } else {
-                // It's a list
+            } else if (lightIdData.IsObject()) {
+                // It's a object
                 auto lightIDobjects = lightIdData.GetObject();
                 std::vector<int> lightIDArray;
 
+                debugSpamLog(contextLogger, "LightID object:");
+
+                PrintJSONValue(lightIdData);
+
                 for (auto &lightId : lightIDobjects) {
                     lightIDArray.push_back(lightId.value.GetInt());
+                }
+
+                LightSwitchEventEffectHolder::LightIDOverride = std::make_optional(lightIDArray);
+            } else if (lightIdData.IsArray()) {
+                // It's a list
+                auto lightIDobjects = lightIdData.GetArray();
+                std::vector<int> lightIDArray;
+
+                debugSpamLog(contextLogger, "LightID array:");
+
+                PrintJSONValue(lightIdData);
+
+                for (auto &lightId : lightIDobjects) {
+                    lightIDArray.push_back(lightId.GetInt());
                 }
 
                 LightSwitchEventEffectHolder::LightIDOverride = std::make_optional(lightIDArray);

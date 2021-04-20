@@ -202,13 +202,14 @@ namespace Chroma {
                           _mHighlightColor1Boost);
             _supportBoostColor = true;
 
-            System::Collections::Generic::List_1<GlobalNamespace::ILightWithId *> *lightList = lse->lightManager->lights->values[lse->lightsID];
+            lightManager = lse->lightManager;
+            System::Collections::Generic::List_1<GlobalNamespace::ILightWithId *> *lightList = lightManager->lights->values[lse->lightsID];
             Array<ILightWithId *> *lightArray = lightList->items;
 
-            lightManager = lse->lightManager;
+
             Lights = std::unordered_map<int, ILightWithId*>();
 
-            for (int i = 0; i < lightList->get_Count(); i++) {
+            for (int i = 0; i < lightArray->get_Length(); i++) {
                 auto l = lightArray->values[i];
                 if (l == nullptr) continue;
 
@@ -239,17 +240,18 @@ namespace Chroma {
                     if (ring) {
 
                         TrackLaneRingsManager* mngr;
+                        auto indexR = 0;
 
-                        for (int i = 0; i < managers->Length(); i++) {
+                        for (int i = 0; i < managers->Length() && !mngr; i++) {
                             auto m = managers->values[i];
-                            if (m->rings->IndexOf(ring) >= 0) {
+                            indexR = m->rings->IndexOf(ring);
+                            if (index >= 0) {
                                 mngr = m;
-                                break;
                             }
                         }
 
                         if (mngr != nullptr)
-                            z = 1000 + mngr->rings->IndexOf(ring);
+                            z = 1000 + indexR;
 
                     }
 
