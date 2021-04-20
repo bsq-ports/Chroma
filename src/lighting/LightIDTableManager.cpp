@@ -104,7 +104,14 @@ void LightIDTableManager::RegisterIndex(int type, int index) {
     // To make fun of Aero, I'll keep the typo ;) https://github.com/Aeroluna/Chroma/commit/0f379e54e006de9dba0b64debcb64fb913b453cf#diff-efd8021f3aec91a9e88e1e6823f48c13605a7ef8b27790c9c3d4545860f43849R47
     auto dictioanry = table[type];
 
-    int maxSize = dictioanry.size();
+    // TODO: Will this work?
+    int maxSize = std::max_element(dictioanry.begin(), dictioanry.end())->first + 1;
+
+//    // You made me resort to this Aero, damn you
+//    for (auto& o : dictioanry) {
+//        maxSize = std::max(o.first, maxSize);
+//    }
+
     dictioanry[maxSize] = index;
     if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue())
     {

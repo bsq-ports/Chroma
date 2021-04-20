@@ -166,16 +166,10 @@ void LightColorizer::RegisterLight(UnityEngine::MonoBehaviour *lightWithId) {
 
             for (int i = 0; i < lightsWithIdArray->Length(); i++) {
                 auto light = reinterpret_cast<ILightWithId*>(lightsWithIdArray->values[i]);
-                auto manager = LSEColorManager::GetLSEColorManager((light->get_lightId() - 1));
+                auto manager = LSEColorManager::GetLSEColorManager((light->get_lightId() - 1)).front();
 
-
-                for (auto& m : manager) {
-                    if (m) {
-                        LightIDTableManager::RegisterIndex(light->get_lightId() - 1, m->Lights.size());
-                        m->Lights[m->Lights.size()] = light;
-                        break;
-                    }
-                }
+                LightIDTableManager::RegisterIndex(light->get_lightId() - 1, manager->Lights.size());
+                manager->Lights[manager->Lights.size()] = light;
             }
         }
     }

@@ -17,7 +17,8 @@ namespace Chroma {
     enum class EventDataType {
         LIGHT,
         RING,
-        LASER_SPEED
+        LASER_SPEED,
+        RING_STEP
     };
 
     class ChromaEventData {
@@ -94,6 +95,14 @@ namespace Chroma {
         float PreciseSpeed;
 
         int Direction;
+    };
+
+    class ChromaRingStepEventData  : public ChromaEventData  {
+    public:
+        ChromaRingStepEventData () : ChromaEventData(EventDataType::RING_STEP) {};
+
+
+        std::optional<float> Step;
     };
 
 }

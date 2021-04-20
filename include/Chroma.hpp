@@ -46,12 +46,13 @@ namespace Chroma {
         void LightSwitchEventEffect();
         void NoteCutEffectSpawner();
         void SaberManager();
-        void TrackLaneRingsManager();
         void SceneManager_Internal();
         void StandardLevelScenesTransitionSetupDataSO();
         void ObstacleController();
         void ParticleSystemEventEffect();
         void BombNoteController();
+        void TrackLaneRingsManager();
+        void TrackLaneRingsPositionStepEffectSpawner();
         void TrackLaneRingsRotationEffect();
         void TrackLaneRingsRotationEffectSpawner();
     }

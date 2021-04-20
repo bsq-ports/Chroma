@@ -119,7 +119,7 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
                     break;
                 }
                 case 8:
-                case 9: {
+                    {
                     // https://github.com/Aeroluna/Chroma/commit/3900969d3fef1eaeea745bcfc23c61bfbe525586#diff-e83fa5da7e2e725f2cfb2ee5a6d6a085b2065a95e0d4757e01fe3c29f0fa4024
 
                     std::optional<std::string> NameFilter = getIfExists<std::string>(optionalDynData, NAMEFILTER);
@@ -159,6 +159,15 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
 
                     break;
                 }
+                case 9: {
+                    auto chromaRingRotationEventData = new ChromaRingStepEventData();
+
+                    chromaRingRotationEventData->Step = getIfExists<float>(optionalDynData, STEP);
+
+                    chromaEventData = std::shared_ptr<ChromaRingStepEventData>(chromaRingRotationEventData);
+                    break;
+                }
+
                 case 12:
                 case 13: {
                     auto chromaLaserSpeedEventData = new ChromaLaserSpeedEventData();
