@@ -8,6 +8,9 @@
 #include "UnityEngine/Transform.hpp"
 #include "UnityEngine/Mathf.hpp"
 #include "GlobalNamespace/LightWithIdManager.hpp"
+#include "GlobalNamespace/LightWithIdMonoBehaviour.hpp"
+#include "GlobalNamespace/LightWithIds.hpp"
+#include "lighting/LightIDTableManager.hpp"
 
 #include <unordered_map>
 
@@ -24,8 +27,8 @@ using namespace UnityEngine;
 
 using namespace Chroma;
 
-// TODO: Is this the proper equivalent of HashSet<LSEColorManager>?
-static std::unordered_map<MonoBehaviour*, Chroma::LSEColorManager *> lseColorManagers;
+
+
 
 DEFINE_TYPE(Chroma::LSEColorManager);
 
@@ -118,7 +121,65 @@ void LightColorizer::LSEStart(MonoBehaviour *monoBehaviour, BeatmapEventType bea
     LSEColorManager::CreateLSEColorManager(monoBehaviour, beatmapEventType);
 }
 
+void LightColorizer::RegisterLight(UnityEngine::MonoBehaviour *lightWithId) {
 
+    if (ASSIGNMENT_CHECK(classof(LightWithIdMonoBehaviour*), lightWithId->klass)) {
+        auto monoBehaviour = reinterpret_cast<LightWithIdMonoBehaviour*>(lightWithId);
+
+        auto lse = LSEColorManager::GetLSEColorManager((monoBehaviour->get_lightId() - 1));
+
+        LSEColorManager * monomanager;
+
+            for (auto l : lse)
+                if(l) {
+                    monomanager = l;
+                    break;
+                }
+
+
+            if (!monomanager) {
+                return;
+            }
+
+
+            LightIDTableManager::RegisterIndex(monoBehaviour->get_lightId() - 1, monomanager->Lights.size());
+
+            monomanager->Lights[monomanager->Lights.size()] = reinterpret_cast<ILightWithId*>(monoBehaviour);
+
+    } else if (ASSIGNMENT_CHECK(classof(LightWithIds*), lightWithId->klass)) {
+        auto lightWithIds = reinterpret_cast<LightWithIds*>(lightWithId);
+        LightWithIdManager* lightManager;
+
+        for (auto& o : lseColorManagers) {
+            if (o.first) {
+                lightManager = o.second->lightManager;
+                break;
+            }
+        }
+
+        if (lightManager) {
+            lightWithIds->lightManager = lightManager;
+
+
+            auto lightsWithIdArray = lightWithIds->lightIntensityData;
+
+
+            for (int i = 0; i < lightsWithIdArray->Length(); i++) {
+                auto light = reinterpret_cast<ILightWithId*>(lightsWithIdArray->values[i]);
+                auto manager = LSEColorManager::GetLSEColorManager((light->get_lightId() - 1));
+
+
+                for (auto& m : manager) {
+                    if (m) {
+                        LightIDTableManager::RegisterIndex(light->get_lightId() - 1, m->Lights.size());
+                        m->Lights[m->Lights.size()] = light;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+}
 
 
 namespace Chroma {
@@ -150,6 +211,7 @@ namespace Chroma {
             System::Collections::Generic::List_1<GlobalNamespace::ILightWithId *> *lightList = lse->lightManager->lights->values[lse->lightsID];
             Array<ILightWithId *> *lightArray = lightList->items;
 
+            lightManager = lse->lightManager;
             Lights = std::unordered_map<int, ILightWithId*>();
 
             for (int i = 0; i < lightList->get_Count(); i++) {
@@ -248,7 +310,7 @@ namespace Chroma {
     std::vector<LSEColorManager *> LSEColorManager::GetLSEColorManager(BeatmapEventType type) {
         std::vector<LSEColorManager *> colorManagers;
 
-        for (auto& man : lseColorManagers) {
+        for (auto& man : LightColorizer::lseColorManagers) {
             if (man.second->_type == type)
                 colorManagers.push_back(man.second);
         }
@@ -257,16 +319,16 @@ namespace Chroma {
     }
 
     LSEColorManager *LSEColorManager::GetLSEColorManager(MonoBehaviour *m) {
-        auto it = lseColorManagers.find(m);
+        auto it = LightColorizer::lseColorManagers.find(m);
 
-        if (it != lseColorManagers.end()) return it->second;
+        if (it != LightColorizer::lseColorManagers.end()) return it->second;
 
         return nullptr;
     }
 
     LSEColorManager *LSEColorManager::CreateLSEColorManager(MonoBehaviour *lse, BeatmapEventType type) {
         LSEColorManager * lsecm = CRASH_UNLESS(il2cpp_utils::New<LSEColorManager *>(lse, type));
-        lseColorManagers[lse] = lsecm;
+        LightColorizer::lseColorManagers[lse] = lsecm;
         return lsecm;
     }
 

@@ -18,16 +18,18 @@ namespace Chroma {
     private:
         inline static std::unordered_map<std::string, EnvironmentLightDataT> lightIdTable;
 
-        inline static std::optional<std::string> activeTable = std::nullopt;
+        inline static std::optional<EnvironmentLightDataT> activeTable = std::nullopt;
 
     public:
         LightIDTableManager() = delete;
 
         static std::optional<int> GetActiveTableValue(int type, int id);
 
-        static void SetEnvironment(std::string environmentName);
+        static void SetEnvironment(const std::string& environmentName);
 
         static void InitTable();
+
+        static void RegisterIndex(int type, int index);
     };
 
 }

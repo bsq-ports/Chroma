@@ -6,6 +6,8 @@
 #include "GlobalNamespace/BeatmapEventType.hpp"
 #include "GlobalNamespace/SimpleColorSO.hpp"
 #include "GlobalNamespace/MultipliedColorSO.hpp"
+#include "GlobalNamespace/LightWithIdManager.hpp"
+#include "UnityEngine/MonoBehaviour.hpp"
 #include <vector>
 #include <string>
 #include <optional>
@@ -14,11 +16,15 @@
 
 // TODO: Document properly
 namespace Chroma {
+    class LSEColorManager;
+
     class LightColorizer {
     public:
         static void Reset(UnityEngine::MonoBehaviour *behaviour);
 
         static void ResetAllLightingColors();
+
+        static void RegisterLight(UnityEngine::MonoBehaviour* lightWithId);
 
         static void
         SetLightingColors(UnityEngine::MonoBehaviour *monoBehaviour, std::optional<UnityEngine::Color> Color0,
@@ -54,6 +60,8 @@ namespace Chroma {
 
         static void
         LSEStart(UnityEngine::MonoBehaviour *monoBehaviour, GlobalNamespace::BeatmapEventType beatmapEventType);
+
+        inline static std::unordered_map<UnityEngine::MonoBehaviour*, Chroma::LSEColorManager *> lseColorManagers;
     };
 }
 
@@ -63,6 +71,8 @@ typedef std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId *>> Li
 DECLARE_CLASS_CODEGEN(Chroma, LSEColorManager, Il2CppObject,
 
         public:
+
+
             std::unordered_map<int, GlobalNamespace::ILightWithId*> Lights = {};
 
             // 2d array of ILightWithId*
@@ -89,6 +99,7 @@ DECLARE_CLASS_CODEGEN(Chroma, LSEColorManager, Il2CppObject,
             UnityEngine::Color& originalColor, GlobalNamespace::MultipliedColorSO *&mColorSO);
 
             DECLARE_INSTANCE_FIELD(UnityEngine::MonoBehaviour *, _lse);
+            DECLARE_INSTANCE_FIELD(GlobalNamespace::LightWithIdManager*, lightManager);
             DECLARE_INSTANCE_FIELD(GlobalNamespace::BeatmapEventType, _type);
 
             DECLARE_INSTANCE_FIELD(UnityEngine::Color, _lightColor0_Original);

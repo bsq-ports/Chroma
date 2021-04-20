@@ -46,6 +46,7 @@ namespace Chroma {
         void LightSwitchEventEffect();
         void NoteCutEffectSpawner();
         void SaberManager();
+        void TrackLaneRingsManager();
         void SceneManager_Internal();
         void StandardLevelScenesTransitionSetupDataSO();
         void ObstacleController();
@@ -94,6 +95,17 @@ namespace Chroma {
     inline const std::string PROP = "_prop";
     inline const std::string ROTATION = "_rotation";
     inline const std::string LIGHTGRADIENT = "_lightGradient";
+
+    inline const std::string ENVIRONMENT = "_environment";
+    inline const std::string IDVAR = "_id";
+    inline const std::string LOOKUPMETHOD = "_lookupMethod";
+    inline const std::string DUPLICATIONAMOUNT = "_duplicate";
+    inline const std::string ACTIVE = "_active";
+    inline const std::string SCALE = "_scale";
+    inline const std::string POSITION = "_position";
+    inline const std::string LOCALPOSITION = "_localPosition";
+    inline const std::string OBJECTROTATION = "_rotation";
+    inline const std::string LOCALROTATION = "_localRotation";
 
     void InstallHooks();
 }

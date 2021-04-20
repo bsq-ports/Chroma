@@ -65,7 +65,7 @@ void Chroma::LightIDTableManager::InitTable() {
     }
 }
 
-void LightIDTableManager::SetEnvironment(std::string environmentName) {
+void LightIDTableManager::SetEnvironment(const std::string& environmentName) {
     auto it = lightIdTable.find(environmentName);
 
     if (it == lightIdTable.end()) {
@@ -73,14 +73,15 @@ void LightIDTableManager::SetEnvironment(std::string environmentName) {
         activeTable = std::nullopt;
     } else {
         getLogger().debug("Set the environment as %s", environmentName.c_str());
-        activeTable = environmentName;
+        auto map = it->second;
+        activeTable = EnvironmentLightDataT(map.begin(), map.end());
     }
 }
 
 std::optional<int> LightIDTableManager::GetActiveTableValue(int type, int id) {
     if (activeTable)
     {
-        auto table = lightIdTable[activeTable.value()];
+        auto table = activeTable.value();
 
         auto typeTable = table[type];
 
@@ -95,4 +96,18 @@ std::optional<int> LightIDTableManager::GetActiveTableValue(int type, int id) {
 
     getLogger().warning("Return not found");
     return std::nullopt;
+}
+
+void LightIDTableManager::RegisterIndex(int type, int index) {
+    auto table = activeTable.value();
+
+    // To make fun of Aero, I'll keep the typo ;) https://github.com/Aeroluna/Chroma/commit/0f379e54e006de9dba0b64debcb64fb913b453cf#diff-efd8021f3aec91a9e88e1e6823f48c13605a7ef8b27790c9c3d4545860f43849R47
+    auto dictioanry = table[type];
+
+    int maxSize = dictioanry.size();
+    dictioanry[maxSize] = index;
+    if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue())
+    {
+        getLogger().info("Registered key [%d] to type [%d]", maxSize, type);
+    }
 }

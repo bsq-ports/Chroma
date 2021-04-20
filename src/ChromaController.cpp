@@ -25,6 +25,9 @@
 #include "colorizer/BombColorizer.hpp"
 #include "colorizer/LightColorizer.hpp"
 #include "lighting/LegacyLightHelper.hpp"
+#include "lighting/environment_enhancements/EnvironmentEnhancementManager.hpp"
+#include "hooks/TrackLaneRingsManager.hpp"
+
 #include "custom-types/shared/coroutine.hpp"
 
 #include <vector>
@@ -118,138 +121,9 @@ custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(Global
         }
     }
 
-//    // TODO: DO WE NEED THIS?
-//    if (DoChromaHooks())
-//    {
-//
-//        auto realBeatmapData = reinterpret_cast<GlobalNamespace::BeatmapEventData*>(beatmapData);
-//
-//        if (il2cpp_functions::class_is_assignable_from(realBeatmapData->klass, classof(CustomJSONData::CustomBeatmapData *))) {
-//        auto customBeatmap = reinterpret_cast<CustomJSONData::CustomBeatmapData *>(beatmapData);
-//            if (getChromaConfig().environmentEnhancementsEnabled.GetValue()) {
-//                // Spaghetti code below until I can figure out a better way of doing this
-//                auto dynData = customBeatmap->customData;
-//                auto objectsToKillMember = dynData->value->FindMember(ENVIRONMENTREMOVAL); // ->GetObject(); Trees.at(dynData, ENVIRONMENTREMOVAL);
-//                if (objectsToKillMember != dynData->value->MemberEnd()) {
-//                    auto objectsToKill = objectsToKillMember->value.GetArray();
-//                    auto gameObjects = Resources::FindObjectsOfTypeAll<UnityEngine::GameObject*>();
-//
-//                    for (auto& object : objectsToKill) {
-//                        auto s = object.GetString();
-//
-//                        if (strcmp(s,"TrackLaneRing") == 0 || strcmp(s, "BigTrackLaneRing") == 0) {
-//
-//                            for (int i = 0; i < gameObjects->Length(); i++) {
-//                                auto go = gameObjects->values[i];
-//
-//
-//                                if (to_utf8(csstrtostr(go->get_name())))
-//                            }
-//
-//                        }
-//                            foreach(GameObject
-//                            n
-//                                    in
-//                            gameObjects.Where(obj = > obj.name.Contains(s)))
-//                            {
-//                                if (s == "TrackLaneRing" && n.name.Contains("Big")) {
-//                                    continue;
-//                                }
-//
-//                                n.SetActive(false);
-//                            }
-//                        } else {
-//                            foreach(GameObject
-//                            n
-//                            in
-//                            gameObjects
-//                                    .Where(obj = > obj.name.Contains(s) && (obj.scene.name ?.Contains("Environment")
-//                            ?? false) && (!obj.scene.name ?.Contains("Menu") ?? false)))
-//                            {
-//                                n.SetActive(false);
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//
-//        }
-
-    // TODO: DO WE NEED THIS?
-    if (DoChromaHooks()) {
+    if (DoChromaHooks() && getChromaConfig().environmentEnhancementsEnabled.GetValue()) {
         auto customBeatmap = reinterpret_cast<CustomJSONData::CustomBeatmapData *>(beatmapData);
-        if (customBeatmap->customData && customBeatmap->customData->value &&
-            getChromaConfig().environmentEnhancementsEnabled.GetValue()) {
-            // Spaghetti code below until I can figure out a better way of doing this
-            static auto contextLogger = getLogger().WithContext(ChromaLogger::EnvironmentRemoval);
-            auto &dynData = customBeatmap->customData->value->get();
-
-
-            // TODO: Ok here's the problem, this
-            // is getting the custom data of the Expert+ data
-            // I'm guessing we need info.dat somehow
-            auto objectsToKill = dynData.FindMember(ENVIRONMENTREMOVAL);
-
-
-            // TODO: This is essentially trying to create a value
-            // and add "GradientBackground" at all times. We should probably make a method for this instead
-            // TODO: Remove this if once this actually gets fixed
-            if (false) {
-                static auto alloc = new rapidjson::MemoryPoolAllocator();
-                if (objectsToKill == dynData.MemberEnd()) {
-                    rapidjson::Value v(rapidjson::StringRef(ENVIRONMENTREMOVAL.c_str()));
-                    v.SetObject();
-                    dynData.AddMember(rapidjson::StringRef(ENVIRONMENTREMOVAL), v, *alloc);
-                    v.PushBack("GradientBackground", *alloc);
-                    objectsToKill = dynData.FindMember(ENVIRONMENTREMOVAL);
-                } else {
-                    objectsToKill->value.PushBack("GradientBackground", *alloc);
-                }
-            }
-
-            if (objectsToKill != dynData.MemberEnd() && !objectsToKill->value.Empty()) {
-                auto gameObjects = Resources::FindObjectsOfTypeAll<GameObject *>();
-
-                for (auto it = objectsToKill->value.MemberBegin(); it != objectsToKill->value.MemberEnd(); it++) {
-                    auto s = it->value.GetString();
-
-                    if (strcmp(s, "TrackLaneRing") == 0 || strcmp(s, "BigTrackLaneRing") == 0) {
-                        for (int i = 0; i < gameObjects->Length(); i++) {
-                            UnityEngine::GameObject *n = gameObjects->values[i];
-
-                            auto nName = to_utf8(csstrtostr(n->get_name()));
-                            if (nName.find(s) != std::string::npos) {
-                                if (strcmp(s, "TrackLaneRing") == 0 && nName.find("Big") != std::string::npos)
-                                    continue;
-
-                                debugSpamLog(contextLogger, "Setting %s to disabled", nName.c_str());
-                                n->SetActive(false);
-                            }
-                        }
-
-                    } else {
-                        for (int i = 0; i < gameObjects->Length(); i++) {
-                            UnityEngine::GameObject *n = gameObjects->values[i];
-
-                            auto gStr = to_utf8(csstrtostr(n->get_name()));
-
-                            std::string sceneName = n->get_scene().get_name() ? to_utf8(csstrtostr(n->get_scene().get_name())) : "";
-
-                            auto sceneEnvironment = !sceneName.empty() &&
-                                                    sceneName.find("Environment") != std::string::npos;
-
-                            auto sceneMenu = !sceneName.empty() &&
-                                             sceneName.find("Menu") != std::string::npos;
-
-                            if (gStr.find(s) != std::string::npos && sceneEnvironment && sceneMenu) {
-                                debugSpamLog(contextLogger, "Setting %s to disabled else check", gStr.c_str());
-                                n->SetActive(false);
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        EnvironmentEnhancementManager::Init(customBeatmap, beatmapObjectSpawnController->get_noteLinesDistance());
     }
 
     auto list = reinterpret_cast<Generic::List_1<BeatmapEventData *> *>(beatmapData->get_beatmapEventsData());
@@ -270,6 +144,7 @@ void ChromaController::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene 
     getLogger().debug("Clear scene");
 
     if (current.IsValid() && to_utf8(csstrtostr(current.get_name())) == "GameCore") {
+        RingManagers.clear();
         LightColorizer::ClearLSEColorManagers();
         ObstacleColorizer::ClearOCColorManagers();
         BombColorizer::ClearBNCColorManagers();

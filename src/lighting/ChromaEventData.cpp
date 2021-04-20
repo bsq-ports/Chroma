@@ -164,7 +164,7 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
                     auto chromaLaserSpeedEventData = new ChromaLaserSpeedEventData();
 
                     chromaLaserSpeedEventData->LockPosition = getIfExists<bool>(optionalDynData, LOCKPOSITION, false);
-                    chromaLaserSpeedEventData->PreciseSpeed = getIfExistsFloat(optionalDynData, PRECISESPEED, (float) beatmapEventData->value);
+                    chromaLaserSpeedEventData->PreciseSpeed = getIfExistsFloat(optionalDynData, SPEED, getIfExistsFloat(optionalDynData, PRECISESPEED, (float) beatmapEventData->value));
                     chromaLaserSpeedEventData->Direction = getIfExists(optionalDynData, DIRECTION, -1);
 
                     chromaEventData = std::shared_ptr<ChromaLaserSpeedEventData>(chromaLaserSpeedEventData);
