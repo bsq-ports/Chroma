@@ -153,10 +153,6 @@ Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root,
     for (int i = 0; i < root->get_childCount(); i++)
     {
         auto transform = root->GetChild(i);
-        if (transform == root)
-        {
-            continue;
-        }
 
         int index = transform->GetSiblingIndex();
         InitializeComponents(transform, original->GetChild(index), gameObjectInfos);

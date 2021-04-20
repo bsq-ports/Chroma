@@ -28,6 +28,8 @@ namespace Chroma {
 
         static void GetAllGameObjects();
 
+        static void GetChildRecursive(UnityEngine::Transform* gameObject, std::vector<UnityEngine::Transform*>& children);
+
     public:
         inline static std::unordered_map<GlobalNamespace::TrackLaneRing*, bool> SkipRingUpdate;
         inline static std::unordered_map<GlobalNamespace::TrackLaneRing*, UnityEngine::Vector3> RingRotationOffsets;

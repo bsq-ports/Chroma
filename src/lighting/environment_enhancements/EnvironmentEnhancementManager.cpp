@@ -76,22 +76,42 @@ void EnvironmentEnhancementManager::GetAllGameObjects() {
     _gameObjectInfos = std::vector<GameObjectInfo>();
 
     auto gameObjects = UnityEngine::Resources::FindObjectsOfTypeAll<UnityEngine::GameObject*>();
+    std::vector<UnityEngine::GameObject*> gameObjectsVec;
+
 
     for (int i = 0; i < gameObjects->Length(); i++) {
         auto gameObject = gameObjects->values[i];
 
-        // 14 = "Environment" layer
-        // 15 = "Neon Tube" layer
-        if (gameObject->get_activeInHierarchy() && (gameObject->get_scene().get_name()->Contains(il2cpp_utils::createcsstr("Environment")) || gameObject->get_layer() == 14 || gameObject->get_layer() == 13))
-        {
-            _gameObjectInfos.emplace_back(gameObject);
+        if (gameObject) {
+            auto sceneName = gameObject->get_scene().get_name();
 
-            // seriously what the fuck beat games
-            // GradientBackground permanently yeeted because it looks awful and can ruin multi-colored chroma maps
-            if (to_utf8(csstrtostr(gameObject->get_name())) == "GradientBackground")
-            {
-                gameObject->SetActive(false);
+            if (sceneName->Contains(il2cpp_utils::createcsstr("Environment")) && !sceneName->Contains(il2cpp_utils::createcsstr("Menu")) || gameObject->GetComponent<GlobalNamespace::TrackLaneRing*>()) {
+                gameObjectsVec.push_back(gameObject);
             }
+        }
+    }
+
+    std::vector<UnityEngine::GameObject*> gameObjectsVec2(gameObjectsVec.begin(), gameObjectsVec.end());
+    for (auto& gameObject : gameObjectsVec) {
+        std::vector<UnityEngine::Transform*> allChildren;
+        GetChildRecursive(gameObject->get_transform(), allChildren);
+
+        for (auto &transform : allChildren) {
+            getLogger().debug("Iterated %s", to_utf8(csstrtostr(transform->get_gameObject()->get_name())).c_str());
+            if (!gameObjects->Contains(transform->get_gameObject())) {
+                gameObjectsVec2.push_back(transform->get_gameObject());
+            }
+        }
+    }
+
+    for (auto& gameObject : gameObjectsVec2) {
+        _gameObjectInfos.emplace_back(gameObject);
+
+        // seriously what the fuck beat games
+        // GradientBackground permanently yeeted because it looks awful and can ruin multi-colored chroma maps
+        if (to_utf8(csstrtostr(gameObject->get_name())) == "GradientBackground")
+        {
+            gameObject->SetActive(false);
         }
     }
 }
@@ -242,6 +262,16 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
     }
 
     LegacyEnvironmentRemoval::Init(customBeatmapData);
+}
+
+void EnvironmentEnhancementManager::GetChildRecursive(UnityEngine::Transform *gameObject,
+                                                      std::vector<UnityEngine::Transform *> &children) {
+
+    for (int i = 0; i < gameObject->get_childCount(); i++) {
+        auto child = gameObject->GetChild(i);
+        children.push_back(child);
+        GetChildRecursive(child, children);
+    }
 }
 
 
