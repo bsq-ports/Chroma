@@ -16,22 +16,20 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRing_FixedUpdateRing, void, GlobalNamespace::Track
         return;
     }
 
-    if (EnvironmentEnhancementManager::SkipRingUpdate.empty())
+    if (!EnvironmentEnhancementManager::SkipRingUpdate.empty())
     {
         auto it = EnvironmentEnhancementManager::SkipRingUpdate.find(self);
 
         if (it != EnvironmentEnhancementManager::SkipRingUpdate.end()) {
             auto doSkip = it->second;
 
-            if (!doSkip) {
-                TrackLaneRing_FixedUpdateRing(self, fixedDeltaTime);
+            if (doSkip) {
                 return;
             }
         }
-
-
-        TrackLaneRing_FixedUpdateRing(self, fixedDeltaTime);
     }
+
+    TrackLaneRing_FixedUpdateRing(self, fixedDeltaTime);
 }
 
 MAKE_HOOK_OFFSETLESS(TrackLaneRing_LateUpdateRing, void, GlobalNamespace::TrackLaneRing* self, float interpolationFactor) {
@@ -41,22 +39,21 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRing_LateUpdateRing, void, GlobalNamespace::TrackL
         return;
     }
 
-    if (EnvironmentEnhancementManager::SkipRingUpdate.empty())
+    if (!EnvironmentEnhancementManager::SkipRingUpdate.empty())
     {
         auto it = EnvironmentEnhancementManager::SkipRingUpdate.find(self);
 
         if (it != EnvironmentEnhancementManager::SkipRingUpdate.end()) {
             auto doSkip = it->second;
 
-            if (!doSkip) {
-                TrackLaneRing_FixedUpdateRing(self, interpolationFactor);
+            if (doSkip) {
                 return;
             }
         }
 
-
-        TrackLaneRing_FixedUpdateRing(self, interpolationFactor);
     }
+
+    TrackLaneRing_LateUpdateRing(self, interpolationFactor);
 }
 
 void Hooks::TrackLaneRing() {
