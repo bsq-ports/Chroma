@@ -97,7 +97,6 @@ void EnvironmentEnhancementManager::GetAllGameObjects() {
         GetChildRecursive(gameObject->get_transform(), allChildren);
 
         for (auto &transform : allChildren) {
-            getLogger().debug("Iterated %s", to_utf8(csstrtostr(transform->get_gameObject()->get_name())).c_str());
             if (!gameObjects->Contains(transform->get_gameObject())) {
                 gameObjectsVec2.push_back(transform->get_gameObject());
             }
@@ -240,10 +239,12 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                     if (trackLaneRing != nullptr) {
                         if (position || localPosition) {
                             trackLaneRing->positionOffset = transform->get_localPosition();
+                            trackLaneRing->posZ = 0;
                         }
 
                         if (rotation || localRotation) {
                             RingRotationOffsets[trackLaneRing] = transform->get_eulerAngles();
+                            trackLaneRing->rotZ = 0;
                         }
                     }
 
