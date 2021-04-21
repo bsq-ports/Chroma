@@ -1,3 +1,4 @@
+#include "main.hpp"
 #include "NoteAPI.hpp"
 #include "colorizer/NoteColorizer.hpp"
 

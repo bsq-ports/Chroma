@@ -31,11 +31,10 @@ EXPOSE_API(getSaberColorSafe, int, int saberType) {
     }
 }
 
-EXPOSE_API(setSaberColorSafe, void, int saberType, std::optional<UnityEngine::Color> color) {
+EXPOSE_API(setSaberColorSafe, void, int saberType, UnityEngine::Color color) {
     CRASH_UNLESS(saberType >= SaberType::SaberA && saberType <= SaberType::SaberB);
 
     SaberColorizer::SetSaberColor(saberType, color);
-
 }
 
 EXPOSE_API(registerSaberCallbackSafe, void, std::function<void()> callback) {

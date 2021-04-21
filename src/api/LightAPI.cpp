@@ -54,12 +54,11 @@ EXPOSE_API(SetAllLightingColors, void, std::optional<LightAPI::LSEData> data) {
 
 // While it does create a pointer on the heap,
 // the API side of this should move the elements back into a value type then delete this pointer.
-EXPOSE_API(getLightsSafe, std::vector<GlobalNamespace::ILightWithId *>*, GlobalNamespace::LightSwitchEventEffect *lse) {
+extern "C" std::unordered_map<int, GlobalNamespace::ILightWithId *>* getLightsSafe(GlobalNamespace::LightSwitchEventEffect *lse) {
     auto vectorOrg = LightColorizer::GetLights(lse);
-    auto vectorPtr = new std::vector<GlobalNamespace::ILightWithId *>(std::move(vectorOrg));
+    auto vectorPtr = new std::unordered_map<int, GlobalNamespace::ILightWithId *>(std::move(vectorOrg));
 
     return vectorPtr;
-
 }
 
 // Returns 2d array of ILightWithId*

@@ -34,8 +34,8 @@ namespace Chroma {
         }
 
         /// Sets the saber color if the method was found.
-        static void setSaberColorSafe(int saberType, std::optional<UnityEngine::Color> color) noexcept {
-            auto function = CondDep::Find<void, int, std::optional<UnityEngine::Color>>("chroma", "setSaberColorSafe");
+        static void setSaberColorSafe(int saberType, UnityEngine::Color color) noexcept {
+            auto function = CondDep::Find<void, int, UnityEngine::Color>("chroma", "setSaberColorSafe");
 
             if (function) {
                 function.value()(saberType, color);

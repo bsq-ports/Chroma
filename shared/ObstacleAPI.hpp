@@ -36,8 +36,8 @@ namespace Chroma {
         }
 
         /// Sets the obstacle color if the method was found.
-        static void setObstacleColorSafe(GlobalNamespace::ObstacleController* nc, std::optional<UnityEngine::Color> color0) noexcept {
-            auto function = CondDep::Find<void, GlobalNamespace::ObstacleController*, std::optional<UnityEngine::Color>>("chroma", "setObstacleColorSafe");
+        static void setObstacleColorSafe(GlobalNamespace::ObstacleController* nc, UnityEngine::Color color0) noexcept {
+            auto function = CondDep::Find<void, GlobalNamespace::ObstacleController*, UnityEngine::Color>("chroma", "setObstacleColorSafe");
 
             if (function) {
                 function.value()(nc, color0);
@@ -45,8 +45,8 @@ namespace Chroma {
         }
 
         /// Sets all the obstacle color if the method was found.
-        static void setAllObstacleColorSafe(std::optional<UnityEngine::Color> color0) noexcept {
-            auto function = CondDep::Find<void, std::optional<UnityEngine::Color>>("chroma", "setAllObstacleColorSafe");
+        static void setAllObstacleColorSafe(UnityEngine::Color color0) noexcept {
+            auto function = CondDep::Find<void, UnityEngine::Color>("chroma", "setAllObstacleColorSafe");
 
             if (function) {
                 function.value()(color0);

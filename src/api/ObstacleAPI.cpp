@@ -19,16 +19,19 @@ EXPOSE_API(getObstacleControllerColorSafe, int, ObstacleController* obstacleCont
 
     auto color = ocm->_color;
 
-    int rgba = Chroma::ColourManager::ColourToInt(color);
+    if (!color)
+        return -1;
+
+    int rgba = Chroma::ColourManager::ColourToInt(color.value());
 
     return rgba;
 }
 
-EXPOSE_API(setObstacleColorSafe, void, ObstacleController* oc, std::optional<UnityEngine::Color> color1) {
+EXPOSE_API(setObstacleColorSafe, void, ObstacleController* oc, UnityEngine::Color color1) {
     ObstacleColorizer::SetObstacleColor(oc, color1);
 }
 
-EXPOSE_API(setAllObstacleColorSafe, void, std::optional<UnityEngine::Color> color1) {
+EXPOSE_API(setAllObstacleColorSafe, void, UnityEngine::Color color1) {
     ObstacleColorizer::SetAllObstacleColors(color1);
 }
 

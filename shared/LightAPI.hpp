@@ -37,13 +37,13 @@ namespace Chroma {
         ///
         /// Avoid using this in a loop or frequent method,
         /// you can cache this during a song perhaps?
-        static std::optional<std::vector<GlobalNamespace::ILightWithId*>> getLightsSafe(GlobalNamespace::LightSwitchEventEffect *lse) {
-            auto function = CondDep::Find<std::vector<GlobalNamespace::ILightWithId*>*, GlobalNamespace::LightSwitchEventEffect*>("chroma", "getLightsSafe");
+        static std::optional<std::unordered_map<int, GlobalNamespace::ILightWithId*>> getLightsSafe(GlobalNamespace::LightSwitchEventEffect *lse) {
+            auto function = CondDep::Find<std::unordered_map<int, GlobalNamespace::ILightWithId*>*, GlobalNamespace::LightSwitchEventEffect*>("chroma", "getLightsSafe");
 
             if (function) {
                 auto val = function.value()(lse);
 
-                std::vector<GlobalNamespace::ILightWithId*> vec(std::move(*val));
+                std::unordered_map<int, GlobalNamespace::ILightWithId*> vec(std::move(*val));
 
                 delete val;
 
