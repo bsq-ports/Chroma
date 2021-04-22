@@ -21,29 +21,19 @@ using namespace Chroma;
 using namespace ChromaUtils;
 
 
-UnityEngine::Vector3 GetTransformScale(UnityEngine::Vector3 defaultV, ParametricBoxController* parametricBoxController) {
-    auto it = ParametricBoxControllerParameters::TransformParameters.find(parametricBoxController);
+UnityEngine::Vector3 GetTransformScale(UnityEngine::Vector3 defaultV, ParametricBoxControllerParameters& parameters) {
 
-    if (it != ParametricBoxControllerParameters::TransformParameters.end()) {
-        auto parameters = it->second;
-
-        if (parameters.Position) {
-            return parameters.Scale.value();
-        }
+    if (parameters.Position) {
+        return parameters.Scale.value();
     }
 
     return defaultV;
 }
 
-UnityEngine::Vector3 GetTransformPosition(UnityEngine::Vector3 defaultV, ParametricBoxController* parametricBoxController) {
-    auto it = ParametricBoxControllerParameters::TransformParameters.find(parametricBoxController);
+UnityEngine::Vector3 GetTransformPosition(UnityEngine::Vector3 defaultV, ParametricBoxControllerParameters& parameters) {
 
-    if (it != ParametricBoxControllerParameters::TransformParameters.end()) {
-        auto parameters = it->second;
-
-        if (parameters.Position) {
-            return parameters.Position.value();
-        }
+    if (parameters.Position) {
+        return parameters.Position.value();
     }
 
     return defaultV;
@@ -62,14 +52,19 @@ MAKE_HOOK_OFFSETLESS(ParametricBoxController_Refresh,void, ParametricBoxControll
     }
 
     auto scale = UnityEngine::Vector3(self->width * 0.5f, self->height * 0.5f, self->length * 0.5f);
-
-    scale = GetTransformScale(scale, self);
-
-    self->get_transform()->set_localScale(scale);
     auto pos = UnityEngine::Vector3(0.0f, (0.5f - self->heightCenter) * self->height, 0.0f);
 
-    pos = GetTransformPosition(pos, self);
 
+    if (!ParametricBoxControllerParameters::TransformParameters.empty()) {
+        auto it = ParametricBoxControllerParameters::TransformParameters.find(self);
+
+        if (it != ParametricBoxControllerParameters::TransformParameters.end()) {
+            scale = GetTransformScale(scale, it->second);
+            pos = GetTransformPosition(pos, it->second);
+        }
+    }
+
+    self->get_transform()->set_localScale(scale);
     self->get_transform()->set_localPosition(pos);
     if (ParametricBoxController::_get__materialPropertyBlock() == nullptr) {
         ParametricBoxController::_set__materialPropertyBlock(UnityEngine::MaterialPropertyBlock::New_ctor());
