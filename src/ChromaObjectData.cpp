@@ -34,7 +34,7 @@ void Chroma::ChromaObjectDataManager::deserialize(GlobalNamespace::IReadonlyBeat
                 if (beatmapObjectData) {
                     std::shared_ptr<ChromaObjectData> chromaObjectData(nullptr);
 
-                    std::optional<std::reference_wrapper<rapidjson::Value>> dynData = std::nullopt;
+                    std::optional<std::reference_wrapper<rapidjson::Value>> dynData;
 
                     if (ASSIGNMENT_CHECK(classof(CustomJSONData::CustomNoteData * ), beatmapObjectData->klass)) {
                         debugSpamLog(contextLogger, "Custom note %s", il2cpp_utils::ClassStandardName(beatmapObjectData->klass).c_str());
@@ -45,6 +45,8 @@ void Chroma::ChromaObjectDataManager::deserialize(GlobalNamespace::IReadonlyBeat
                         auto *data = new ChromaNoteData();
                         debugSpamLog(contextLogger, "Color");
                         data->Color = ChromaUtilities::GetColorFromData(dynData);
+                        if (dynData)
+                            PrintJSONValue(dynData.value());
                         debugSpamLog(contextLogger, "Spawn effects");
 
                         data->DisableSpawnEffect = getIfExists<bool>(dynData, DISABLESPAWNEFFECT);

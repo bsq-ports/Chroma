@@ -60,13 +60,6 @@ namespace Chroma {
         void TrackLaneRingsRotationEffectSpawner();
     }
 
-    namespace CustomData {
-        struct NoteData {
-            std::optional<UnityEngine::Color> _color0;
-            std::optional<UnityEngine::Color> _color1;
-        };
-    }
-
     namespace ChromaLogger {
         inline const char* ColorLightSwitch = "ColorLightSwitch";
         inline const char* EnvironmentRemoval = "EnvironmentRemoval";

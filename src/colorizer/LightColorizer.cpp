@@ -179,8 +179,7 @@ namespace Chroma {
         InitializeSOs(mono, "_highlightColor1", _lightColor1, _lightColor1_Original, _mHighlightColor1);
 
 
-        auto klass = classof(LightSwitchEventEffect *);
-        if (ASSIGNMENT_CHECK(klass, mono->klass)) {
+        if (ASSIGNMENT_CHECK(classof(LightSwitchEventEffect *), mono->klass)) {
             auto *lse = reinterpret_cast<LightSwitchEventEffect *>(mono);
 
             InitializeSOs(mono, "_lightColor0Boost", _lightColor0Boost, _lightColor0Boost_Original, _mLightColor0Boost);
@@ -415,7 +414,7 @@ namespace Chroma {
                 } else if (ASSIGNMENT_CHECK(classof(ParticleSystemEventEffect *), _lse->klass)) {
                     auto p1 = reinterpret_cast<ParticleSystemEventEffect *>(_lse);
                     c.a = 0.0f;
-                    p1->highlightColor = c;
+                    p1->afterHighlightColor = c;
                 }
             } else {
                 if (ASSIGNMENT_CHECK(classof(LightSwitchEventEffect *), _lse->klass)) {

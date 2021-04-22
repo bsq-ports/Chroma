@@ -7,6 +7,7 @@
 #include "GlobalNamespace/BeatmapObjectSpawnController.hpp"
 #include "GlobalNamespace/NoteController.hpp"
 #include "GlobalNamespace/MultiplayerConnectedPlayerNoteController.hpp"
+#include "GlobalNamespace/TutorialNoteController.hpp"
 
 #include "custom-json-data/shared/CustomBeatmapData.h"
 
@@ -16,28 +17,31 @@
 using namespace Chroma;
 using namespace GlobalNamespace;
 
-MAKE_HOOK_OFFSETLESS(BeatEffectSpawner_HandleNoteDidStartJumpColorizer, void, BeatEffectSpawner* self, NoteController* noteController) {
+MAKE_HOOK_OFFSETLESS(BeatEffectSpawner_HandleNoteDidStartJump, void, BeatEffectSpawner* self, NoteController* noteController) {
     // Do nothing if Chroma shouldn't run
-    if (!ChromaController::DoChromaHooks() || ASSIGNMENT_CHECK(classof(MultiplayerConnectedPlayerNoteController*), noteController->klass)) {
-        BeatEffectSpawner_HandleNoteDidStartJumpColorizer(self, noteController);
+    if (!ChromaController::DoChromaHooks()) {
+        BeatEffectSpawner_HandleNoteDidStartJump(self, noteController);
         return;
     }
 
-    auto chromaData = std::static_pointer_cast<ChromaNoteData>(ChromaObjectDataManager::ChromaObjectDatas[noteController->noteData]);
-    std::optional<bool> disable = chromaData->DisableSpawnEffect;
+    if (ASSIGNMENT_CHECK(classof(MultiplayerConnectedPlayerNoteController*), noteController->klass) || ASSIGNMENT_CHECK(classof(TutorialNoteController*), noteController->klass)) {
+        auto chromaData = std::static_pointer_cast<ChromaNoteData>(
+                ChromaObjectDataManager::ChromaObjectDatas[noteController->noteData]);
+        std::optional<bool> disable = chromaData->DisableSpawnEffect;
 
-    if (disable && disable.value()) {
-        return;
+        if (disable && disable.value()) {
+            return;
+        }
+
+        NoteColorizer::EnableNoteColorOverride(noteController);
     }
 
-    NoteColorizer::EnableNoteColorOverride(noteController);
-
-    BeatEffectSpawner_HandleNoteDidStartJumpColorizer(self, noteController);
+    BeatEffectSpawner_HandleNoteDidStartJump(self, noteController);
 
     NoteColorizer::DisableNoteColorOverride();
 }
 
 
 void Chroma::Hooks::BeatEffectSpawner() {
-    INSTALL_HOOK_OFFSETLESS(getLogger(), BeatEffectSpawner_HandleNoteDidStartJumpColorizer, il2cpp_utils::FindMethodUnsafe("", "BeatEffectSpawner", "HandleNoteDidStartJump", 1));
+    INSTALL_HOOK_OFFSETLESS(getLogger(), BeatEffectSpawner_HandleNoteDidStartJump, il2cpp_utils::FindMethodUnsafe("", "BeatEffectSpawner", "HandleNoteDidStartJump", 1));
 }

@@ -49,14 +49,14 @@ namespace Chroma {
          GlobalNamespace::ColorManager* _colorManager;
          CustomJSONData::CustomNoteData* _noteData;
 
-         CNVColorManager(GlobalNamespace::ColorNoteVisuals* cnv, GlobalNamespace::NoteController* nc);
-
         public:
+            CNVColorManager(GlobalNamespace::ColorNoteVisuals* cnv, GlobalNamespace::NoteController* nc);
+
             static std::unordered_map<int, std::optional<UnityEngine::Color>> GlobalColor;
 
-            static CNVColorManager* GetCNVColorManager(GlobalNamespace::NoteController* nc);
+            static std::shared_ptr<CNVColorManager> GetCNVColorManager(GlobalNamespace::NoteController* nc);
 
-            static CNVColorManager* CreateCNVColorManager(GlobalNamespace::ColorNoteVisuals* cnv, GlobalNamespace::NoteController* nc);
+            static std::shared_ptr<CNVColorManager> CreateCNVColorManager(GlobalNamespace::ColorNoteVisuals* cnv, GlobalNamespace::NoteController* nc);
 
             static void SetGlobalNoteColors(std::optional<UnityEngine::Color> color0, std::optional<UnityEngine::Color> color1);
 
@@ -71,7 +71,7 @@ namespace Chroma {
             void SetActiveColors();
     };
     private:
-        inline static std::unordered_map<GlobalNamespace::NoteController*, CNVColorManager*> _cnvColorManagers = {};
+        inline static std::unordered_map<GlobalNamespace::NoteController*, std::shared_ptr<CNVColorManager>> _cnvColorManagers = {};
     };
 }
 

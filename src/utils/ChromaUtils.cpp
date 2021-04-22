@@ -6,13 +6,13 @@ using namespace ChromaUtils;
 
 std::optional<UnityEngine::Color> ChromaUtilities::GetColorFromData(std::optional<std::reference_wrapper<rapidjson::Value>> data, const std::string& member)
 {
-    if (!data || data->get().Empty() || data->get().GetType() == rapidjson::kNullType) return std::nullopt;
+    if (!data) return std::nullopt;
 
-    auto unwrapped = data.value();
+    rapidjson::Value& unwrapped = *data;
 
-    rapidjson::Value::MemberIterator color = unwrapped.get().FindMember(member);
+    rapidjson::Value::MemberIterator color = unwrapped.FindMember(member);
 
-    if (color == unwrapped.get().MemberEnd())
+    if (color == unwrapped.MemberEnd())
         return std::nullopt;
 
 

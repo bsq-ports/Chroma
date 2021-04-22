@@ -3,6 +3,7 @@
 #include "ChromaController.hpp"
 
 #include "GlobalNamespace/MultiplayerConnectedPlayerNoteController.hpp"
+#include "GlobalNamespace/TutorialNoteController.hpp"
 
 #include "colorizer/NoteColorizer.hpp"
 #include "utils/ChromaUtils.hpp"
@@ -12,26 +13,29 @@ using namespace Chroma;
 
 MAKE_HOOK_OFFSETLESS(ColorNoteVisuals_HandleNoteControllerDidInit, void, ColorNoteVisuals* self, NoteController* noteController) {
     // Do nothing if Chroma shouldn't run
-    if (!ChromaController::DoChromaHooks() || ASSIGNMENT_CHECK(classof(MultiplayerConnectedPlayerNoteController*), noteController->klass)) {
+    if (!ChromaController::DoChromaHooks()) {
         ColorNoteVisuals_HandleNoteControllerDidInit(self, noteController);
         return;
     }
 
-    NoteColorizer::CNVStart(self, noteController);
+    if (!ASSIGNMENT_CHECK(classof(MultiplayerConnectedPlayerNoteController*), noteController->klass) && !ASSIGNMENT_CHECK(classof(TutorialNoteController*), noteController->klass)) {
+        NoteColorizer::CNVStart(self, noteController);
 
-    auto chromaData = std::static_pointer_cast<ChromaNoteData>(ChromaObjectDataManager::ChromaObjectDatas[noteController->noteData]);
+//        auto chromaData = std::static_pointer_cast<ChromaNoteData>(ChromaObjectDataManager::ChromaObjectDatas[noteController->noteData]);
 
-    auto color = chromaData->Color;
+//        auto color = chromaData->Color;
 
-    if (color) {
-        NoteColorizer::SetNoteColors(noteController, color.value(), color.value());
-    } else {
-        NoteColorizer::Reset(noteController);
+//        if (color) {
+//
+//            NoteColorizer::SetNoteColors(noteController, color, color);
+//        } else {
+//            NoteColorizer::Reset(noteController);
+//        }
+
+        NoteColorizer::EnableNoteColorOverride(noteController);
     }
 
-    NoteColorizer::EnableNoteColorOverride(noteController);
-
-    ColorNoteVisuals_HandleNoteControllerDidInit(self, noteController);
+    ColorNoteVisuals_HandleNoteControllerDidInit(self, noteController); // This calls the original method
 
     NoteColorizer::DisableNoteColorOverride();
 }

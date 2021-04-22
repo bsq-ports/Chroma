@@ -35,7 +35,7 @@ void NoteColorizer::Reset(GlobalNamespace::NoteController *nc) {
 void NoteColorizer::ResetAllNotesColors() {
     CNVColorManager::ResetGlobal();
 
-    for (auto cnvColorManager : _cnvColorManagers)
+    for (const auto& cnvColorManager : _cnvColorManagers)
     {
         cnvColorManager.second->Reset();
     }
@@ -52,7 +52,7 @@ void
 NoteColorizer::SetAllNoteColors(std::optional<UnityEngine::Color> color0, std::optional<UnityEngine::Color> color1) {
     CNVColorManager::SetGlobalNoteColors(color0, color1);
 
-    for (auto cnvColorManager : _cnvColorManagers)
+    for (const auto& cnvColorManager : _cnvColorManagers)
     {
         cnvColorManager.second->Reset();
     }
@@ -63,7 +63,7 @@ void NoteColorizer::SetActiveColors(GlobalNamespace::NoteController *nc) {
 }
 
 void NoteColorizer::SetAllActiveColors() {
-    for (auto cnvColorManager : _cnvColorManagers)
+    for (const auto& cnvColorManager : _cnvColorManagers)
     {
         cnvColorManager.second->SetActiveColors();
     }
@@ -89,17 +89,11 @@ void NoteColorizer::ClearCNVColorManagers() {
 void NoteColorizer::EnableNoteColorOverride(GlobalNamespace::NoteController *noteController) {
     auto chromaData = ChromaObjectDataManager::ChromaObjectDatas[noteController->noteData];
 
-    auto noteChromaData = std::static_pointer_cast<ChromaNoteData>(chromaData);
-
-    if (noteChromaData->Color) {
-        NoteColorOverride[0] = noteChromaData->Color;
+    if (chromaData->Color) {
+        NoteColorOverride[0] = chromaData->Color;
+        NoteColorOverride[1] = chromaData->Color;
     } else {
         NoteColorOverride[0] = CNVColorManager::GlobalColor[0];
-    }
-
-    if (noteChromaData->Color) {
-        NoteColorOverride[1] = noteChromaData->Color;
-    } else {
         NoteColorOverride[1] = CNVColorManager::GlobalColor[1];
     }
 }
@@ -109,11 +103,6 @@ void NoteColorizer::DisableNoteColorOverride() {
     NoteColorOverride[1] = std::nullopt;
 }
 
-bool MatchesColorType(SaberType saberType, ColorType colorType){
-    return (saberType.value == SaberType::SaberA && colorType.value == ColorType::ColorA)
-    || (saberType.value == SaberType::SaberB && colorType.value == ColorType::ColorB);
-}
-
 
 void NoteColorizer::ColorizeSaber(GlobalNamespace::NoteController *noteController, GlobalNamespace::NoteCutInfo *noteCutInfo) {
     if (ChromaController::DoColorizerSabers())
@@ -121,7 +110,7 @@ void NoteColorizer::ColorizeSaber(GlobalNamespace::NoteController *noteControlle
         NoteData* noteData = noteController->noteData;
         auto saberType = noteCutInfo->saberType;
         auto colorType = noteData->colorType;
-        if (MatchesColorType(saberType, colorType))
+        if ((int)colorType == (int) saberType)
         {
             UnityEngine::Color color = CNVColorManager::GetCNVColorManager(noteController)->ColorForCNVManager();
 
@@ -132,16 +121,13 @@ void NoteColorizer::ColorizeSaber(GlobalNamespace::NoteController *noteControlle
 
 void NoteColorizer::CNVStart(GlobalNamespace::ColorNoteVisuals *cnv, GlobalNamespace::NoteController *nc) {
     ColorType noteType = nc->noteData->colorType;
-    if (noteType == ColorType::ColorA || noteType == ColorType::ColorB)
+    if ((int) noteType == (int) ColorType::ColorA || (int) noteType == (int) ColorType::ColorB)
     {
         CNVColorManager::CreateCNVColorManager(cnv, nc);
     }
 }
 
 std::optional<UnityEngine::Color> NoteColorizer::getNoteColorOverride(int color) {
-    if (NoteColorizer::NoteColorOverride.size() < color + 1)
-        return std::nullopt;
-
     return NoteColorizer::NoteColorOverride[color];
 }
 
@@ -154,13 +140,10 @@ NoteColorizer::CNVColorManager::CNVColorManager(GlobalNamespace::ColorNoteVisual
 
     if (ASSIGNMENT_CHECK(classof(CustomJSONData::CustomNoteData*), nc->noteData->klass)) {
         _noteData = reinterpret_cast<CustomJSONData::CustomNoteData *>(nc->noteData);
-
-        _noteData->customData->associatedData['C'] = new CustomData::NoteData {GlobalColor[0], GlobalColor[1]};
     }
 }
 
-NoteColorizer::CNVColorManager *
-NoteColorizer::CNVColorManager::GetCNVColorManager(GlobalNamespace::NoteController *nc) {
+std::shared_ptr<NoteColorizer::CNVColorManager> NoteColorizer::CNVColorManager::GetCNVColorManager(GlobalNamespace::NoteController *nc) {
     auto it = _cnvColorManagers.find(nc);
 
     if (it != _cnvColorManagers.end()) return it->second;
@@ -168,30 +151,26 @@ NoteColorizer::CNVColorManager::GetCNVColorManager(GlobalNamespace::NoteControll
     return nullptr;
 }
 
-NoteColorizer::CNVColorManager *
-NoteColorizer::CNVColorManager::CreateCNVColorManager(GlobalNamespace::ColorNoteVisuals *cnv,
+std::shared_ptr<NoteColorizer::CNVColorManager> NoteColorizer::CNVColorManager::CreateCNVColorManager(GlobalNamespace::ColorNoteVisuals *cnv,
                                                       GlobalNamespace::NoteController *nc) {
-    CNVColorManager *cnvColorManager = GetCNVColorManager(nc);
+    std::shared_ptr<CNVColorManager> cnvColorManager = GetCNVColorManager(nc);
     if (cnvColorManager != nullptr)
     {
         if (ASSIGNMENT_CHECK(classof(CustomJSONData::CustomNoteData*), nc->noteData->klass)) {
             auto *customData = reinterpret_cast<CustomNoteData *>(nc->noteData);
             cnvColorManager->_noteData = customData;
 
-           cnvColorManager->_chromaData = std::static_pointer_cast<ChromaNoteData>(ChromaObjectDataManager::ChromaObjectDatas[nc->noteData]);
-           cnvColorManager->Reset();
+            cnvColorManager->_chromaData = std::static_pointer_cast<ChromaNoteData>(
+                    ChromaObjectDataManager::ChromaObjectDatas[nc->noteData]);
+            // Aero why
+            //           cnvColorManager->Reset();
 
-//            if (customData->customData && customData->customData->value) {
-//                cnvColorManager->_noteData = customData;
-//                customData->customData->value->GetObject()["color0"] = _globalColor[0];
-//                customData->customData->value->GetObject()["color1"] = _globalColor[0];
-//            }
         }
 
         return nullptr;
     }
 
-    auto* cnvcm = new CNVColorManager(cnv, nc);
+    std::shared_ptr<CNVColorManager> cnvcm = std::make_shared<CNVColorManager>(cnv, nc);
     _cnvColorManagers[nc] = cnvcm;
     return cnvcm;
 }
@@ -218,13 +197,10 @@ void NoteColorizer::CNVColorManager::Reset() {
 }
 
 void NoteColorizer::CNVColorManager::SetNoteColors(std::optional<UnityEngine::Color> color0, std::optional<UnityEngine::Color> color1) {
-    switch (_noteData->colorType) {
-        case GlobalNamespace::ColorType::ColorA: {
-            _chromaData->Color= color0;
-        }
-        case GlobalNamespace::ColorType::ColorB: {
-            _chromaData->Color= color1;
-        }
+    if (_noteData->colorType == (int) GlobalNamespace::ColorType::ColorA) {
+        _chromaData->Color = color0;
+    } else if (_noteData->colorType == (int) GlobalNamespace::ColorType::ColorB) {
+        _chromaData->Color = color1;
     }
 }
 
@@ -249,6 +225,7 @@ void NoteColorizer::CNVColorManager::SetActiveColors() {
         return;
     }
 
+    colorNoteVisuals->noteColor = noteColor;
     SpriteRenderer* arrowGlowSpriteRenderer = colorNoteVisuals->arrowGlowSpriteRenderer;
     SpriteRenderer* circleGlowSpriteRenderer = colorNoteVisuals->circleGlowSpriteRenderer;
     arrowGlowSpriteRenderer->set_color(ColorWithAlpha(noteColor, arrowGlowSpriteRenderer->get_color().a));
@@ -256,11 +233,7 @@ void NoteColorizer::CNVColorManager::SetActiveColors() {
     Array<MaterialPropertyBlockController *> *materialPropertyBlockControllers = colorNoteVisuals->materialPropertyBlockControllers;
     for (int i = 0; i < materialPropertyBlockControllers->Length(); i++)
     {
-        if (_colorID == -1) {
-            _colorID = UnityEngine::Shader::PropertyToID(il2cpp_utils::createcsstr("_Color"));
-        }
-
-        MaterialPropertyBlockController *materialPropertyBlockController = materialPropertyBlockControllers->values[i];
+        auto *materialPropertyBlockController = materialPropertyBlockControllers->values[i];
         materialPropertyBlockController->materialPropertyBlock->SetColor(_colorID, noteColor);
         materialPropertyBlockController->ApplyChanges();
     }

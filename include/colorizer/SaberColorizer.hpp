@@ -46,21 +46,20 @@ namespace Chroma {
             inline static GlobalNamespace::SaberBurnMarkArea *saberBurnMarkArea = nullptr;
             inline static GlobalNamespace::SaberBurnMarkSparkles* saberBurnMarkSparkles = nullptr;
 
-            BSMColorManager(GlobalNamespace::Saber *bsm, int saberType);
-
             [[nodiscard]] GlobalNamespace::Saber* getSaber() const;
 
         public:
-            static BSMColorManager* GetBSMColorManager(int saberType);
+            BSMColorManager(GlobalNamespace::Saber *bsm, int saberType);
 
-            static BSMColorManager *
-            CreateBSMColorManager(GlobalNamespace::Saber *bsm, int saberType);
+            static std::shared_ptr<BSMColorManager> GetBSMColorManager(int saberType);
+
+            static std::shared_ptr<BSMColorManager> CreateBSMColorManager(GlobalNamespace::Saber *bsm, int saberType);
 
             void SetSaberColor(UnityEngine::Color color);
         };
 
     private:
-        inline static std::unordered_map<int, BSMColorManager *> _bsmColorManagers;
+        inline static std::unordered_map<int, std::shared_ptr<BSMColorManager>> _bsmColorManagers;
 
     };
 }

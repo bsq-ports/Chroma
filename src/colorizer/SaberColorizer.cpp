@@ -82,7 +82,7 @@ SaberColorizer::BSMColorManager::BSMColorManager(GlobalNamespace::Saber *bsm, in
     saberBurnMarkSparkles = UnityEngine::Resources::FindObjectsOfTypeAll<SaberBurnMarkSparkles*>()->values[0];
 }
 
-SaberColorizer::BSMColorManager* SaberColorizer::BSMColorManager::GetBSMColorManager(int saberType) {
+std::shared_ptr<SaberColorizer::BSMColorManager> SaberColorizer::BSMColorManager::GetBSMColorManager(int saberType) {
     auto it = _bsmColorManagers.find(saberType);
 
     if (it != _bsmColorManagers.end()) return it->second;
@@ -90,10 +90,10 @@ SaberColorizer::BSMColorManager* SaberColorizer::BSMColorManager::GetBSMColorMan
     return nullptr;
 }
 
-SaberColorizer::BSMColorManager* SaberColorizer::BSMColorManager::CreateBSMColorManager(GlobalNamespace::Saber *bsm,
+std::shared_ptr<SaberColorizer::BSMColorManager> SaberColorizer::BSMColorManager::CreateBSMColorManager(GlobalNamespace::Saber *bsm,
                                                                                          int saberType) {
     getLogger().debug("Creating a beat saber model manager");
-    auto* bsmcm = new BSMColorManager(bsm, saberType);
+    std::shared_ptr<BSMColorManager> bsmcm = std::make_shared<SaberColorizer::BSMColorManager>(bsm, saberType);
     _bsmColorManagers[saberType] = bsmcm;
     return bsmcm;
 }
