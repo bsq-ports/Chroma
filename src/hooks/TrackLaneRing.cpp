@@ -66,6 +66,7 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRing_LateUpdateRing, void, GlobalNamespace::TrackL
 }
 
 void Hooks::TrackLaneRing() {
+    INSTALL_HOOK_OFFSETLESS(getLogger(), TrackLaneRing_Init, il2cpp_utils::FindMethodUnsafe("", "TrackLaneRing", "Init", 2));
     INSTALL_HOOK_OFFSETLESS(getLogger(), TrackLaneRing_FixedUpdateRing, il2cpp_utils::FindMethodUnsafe("", "TrackLaneRing", "FixedUpdateRing", 1));
     INSTALL_HOOK_OFFSETLESS(getLogger(), TrackLaneRing_LateUpdateRing, il2cpp_utils::FindMethodUnsafe("", "TrackLaneRing", "LateUpdateRing", 1));
     //    INSTALL_HOOK_OFFSETLESS(getLogger(), SaberManager_Finalize, il2cpp_utils::FindMethodUnsafe("System", "Object", "Finalize", 0));
