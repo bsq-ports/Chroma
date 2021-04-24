@@ -54,12 +54,16 @@ UnityEngine::Color ChromaGradientController::AddGradient(ChromaLightEventData::G
     Functions easing = gradientObject.Easing;
 
     auto gradientEvent = ChromaGradientEvent(initcolor, endcolor, time, duration, id, easing);
-    getInstance()->Gradients.emplace(id.value, gradientEvent);
+    auto it = getInstance()->Gradients.emplace(id.value, gradientEvent);
 
-    auto it = getInstance()->Gradients.find(id.value);
-    bool ignored = false;
+    bool erased = false;
 
-    return gradientEvent.Interpolate(it, ignored);
+    auto r = gradientEvent.Interpolate(erased);
+
+    if (erased)
+        getInstance()->Gradients.erase(it.first);
+
+    return r;
 }
 
 void Chroma::ChromaGradientController::Update() {
@@ -74,14 +78,15 @@ void Chroma::ChromaGradientController::Update() {
             // Accessing KEY from element pointed by it.
             BeatmapEventType eventType = it->first;
             // Accessing VALUE from element pointed by it.
-            // TODO: CRASH HERE DUE TO signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0xb8f00000fd8
-            UnityEngine::Color color = it->second.Interpolate(it, modified);
+            UnityEngine::Color color = it->second.Interpolate(modified);
 
             LightColorizer::SetLightingColors(eventType, color, color, color, color);
             LightColorizer::SetActiveColors(eventType);
 
             if (!modified)
                 it++;
+            else
+                it = Gradients.erase(it);
         }
     }
 }
@@ -101,7 +106,7 @@ UnityEngine::Color lerpUnclamped(UnityEngine::Color a, UnityEngine::Color b, flo
     return UnityEngine::Color(a.r + (b.r - a.r) * t, a.g + (b.g - a.g) * t, a.b + (b.b - a.b) * t, a.a + (b.a - a.a) * t);
 }
 
-UnityEngine::Color Chroma::ChromaGradientEvent::Interpolate(gradientMap::iterator &it, bool &modified) const {
+UnityEngine::Color Chroma::ChromaGradientEvent::Interpolate(bool &modified) const {
     modified = false;
     float normalTime = ChromaController::IAudioTimeSource->get_songTime() - _start;
     if (normalTime < 0)
@@ -115,7 +120,6 @@ UnityEngine::Color Chroma::ChromaGradientEvent::Interpolate(gradientMap::iterato
     else
     {
         modified = true;
-        it = ChromaGradientController::getInstance()->Gradients.erase(it);
         return _endcolor;
     }
 }
