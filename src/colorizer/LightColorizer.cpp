@@ -233,7 +233,7 @@ namespace Chroma {
                         for (int i = 0; i < managers->Length() && !mngr; i++) {
                             auto m = managers->values[i];
                             indexR = m->rings->IndexOf(ring);
-                            if (index >= 0) {
+                            if (indexR >= 0) {
                                 mngr = m;
                             }
                         }

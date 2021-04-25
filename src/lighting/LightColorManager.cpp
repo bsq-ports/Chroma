@@ -123,8 +123,6 @@ void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, B
         }
 
 
-        //gradientObject
-        // FIXME, THIS IS VERY TEMP!!
         auto gradient = chromaData->GradientObject;
         if (gradient) {
             color = ChromaGradientController::AddGradient(gradient.value(), beatmapEventData->type,
