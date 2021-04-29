@@ -91,7 +91,7 @@ void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, B
             debugSpamLog(contextLogger, "Prop id data is");
             PrintJSONValue(propIDData);
 
-            if (propIDData.IsInt64() || propIDData.IsInt()) {
+            if (propIDData.IsInt64() || propIDData.IsInt() || propIDData.IsUint() || propIDData.IsUint64()) {
                 auto propIdLong = propIDData.GetInt();
                 debugSpamLog(contextLogger, "It is an int prop %d %d", lightCount, propIdLong);
                 if (lightCount > propIdLong) {

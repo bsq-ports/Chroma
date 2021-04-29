@@ -227,14 +227,18 @@ namespace Chroma {
 
                     if (ring) {
 
-                        TrackLaneRingsManager* mngr;
+                        TrackLaneRingsManager* mngr = nullptr;
                         auto indexR = 0;
 
-                        for (int i = 0; i < managers->Length() && !mngr; i++) {
+                        for (int i = 0; i < managers->Length(); i++) {
                             auto m = managers->values[i];
-                            indexR = m->rings->IndexOf(ring);
-                            if (indexR >= 0) {
-                                mngr = m;
+
+                            if (m) {
+                                indexR = m->rings->IndexOf(ring);
+                                if (indexR >= 0) {
+                                    mngr = m;
+                                    break;
+                                }
                             }
                         }
 
@@ -250,15 +254,13 @@ namespace Chroma {
                     auto it = lightsPreGroup.find(z);
                     // Not found
                     if (it == lightsPreGroup.end()) {
-                        list = std::vector<ILightWithId *>();
                         insertionOrder[index] = z;
                         index++;
                     } else list = it->second;
 
                     list.push_back(light.second);
 
-                    lightsPreGroup[z] = list;
-
+                    lightsPreGroup.insert_or_assign(it, z, list);
                 }
             }
 
@@ -274,16 +276,6 @@ namespace Chroma {
                 lightsPreGroupFinal[i] = lightsPreGroup[z];
                 i++;
             }
-
-//            int i = 0;
-//
-//            auto it = lightsPreGroup.begin();
-//            while (it != lightsPreGroup.end()) {
-//                debugSpamLog(contextLogger, "Doing the final grouping, prop id %d", i);
-//                lightsPreGroupFinal[i] = it->second;
-//                i++;
-//                it++;
-//            }
 
             debugSpamLog(contextLogger, "Done grouping, size %d", lightsPreGroup.size());
 
