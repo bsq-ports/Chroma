@@ -197,13 +197,6 @@ namespace Chroma {
 
             Lights = std::unordered_map<int, ILightWithId*>();
 
-            for (int i = 0; i < lightArray->get_Length(); i++) {
-                auto l = lightArray->values[i];
-                if (l == nullptr) continue;
-
-                debugSpamLog(contextLogger, "Adding light to list");
-                Lights[i] = l;
-            }
 
             // Keep track of order
             int index = 0;
@@ -213,10 +206,14 @@ namespace Chroma {
 
             auto managers = UnityEngine::Object::FindObjectsOfType<TrackLaneRingsManager*>();
 
-            for (auto& light : Lights) {
-                if (!light.second) continue;
+            for (int i = 0; i < lightArray->get_Length(); i++) {
+                auto light = lightArray->values[i];
+                if (light == nullptr) continue;
 
-                auto object = reinterpret_cast<Il2CppObject *>(light.second);
+                debugSpamLog(contextLogger, "Adding light to list");
+                Lights[i] = light;
+
+                auto object = reinterpret_cast<Il2CppObject *>(light);
 
                 debugSpamLog(contextLogger, "Doing light %s", object->klass->name);
                 if (ASSIGNMENT_CHECK(classof(MonoBehaviour *), object->klass)) {
@@ -258,7 +255,7 @@ namespace Chroma {
                         index++;
                     } else list = it->second;
 
-                    list.push_back(light.second);
+                    list.push_back(light);
 
                     lightsPreGroup.insert_or_assign(it, z, list);
                 }
