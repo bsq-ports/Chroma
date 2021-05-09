@@ -47,6 +47,8 @@ namespace Chroma {
         void LightSwitchEventEffect();
         void LightWithIdManager();
         void NoteCutEffectSpawner();
+        void MissionLevelScenesTransitionSetupDataSO();
+        void MultiplayerLevelScenesTransitionSetupDataSO();
         void ObstacleController();
         void ParametricBoxController();
         void ParticleSystemEventEffect();
@@ -58,6 +60,7 @@ namespace Chroma {
         void TrackLaneRingsPositionStepEffectSpawner();
         void TrackLaneRingsRotationEffect();
         void TrackLaneRingsRotationEffectSpawner();
+        void TutorialScenesTransitionSetupDataSO();
     }
 
     namespace ChromaLogger {

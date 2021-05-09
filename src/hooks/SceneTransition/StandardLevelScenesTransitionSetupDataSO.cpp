@@ -9,10 +9,8 @@
 #include "GlobalNamespace/PracticeSettings.hpp"
 #include "GlobalNamespace/IDifficultyBeatmap.hpp"
 #include "GlobalNamespace/NoteController.hpp"
-#include "UnityEngine/Vector3.hpp"
 #include "GlobalNamespace/BeatmapLevelSO.hpp"
 #include "colorizer/NoteColorizer.hpp"
-#include "UnityEngine/Random.hpp"
 #include "UnityEngine/Space.hpp"
 #include "UnityEngine/Transform.hpp"
 

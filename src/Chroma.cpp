@@ -12,6 +12,8 @@ void Chroma::InstallHooks() {
     Hooks::LightSwitchEventEffect();
     Hooks::LightWithIdManager();
     Hooks::NoteCutEffectSpawner();
+    Hooks::MissionLevelScenesTransitionSetupDataSO();
+    Hooks::MultiplayerLevelScenesTransitionSetupDataSO();
     Hooks::ObstacleController();
     Hooks::ParametricBoxController();
     Hooks::ParticleSystemEventEffect();
@@ -23,4 +25,5 @@ void Chroma::InstallHooks() {
     Hooks::TrackLaneRingsPositionStepEffectSpawner();
     Hooks::TrackLaneRingsRotationEffect();
     Hooks::TrackLaneRingsRotationEffectSpawner();
+    Hooks::TutorialScenesTransitionSetupDataSO();
 }

@@ -1,20 +1,15 @@
 #include "ChromaConfig.hpp"
 #include "hooks/SceneTransition/SceneTransitionHelper.hpp"
-#include <vector>
-#include <optional>
 
 #include "lighting/LegacyLightHelper.hpp"
 #include "ChromaController.hpp"
 #include "lighting/LightIDTableManager.hpp"
 
-#include "GlobalNamespace/BeatmapDataSO.hpp"
 #include "GlobalNamespace/BeatmapEnvironmentHelper.hpp"
 #include "GlobalNamespace/EnvironmentInfoSO.hpp"
 #include "Chroma.hpp"
 
 #include "utils/ChromaUtils.hpp"
-
-#include <cstdlib>
 
 using namespace CustomJSONData;
 using namespace Chroma;
@@ -27,15 +22,10 @@ void SceneTransitionHelper::Patch(GlobalNamespace::IDifficultyBeatmap* customBea
 }
 
 void SceneTransitionHelper::Patch(GlobalNamespace::IDifficultyBeatmap* customBeatmapData, OverrideEnvironmentSettings*& overrideEnvironmentSettings) {
-
-
     bool chromaRequirement = SceneTransitionHelper::BasicPatch(customBeatmapData);
     if (chromaRequirement && getChromaConfig().environmentEnhancementsEnabled.GetValue() && customBeatmapData)
-        //TODO: Actually implement this once info.dat information is retrievable
-        // && customBeatmapData->customData && customBeatmapData->customData->value && customBeatmapData->customData->value->HasMember("_environmentRemoval"))
     {
         auto il2cppObject = reinterpret_cast<Il2CppObject*>(customBeatmapData);
-        getLogger().debug("Beatmap klass: %s", il2cpp_utils::ClassStandardName(il2cppObject->klass).c_str());
         if (ASSIGNMENT_CHECK(classof(CustomJSONData::CustomBeatmapData*), il2cppObject->klass)) {
             auto customBeatmapDataCustom = reinterpret_cast<CustomJSONData::CustomBeatmapData *>(customBeatmapData);
 
@@ -56,6 +46,7 @@ void SceneTransitionHelper::Patch(GlobalNamespace::IDifficultyBeatmap* customBea
 }
 
 bool SceneTransitionHelper::BasicPatch(GlobalNamespace::IDifficultyBeatmap* customBeatmapData) {
+    ChromaController::TutorialMode = false;
     auto environmentInfo = BeatmapEnvironmentHelper::GetEnvironmentInfo(customBeatmapData);
 
     LightIDTableManager::SetEnvironment(to_utf8(csstrtostr(environmentInfo->serializedName)));

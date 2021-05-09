@@ -39,6 +39,9 @@ using namespace custom_types::Helpers;
 
 static bool hookInstalled = false;
 
+bool ChromaController::ChromaLegacy = false;
+bool ChromaController::TutorialMode = false;
+
 MAKE_HOOK_OFFSETLESS(ChromaController_NoteCutEvent, void, BeatmapObjectManager *self, NoteController *noteController,
                      NoteCutInfo *noteCutInfo) {
     if (!ChromaController::DoChromaHooks()) {
@@ -87,7 +90,7 @@ custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(Global
 void ChromaController::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene current) {
     getLogger().debug("Clear scene");
 
-    if (current.IsValid() && to_utf8(csstrtostr(current.get_name())) == "GameCore") {
+    if (current && current.IsValid() && to_utf8(csstrtostr(current.get_name())) == "GameCore") {
         RingManagers.clear();
         LightColorizer::ClearLSEColorManagers();
         ObstacleColorizer::ClearOCColorManagers();
@@ -102,21 +105,20 @@ bool ChromaController::ChromaRequired() {
     auto reqVar = getenv("req_Chroma");
     auto sugVar = getenv("sug_Chroma");
 
-    return true || (reqVar && strcmp(reqVar, "1") == 0) || (sugVar && strcmp(sugVar, "1") == 0);
+    return !TutorialMode && (true || (reqVar && strcmp(reqVar, "1") == 0) || (sugVar && strcmp(sugVar, "1") == 0));
 }
 
 bool ChromaController::DoColorizerSabers() {
     return getChromaConfig().customColorEventsEnabled.GetValue() && ChromaRequired();
 }
 
-bool ChromaController::_ChromaLegacy = false;
 void ChromaController::SetChromaLegacy(bool v) {
     getLogger().debug("Set chroma legacy to %s", v ? "true" : "false");
-    _ChromaLegacy = v;
+    ChromaLegacy = v;
 }
 
 bool ChromaController::GetChromaLegacy() {
-    return _ChromaLegacy;
+    return ChromaLegacy;
 }
 
 
