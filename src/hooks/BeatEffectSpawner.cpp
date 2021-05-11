@@ -24,17 +24,18 @@ MAKE_HOOK_OFFSETLESS(BeatEffectSpawner_HandleNoteDidStartJump, void, BeatEffectS
         return;
     }
 
-    if (ASSIGNMENT_CHECK(classof(MultiplayerConnectedPlayerNoteController*), noteController->klass) || ASSIGNMENT_CHECK(classof(TutorialNoteController*), noteController->klass)) {
-        auto chromaData = std::static_pointer_cast<ChromaNoteData>(
-                ChromaObjectDataManager::ChromaObjectDatas[noteController->noteData]);
+    auto it = ChromaObjectDataManager::ChromaObjectDatas.find(noteController->noteData);
+
+    if (it != ChromaObjectDataManager::ChromaObjectDatas.end()) {
+        auto chromaData = std::static_pointer_cast<ChromaNoteData>(it->second);
         std::optional<bool> disable = chromaData->DisableSpawnEffect;
 
         if (disable && disable.value()) {
             return;
         }
-
-        NoteColorizer::EnableNoteColorOverride(noteController);
     }
+
+    NoteColorizer::EnableNoteColorOverride(noteController);
 
     BeatEffectSpawner_HandleNoteDidStartJump(self, noteController);
 

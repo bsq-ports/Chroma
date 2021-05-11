@@ -18,22 +18,25 @@ MAKE_HOOK_OFFSETLESS(ColorNoteVisuals_HandleNoteControllerDidInit, void, ColorNo
         return;
     }
 
-    if (!ASSIGNMENT_CHECK(classof(MultiplayerConnectedPlayerNoteController*), noteController->klass) && !ASSIGNMENT_CHECK(classof(TutorialNoteController*), noteController->klass)) {
-        NoteColorizer::CNVStart(self, noteController);
+    NoteColorizer::CNVStart(self, noteController);
 
-//        auto chromaData = std::static_pointer_cast<ChromaNoteData>(ChromaObjectDataManager::ChromaObjectDatas[noteController->noteData]);
+    auto it = ChromaObjectDataManager::ChromaObjectDatas.find(noteController->noteData);
 
-//        auto color = chromaData->Color;
+    if (it != ChromaObjectDataManager::ChromaObjectDatas.end()) {
 
-//        if (color) {
-//
-//            NoteColorizer::SetNoteColors(noteController, color, color);
-//        } else {
-//            NoteColorizer::Reset(noteController);
-//        }
+        auto chromaData = std::static_pointer_cast<ChromaNoteData>(it->second);
 
-        NoteColorizer::EnableNoteColorOverride(noteController);
+        std::optional<UnityEngine::Color> color = chromaData->Color;
+
+        if (color) {
+            NoteColorizer::SetNoteColors(noteController, color, color);
+        } else {
+            NoteColorizer::Reset(noteController);
+        }
     }
+
+    NoteColorizer::EnableNoteColorOverride(noteController);
+
 
     ColorNoteVisuals_HandleNoteControllerDidInit(self, noteController); // This calls the original method
 
