@@ -66,6 +66,7 @@ void SaberColorizer::SetAllSaberColors(std::optional<UnityEngine::Color> color0,
 void SaberColorizer::ClearBSMColorManagers() {
     SaberColorOverride = {std::nullopt, std::nullopt};
     _bsmColorManagers.clear();
+    clearCallbacks();
 }
 
 void SaberColorizer::BSMStart(GlobalNamespace::Saber *bcm, int saberType) {
@@ -74,6 +75,14 @@ void SaberColorizer::BSMStart(GlobalNamespace::Saber *bcm, int saberType) {
         getLogger().debug("Saber start was called, doing stuff");
         BSMColorManager::CreateBSMColorManager(bcm, saberType);
     }
+}
+
+void SaberColorizer::registerCallback(std::function<void()> callback) {
+    saberCallbacks.push_back(callback);
+}
+
+void SaberColorizer::clearCallbacks() {
+    saberCallbacks.clear();
 }
 
 SaberColorizer::BSMColorManager::BSMColorManager(GlobalNamespace::Saber *bsm, int saberType) {
@@ -221,6 +230,11 @@ custom_types::Helpers::Coroutine ChangeColorCoroutine(Saber *saber, UnityEngine:
         }
     }
 
+    // Call callbacks
+    for (auto& c : SaberColorizer::saberCallbacks)
+    {
+        c();
+    }
 
 
     coroutineSabers.erase(saber->get_saberType().value);
