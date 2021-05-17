@@ -146,11 +146,11 @@ void OCColorManager::SetActiveColors() const {
     for (int i = 0; i < materialPropertyBlockControllers->Length(); i++)
     {
         if (_tintColorID == -1) {
-            _tintColorID = UnityEngine::Shader::PropertyToID(il2cpp_utils::createcsstr("_TintColor"));
+            _tintColorID = UnityEngine::Shader::PropertyToID(il2cpp_utils::newcsstr("_TintColor"));
         }
 
         if (_addColorID == -1) {
-            _addColorID = UnityEngine::Shader::PropertyToID(il2cpp_utils::createcsstr("_AddColor"));
+            _addColorID = UnityEngine::Shader::PropertyToID(il2cpp_utils::newcsstr("_AddColor"));
         }
 
         MaterialPropertyBlockController* materialPropertyBlockController = materialPropertyBlockControllers->get(i);

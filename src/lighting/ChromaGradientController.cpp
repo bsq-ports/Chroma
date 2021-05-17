@@ -27,7 +27,7 @@ void ChromaGradientController::ctor() {
 }
 
 Chroma::ChromaGradientController* ChromaGradientController::getInstance() {
-    auto str = il2cpp_utils::createcsstr("Chroma_GradientController");
+    auto str = il2cpp_utils::newcsstr("Chroma_GradientController");
     if (_instance == nullptr || UnityEngine::GameObject::Find(str) == nullptr)
     {
         _instance = UnityEngine::GameObject::New_ctor(str)->AddComponent<ChromaGradientController*>();

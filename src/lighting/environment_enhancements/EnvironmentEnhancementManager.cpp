@@ -86,7 +86,7 @@ void EnvironmentEnhancementManager::GetAllGameObjects() {
         if (gameObject) {
             auto sceneName = gameObject->get_scene().get_name();
 
-            if (sceneName && (sceneName->Contains(il2cpp_utils::createcsstr("Environment")) && !sceneName->Contains(il2cpp_utils::createcsstr("Menu")) || gameObject->GetComponent<GlobalNamespace::TrackLaneRing*>())) {
+            if (sceneName && (sceneName->Contains(il2cpp_utils::newcsstr("Environment")) && !sceneName->Contains(il2cpp_utils::newcsstr("Menu")) || gameObject->GetComponent<GlobalNamespace::TrackLaneRing*>())) {
                 gameObjectsVec.push_back(gameObject);
             }
         }

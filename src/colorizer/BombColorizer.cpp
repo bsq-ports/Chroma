@@ -67,10 +67,10 @@ void BNCColorManager::ctor(GlobalNamespace::BombNoteController *nc) {
 
     _bombMaterial = nc->noteTransform->get_gameObject()->GetComponent<Renderer*>()->get_material();
 
-    _color_Original = _bombMaterial->GetColor(il2cpp_utils::createcsstr("_SimpleColor"));
+    _color_Original = _bombMaterial->GetColor(il2cpp_utils::newcsstr("_SimpleColor"));
     if (_globalColor)
     {
-        _bombMaterial->SetColor(il2cpp_utils::createcsstr("_SimpleColor"), _globalColor.value());
+        _bombMaterial->SetColor(il2cpp_utils::newcsstr("_SimpleColor"), _globalColor.value());
     }
 }
 
@@ -108,16 +108,16 @@ void BNCColorManager::ResetGlobal() {
 void BNCColorManager::Reset() {
     if (_bombMaterial) {
         if (_globalColor) {
-            _bombMaterial->SetColor(il2cpp_utils::createcsstr("_SimpleColor"), _globalColor.value());
+            _bombMaterial->SetColor(il2cpp_utils::newcsstr("_SimpleColor"), _globalColor.value());
         } else {
-            _bombMaterial->SetColor(il2cpp_utils::createcsstr("_SimpleColor"), _color_Original);
+            _bombMaterial->SetColor(il2cpp_utils::newcsstr("_SimpleColor"), _color_Original);
         }
     }
 }
 
 void BNCColorManager::SetBombColor(std::optional<UnityEngine::Color> color) const {
-    if (color && color.value() != _bombMaterial->GetColor(il2cpp_utils::createcsstr("_SimpleColor")))
+    if (color && color.value() != _bombMaterial->GetColor(il2cpp_utils::newcsstr("_SimpleColor")))
     {
-        _bombMaterial->SetColor(il2cpp_utils::createcsstr("_SimpleColor"), color.value());
+        _bombMaterial->SetColor(il2cpp_utils::newcsstr("_SimpleColor"), color.value());
     }
 }

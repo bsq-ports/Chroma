@@ -33,7 +33,7 @@ MAKE_HOOK_OFFSETLESS(BeatmapDataTransformHelper_CreateTransformedBeatmapData, Gl
 //
 //    getLogger().debug("Frames: %d", stackTrace->frames->Length());
 
-//    if (!stackTrace->GetFrame(2)->GetMethod()->get_Name()->Contains(il2cpp_utils::createcsstr("MultiplayerConnectedPlayerInstaller"))) {
+//    if (!stackTrace->GetFrame(2)->GetMethod()->get_Name()->Contains(il2cpp_utils::newcsstr("MultiplayerConnectedPlayerInstaller"))) {
         ChromaObjectDataManager::deserialize(result);
         ChromaEventDataManager::deserialize(result);
 //    }
