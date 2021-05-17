@@ -99,10 +99,10 @@ void ChromaController::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene 
 
 bool ChromaController::ChromaRequired() {
     // 1 is true
-    std::string reqVar = getenv("req_Chroma");
-    std::string sugVar = getenv("sug_Chroma");
+    char* reqVar = getenv("req_Chroma");
+    char* sugVar = getenv("sug_Chroma");
 
-    return !TutorialMode && (true || (reqVar == "1") || (sugVar == "1"));
+    return !TutorialMode && (true || (reqVar && std::string(reqVar) == "1") || (sugVar && std::string(sugVar) == "1"));
 }
 
 bool ChromaController::DoColorizerSabers() {
