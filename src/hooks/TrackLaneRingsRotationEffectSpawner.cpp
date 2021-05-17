@@ -36,7 +36,7 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffectSpawner_Start, void, GlobalName
 
         UnityEngine::Object::Destroy(oldRotationEffect);
 
-        self->trackLaneRingsRotationEffect = reinterpret_cast<TrackLaneRingsRotationEffect *>(newRotationEffect);
+        self->trackLaneRingsRotationEffect = il2cpp_utils::cast<TrackLaneRingsRotationEffect>(newRotationEffect);
     }
     TrackLaneRingsRotationEffectSpawner_Start(self);
 }
@@ -59,7 +59,7 @@ void TriggerRotation(
     static auto contextLogger = getLogger().WithContext(Chroma::ChromaLogger::TrackLaneRings);
     debugSpamLog(contextLogger, "DOING TRIGGER ROTATION %s", trackLaneRingsRotationEffect->klass->name);
 
-    auto chromaRingRotation = reinterpret_cast<ChromaRingsRotationEffect*>(trackLaneRingsRotationEffect);
+    auto chromaRingRotation = il2cpp_utils::cast<ChromaRingsRotationEffect>(trackLaneRingsRotationEffect);
 
     chromaRingRotation->AddRingRotationEffectF(chromaRingRotation->GetFirstRingDestinationRotationAngle() + (rotation * (rotRight ? -1.0f : 1.0f)), rotationStep, rotationPropagationSpeed, rotationFlexySpeed);
 }

@@ -138,8 +138,10 @@ NoteColorizer::CNVColorManager::CNVColorManager(GlobalNamespace::ColorNoteVisual
 
     _chromaData = std::static_pointer_cast<ChromaNoteData>(ChromaObjectDataManager::ChromaObjectDatas[nc->noteData]);
 
-    if (ASSIGNMENT_CHECK(classof(CustomJSONData::CustomNoteData*), nc->noteData->klass)) {
-        _noteData = reinterpret_cast<CustomJSONData::CustomNoteData *>(nc->noteData);
+    auto castedNote = il2cpp_utils::try_cast<CustomJSONData::CustomNoteData>(nc->noteData);
+
+    if (castedNote) {
+        _noteData =  *castedNote;
     }
 }
 
@@ -161,8 +163,9 @@ std::shared_ptr<NoteColorizer::CNVColorManager> NoteColorizer::CNVColorManager::
         //        CRASH_UNLESS(false);
         // However it does and I can't wonder why,
         // TODO: gotta fix Aero's NoteColorizer for them
-        if (ASSIGNMENT_CHECK(classof(CustomJSONData::CustomNoteData*), nc->noteData->klass)) {
-            auto *customData = reinterpret_cast<CustomNoteData *>(nc->noteData);
+        auto castedNote = il2cpp_utils::try_cast<CustomJSONData::CustomNoteData>(nc->noteData);
+        if (castedNote) {
+            auto *customData = *castedNote;
             cnvColorManager->_noteData = customData;
 
             cnvColorManager->_chromaData = std::static_pointer_cast<ChromaNoteData>(

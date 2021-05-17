@@ -124,7 +124,7 @@ void LightColorizer::LSEStart(MonoBehaviour *monoBehaviour, BeatmapEventType bea
 void LightColorizer::RegisterLight(UnityEngine::MonoBehaviour *lightWithId) {
 
     if (ASSIGNMENT_CHECK(classof(LightWithIdMonoBehaviour*), lightWithId->klass)) {
-        auto monoBehaviour = reinterpret_cast<LightWithIdMonoBehaviour*>(lightWithId);
+        auto monoBehaviour = il2cpp_utils::cast<LightWithIdMonoBehaviour>(lightWithId);
 
         auto lse = LSEColorManager::GetLSEColorManager((monoBehaviour->get_lightId() - 1));
 
@@ -144,17 +144,17 @@ void LightColorizer::RegisterLight(UnityEngine::MonoBehaviour *lightWithId) {
 
             LightIDTableManager::RegisterIndex(monoBehaviour->get_lightId() - 1, monomanager->Lights.size());
 
-            monomanager->Lights[monomanager->Lights.size()] = reinterpret_cast<ILightWithId*>(monoBehaviour);
+            monomanager->Lights[(int) monomanager->Lights.size()] = il2cpp_utils::cast<ILightWithId>(monoBehaviour);
 
     } else if (ASSIGNMENT_CHECK(classof(LightWithIds*), lightWithId->klass)) {
-        auto lightWithIds = reinterpret_cast<LightWithIds *>(lightWithId);
+        auto lightWithIds = il2cpp_utils::cast<LightWithIds>(lightWithId);
 
 
         auto lightsWithIdArray = lightWithIds->lightIntensityData;
 
 
         for (int i = 0; i < lightsWithIdArray->Length(); i++) {
-            auto light = reinterpret_cast<ILightWithId *>(lightsWithIdArray->get(i));
+            auto light = il2cpp_utils::cast<ILightWithId>(lightsWithIdArray->get(i));
             auto manager = LSEColorManager::GetLSEColorManager((light->get_lightId() - 1)).front();
 
             LightIDTableManager::RegisterIndex(light->get_lightId() - 1, (int) manager->Lights.size());
@@ -179,8 +179,9 @@ namespace Chroma {
         InitializeSOs(mono, "_highlightColor1", _lightColor1, _lightColor1_Original, _mHighlightColor1);
 
 
-        if (ASSIGNMENT_CHECK(classof(LightSwitchEventEffect *), mono->klass)) {
-            auto *lse = reinterpret_cast<LightSwitchEventEffect *>(mono);
+        auto lse = il2cpp_utils::try_cast<LightSwitchEventEffect>(mono);
+        if (lse) {
+
 
             InitializeSOs(mono, "_lightColor0Boost", _lightColor0Boost, _lightColor0Boost_Original, _mLightColor0Boost);
             InitializeSOs(mono, "_highlightColor0Boost", _lightColor0Boost, _lightColor0Boost_Original,
@@ -190,8 +191,8 @@ namespace Chroma {
                           _mHighlightColor1Boost);
             _supportBoostColor = true;
 
-            auto lightManager = lse->lightManager;
-            System::Collections::Generic::List_1<GlobalNamespace::ILightWithId *> *lightList = lightManager->lights->get(lse->lightsID);
+            auto lightManager = (*lse)->lightManager;
+            System::Collections::Generic::List_1<GlobalNamespace::ILightWithId *> *lightList = lightManager->lights->get((*lse)->lightsID);
             Array<ILightWithId *> *lightArray = lightList->items;
 
 
@@ -213,14 +214,15 @@ namespace Chroma {
                 debugSpamLog(contextLogger, "Adding light to list");
                 Lights[i] = light;
 
-                auto object = reinterpret_cast<Il2CppObject *>(light);
-
+                auto object = il2cpp_utils::cast<Il2CppObject>(light);
                 debugSpamLog(contextLogger, "Doing light %s", object->klass->name);
-                if (ASSIGNMENT_CHECK(classof(MonoBehaviour *), object->klass)) {
-                    auto monoBehaviour = reinterpret_cast<MonoBehaviour *>(object);
-                    int z = UnityEngine::Mathf::RoundToInt(monoBehaviour->get_transform()->get_position().z);
+                auto monoBehaviour = il2cpp_utils::try_cast<MonoBehaviour>(object);
 
-                    auto ring = monoBehaviour->GetComponentInParent<TrackLaneRing*>();
+                if (monoBehaviour) {
+
+                    int z = UnityEngine::Mathf::RoundToInt((*monoBehaviour)->get_transform()->get_position().z);
+
+                    auto ring = (*monoBehaviour)->GetComponentInParent<TrackLaneRing*>();
 
                     if (ring) {
 
@@ -385,58 +387,48 @@ namespace Chroma {
                 break;
         }
 
+        auto l1 = il2cpp_utils::try_cast<LightSwitchEventEffect>(_lse);
+        auto p1 = il2cpp_utils::try_cast<ParticleSystemEventEffect>(_lse);
         if (_lse->get_enabled()) {
-            if (ASSIGNMENT_CHECK(classof(LightSwitchEventEffect *), _lse->klass )) {
-                auto l1 = reinterpret_cast<LightSwitchEventEffect *>(_lse);
-                l1->highlightColor = c;
-            } else if (ASSIGNMENT_CHECK(classof(ParticleSystemEventEffect *), _lse->klass )) {
-                auto p1 = reinterpret_cast<ParticleSystemEventEffect *>(_lse);
-
-                p1->highlightColor = c;
+            if (l1) {
+                (*l1)->highlightColor = c;
+            } else if (p1) {
+                (*p1)->highlightColor = c;
             }
 
             if (_lastValue == 3 || _lastValue == 7) {
-                if (ASSIGNMENT_CHECK(classof(LightSwitchEventEffect *), _lse->klass)) {
-                    auto l1 = reinterpret_cast<LightSwitchEventEffect *>(_lse);
+                if (l1) {
+
                     c.a = 0.0f;
-                    l1->afterHighlightColor = c;
-                } else if (ASSIGNMENT_CHECK(classof(ParticleSystemEventEffect *), _lse->klass)) {
-                    auto p1 = reinterpret_cast<ParticleSystemEventEffect *>(_lse);
+                    (*l1)->afterHighlightColor = c;
+                } else if (p1) {
                     c.a = 0.0f;
-                    p1->afterHighlightColor = c;
+                    (*p1)->afterHighlightColor = c;
                 }
             } else {
-                if (ASSIGNMENT_CHECK(classof(LightSwitchEventEffect *), _lse->klass)) {
-                    auto l1 = reinterpret_cast<LightSwitchEventEffect *>(_lse);
-                    l1->afterHighlightColor = c;
-                } else if (ASSIGNMENT_CHECK(classof(ParticleSystemEventEffect *), _lse->klass)) {
-                    auto p1 = reinterpret_cast<ParticleSystemEventEffect *>(_lse);
-
-                    p1->afterHighlightColor = c;
+                if (l1) {
+                    (*l1)->afterHighlightColor = c;
+                } else if (p1) {
+                    (*p1)->afterHighlightColor = c;
                 }
             }
         } else {
             if (_lastValue == 1 || _lastValue == 5 || _lastValue == 2 || _lastValue == 6) {
-                if (ASSIGNMENT_CHECK(classof(LightSwitchEventEffect *), _lse->klass)) {
-                    auto l1 = reinterpret_cast<LightSwitchEventEffect *>(_lse);
-                    l1->SetColor(c);
-                } else if (ASSIGNMENT_CHECK(classof(ParticleSystemEventEffect *), _lse->klass)) {
-                    auto p1 = reinterpret_cast<ParticleSystemEventEffect *>(_lse);
-
-                    p1->particleColor = c;
-                    p1->RefreshParticles();
+                if (l1) {
+                    (*l1)->SetColor(c);
+                } else if (p1) {
+                    (*p1)->particleColor = c;
+                    (*p1)->RefreshParticles();
                 }
             }
         }
 
-        if (ASSIGNMENT_CHECK(classof(LightSwitchEventEffect *), _lse->klass)) {
-            auto l1 = reinterpret_cast<LightSwitchEventEffect *>(_lse);
+        if (l1) {
             c.a = 0.0f;
-            l1->offColor = c;
-        } else if (ASSIGNMENT_CHECK(classof(ParticleSystemEventEffect *), _lse->klass)) {
-            auto p1 = reinterpret_cast<ParticleSystemEventEffect *>(_lse);
+            (*l1)->offColor = c;
+        } else if (p1) {
             c.a = 0.0f;
-            p1->offColor = c;
+            (*p1)->offColor = c;
         }
     }
 
@@ -446,14 +438,16 @@ namespace Chroma {
 
         // Todo: Use codegen here
         MultipliedColorSO *lightMultSO = nullptr;
-        if (ASSIGNMENT_CHECK(classof(LightSwitchEventEffect *), lse->klass)) {
-            auto l1 = reinterpret_cast<LightSwitchEventEffect *>(lse);
-            lightMultSO = reinterpret_cast<MultipliedColorSO *>(il2cpp_utils::GetFieldValue<ColorSO *>(l1,
-                                                                                                       id).value()); //l1.GetField<ColorSO, LightSwitchEventEffect>(id);
-        } else if (ASSIGNMENT_CHECK(classof(ParticleSystemEventEffect *), lse->klass)) {
-            auto p1 = reinterpret_cast<ParticleSystemEventEffect *>(lse);
-            lightMultSO = reinterpret_cast<MultipliedColorSO *>(il2cpp_utils::GetFieldValue<ColorSO *>(p1,
-                                                                                                       id).value()); //l1.GetField<ColorSO, LightSwitchEventEffect>(id);
+        auto l1 = il2cpp_utils::try_cast<LightSwitchEventEffect>(lse);
+        auto p1 = il2cpp_utils::try_cast<ParticleSystemEventEffect>(lse);
+        if (l1) {
+
+            lightMultSO =
+                    il2cpp_utils::cast<MultipliedColorSO>(il2cpp_utils::GetFieldValue<ColorSO *>(l1, id).value()); //l1.GetField<ColorSO, LightSwitchEventEffect>(id);
+        } else if (p1) {
+
+            lightMultSO =
+                    il2cpp_utils::cast<MultipliedColorSO>(il2cpp_utils::GetFieldValue<ColorSO *>(p1, id).value()); //l1.GetField<ColorSO, LightSwitchEventEffect>(id);
         }
 
         UnityEngine::Color multiplierColor = lightMultSO->multiplierColor;
@@ -474,17 +468,13 @@ namespace Chroma {
 
         static auto contextLogger = getLogger().WithContext(ChromaLogger::LightColorizer);
         debugSpamLog(contextLogger, "Overwriting %s", id.c_str());
-        if (ASSIGNMENT_CHECK(classof(LightSwitchEventEffect *), lse->klass)) {
+        if (l1) {
             CRASH_UNLESS(mColorSO);
-            auto l1 = reinterpret_cast<LightSwitchEventEffect *>(lse);
-
-            il2cpp_utils::SetFieldValue<LightSwitchEventEffect *, ColorSO *>(l1, id,
+            il2cpp_utils::SetFieldValue<LightSwitchEventEffect *, ColorSO *>((*l1), id,
                                                                              mColorSO); //l1.GetField<ColorSO, LightSwitchEventEffect>(id);
-        } else if (ASSIGNMENT_CHECK(classof(ParticleSystemEventEffect *), lse->klass)) {
+        } else if (p1) {
             CRASH_UNLESS(mColorSO);
-            auto p1 = reinterpret_cast<ParticleSystemEventEffect *>(lse);
-
-            il2cpp_utils::SetFieldValue<ParticleSystemEventEffect *, ColorSO *>(p1, id,
+            il2cpp_utils::SetFieldValue<ParticleSystemEventEffect *, ColorSO *>((*p1), id,
                                                                                 mColorSO); //l1.GetField<ColorSO, LightSwitchEventEffect>(id);
         }
     }

@@ -18,13 +18,13 @@ void Chroma::ChromaObjectDataManager::deserialize(GlobalNamespace::IReadonlyBeat
 
     static auto contextLogger = getLogger().WithContext(ChromaLogger::ObjectDataDeserialize);
 
-    auto beatmapDataCast = reinterpret_cast<GlobalNamespace::BeatmapData*>(beatmapData);
-    auto beatmapLines = reinterpret_cast<Array<GlobalNamespace::IReadonlyBeatmapLineData*>*>(beatmapDataCast->get_beatmapLinesData());
+    auto beatmapDataCast = il2cpp_utils::cast<GlobalNamespace::BeatmapData>(beatmapData);
+    auto beatmapLines = il2cpp_utils::cast<Array<GlobalNamespace::IReadonlyBeatmapLineData*>>(beatmapDataCast->get_beatmapLinesData());
 
     debugSpamLog(contextLogger, "Array klass: %s", il2cpp_utils::ClassStandardName(beatmapLines->klass).c_str());
 
     for (int i = 0; i < beatmapLines->Length(); i++) {
-        auto beatmapLineData = reinterpret_cast<GlobalNamespace::BeatmapLineData *>(beatmapLines->get(i));
+        auto beatmapLineData = il2cpp_utils::cast<GlobalNamespace::BeatmapLineData>(beatmapLines->get(i));
 
         if (beatmapLineData && beatmapLineData->beatmapObjectsData) {
             debugSpamLog(contextLogger, "Klass: %s", il2cpp_utils::ClassStandardName(beatmapLineData->klass).c_str());
@@ -38,7 +38,7 @@ void Chroma::ChromaObjectDataManager::deserialize(GlobalNamespace::IReadonlyBeat
 
                     if (ASSIGNMENT_CHECK(classof(CustomJSONData::CustomNoteData * ), beatmapObjectData->klass)) {
                         debugSpamLog(contextLogger, "Custom note %s", il2cpp_utils::ClassStandardName(beatmapObjectData->klass).c_str());
-                        auto *customBeatmapEvent = reinterpret_cast<CustomJSONData::CustomNoteData *>(beatmapObjectData);
+                        auto *customBeatmapEvent = il2cpp_utils::cast<CustomJSONData::CustomNoteData>(beatmapObjectData);
 
                         dynData = customBeatmapEvent->customData->value;
 
@@ -56,7 +56,7 @@ void Chroma::ChromaObjectDataManager::deserialize(GlobalNamespace::IReadonlyBeat
                     } else if (ASSIGNMENT_CHECK(classof(CustomJSONData::CustomObstacleData * ),
                                                 beatmapObjectData->klass)) {
                         debugSpamLog(contextLogger, "Custom obstacle");
-                        auto *customBeatmapEvent = reinterpret_cast<CustomJSONData::CustomObstacleData *>(beatmapObjectData);
+                        auto *customBeatmapEvent = il2cpp_utils::cast<CustomJSONData::CustomObstacleData>(beatmapObjectData);
 
                         dynData = customBeatmapEvent->customData->value;
 
@@ -68,7 +68,7 @@ void Chroma::ChromaObjectDataManager::deserialize(GlobalNamespace::IReadonlyBeat
                     } else if (ASSIGNMENT_CHECK(classof(CustomJSONData::CustomWaypointData * ),
                                                 beatmapObjectData->klass)) {
                         debugSpamLog(contextLogger, "Custom waypoint");
-                        auto *customBeatmapEvent = reinterpret_cast<CustomJSONData::CustomWaypointData *>(beatmapObjectData);
+                        auto *customBeatmapEvent = il2cpp_utils::cast<CustomJSONData::CustomWaypointData>(beatmapObjectData);
 
                         // TODO: uncomment when CJD adds customData
 //                    bool isCustomData = customBeatmapEvent->customData && customBeatmapEvent->customData->value &&

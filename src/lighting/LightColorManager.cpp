@@ -34,10 +34,8 @@ void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, B
 
 
     auto chromaData = std::static_pointer_cast<ChromaLightEventData>(chromaIt->second);
-    if (ASSIGNMENT_CHECK(classof(LightSwitchEventEffect *), monobehaviour->klass)) {
-        auto *lightSwitchEventEffect = reinterpret_cast<LightSwitchEventEffect *>(monobehaviour);
-
-
+    auto lightSwitchEventEffect = il2cpp_utils::try_cast<LightSwitchEventEffect>(monobehaviour);
+    if (lightSwitchEventEffect) {
         auto lightMember = chromaData->LightID;
         if (lightMember) {
             debugSpamLog(contextLogger, "JSON data 2");
@@ -85,7 +83,7 @@ void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, B
             rapidjson::Value& propIDData = *propMember;
 
             std::unordered_map<int, std::vector<ILightWithId *>> lights = LightColorizer::GetLightsPropagationGrouped(
-                    lightSwitchEventEffect);
+                    *lightSwitchEventEffect);
             int lightCount = lights.size();
 
             debugSpamLog(contextLogger, "Prop id data is");

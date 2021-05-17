@@ -25,12 +25,12 @@ void SceneTransitionHelper::Patch(GlobalNamespace::IDifficultyBeatmap* customBea
     bool chromaRequirement = SceneTransitionHelper::BasicPatch(customBeatmapData);
     if (chromaRequirement && getChromaConfig().environmentEnhancementsEnabled.GetValue() && customBeatmapData)
     {
-        auto il2cppObject = reinterpret_cast<Il2CppObject*>(customBeatmapData);
-        if (ASSIGNMENT_CHECK(classof(CustomJSONData::CustomBeatmapData*), il2cppObject->klass)) {
-            auto customBeatmapDataCustom = reinterpret_cast<CustomJSONData::CustomBeatmapData *>(customBeatmapData);
+        auto customBeatmapDataCustom = il2cpp_utils::try_cast<CustomJSONData::CustomBeatmapData>(customBeatmapData);
+        if (customBeatmapDataCustom) {
 
-            if (customBeatmapDataCustom->customData) {
-                auto dynData = customBeatmapDataCustom->customData->value;
+
+            if ((*customBeatmapDataCustom)->customData) {
+                auto dynData = (*customBeatmapDataCustom)->customData->value;
 
                 if (dynData) {
                     auto it = dynData.value().get().FindMember(ENVIRONMENT);

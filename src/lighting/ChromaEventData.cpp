@@ -32,19 +32,22 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
 
     static auto contextLogger = getLogger().WithContext(ChromaLogger::ObjectDataDeserialize);
 
-    auto beatmapDataCast = reinterpret_cast<GlobalNamespace::BeatmapData*>(beatmapData);
-    auto beatmapEvents = reinterpret_cast<System::Collections::Generic::List_1<GlobalNamespace::BeatmapEventData*>*>(beatmapDataCast->get_beatmapEventsData());
+    auto beatmapDataCast = il2cpp_utils::cast<GlobalNamespace::BeatmapData>(beatmapData);
+    auto beatmapEvents = il2cpp_utils::cast<System::Collections::Generic::List_1<GlobalNamespace::BeatmapEventData*>>(beatmapDataCast->get_beatmapEventsData());
 
     for (int i = 0; i < beatmapEvents->items->Length(); i++) {
         auto beatmapEventData = beatmapEvents->items->get(i);
-        if (beatmapEventData && ASSIGNMENT_CHECK(classof(CustomJSONData::CustomBeatmapEventData *), beatmapEventData->klass)) {
+
+
+        auto customBeatmapEvent = il2cpp_utils::try_cast<CustomJSONData::CustomBeatmapEventData>(beatmapEventData);
+        if (customBeatmapEvent) {
             std::shared_ptr<ChromaEventData> chromaEventData;
 
-            auto *customBeatmapEvent = reinterpret_cast<CustomJSONData::CustomBeatmapEventData *>(beatmapEventData);
 
-            std::optional<std::reference_wrapper<rapidjson::Value>> optionalDynData = customBeatmapEvent->customData->value;
 
-            switch ((int) customBeatmapEvent->type) {
+            std::optional<std::reference_wrapper<rapidjson::Value>> optionalDynData = (*customBeatmapEvent)->customData->value;
+
+            switch ((int) (*customBeatmapEvent)->type) {
                 case 0:
                 case 1:
                 case 2:

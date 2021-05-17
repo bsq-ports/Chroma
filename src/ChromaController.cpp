@@ -56,8 +56,8 @@ custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(Global
     co_yield reinterpret_cast<enumeratorT *>(CRASH_UNLESS(il2cpp_utils::New<UnityEngine::WaitForEndOfFrame *>()));
 
     Chroma::ChromaController::BeatmapObjectSpawnController = beatmapObjectSpawnController;
-    auto *beatmapObjectManager = reinterpret_cast<BeatmapObjectManager *>(beatmapObjectSpawnController->beatmapObjectSpawner);
-    BeatmapObjectCallbackController *coreSetup = reinterpret_cast<BeatmapObjectCallbackController *>(beatmapObjectSpawnController->beatmapObjectCallbackController);
+    auto *beatmapObjectManager = il2cpp_utils::cast<BeatmapObjectManager *>(beatmapObjectSpawnController->beatmapObjectSpawner);
+    BeatmapObjectCallbackController *coreSetup = il2cpp_utils::cast<BeatmapObjectCallbackController>(beatmapObjectSpawnController->beatmapObjectCallbackController);
     Chroma::ChromaController::IAudioTimeSource = coreSetup->audioTimeSource;
 
     IReadonlyBeatmapData *beatmapData = coreSetup->beatmapData;
@@ -69,11 +69,11 @@ custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(Global
     }
 
     if (DoChromaHooks() && getChromaConfig().environmentEnhancementsEnabled.GetValue()) {
-        auto customBeatmap = reinterpret_cast<CustomJSONData::CustomBeatmapData *>(beatmapData);
+        auto customBeatmap = il2cpp_utils::cast<CustomJSONData::CustomBeatmapData>(beatmapData);
         EnvironmentEnhancementManager::Init(customBeatmap, beatmapObjectSpawnController->get_noteLinesDistance());
     }
 
-    auto list = reinterpret_cast<Generic::List_1<BeatmapEventData *> *>(beatmapData->get_beatmapEventsData());
+    auto list = il2cpp_utils::cast<Generic::List_1<BeatmapEventData *>>(beatmapData->get_beatmapEventsData());
     std::vector<GlobalNamespace::BeatmapEventData*> eventData;
     list->items->copy_to(eventData);
 
