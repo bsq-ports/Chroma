@@ -3,6 +3,7 @@
 void Chroma::InstallHooks() {
     Hooks::BeatEffectSpawner();
     Hooks::BeatmapDataTransformHelper();
+    Hooks::BeatmapObjectManager();
     Hooks::BeatmapObjectSpawnController();
     Hooks::BombNoteController();
     Hooks::ColorManager();

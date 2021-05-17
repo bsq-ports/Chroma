@@ -38,6 +38,7 @@ namespace Chroma {
     namespace Hooks {
         void BeatEffectSpawner();
         void BeatmapDataTransformHelper();
+        void BeatmapObjectManager();
         void BeatmapObjectSpawnController();
         void BombNoteController();
         void ColorManager();

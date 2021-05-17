@@ -37,20 +37,10 @@ using namespace UnityEngine;
 using namespace System::Collections;
 using namespace custom_types::Helpers;
 
-static bool hookInstalled = false;
-
 bool ChromaController::ChromaLegacy = false;
 bool ChromaController::TutorialMode = false;
 
-MAKE_HOOK_OFFSETLESS(ChromaController_NoteCutEvent, void, BeatmapObjectManager *self, NoteController *noteController,
-                     NoteCutInfo *noteCutInfo) {
-    if (!ChromaController::DoChromaHooks()) {
-        ChromaController_NoteCutEvent(self, noteController, noteCutInfo);
-        return;
-    }
-    NoteColorizer::ColorizeSaber(noteController, noteCutInfo);
-    ChromaController_NoteCutEvent(self, noteController, noteCutInfo);
-}
+
 
 custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnController *beatmapObjectSpawnController) {
     co_yield reinterpret_cast<enumeratorT *>(CRASH_UNLESS(il2cpp_utils::New<UnityEngine::WaitForEndOfFrame *>()));
@@ -60,12 +50,6 @@ custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(Global
     Chroma::ChromaController::IAudioTimeSource = coreSetup->audioTimeSource;
 
     IReadonlyBeatmapData *beatmapData = coreSetup->beatmapData;
-
-    if (!hookInstalled) {
-        INSTALL_HOOK_OFFSETLESS(getLogger(), ChromaController_NoteCutEvent,
-                                il2cpp_utils::FindMethodUnsafe("", "BeatmapObjectManager", "HandleNoteControllerNoteWasCut", 2));
-        hookInstalled = true;
-    }
 
     if (DoChromaHooks() && getChromaConfig().environmentEnhancementsEnabled.GetValue()) {
         auto customBeatmap = il2cpp_utils::cast<CustomJSONData::CustomBeatmapData>(beatmapData);
