@@ -442,12 +442,10 @@ namespace Chroma {
         auto p1 = il2cpp_utils::try_cast<ParticleSystemEventEffect>(lse);
         if (l1) {
 
-            lightMultSO =
-                    il2cpp_utils::cast<MultipliedColorSO>(il2cpp_utils::GetFieldValue<ColorSO *>(l1, id).value()); //l1.GetField<ColorSO, LightSwitchEventEffect>(id);
+            lightMultSO = il2cpp_utils::cast<MultipliedColorSO>(il2cpp_utils::GetFieldValue<ColorSO *>((*l1), id).value()); //l1.GetField<ColorSO, LightSwitchEventEffect>(id);
         } else if (p1) {
 
-            lightMultSO =
-                    il2cpp_utils::cast<MultipliedColorSO>(il2cpp_utils::GetFieldValue<ColorSO *>(p1, id).value()); //l1.GetField<ColorSO, LightSwitchEventEffect>(id);
+            lightMultSO = il2cpp_utils::cast<MultipliedColorSO>(il2cpp_utils::GetFieldValue<ColorSO *>((*p1), id).value()); //l1.GetField<ColorSO, LightSwitchEventEffect>(id);
         }
 
         UnityEngine::Color multiplierColor = lightMultSO->multiplierColor;

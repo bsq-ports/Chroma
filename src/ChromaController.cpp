@@ -56,7 +56,6 @@ custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(Global
     co_yield reinterpret_cast<enumeratorT *>(CRASH_UNLESS(il2cpp_utils::New<UnityEngine::WaitForEndOfFrame *>()));
 
     Chroma::ChromaController::BeatmapObjectSpawnController = beatmapObjectSpawnController;
-    auto *beatmapObjectManager = il2cpp_utils::cast<BeatmapObjectManager *>(beatmapObjectSpawnController->beatmapObjectSpawner);
     BeatmapObjectCallbackController *coreSetup = il2cpp_utils::cast<BeatmapObjectCallbackController>(beatmapObjectSpawnController->beatmapObjectCallbackController);
     Chroma::ChromaController::IAudioTimeSource = coreSetup->audioTimeSource;
 
