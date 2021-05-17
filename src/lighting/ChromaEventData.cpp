@@ -112,13 +112,13 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
                                 std::ref(propId->value));
                     }
 
-                    auto chromaLightEvent = new ChromaLightEventData();
+                    auto chromaLightEvent = std::make_shared<ChromaLightEventData>();
                     chromaLightEvent->LightID = lightIdOpt;
                     chromaLightEvent->PropID = propIdOpt;
                     chromaLightEvent->ColorData = ChromaUtilities::GetColorFromData(optionalDynData);
                     chromaLightEvent->GradientObject = gradientObject;
 
-                    chromaEventData = std::shared_ptr<ChromaLightEventData>(chromaLightEvent);
+                    chromaEventData = chromaLightEvent;
                     break;
                 }
                 case 8:
@@ -140,7 +140,7 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
                     auto propMult = getIfExistsFloat(optionalDynData, PROPMULT, 1.0f);
                     auto speedMult = getIfExistsFloat(optionalDynData, SPEEDMULT, 1.0f);
 
-                    auto chromaRingRotationEventData = new ChromaRingRotationEventData();
+                    auto chromaRingRotationEventData = std::make_shared<ChromaRingRotationEventData>();
 
                     chromaRingRotationEventData->NameFilter = NameFilter;
                     chromaRingRotationEventData->Direction = direction;
@@ -158,28 +158,28 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
                     chromaRingRotationEventData->SpeedMult = speedMult;
 
 
-                    chromaEventData = std::shared_ptr<ChromaRingRotationEventData>(chromaRingRotationEventData);
+                    chromaEventData = chromaRingRotationEventData;
 
                     break;
                 }
                 case 9: {
-                    auto chromaRingRotationEventData = new ChromaRingStepEventData();
+                    auto chromaRingRotationEventData = std::make_shared<ChromaRingStepEventData>();
 
                     chromaRingRotationEventData->Step = getIfExists<float>(optionalDynData, STEP);
 
-                    chromaEventData = std::shared_ptr<ChromaRingStepEventData>(chromaRingRotationEventData);
+                    chromaEventData = chromaRingRotationEventData;
                     break;
                 }
 
                 case 12:
                 case 13: {
-                    auto chromaLaserSpeedEventData = new ChromaLaserSpeedEventData();
+                    auto chromaLaserSpeedEventData = std::make_shared<ChromaLaserSpeedEventData>();
 
                     chromaLaserSpeedEventData->LockPosition = getIfExists<bool>(optionalDynData, LOCKPOSITION, false);
                     chromaLaserSpeedEventData->PreciseSpeed = getIfExistsFloat(optionalDynData, SPEED, getIfExistsFloat(optionalDynData, PRECISESPEED, (float) beatmapEventData->value));
                     chromaLaserSpeedEventData->Direction = getIfExists(optionalDynData, DIRECTION, -1);
 
-                    chromaEventData = std::shared_ptr<ChromaLaserSpeedEventData>(chromaLaserSpeedEventData);
+                    chromaEventData = chromaLaserSpeedEventData;
                     break;
                 }
                 default:

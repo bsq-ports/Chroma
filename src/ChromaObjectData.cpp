@@ -32,7 +32,7 @@ void Chroma::ChromaObjectDataManager::deserialize(GlobalNamespace::IReadonlyBeat
                 auto beatmapObjectData = beatmapLineData->beatmapObjectsData->items->get(j);
 
                 if (beatmapObjectData) {
-                    std::shared_ptr<ChromaObjectData> chromaObjectData(nullptr);
+                    std::shared_ptr<ChromaObjectData> chromaObjectData;
 
                     std::optional<std::reference_wrapper<rapidjson::Value>> dynData;
 
@@ -42,7 +42,7 @@ void Chroma::ChromaObjectDataManager::deserialize(GlobalNamespace::IReadonlyBeat
 
                         dynData = customBeatmapEvent->customData->value;
 
-                        auto *data = new ChromaNoteData();
+                        auto data = std::make_shared<ChromaNoteData>();
                         debugSpamLog(contextLogger, "Color");
                         data->Color = ChromaUtilities::GetColorFromData(dynData);
                         if (dynData)
@@ -52,7 +52,7 @@ void Chroma::ChromaObjectDataManager::deserialize(GlobalNamespace::IReadonlyBeat
                         data->DisableSpawnEffect = getIfExists<bool>(dynData, DISABLESPAWNEFFECT);
 
                         debugSpamLog(contextLogger,"Shared ptr custom note");
-                        chromaObjectData = std::shared_ptr<ChromaNoteData>(data);
+                        chromaObjectData = data;
                     } else if (ASSIGNMENT_CHECK(classof(CustomJSONData::CustomObstacleData * ),
                                                 beatmapObjectData->klass)) {
                         debugSpamLog(contextLogger, "Custom obstacle");
@@ -60,27 +60,27 @@ void Chroma::ChromaObjectDataManager::deserialize(GlobalNamespace::IReadonlyBeat
 
                         dynData = customBeatmapEvent->customData->value;
 
-                        auto *data = new ChromaObjectData();
+                        auto data = std::make_shared<ChromaObjectData>();
 
                         data->Color = ChromaUtilities::GetColorFromData(dynData);
 
-                        chromaObjectData = std::shared_ptr<ChromaObjectData>(data);
+                        chromaObjectData = data;
                     } else if (ASSIGNMENT_CHECK(classof(CustomJSONData::CustomWaypointData * ),
                                                 beatmapObjectData->klass)) {
                         debugSpamLog(contextLogger, "Custom waypoint");
                         auto *customBeatmapEvent = il2cpp_utils::cast<CustomJSONData::CustomWaypointData>(beatmapObjectData);
 
                         // TODO: uncomment when CJD adds customData
-//                    bool isCustomData = customBeatmapEvent->customData && customBeatmapEvent->customData->value &&
-//                                        customBeatmapEvent->customData->value->IsObject();
-//                    dynData = isCustomData ? customBeatmapEvent->customData->value : nullptr;
+                        // bool isCustomData = customBeatmapEvent->customData && customBeatmapEvent->customData->value &&
+                        //                customBeatmapEvent->customData->value->IsObject();
+                        // dynData = isCustomData ? customBeatmapEvent->customData->value : nullptr;
 
-                        auto *data = new ChromaObjectData();
+                        auto data = std::make_shared<ChromaObjectData>();
 
                         data->Color = std::nullopt;
 
 
-                        chromaObjectData = std::shared_ptr<ChromaObjectData>(data);
+                        chromaObjectData = data;
                     } else continue;
 
                     // TODO: Do Noodle stuff here
