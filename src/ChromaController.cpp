@@ -88,7 +88,7 @@ void ChromaController::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene 
     getLogger().debug("Clear scene");
 
     if (current && current.IsValid() && to_utf8(csstrtostr(current.get_name())) == "GameCore") {
-        RingManagers.clear();
+        TrackLaneRingsManagerHolder::RingManagers.clear();
         LightColorizer::ClearLSEColorManagers();
         ObstacleColorizer::ClearOCColorManagers();
         BombColorizer::ClearBNCColorManagers();

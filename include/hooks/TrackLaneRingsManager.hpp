@@ -3,5 +3,8 @@
 #include "GlobalNamespace/TrackLaneRingsManager.hpp"
 
 namespace Chroma {
-    inline std::vector<GlobalNamespace::TrackLaneRingsManager*> RingManagers;
+    class TrackLaneRingsManagerHolder {
+    public:
+        static std::vector<GlobalNamespace::TrackLaneRingsManager *> RingManagers;
+    };
 }

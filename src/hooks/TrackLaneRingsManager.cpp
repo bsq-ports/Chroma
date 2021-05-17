@@ -9,6 +9,8 @@
 
 using namespace Chroma;
 
+std::vector<GlobalNamespace::TrackLaneRingsManager*> TrackLaneRingsManagerHolder::RingManagers = std::vector<GlobalNamespace::TrackLaneRingsManager*>();
+
 MAKE_HOOK_OFFSETLESS(TrackLaneRingsManager_Awake, void, GlobalNamespace::TrackLaneRingsManager* self) {
     // Do nothing if Chroma shouldn't run
     if (!ChromaController::DoChromaHooks()) {
@@ -21,7 +23,7 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRingsManager_Awake, void, GlobalNamespace::TrackLa
     }
 
     TrackLaneRingsManager_Awake(self);
-    RingManagers.push_back(self);
+    TrackLaneRingsManagerHolder::RingManagers.push_back(self);
 }
 
 void Hooks::TrackLaneRingsManager() {

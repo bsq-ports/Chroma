@@ -3,18 +3,22 @@
 #include "lighting/environment_enhancements/EnvironmentEnhancementManager.hpp"
 #include "colorizer/LightColorizer.hpp"
 #include "hooks/TrackLaneRingsManager.hpp"
+#include "lighting/ChromaRingsRotationEffect.hpp"
 
 #include "GlobalNamespace/LightWithIdMonoBehaviour.hpp"
 #include "GlobalNamespace/LightWithIds.hpp"
 #include "GlobalNamespace/TrackLaneRing.hpp"
 #include "GlobalNamespace/TrackLaneRingsManager.hpp"
+#include "GlobalNamespace/TrackLaneRingsPositionStepEffectSpawner.hpp"
+#include "GlobalNamespace/TrackLaneRingsRotationEffectSpawner.hpp"
+#include "GlobalNamespace/TrackLaneRingsRotationEffect.hpp"
 #include "GlobalNamespace/Spectrogram.hpp"
 #include "GlobalNamespace/LightRotationEventEffect.hpp"
 #include "GlobalNamespace/LightPairRotationEventEffect.hpp"
 #include "GlobalNamespace/ParticleSystemEventEffect.hpp"
 #include "GlobalNamespace/Mirror.hpp"
 #include "GlobalNamespace/MirrorRendererSO.hpp"
-#include "GlobalNamespace/TrackLaneRingsRotationEffect.hpp"
+
 
 
 #include "UnityEngine/Vector3.hpp"
@@ -27,41 +31,52 @@
 
 #include "beatsaber-hook/shared/utils/il2cpp-utils.hpp"
 
+#include <functional>
+
 
 using namespace GlobalNamespace;
 using namespace Chroma;
 
+template <typename T>
+void GetComponentAndOriginal(UnityEngine::Transform*& root, UnityEngine::Transform*& original, std::function < void(T*, T*)> initializeDelegate) {
+    Array<T*>* rootComponents = root->GetComponents<T*>();
+    Array<T*>* originalComponents = original->GetComponents<T*>();
+
+    for (int i = 0; i < rootComponents->Length(); i++)
+    {
+        initializeDelegate(rootComponents->get(i), originalComponents->get(i));
+
+        if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue())
+        {
+            getLogger().info("Initialized %s", il2cpp_utils::ClassStandardName(classof(T*)).c_str());
+        }
+    }
+}
+
 void
 Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root, UnityEngine::Transform *original, std::vector<GameObjectInfo> gameObjectInfos, std::vector<std::shared_ptr<IComponentData>>& componentDatas) {
-    auto lightWithIdMonoBehaviour = root->GetComponent<LightWithIdMonoBehaviour*>();
-    if (lightWithIdMonoBehaviour != nullptr)
-    {
-        auto originalLight = original->GetComponent<LightWithIdMonoBehaviour*>();
-        lightWithIdMonoBehaviour->lightManager = originalLight->lightManager;
-        LightColorizer::RegisterLight(lightWithIdMonoBehaviour);
-    }
+    GetComponentAndOriginal<LightWithIdMonoBehaviour>(root, original, [=](LightWithIdMonoBehaviour* rootComponent, LightWithIdMonoBehaviour* originalComponent) {
+        rootComponent->lightManager = originalComponent->lightManager;
+        LightColorizer::RegisterLight(rootComponent);
+    });
 
-    auto lightWithIds = root->GetComponent<LightWithIds*>();
-    if (lightWithIds != nullptr)
-    {
-        auto originalLight = original->GetComponent<LightWithIds*>();
-        lightWithIdMonoBehaviour->lightManager = originalLight->lightManager;
-        LightColorizer::RegisterLight(lightWithIds);
-    }
+    GetComponentAndOriginal<LightWithIds>(root, original, [=](LightWithIds* rootComponent, LightWithIds* originalComponent) {
+        rootComponent->lightManager = originalComponent->lightManager;
+        LightColorizer::RegisterLight(rootComponent);
+    });
 
-    auto trackLaneRing = root->GetComponent<TrackLaneRing*>();
-    if (trackLaneRing != nullptr)
-    {
-        auto originalRing = original->GetComponent<TrackLaneRing*>();
-
-        auto ringIt = EnvironmentEnhancementManager::RingRotationOffsets.find(originalRing);
+    GetComponentAndOriginal<TrackLaneRing>(root, original, [=](TrackLaneRing* rootComponent, TrackLaneRing* originalComponent) {
+        auto ringIt = EnvironmentEnhancementManager::RingRotationOffsets.find(originalComponent);
 
         if (ringIt != EnvironmentEnhancementManager::RingRotationOffsets.end())
-            EnvironmentEnhancementManager::RingRotationOffsets[trackLaneRing] = ringIt->second;
+            EnvironmentEnhancementManager::RingRotationOffsets[rootComponent] = ringIt->second;
 
+        rootComponent->transform = root;
+        rootComponent->positionOffset = originalComponent->positionOffset;
+        rootComponent->posZ = originalComponent->posZ;
 
         TrackLaneRingsManager* managerToAdd;
-        for (auto& manager : RingManagers) {
+        for (auto& manager : Chroma::TrackLaneRingsManagerHolder::RingManagers) {
 
             std::optional<std::shared_ptr<TrackLaneRingsManagerComponentData>> componentData;
             for (auto& componentDataC : componentDatas) {
@@ -81,7 +96,7 @@ Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root,
                 auto managerRef = manager;
 
                 auto rings = managerRef->rings;
-                if (rings->Contains(originalRing))
+                if (rings->Contains(originalComponent))
                     managerToAdd = manager;
             }
 
@@ -90,94 +105,98 @@ Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root,
 
                 std::vector<GlobalNamespace::TrackLaneRing *> newRingList(rings->Length() + 1); // + 1 for the element we'll add
                 rings->copy_to(newRingList);
-                newRingList.push_back(trackLaneRing);
+                newRingList.push_back(originalComponent);
                 auto newRingArray = il2cpp_utils::vectorToArray(newRingList);
                 managerToAdd->rings = newRingArray;
-
-                if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {
-                    getLogger().info("Initialized TrackLaneRing");
-                }
-
                 break;
-
             }
         }
-    }
+    });
 
-    auto spectrogram = root->GetComponent<GlobalNamespace::Spectrogram*>();
-    if (spectrogram != nullptr)
-    {
-        auto originalSpectrogram = original->GetComponent<GlobalNamespace::Spectrogram*>();
+    GetComponentAndOriginal<TrackLaneRingsPositionStepEffectSpawner>(root, original, [=](TrackLaneRingsPositionStepEffectSpawner* rootComponent, TrackLaneRingsPositionStepEffectSpawner* originalComponent) {
+        for (auto& manager : TrackLaneRingsManagerHolder::RingManagers) {
+            std::optional<std::shared_ptr<TrackLaneRingsManagerComponentData>> componentData;
+            for (auto& componentDataC : componentDatas) {
+                if (componentDataC->getComponentType() == ComponentType::TrackLaneRingsManager) {
+                    auto trackLaneData = std::static_pointer_cast<TrackLaneRingsManagerComponentData>(componentDataC);
 
-        spectrogram->spectrogramData = originalSpectrogram->spectrogramData;
+                    if (trackLaneData->OldTrackLaneRingsManager == manager) {
+                        componentData = std::make_optional(trackLaneData);
+                        break;
+                    }
+                }
+            }
 
+            if (componentData) {
+                rootComponent->trackLaneRingsManager = componentData.value()->NewTrackLaneRingsManager;
 
-        if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {
-            getLogger().info("Initialized Spectrogram");
+                break;
+            }
         }
-    }
+    });
 
-    auto lightRotationEvent = root->GetComponent<LightRotationEventEffect*>();
-    if (lightRotationEvent != nullptr)
-    {
-        auto originalLightRotationEvent = original->GetComponent<LightRotationEventEffect*>();
+    GetComponentAndOriginal<ChromaRingsRotationEffect>(root, original, [=](ChromaRingsRotationEffect* rootComponent, ChromaRingsRotationEffect* originalComponent) {
+        for (auto& manager : TrackLaneRingsManagerHolder::RingManagers) {
+            std::optional<std::shared_ptr<TrackLaneRingsManagerComponentData>> componentData;
+            for (auto& componentDataC : componentDatas) {
+                if (componentDataC->getComponentType() == ComponentType::TrackLaneRingsManager) {
+                    auto trackLaneData = std::static_pointer_cast<TrackLaneRingsManagerComponentData>(componentDataC);
 
-        lightRotationEvent->beatmapObjectCallbackController = originalLightRotationEvent->beatmapObjectCallbackController;
+                    if (trackLaneData->OldTrackLaneRingsManager == manager) {
+                        componentData = std::make_optional(trackLaneData);
+                        break;
+                    }
+                }
+            }
 
-        if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {
-            getLogger().info("Initialized LightRotationEventEffect");
+            if (componentData) {
+                rootComponent->SetNewRingManager(componentData.value()->NewTrackLaneRingsManager);
+
+                break;
+            }
         }
-    }
+    });
 
-    auto lightPairRotationEvent = root->GetComponent<LightPairRotationEventEffect*>();
-    if (lightPairRotationEvent != nullptr)
-    {
-        auto originalLightPairRotationEvent = original->GetComponent<LightPairRotationEventEffect*>();
 
-        lightPairRotationEvent->beatmapObjectCallbackController = originalLightPairRotationEvent->beatmapObjectCallbackController;
+    GetComponentAndOriginal<TrackLaneRingsRotationEffectSpawner>(root, original, [=](TrackLaneRingsRotationEffectSpawner* rootComponent, TrackLaneRingsRotationEffectSpawner* originalComponent) {
+        rootComponent->beatmapObjectCallbackController = originalComponent->beatmapObjectCallbackController;
+        rootComponent->trackLaneRingsRotationEffect = rootComponent->GetComponent<ChromaRingsRotationEffect*>();
+    });
 
-        auto transformL = originalLightPairRotationEvent->transformL;
-        auto transformR = originalLightPairRotationEvent->transformR;
+    GetComponentAndOriginal<Spectrogram>(root, original, [=](Spectrogram* rootComponent, Spectrogram* originalComponent) {
+        rootComponent->spectrogramData = originalComponent->spectrogramData;
+    });
 
-        lightPairRotationEvent->transformL = root->GetChild(transformL->GetSiblingIndex());
-        lightPairRotationEvent->transformR = root->GetChild(transformR->GetSiblingIndex());
+    GetComponentAndOriginal<LightRotationEventEffect>(root, original, [=](LightRotationEventEffect* rootComponent, LightRotationEventEffect* originalComponent) {
+        rootComponent->beatmapObjectCallbackController = originalComponent->beatmapObjectCallbackController;
+    });
+
+    GetComponentAndOriginal<LightPairRotationEventEffect>(root, original, [=](LightPairRotationEventEffect* rootComponent, LightPairRotationEventEffect* originalComponent) {
+        rootComponent->beatmapObjectCallbackController = originalComponent->beatmapObjectCallbackController;
+
+        auto transformL = originalComponent->transformL;
+        auto transformR = originalComponent->transformR;
+
+        rootComponent->transformL = root->GetChild(transformL->GetSiblingIndex());
+        rootComponent->transformR = root->GetChild(transformR->GetSiblingIndex());
 
 
         // We have to enable the object to tell unity to run Start
-        lightPairRotationEvent->set_enabled(true);
+        rootComponent->set_enabled(true);
+    });
 
 
-        if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {
-            getLogger().info("Initialized LightPairRotationEventEffect");
-        }
-    }
+    GetComponentAndOriginal<ParticleSystemEventEffect>(root, original, [=](ParticleSystemEventEffect* rootComponent, ParticleSystemEventEffect* originalComponent) {
+        rootComponent->beatmapObjectCallbackController = originalComponent->beatmapObjectCallbackController;
+        rootComponent->particleSystem = root->GetComponent<UnityEngine::ParticleSystem*>();
 
-    auto particleSystemEvent = root->GetComponent<ParticleSystemEventEffect*>();
-    if (particleSystemEvent != nullptr)
-    {
-        auto originalParticleSystemEvent = original->GetComponent<ParticleSystemEventEffect*>();
+        rootComponent->set_enabled(true);
+    });
 
-        particleSystemEvent->beatmapObjectCallbackController = originalParticleSystemEvent->beatmapObjectCallbackController;
-        particleSystemEvent->particleSystem = root->GetComponent<UnityEngine::ParticleSystem*>();
-
-        particleSystemEvent->set_enabled(true);
-
-        if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {
-            getLogger().info("Initialized ParticleSystemEventEffect");
-        }
-    }
-
-    auto mirror = root->GetComponent<Mirror*>();
-    if (mirror != nullptr)
-    {
-        mirror->mirrorRenderer = UnityEngine::Object::Instantiate(mirror->mirrorRenderer);
-        mirror->mirrorMaterial = UnityEngine::Object::Instantiate(mirror->mirrorMaterial);
-
-
-        if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {
-            getLogger().info("Initialized Mirror");
-        }
-    }
+    GetComponentAndOriginal<Mirror>(root, original, [=](Mirror* rootComponent, Mirror* originalComponent) {
+        rootComponent->mirrorRenderer = UnityEngine::Object::Instantiate(originalComponent->mirrorRenderer);
+        rootComponent->mirrorMaterial = UnityEngine::Object::Instantiate(originalComponent->mirrorMaterial);
+    });
 
     GameObjectInfo gameObjectInfo = GameObjectInfo(root->get_gameObject());
     gameObjectInfos.push_back(gameObjectInfo);
