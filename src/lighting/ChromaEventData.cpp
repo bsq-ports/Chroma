@@ -36,7 +36,7 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
     auto beatmapEvents = reinterpret_cast<System::Collections::Generic::List_1<GlobalNamespace::BeatmapEventData*>*>(beatmapDataCast->get_beatmapEventsData());
 
     for (int i = 0; i < beatmapEvents->items->Length(); i++) {
-        auto beatmapEventData = beatmapEvents->items->values[i];
+        auto beatmapEventData = beatmapEvents->items->get(i);
         if (beatmapEventData && ASSIGNMENT_CHECK(classof(CustomJSONData::CustomBeatmapEventData *), beatmapEventData->klass)) {
             std::shared_ptr<ChromaEventData> chromaEventData;
 

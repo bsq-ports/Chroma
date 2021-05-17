@@ -13,15 +13,15 @@
     "libcustom-json-data.so"
   ],
   "libraryFiles": [
-    "libbeatsaber-hook_1_3_3.so",
+    "libbeatsaber-hook_1_3_5.so",
     "libquestui.so",
     "libcustom-types.so"
   ],
   "dependencies": [
     {
       "id": "codegen",
-      "version": ">=0.7.2",
-      "downloadIfMissing": "https://cdn.discordapp.com/attachments/769457887415894036/831983629366329414/codegen_0_7_2.qmod"
+      "version": "^0.8.1",
+      "downloadIfMissing": "https://cdn.discordapp.com/attachments/769457887415894036/837780420811816987/codegen_0_8_1.qmod"
     }
   ]
 }

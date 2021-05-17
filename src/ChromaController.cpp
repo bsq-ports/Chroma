@@ -75,10 +75,7 @@ custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(Global
 
     auto list = reinterpret_cast<Generic::List_1<BeatmapEventData *> *>(beatmapData->get_beatmapEventsData());
     std::vector<GlobalNamespace::BeatmapEventData*> eventData;
-
-    for (int i = 0; i < list->items->Length(); i++) {
-        eventData.emplace_back(list->items->values[i]);
-    }
+    list->items->copy_to(eventData);
 
     // please let me kill legacy
     LegacyLightHelper::Activate(eventData);
@@ -102,10 +99,10 @@ void ChromaController::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene 
 
 bool ChromaController::ChromaRequired() {
     // 1 is true
-    auto reqVar = getenv("req_Chroma");
-    auto sugVar = getenv("sug_Chroma");
+    std::string reqVar = getenv("req_Chroma");
+    std::string sugVar = getenv("sug_Chroma");
 
-    return !TutorialMode && (true || (reqVar && strcmp(reqVar, "1") == 0) || (sugVar && strcmp(sugVar, "1") == 0));
+    return !TutorialMode && (true || (reqVar == "1") || (sugVar == "1"));
 }
 
 bool ChromaController::DoColorizerSabers() {

@@ -88,18 +88,11 @@ Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root,
             if (managerToAdd) {
                 auto rings = managerToAdd->rings;
 
-
-                System::Collections::Generic::List_1<GlobalNamespace::TrackLaneRing *> *newRingList = System::Collections::Generic::List_1<GlobalNamespace::TrackLaneRing *>::New_ctor();
-
-                if (rings) {
-                    for (int i = 0; i < rings->Length(); i++) {
-                        newRingList->Add(rings->values[i]);
-                    }
-                }
-
-                newRingList->Add(trackLaneRing);
-
-                managerToAdd->rings = newRingList->ToArray();
+                std::vector<GlobalNamespace::TrackLaneRing *> newRingList(rings->Length() + 1); // + 1 for the element we'll add
+                rings->copy_to(newRingList);
+                newRingList.push_back(trackLaneRing);
+                auto newRingArray = il2cpp_utils::vectorToArray(newRingList);
+                managerToAdd->rings = newRingArray;
 
                 if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {
                     getLogger().info("Initialized TrackLaneRing");

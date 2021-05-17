@@ -156,6 +156,11 @@ std::shared_ptr<NoteColorizer::CNVColorManager> NoteColorizer::CNVColorManager::
     std::shared_ptr<CNVColorManager> cnvColorManager = GetCNVColorManager(nc);
     if (cnvColorManager != nullptr)
     {
+
+        // Theoretically, this should never be called
+        //        CRASH_UNLESS(false);
+        // However it does and I can't wonder why,
+        // TODO: gotta fix Aero's NoteColorizer for them
         if (ASSIGNMENT_CHECK(classof(CustomJSONData::CustomNoteData*), nc->noteData->klass)) {
             auto *customData = reinterpret_cast<CustomNoteData *>(nc->noteData);
             cnvColorManager->_noteData = customData;
@@ -233,7 +238,7 @@ void NoteColorizer::CNVColorManager::SetActiveColors() {
     Array<MaterialPropertyBlockController *> *materialPropertyBlockControllers = colorNoteVisuals->materialPropertyBlockControllers;
     for (int i = 0; i < materialPropertyBlockControllers->Length(); i++)
     {
-        auto *materialPropertyBlockController = materialPropertyBlockControllers->values[i];
+        auto *materialPropertyBlockController = materialPropertyBlockControllers->get(i);
         materialPropertyBlockController->materialPropertyBlock->SetColor(_colorID, noteColor);
         materialPropertyBlockController->ApplyChanges();
     }

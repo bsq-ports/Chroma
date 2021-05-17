@@ -47,10 +47,10 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRingsPositionStepEffectSpawner_HandleBeatmapObject
 
     self->prevWasMinStep = !self->prevWasMinStep;
     auto rings = self->trackLaneRingsManager->rings;
-    for (int i = 0; i < rings->get_Length(); i++)
+    for (int i = 0; i < rings->Length(); i++)
     {
         float destPosZ = (float)i * num;
-        rings->values[i]->SetPosition(destPosZ, self->moveSpeed);
+        rings->get(i)->SetPosition(destPosZ, self->moveSpeed);
     }
 
 }

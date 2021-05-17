@@ -81,7 +81,7 @@ void EnvironmentEnhancementManager::GetAllGameObjects() {
 
 
     for (int i = 0; i < gameObjects->Length(); i++) {
-        auto gameObject = gameObjects->values[i];
+        auto gameObject = gameObjects->get(i);
 
         if (gameObject) {
             auto sceneName = gameObject->get_scene().get_name();
@@ -148,11 +148,11 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                 std::transform(lookupString.begin(), lookupString.end(), lookupString.begin(), ::tolower);
                 LookupMethod lookupMethod;
 
-                if (strcmp(lookupString.c_str(), "regex") == 0) {
+                if (lookupString == "regex") {
                     lookupMethod = LookupMethod::Regex;
-                } else if (strcmp(lookupString.c_str(), "exact") == 0) {
+                } else if (lookupString == "exact") {
                     lookupMethod = LookupMethod::Exact;
-                } else if (strcmp(lookupString.c_str(), "contains") == 0) {
+                } else if (lookupString == "contains") {
                     lookupMethod = LookupMethod::Contains;
                 }
 

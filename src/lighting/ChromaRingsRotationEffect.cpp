@@ -68,7 +68,7 @@ void ChromaRingsRotationEffect::FixedUpdate() {
             int length = rings->Length();
 
             while ((float) num < progressPos && num < length) {
-                rings->values[num]->SetDestRotation(
+                rings->get(num)->SetDestRotation(
                         ringRotationEffect->RotationAngle + ((float) num * ringRotationEffect->RotationStep),
                         ringRotationEffect->RotationFlexySpeed);
                 num++;
@@ -103,9 +103,9 @@ void ChromaRingsRotationEffect::RecycleRingRotationEffect(ChromaRotationEffect* 
 }
 
 float ChromaRingsRotationEffect::GetFirstRingRotationAngle() {
-    return _trackLaneRingsManager->rings->values[0]->GetRotation();
+    return _trackLaneRingsManager->rings->get(0)->GetRotation();
 }
 
 float ChromaRingsRotationEffect::GetFirstRingDestinationRotationAngle() {
-    return _trackLaneRingsManager->rings->values[0]->GetDestinationRotation();
+    return _trackLaneRingsManager->rings->get(0)->GetDestinationRotation();
 }

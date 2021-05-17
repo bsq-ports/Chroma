@@ -25,15 +25,15 @@ void Chroma::LegacyEnvironmentRemoval::Init(CustomJSONData::CustomBeatmapData* c
             auto gameObjects = UnityEngine::Resources::FindObjectsOfTypeAll<UnityEngine::GameObject*>();
 
             for (auto& oValue : objectsToKill) {
-                auto s = oValue.value.GetString();
-                if (strcmp(s, "TrackLaneRing") == 0 || strcmp(s, "BigTrackLaneRing") == 0) {
+                std::string s = oValue.value.GetString();
+                if (s == "TrackLaneRing" || s == "BigTrackLaneRing") {
 
                     for (int i = 0; i < gameObjects->Length(); i++) {
-                        UnityEngine::GameObject *n = gameObjects->values[i];
+                        UnityEngine::GameObject *n = gameObjects->get(i);
 
                         auto nName = to_utf8(csstrtostr(n->get_name()));
                         if (nName.find(s) != std::string::npos) {
-                            if (strcmp(s, "TrackLaneRing") == 0 && nName.find("Big") != std::string::npos)
+                            if (s == "TrackLaneRing" && nName.find("Big") != std::string::npos)
                                 continue;
 
                             debugSpamLog(contextLogger, "Setting %s to disabled", nName.c_str());
@@ -43,7 +43,7 @@ void Chroma::LegacyEnvironmentRemoval::Init(CustomJSONData::CustomBeatmapData* c
 
                 } else {
                     for (int i = 0; i < gameObjects->Length(); i++) {
-                        UnityEngine::GameObject *n = gameObjects->values[i];
+                        UnityEngine::GameObject *n = gameObjects->get(i);
 
                         auto gStr = to_utf8(csstrtostr(n->get_name()));
 

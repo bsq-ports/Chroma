@@ -154,11 +154,11 @@ void LightColorizer::RegisterLight(UnityEngine::MonoBehaviour *lightWithId) {
 
 
         for (int i = 0; i < lightsWithIdArray->Length(); i++) {
-            auto light = reinterpret_cast<ILightWithId *>(lightsWithIdArray->values[i]);
+            auto light = reinterpret_cast<ILightWithId *>(lightsWithIdArray->get(i));
             auto manager = LSEColorManager::GetLSEColorManager((light->get_lightId() - 1)).front();
 
-            LightIDTableManager::RegisterIndex(light->get_lightId() - 1, manager->Lights.size());
-            manager->Lights[manager->Lights.size()] = light;
+            LightIDTableManager::RegisterIndex(light->get_lightId() - 1, (int) manager->Lights.size());
+            manager->Lights[(int) manager->Lights.size()] = light;
         }
 
     }
@@ -191,11 +191,11 @@ namespace Chroma {
             _supportBoostColor = true;
 
             auto lightManager = lse->lightManager;
-            System::Collections::Generic::List_1<GlobalNamespace::ILightWithId *> *lightList = lightManager->lights->values[lse->lightsID];
+            System::Collections::Generic::List_1<GlobalNamespace::ILightWithId *> *lightList = lightManager->lights->get(lse->lightsID);
             Array<ILightWithId *> *lightArray = lightList->items;
 
 
-            Lights = std::unordered_map<int, ILightWithId*>();
+            Lights = std::unordered_map<int, ILightWithId*>(lightArray->Length());
 
 
             // Keep track of order
@@ -206,8 +206,8 @@ namespace Chroma {
 
             auto managers = UnityEngine::Object::FindObjectsOfType<TrackLaneRingsManager*>();
 
-            for (int i = 0; i < lightArray->get_Length(); i++) {
-                auto light = lightArray->values[i];
+            for (int i = 0; i < lightArray->Length(); i++) {
+                auto light = lightArray->get(i);
                 if (light == nullptr) continue;
 
                 debugSpamLog(contextLogger, "Adding light to list");
@@ -227,8 +227,8 @@ namespace Chroma {
                         TrackLaneRingsManager* mngr = nullptr;
                         auto indexR = 0;
 
-                        for (int i = 0; i < managers->Length(); i++) {
-                            auto m = managers->values[i];
+                        for (int ii = 0; ii < managers->Length(); ii++) {
+                            auto m = managers->get(ii);
 
                             if (m) {
                                 indexR = m->rings->IndexOf(ring);

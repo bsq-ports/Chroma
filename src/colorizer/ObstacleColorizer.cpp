@@ -153,7 +153,7 @@ void OCColorManager::SetActiveColors() const {
             _addColorID = UnityEngine::Shader::PropertyToID(il2cpp_utils::createcsstr("_AddColor"));
         }
 
-        MaterialPropertyBlockController* materialPropertyBlockController = materialPropertyBlockControllers->values[i];
+        MaterialPropertyBlockController* materialPropertyBlockController = materialPropertyBlockControllers->get(i);
         materialPropertyBlockController->materialPropertyBlock->SetColor(_addColorID, value);
         materialPropertyBlockController->materialPropertyBlock->SetColor(_tintColorID, UnityEngine::Color::Lerp(finalColor, UnityEngine::Color::get_white(), obstacleCoreLerpToWhiteFactor));
         materialPropertyBlockController->ApplyChanges();

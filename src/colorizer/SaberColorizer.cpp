@@ -87,8 +87,8 @@ void SaberColorizer::clearCallbacks() {
 
 SaberColorizer::BSMColorManager::BSMColorManager(GlobalNamespace::Saber *bsm, int saberType) {
     _saberType = saberType;
-    saberBurnMarkArea = UnityEngine::Resources::FindObjectsOfTypeAll<SaberBurnMarkArea*>()->values[0];
-    saberBurnMarkSparkles = UnityEngine::Resources::FindObjectsOfTypeAll<SaberBurnMarkSparkles*>()->values[0];
+    saberBurnMarkArea = UnityEngine::Resources::FindObjectsOfTypeAll<SaberBurnMarkArea*>()->get(0);
+    saberBurnMarkSparkles = UnityEngine::Resources::FindObjectsOfTypeAll<SaberBurnMarkSparkles*>()->get(0);
 }
 
 std::shared_ptr<SaberColorizer::BSMColorManager> SaberColorizer::BSMColorManager::GetBSMColorManager(int saberType) {
@@ -119,7 +119,7 @@ void OverrideColor(SetSaberGlowColor* ssgc, UnityEngine::Color color) {
     }
     for (int i = 0; i < tintPairs->Length(); i++)
     {
-        SetSaberGlowColor::PropertyTintColorPair *ptcp = tintPairs->values[i];
+        SetSaberGlowColor::PropertyTintColorPair *ptcp = tintPairs->get(i);
         block->SetColor(ptcp->property, color * ptcp->tintColor);
     }
     mesh->SetPropertyBlock(block);
@@ -147,10 +147,10 @@ void ChangeColorCoroutine2(Saber *instance, UnityEngine::Color color) {
     modelController->saberTrail->color = (color * tintColor).get_linear();
 
     for (int i = 0; i != setSaberGlowColors->Length(); i++) {
-        OverrideColor(setSaberGlowColors->values[i], color);
+        OverrideColor(setSaberGlowColors->get(i), color);
     }
     for (int i = 0; i < setSaberFakeGlowColors->Length(); i++) {
-        OverrideColor(setSaberFakeGlowColors->values[i], color);
+        OverrideColor(setSaberFakeGlowColors->get(i), color);
     }
 
     TubeBloomPrePassLight *saberLight = modelController->saberLight;
@@ -208,7 +208,7 @@ custom_types::Helpers::Coroutine ChangeColorCoroutine(Saber *saber, UnityEngine:
     if (saberBurnMarkSparkles) {
         auto saberMarkPS = saberBurnMarkSparkles->burnMarksPS;
 
-        auto sPS = saberMarkPS->values[(int) saber->get_saberType()];
+        auto sPS = saberMarkPS->get((int) saber->get_saberType());
 
         sPS->get_main().set_startColor(ParticleSystem::MinMaxGradient(saberColor));
     }
@@ -220,7 +220,7 @@ custom_types::Helpers::Coroutine ChangeColorCoroutine(Saber *saber, UnityEngine:
 
         // TODO: Find out if this breaks saber burn marks
         if (lineRenderers) {
-            auto lineRenderer = lineRenderers->values[(int) saber->get_saberType()];
+            auto lineRenderer = lineRenderers->get((int) saber->get_saberType());
 
             if (lineRenderer) {
                 lineRenderer->set_startColor(saberColor);

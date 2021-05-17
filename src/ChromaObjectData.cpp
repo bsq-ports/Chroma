@@ -24,12 +24,12 @@ void Chroma::ChromaObjectDataManager::deserialize(GlobalNamespace::IReadonlyBeat
     debugSpamLog(contextLogger, "Array klass: %s", il2cpp_utils::ClassStandardName(beatmapLines->klass).c_str());
 
     for (int i = 0; i < beatmapLines->Length(); i++) {
-        auto beatmapLineData = reinterpret_cast<GlobalNamespace::BeatmapLineData *>(beatmapLines->values[i]);
+        auto beatmapLineData = reinterpret_cast<GlobalNamespace::BeatmapLineData *>(beatmapLines->get(i));
 
         if (beatmapLineData && beatmapLineData->beatmapObjectsData) {
             debugSpamLog(contextLogger, "Klass: %s", il2cpp_utils::ClassStandardName(beatmapLineData->klass).c_str());
             for (int j = 0; j < beatmapLineData->beatmapObjectsData->items->Length(); j++) {
-                auto beatmapObjectData = beatmapLineData->beatmapObjectsData->items->values[j];
+                auto beatmapObjectData = beatmapLineData->beatmapObjectsData->items->get(j);
 
                 if (beatmapObjectData) {
                     std::shared_ptr<ChromaObjectData> chromaObjectData(nullptr);

@@ -60,7 +60,7 @@ bool SceneTransitionHelper::BasicPatch(GlobalNamespace::IDifficultyBeatmap* cust
     auto length = beatmapEvents->Length();
     getLogger().debug("Checking at most %d for ChromaLite notes", length);
     for (int i = 0; i < length; i++) {
-        auto event = beatmapEvents->values[i];
+        auto event = beatmapEvents->get(i);
 
         if (!event) continue;
 
