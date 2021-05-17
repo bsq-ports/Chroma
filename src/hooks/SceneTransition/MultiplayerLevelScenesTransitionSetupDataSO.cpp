@@ -31,7 +31,7 @@ MAKE_HOOK_OFFSETLESS(MultiplayerLevelScenesTransitionSetupDataSO_Init,void,Multi
                                                  difficultyBeatmap,
                                                  overrideColorScheme, gameplayModifiers,
                                                  playerSpecificSettings, practiceSettings, useTestNoteCutSoundEffects);
-    SceneTransitionHelper::Patch(reinterpret_cast<IDifficultyBeatmap*>(difficultyBeatmap));
+    SceneTransitionHelper::Patch(difficultyBeatmap);
 }
 
 void Chroma::Hooks::MultiplayerLevelScenesTransitionSetupDataSO() {

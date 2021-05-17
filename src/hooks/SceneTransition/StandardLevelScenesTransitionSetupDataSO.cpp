@@ -21,14 +21,16 @@ using namespace GlobalNamespace;
 using namespace UnityEngine;
 using namespace Chroma;
 
-MAKE_HOOK_OFFSETLESS(StandardLevelScenesTransitionSetupDataSO_Init,void,StandardLevelScenesTransitionSetupDataSO* self, ::Il2CppString* gameMode,
-                     BeatmapLevelSO::DifficultyBeatmap* difficultyBeatmap, GlobalNamespace::IPreviewBeatmapLevel* previewBeatmapLevel,
+MAKE_HOOK_OFFSETLESS(StandardLevelScenesTransitionSetupDataSO_Init,void,StandardLevelScenesTransitionSetupDataSO* self, Il2CppString* gameMode,
+                     GlobalNamespace::IDifficultyBeatmap* difficultyBeatmap,
+                     GlobalNamespace::IPreviewBeatmapLevel* previewBeatmapLevel,
                      GlobalNamespace::OverrideEnvironmentSettings* overrideEnvironmentSettings,
                      GlobalNamespace::ColorScheme* overrideColorScheme, GlobalNamespace::GameplayModifiers* gameplayModifiers,
-                     GlobalNamespace::PlayerSpecificSettings* playerSpecificSettings, GlobalNamespace::PracticeSettings* practiceSettings,
-                     ::Il2CppString* backButtonText, bool useTestNoteCutSoundEffects) {
+                     GlobalNamespace::PlayerSpecificSettings* playerSpecificSettings,
+                     GlobalNamespace::PracticeSettings* practiceSettings, Il2CppString* backButtonText,
+                     bool useTestNoteCutSoundEffects) {
     auto settings = overrideEnvironmentSettings;
-    SceneTransitionHelper::Patch(reinterpret_cast<IDifficultyBeatmap*>(difficultyBeatmap), settings);
+    SceneTransitionHelper::Patch(difficultyBeatmap, settings);
     StandardLevelScenesTransitionSetupDataSO_Init(self, gameMode, difficultyBeatmap, previewBeatmapLevel, settings,
                                                   overrideColorScheme, gameplayModifiers,
                                                   playerSpecificSettings, practiceSettings, backButtonText,

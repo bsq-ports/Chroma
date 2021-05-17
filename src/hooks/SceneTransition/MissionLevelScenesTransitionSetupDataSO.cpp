@@ -29,7 +29,7 @@ MAKE_HOOK_OFFSETLESS(MissionLevelScenesTransitionSetupDataSO_Init,void,MissionLe
     MissionLevelScenesTransitionSetupDataSO_Init(self, missionId, difficultyBeatmap, previewBeatmapLevel, missionObjectives,
                                                  overrideColorScheme, gameplayModifiers,
                                                  playerSpecificSettings, backButtonText);
-    SceneTransitionHelper::Patch(reinterpret_cast<IDifficultyBeatmap*>(difficultyBeatmap));
+    SceneTransitionHelper::Patch(difficultyBeatmap);
 }
 
 void Chroma::Hooks::MissionLevelScenesTransitionSetupDataSO() {
