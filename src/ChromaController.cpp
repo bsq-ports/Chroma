@@ -25,6 +25,7 @@
 #include "colorizer/LightColorizer.hpp"
 #include "lighting/LegacyLightHelper.hpp"
 #include "lighting/environment_enhancements/EnvironmentEnhancementManager.hpp"
+#include "lighting/ChromaGradientController.hpp"
 #include "hooks/TrackLaneRingsManager.hpp"
 
 #include "custom-types/shared/coroutine.hpp"
@@ -71,6 +72,7 @@ void ChromaController::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene 
     getLogger().debug("Clear scene");
 
     if (current && current.IsValid() && to_utf8(csstrtostr(current.get_name())) == "GameCore") {
+        ChromaGradientController::clearInstance();
         TrackLaneRingsManagerHolder::RingManagers.clear();
         LightColorizer::ClearLSEColorManagers();
         ObstacleColorizer::ClearOCColorManagers();

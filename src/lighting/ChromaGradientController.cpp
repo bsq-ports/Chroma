@@ -27,14 +27,26 @@ void ChromaGradientController::ctor() {
 }
 
 Chroma::ChromaGradientController* ChromaGradientController::getInstance() {
-    auto str = il2cpp_utils::newcsstr("Chroma_GradientController");
-    if (_instance == nullptr || UnityEngine::GameObject::Find(str) == nullptr)
+    static auto str = il2cpp_utils::newcsstr<il2cpp_utils::CreationType::Manual>("Chroma_GradientController");
+    if (_instance == nullptr)
     {
         _instance = UnityEngine::GameObject::New_ctor(str)->AddComponent<ChromaGradientController*>();
     }
 
     return _instance;
 }
+
+void Chroma::ChromaGradientController::clearInstance() {
+    if (_instance) {
+        UnityEngine::GameObject::Destroy(_instance);
+        _instance = nullptr;
+    }
+}
+
+void ChromaGradientController::OnDestroy() {
+    _instance = nullptr;
+}
+
 
 bool Chroma::ChromaGradientController::IsGradientActive(GlobalNamespace::BeatmapEventType eventType) {
     return getInstance()->Gradients.find(eventType) != getInstance()->Gradients.end();
