@@ -27,7 +27,9 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffectSpawner_Start, void, GlobalName
         return;
     }
 
-    if (self->trackLaneRingsRotationEffect->klass == classof(TrackLaneRingsRotationEffect*)) {
+    static auto TrackLaneRingsRotationEffectKlass = classof(TrackLaneRingsRotationEffect*);
+
+    if (self->trackLaneRingsRotationEffect->klass == TrackLaneRingsRotationEffectKlass) {
         auto *oldRotationEffect = self->trackLaneRingsRotationEffect;
         debugSpamLog(contextLogger, "Adding component");
         auto newRotationEffect = oldRotationEffect->get_gameObject()->AddComponent<ChromaRingsRotationEffect *>();
