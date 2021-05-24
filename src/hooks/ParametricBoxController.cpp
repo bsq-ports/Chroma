@@ -55,13 +55,12 @@ MAKE_HOOK_OFFSETLESS(ParametricBoxController_Refresh,void, ParametricBoxControll
     auto pos = UnityEngine::Vector3(0.0f, (0.5f - self->heightCenter) * self->height, 0.0f);
 
 
-    if (!ParametricBoxControllerParameters::TransformParameters.empty()) {
-        auto it = ParametricBoxControllerParameters::TransformParameters.find(self);
 
-        if (it != ParametricBoxControllerParameters::TransformParameters.end()) {
-            scale = GetTransformScale(scale, it->second);
-            pos = GetTransformPosition(pos, it->second);
-        }
+    auto it = ParametricBoxControllerParameters::TransformParameters.find(self);
+
+    if (it != ParametricBoxControllerParameters::TransformParameters.end()) {
+        scale = GetTransformScale(scale, it->second);
+        pos = GetTransformPosition(pos, it->second);
     }
 
     self->get_transform()->set_localScale(scale);

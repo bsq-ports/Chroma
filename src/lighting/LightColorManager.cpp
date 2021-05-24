@@ -84,7 +84,7 @@ void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, B
 
             std::unordered_map<int, std::vector<ILightWithId *>> lights = LightColorizer::GetLightsPropagationGrouped(
                     *lightSwitchEventEffect);
-            int lightCount = lights.size();
+            int lightCount = (int) lights.size();
 
             debugSpamLog(contextLogger, "Prop id data is");
             PrintJSONValue(propIDData);

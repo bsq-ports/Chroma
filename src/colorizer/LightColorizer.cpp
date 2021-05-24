@@ -123,7 +123,10 @@ void LightColorizer::LSEStart(MonoBehaviour *monoBehaviour, BeatmapEventType bea
 
 void LightColorizer::RegisterLight(UnityEngine::MonoBehaviour *lightWithId) {
 
-    if (ASSIGNMENT_CHECK(classof(LightWithIdMonoBehaviour*), lightWithId->klass)) {
+    static auto LightWithIdMonoBehaviourKlass = classof(LightWithIdMonoBehaviour*);
+    static auto LightWithIdsKlass = classof(LightWithIds*);
+
+    if (ASSIGNMENT_CHECK(LightWithIdMonoBehaviourKlass, lightWithId->klass)) {
         auto monoBehaviour = il2cpp_utils::cast<LightWithIdMonoBehaviour>(lightWithId);
 
         auto lse = LSEColorManager::GetLSEColorManager((monoBehaviour->get_lightId() - 1));
@@ -146,7 +149,7 @@ void LightColorizer::RegisterLight(UnityEngine::MonoBehaviour *lightWithId) {
 
             monomanager->Lights[(int) monomanager->Lights.size()] = il2cpp_utils::cast<ILightWithId>(monoBehaviour);
 
-    } else if (ASSIGNMENT_CHECK(classof(LightWithIds*), lightWithId->klass)) {
+    } else if (ASSIGNMENT_CHECK(LightWithIdsKlass, lightWithId->klass)) {
         auto lightWithIds = il2cpp_utils::cast<LightWithIds>(lightWithId);
 
 

@@ -29,8 +29,10 @@ MAKE_HOOK_OFFSETLESS(
     float singleLineWidth,
     float height
 ) {
+    static auto MultiplayerConnectedPlayerObstacleControllerKlass = classof(MultiplayerConnectedPlayerObstacleController*);
+
     // Do nothing if Chroma shouldn't run
-    if (!ChromaController::DoChromaHooks() || ASSIGNMENT_CHECK(classof(MultiplayerConnectedPlayerObstacleController*), self->klass)) {
+    if (!ChromaController::DoChromaHooks() || ASSIGNMENT_CHECK(MultiplayerConnectedPlayerObstacleControllerKlass, self->klass)) {
         ObstacleController_Init(self, obstacleData, worldRotation, startPos, midPos, endPos, move1Duration, move2Duration, singleLineWidth, height);
         return;
     }
