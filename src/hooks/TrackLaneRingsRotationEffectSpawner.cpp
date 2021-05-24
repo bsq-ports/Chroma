@@ -74,8 +74,7 @@ void TriggerRotation(
 // just stays as limbo. Hopefully with time we can fix that and use that instead
 void origHandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(GlobalNamespace::TrackLaneRingsRotationEffectSpawner* self, BeatmapEventData* beatmapEventData) {
     static auto contextLogger = getLogger().WithContext(Chroma::ChromaLogger::TrackLaneRings);
-    if (beatmapEventData->type != self->beatmapEventType)
-    {
+    if (beatmapEventData->type != self->beatmapEventType) {
         return;
     }
     float step = 0.0f;
@@ -91,7 +90,26 @@ void origHandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(GlobalNames
     }
     debugSpamLog(contextLogger, "Track lane klass %s", self->trackLaneRingsRotationEffect->klass->name);
 
-    self->trackLaneRingsRotationEffect->AddRingRotationEffect(self->trackLaneRingsRotationEffect->GetFirstRingRotationAngle() + self->rotation * (float)((UnityEngine::Random::get_value() < 0.5f) ? 1 : -1), step, self->rotationPropagationSpeed, self->rotationFlexySpeed);
+    static auto ChromaRingsRotationEffectKlass = classof(ChromaRingsRotationEffect*);
+
+    auto rotationEffect = self->trackLaneRingsRotationEffect;
+
+
+    if (ASSIGNMENT_CHECK(ChromaRingsRotationEffectKlass, self->trackLaneRingsRotationEffect->klass)) {
+
+        reinterpret_cast<ChromaRingsRotationEffect*>
+        (rotationEffect)->AddRingRotationEffectF(
+                self->trackLaneRingsRotationEffect->GetFirstRingRotationAngle() + self->rotation * (float) ((UnityEngine::Random::get_value() < 0.5f) ? 1 : -1),
+                step,
+                (float) self->rotationPropagationSpeed,
+                self->rotationFlexySpeed);
+    } else {
+        rotationEffect->AddRingRotationEffect(
+                self->trackLaneRingsRotationEffect->GetFirstRingRotationAngle() + self->rotation * (float) ((UnityEngine::Random::get_value() < 0.5f) ? 1 : -1),
+                step,
+                self->rotationPropagationSpeed,
+                self->rotationFlexySpeed);
+    }
 }
 
 MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger, void, GlobalNamespace::TrackLaneRingsRotationEffectSpawner* self,

@@ -45,13 +45,13 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRing_LateUpdateRing, void, GlobalNamespace::TrackL
 
     UnityEngine::Quaternion rotation = UnityEngine::Quaternion::get_identity();
 
-    if (!EnvironmentEnhancementManager::RingRotationOffsets.empty()) {
-        auto it2 = EnvironmentEnhancementManager::RingRotationOffsets.find(self);
 
-        if (it2 != EnvironmentEnhancementManager::RingRotationOffsets.end()) {
-            rotation = it2->second;
-        }
+    auto it2 = EnvironmentEnhancementManager::RingRotationOffsets.find(self);
+
+    if (it2 != EnvironmentEnhancementManager::RingRotationOffsets.end()) {
+        rotation = it2->second;
     }
+
 
     float interpolatedZPos = self->prevPosZ + ((self->posZ - self->prevPosZ) * interpolationFactor);
     UnityEngine::Vector3 positionZOffset = vectorMultiply(quaternionMultiply(rotation, UnityEngine::Vector3::get_forward()), interpolatedZPos);
