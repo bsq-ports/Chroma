@@ -115,7 +115,7 @@ void OverrideColor(SetSaberGlowColor* ssgc, UnityEngine::Color color) {
     Array<SetSaberGlowColor::PropertyTintColorPair *> *tintPairs = ssgc->propertyTintColorPairs;
     if (block == nullptr)
     {
-        block = new MaterialPropertyBlock();
+        block = MaterialPropertyBlock::New_ctor();
     }
     for (int i = 0; i < tintPairs->Length(); i++)
     {
