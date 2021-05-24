@@ -53,10 +53,13 @@ DECLARE_CLASS_CODEGEN(Chroma, ChromaGradientController, UnityEngine::MonoBehavio
 
         static UnityEngine::Color AddGradient(ChromaLightEventData::GradientObjectData gradientObject, GlobalNamespace::BeatmapEventType id, float time);
         DECLARE_METHOD(static Chroma::ChromaGradientController*, getInstance);
+        DECLARE_METHOD(static void, clearInstance);
+
         DECLARE_METHOD(static bool, IsGradientActive, GlobalNamespace::BeatmapEventType eventType);
         DECLARE_METHOD(static void, CancelGradient, GlobalNamespace::BeatmapEventType eventType);
         DECLARE_METHOD(void, Update);
         DECLARE_CTOR(ctor);
+        DECLARE_METHOD(void, OnDestroy);
         DECLARE_SIMPLE_DTOR();
 
 
@@ -67,6 +70,7 @@ DECLARE_CLASS_CODEGEN(Chroma, ChromaGradientController, UnityEngine::MonoBehavio
             REGISTER_METHOD(getInstance);
             REGISTER_METHOD(IsGradientActive);
             REGISTER_METHOD(CancelGradient);
+            REGISTER_METHOD(OnDestroy);
             //                              REGISTER_METHOD(AddGradient);
             REGISTER_METHOD(Update);
 
