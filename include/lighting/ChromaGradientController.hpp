@@ -23,7 +23,7 @@ namespace Chroma {
     struct ChromaGradientEvent;
 }
 
-typedef std::unordered_map<int, Chroma::ChromaGradientEvent&> gradientMap;
+typedef std::unordered_map<int, Chroma::ChromaGradientEvent> gradientMap;
 
 namespace Chroma {
     struct ChromaGradientEvent {
@@ -33,11 +33,6 @@ namespace Chroma {
         float _duration;
         GlobalNamespace::BeatmapEventType _event;
         ChromaUtils::Functions _easing;
-
-
-        ~ChromaGradientEvent() = default;
-        ChromaGradientEvent(const ChromaGradientEvent&) = delete;
-        ChromaGradientEvent& operator=(ChromaGradientEvent&) = delete;
 
         ChromaGradientEvent(UnityEngine::Color initcolor, UnityEngine::Color endcolor, float start, float duration, GlobalNamespace::BeatmapEventType eventType, ChromaUtils::Functions easing = ChromaUtils::Functions::easeLinear);
 
