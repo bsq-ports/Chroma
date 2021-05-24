@@ -48,7 +48,7 @@ MAKE_HOOK_OFFSETLESS(
 
     int dir = chromaData->Direction;
 
-    float direction = (Random::get_value() > 0.5f) ? 1.0f : -1.0f;
+    float direction = (randomNumber() > 0.5f) ? 1.0f : -1.0f;
     switch (dir) {
         case 0:
             direction = isLeftEvent ? -1.0f : 1.0f;
@@ -68,7 +68,7 @@ MAKE_HOOK_OFFSETLESS(
         self->rotationSpeed = precisionSpeed * 20.0f * direction;
         if (!lockPosition) {
             self->get_transform()->set_localRotation(self->startRotation);
-            self->get_transform()->Rotate(self->rotationVector, Random::Range(0.0f, 180.0f), Space::Self);
+            self->get_transform()->Rotate(self->rotationVector, randomNumber(0.0f, 180.0f), Space::Self);
         }
     }
 }

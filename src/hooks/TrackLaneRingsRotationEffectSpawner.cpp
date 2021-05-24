@@ -82,11 +82,11 @@ void origHandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(GlobalNames
     int originalRotationStepType = (int) self->rotationStepType;
 
     if (originalRotationStepType == TrackLaneRingsRotationEffectSpawner::RotationStepType::Range0ToMax) {
-        step = UnityEngine::Random::Range(0.0f, self->rotationStep);
+        step = randomNumber(0.0f, self->rotationStep);
     } else if (originalRotationStepType == TrackLaneRingsRotationEffectSpawner::RotationStepType::Range) {
-        step = UnityEngine::Random::Range(-self->rotationStep, self->rotationStep);
+        step = randomNumber(-self->rotationStep, self->rotationStep);
     } else if (originalRotationStepType == TrackLaneRingsRotationEffectSpawner::RotationStepType::MaxOr0) {
-        step = (UnityEngine::Random::get_value() < 0.5f) ? self->rotationStep : 0.0f;
+        step = (randomNumber() < 0.5f) ? self->rotationStep : 0.0f;
     }
     debugSpamLog(contextLogger, "Track lane klass %s", self->trackLaneRingsRotationEffect->klass->name);
 
@@ -99,13 +99,13 @@ void origHandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(GlobalNames
 
         reinterpret_cast<ChromaRingsRotationEffect*>
         (rotationEffect)->AddRingRotationEffectF(
-                self->trackLaneRingsRotationEffect->GetFirstRingRotationAngle() + self->rotation * (float) ((UnityEngine::Random::get_value() < 0.5f) ? 1 : -1),
+                self->trackLaneRingsRotationEffect->GetFirstRingRotationAngle() + self->rotation * (float) ((randomNumber() < 0.5f) ? 1 : -1),
                 step,
                 (float) self->rotationPropagationSpeed,
                 self->rotationFlexySpeed);
     } else {
         rotationEffect->AddRingRotationEffect(
-                self->trackLaneRingsRotationEffect->GetFirstRingRotationAngle() + self->rotation * (float) ((UnityEngine::Random::get_value() < 0.5f) ? 1 : -1),
+                self->trackLaneRingsRotationEffect->GetFirstRingRotationAngle() + self->rotation * (float) ((randomNumber() < 0.5f) ? 1 : -1),
                 step,
                 self->rotationPropagationSpeed,
                 self->rotationFlexySpeed);
@@ -151,11 +151,11 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCall
             int originalRotationStepType = (int) self->rotationStepType;
 
             if (originalRotationStepType == TrackLaneRingsRotationEffectSpawner::RotationStepType::Range0ToMax) {
-                rotationStep = UnityEngine::Random::Range(0.0f, rotationStep);
+                rotationStep = randomNumber(0.0f, rotationStep);
             } else if (originalRotationStepType == TrackLaneRingsRotationEffectSpawner::RotationStepType::Range) {
-                rotationStep = UnityEngine::Random::Range(-originalRotationStep, originalRotationStep);
+                rotationStep = randomNumber(-originalRotationStep, originalRotationStep);
             } else if (originalRotationStepType == TrackLaneRingsRotationEffectSpawner::RotationStepType::MaxOr0) {
-                rotationStep = (UnityEngine::Random::get_value() < 0.5f) ? originalRotationStep : 0.0f;
+                rotationStep = (randomNumber() < 0.5f) ? originalRotationStep : 0.0f;
             }
 
             debugSpamLog(contextLogger, "Got the data");
@@ -172,7 +172,7 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCall
             // https://github.com/Aeroluna/Chroma/commit/3900969d3fef1eaeea745bcfc23c61bfbe525586#diff-e83fa5da7e2e725f2cfb2ee5a6d6a085b2065a95e0d4757e01fe3c29f0fa4024
             bool rotRight;
             if (dir) {
-                rotRight = UnityEngine::Random::get_value() < 0.5f;
+                rotRight = randomNumber() < 0.5f;
             } else {
                 rotRight = dir == 1;
             }
