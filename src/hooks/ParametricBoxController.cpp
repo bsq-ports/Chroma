@@ -65,21 +65,34 @@ MAKE_HOOK_OFFSETLESS(ParametricBoxController_Refresh,void, ParametricBoxControll
 
     self->get_transform()->set_localScale(scale);
     self->get_transform()->set_localPosition(pos);
-    if (ParametricBoxController::_get__materialPropertyBlock() == nullptr) {
+
+    static auto materialPropertyBlock = ParametricBoxController::_get__materialPropertyBlock();
+
+    if (materialPropertyBlock == nullptr) {
         ParametricBoxController::_set__materialPropertyBlock(UnityEngine::MaterialPropertyBlock::New_ctor());
+        materialPropertyBlock = ParametricBoxController::_get__materialPropertyBlock();
     }
+
+
     auto color = self->color;
     color.a *= self->alphaMultiplier;
     if (color.a < self->minAlpha)
     {
         color.a = self->minAlpha;
     }
-    ParametricBoxController::_get__materialPropertyBlock()->SetColor(ParametricBoxController::_get__colorID(), color);
-    ParametricBoxController::_get__materialPropertyBlock()->SetFloat(ParametricBoxController::_get__alphaStartID(), self->alphaStart);
-    ParametricBoxController::_get__materialPropertyBlock()->SetFloat(ParametricBoxController::_get__alphaEndID(), self->alphaEnd);
-    ParametricBoxController::_get__materialPropertyBlock()->SetFloat(ParametricBoxController::_get__widthStartID(), self->widthStart);
-    ParametricBoxController::_get__materialPropertyBlock()->SetFloat(ParametricBoxController::_get__widthEndID(), self->widthEnd);
-    self->meshRenderer->SetPropertyBlock(ParametricBoxController::_get__materialPropertyBlock());
+
+    static auto colorId = ParametricBoxController::_get__colorID();
+    static auto alphaStartID = ParametricBoxController::_get__alphaStartID();
+    static auto alphaEndID = ParametricBoxController::_get__alphaEndID();
+    static auto widthStartID = ParametricBoxController::_get__widthStartID();
+    static auto widthEndID = ParametricBoxController::_get__widthEndID();
+
+    materialPropertyBlock->SetColor(colorId, color);
+    materialPropertyBlock->SetFloat(alphaStartID, self->alphaStart);
+    materialPropertyBlock->SetFloat(alphaEndID, self->alphaEnd);
+    materialPropertyBlock->SetFloat(widthStartID, self->widthStart);
+    materialPropertyBlock->SetFloat(widthEndID, self->widthEnd);
+    self->meshRenderer->SetPropertyBlock(materialPropertyBlock);
 
 }
 
