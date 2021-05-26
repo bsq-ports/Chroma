@@ -43,7 +43,9 @@ void ChromaRingsRotationEffect::CopyValues(
 void ChromaRingsRotationEffect::Awake() {
     int poolCount = 20;
     _activeRingRotationEffects = std::vector<ChromaRotationEffect*>();
+    _activeRingRotationEffects.reserve(poolCount);
     _ringRotationEffectsPool = std::vector<ChromaRotationEffect*>();
+    _ringRotationEffectsPool.reserve(poolCount);
     for (int i = 0; i < poolCount; i++)
     {
         _ringRotationEffectsPool.push_back(CRASH_UNLESS(il2cpp_utils::New<ChromaRotationEffect*>()));

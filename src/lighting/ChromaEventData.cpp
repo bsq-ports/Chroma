@@ -28,9 +28,8 @@ float getIfExistsFloat(std::optional<std::reference_wrapper<rapidjson::Value>> v
 }
 
 void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatmapData* beatmapData) {
-    ChromaEventDatas.clear();
-
     static auto contextLogger = getLogger().WithContext(ChromaLogger::ObjectDataDeserialize);
+    ChromaEventDatas.clear();
 
     auto beatmapDataCast = il2cpp_utils::cast<GlobalNamespace::BeatmapData>(beatmapData);
     auto beatmapEvents = il2cpp_utils::cast<System::Collections::Generic::List_1<GlobalNamespace::BeatmapEventData*>>(beatmapDataCast->get_beatmapEventsData());
@@ -188,4 +187,8 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
             ChromaEventDatas[beatmapEventData] = chromaEventData;
         }
     }
+
+    // Deallocate unused memory.
+    auto shrinkedMap = EventMapType(ChromaEventDatas.begin(), ChromaEventDatas.end());
+    ChromaEventDatas = shrinkedMap;
 }

@@ -12,7 +12,7 @@ LegacyLightHelper::ColorMap LegacyLightHelper::LegacyColorEvents = LegacyLightHe
 void LegacyLightHelper::Activate(const std::vector<GlobalNamespace::BeatmapEventData*>& eventData) {
     static auto contextLogger = getLogger().WithContext(ChromaLogger::LegacyLightColor);
 
-    LegacyColorEvents.clear();
+    LegacyColorEvents = LegacyLightHelper::ColorMap();
     debugSpamLog(contextLogger, "Got the events, checking for legacy %d", eventData.size());
     for (auto& d : eventData)
     {
@@ -34,7 +34,6 @@ void LegacyLightHelper::Activate(const std::vector<GlobalNamespace::BeatmapEvent
 }
 
 std::optional<UnityEngine::Color> LegacyLightHelper::GetLegacyColor(GlobalNamespace::BeatmapEventData *beatmapEventData) {
-    auto list = std::vector<pair<float, UnityEngine::Color>>();
     auto it = LegacyColorEvents.find(beatmapEventData->type);
     if (it != LegacyColorEvents.end()) {
         auto dictionaryID = it->second;

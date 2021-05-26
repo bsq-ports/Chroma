@@ -49,6 +49,7 @@ void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, B
                 // It's a object
                 auto lightIDobjects = lightIdData.GetObject();
                 std::vector<int> lightIDArray;
+                lightIDArray.reserve(lightIDobjects.MemberCount());
 
                 debugSpamLog(contextLogger, "LightID object:");
 
@@ -63,6 +64,7 @@ void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, B
                 // It's a list
                 auto lightIDobjects = lightIdData.GetArray();
                 std::vector<int> lightIDArray;
+                lightIDArray.reserve(lightIDobjects.Size());
 
                 debugSpamLog(contextLogger, "LightID array:");
 
@@ -99,16 +101,11 @@ void Chroma::LightColorManager::ColorLightSwitch(MonoBehaviour* monobehaviour, B
                 debugSpamLog(contextLogger, "It is a list prop");
                 // It's a list
                 auto propIDobjects = propIDData.GetObject();
-                std::vector<int> propIDArray;
-
-
-                for (auto &lightId : propIDobjects) {
-                    propIDArray.push_back(lightId.value.GetInt());
-                }
 
                 std::vector<ILightWithId *> overrideLights;
 
-                for (auto propId : propIDArray) {
+                for (auto &lightId : propIDobjects) {
+                    int propId = lightId.value.GetInt();
                     if (lightCount > propId) {
                         for (auto l : lights[propId]) {
                             overrideLights.push_back(l);

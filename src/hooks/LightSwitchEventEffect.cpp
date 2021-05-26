@@ -59,12 +59,14 @@ MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_SetColor, void, LightSwitchEventEffe
 
 
     if (LightSwitchEventEffectHolder::LightIDOverride) {
+        auto lightOverride = LightSwitchEventEffectHolder::LightIDOverride.value();
         auto lights = LightColorizer::GetLights(self);
 
         int type = self->event;
         std::vector<int> newIds;
+        newIds.reserve(lightOverride.size());
 
-        for (auto id : LightSwitchEventEffectHolder::LightIDOverride.value()) {
+        for (auto id : lightOverride) {
             auto newId = LightIDTableManager::GetActiveTableValue(type, id);
 
             if (newId) {

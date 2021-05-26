@@ -54,7 +54,7 @@ void GetComponentAndOriginal(UnityEngine::Transform*& root, UnityEngine::Transfo
 }
 
 void
-Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root, UnityEngine::Transform *original, std::vector<GameObjectInfo> gameObjectInfos, std::vector<std::shared_ptr<IComponentData>>& componentDatas) {
+Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root, UnityEngine::Transform *original, std::vector<GameObjectInfo>& gameObjectInfos, std::vector<std::shared_ptr<IComponentData>>& componentDatas) {
     GetComponentAndOriginal<LightWithIdMonoBehaviour>(root, original, [=](LightWithIdMonoBehaviour* rootComponent, LightWithIdMonoBehaviour* originalComponent) {
         rootComponent->lightManager = originalComponent->lightManager;
         LightColorizer::RegisterLight(rootComponent);
@@ -221,6 +221,7 @@ ComponentInitializer::PrefillComponentsData(UnityEngine::Transform *root, std::v
         componentDatas.push_back(manager);
     }
 
+    componentDatas.reserve(componentDatas.size() + root->get_childCount());
     for (int i = 0; i < root->get_childCount(); i++) {
         auto transform = root->GetChild(i);
         PrefillComponentsData(transform, componentDatas);

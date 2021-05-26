@@ -52,11 +52,14 @@ Chroma::EnvironmentEnhancementManager::LookupId(const std::string& id, Chroma::L
     }
 
     std::vector<GameObjectInfo> ret;
+    ret.reserve(_gameObjectInfos.size());
 
     for (const auto &o : _gameObjectInfos) {
         if(predicate(o))
             ret.push_back(o);
     }
+
+    ret.shrink_to_fit();
 
     return ret;
 }
@@ -74,10 +77,11 @@ EnvironmentEnhancementManager::GetVectorData(std::reference_wrapper<rapidjson::V
 }
 
 void EnvironmentEnhancementManager::GetAllGameObjects() {
-    _gameObjectInfos = std::vector<GameObjectInfo>();
+    _gameObjectInfos.clear();
 
     auto gameObjects = UnityEngine::Resources::FindObjectsOfTypeAll<UnityEngine::GameObject*>();
     std::vector<UnityEngine::GameObject*> gameObjectsVec;
+    gameObjectsVec.reserve(gameObjects->Length());
 
 
     for (int i = 0; i < gameObjects->Length(); i++) {
@@ -116,6 +120,9 @@ void EnvironmentEnhancementManager::GetAllGameObjects() {
             gameObject->SetActive(false);
         }
     }
+
+    // Shrink if necessary
+    _gameObjectInfos.shrink_to_fit();
 }
 
 void
@@ -168,6 +175,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                 auto foundObjects = LookupId(id, lookupMethod);
 
                 std::vector<GameObjectInfo> gameObjectInfos;
+                _gameObjectInfos.reserve(_gameObjectInfos.size());
 
                 if (dupeAmount) {
                     for (const auto &gameObjectInfo : foundObjects) {
@@ -284,7 +292,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
 
 void EnvironmentEnhancementManager::GetChildRecursive(UnityEngine::Transform *gameObject,
                                                       std::vector<UnityEngine::Transform *> &children) {
-
+    children.reserve(children.size() + gameObject->get_childCount());
     for (int i = 0; i < gameObject->get_childCount(); i++) {
         auto child = gameObject->GetChild(i);
         children.push_back(child);

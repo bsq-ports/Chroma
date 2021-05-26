@@ -74,6 +74,7 @@ void ChromaController::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene 
     if (current && current.IsValid() && to_utf8(csstrtostr(current.get_name())) == "GameCore") {
         ChromaGradientController::clearInstance();
         TrackLaneRingsManagerHolder::RingManagers.clear();
+        TrackLaneRingsManagerHolder::RingManagers.shrink_to_fit(); // Deallocate unnecessary used memory
         LightColorizer::ClearLSEColorManagers();
         ObstacleColorizer::ClearOCColorManagers();
         BombColorizer::ClearBNCColorManagers();
