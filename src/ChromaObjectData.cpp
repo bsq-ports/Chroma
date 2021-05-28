@@ -21,8 +21,6 @@ void Chroma::ChromaObjectDataManager::deserialize(GlobalNamespace::IReadonlyBeat
     auto beatmapDataCast = il2cpp_utils::cast<GlobalNamespace::BeatmapData>(beatmapData);
     auto beatmapLines = il2cpp_utils::cast<Array<GlobalNamespace::IReadonlyBeatmapLineData*>>(beatmapDataCast->get_beatmapLinesData());
 
-    ChromaObjectDatas.reserve(beatmapLines->Length());
-
     debugSpamLog(contextLogger, "Array klass: %s", il2cpp_utils::ClassStandardName(beatmapLines->klass).c_str());
 
     for (int i = 0; i < beatmapLines->Length(); i++) {

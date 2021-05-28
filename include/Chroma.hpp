@@ -47,6 +47,7 @@ namespace Chroma {
         void LightRotationEventEffect();
         void LightSwitchEventEffect();
         void LightWithIdManager();
+        void MirroredCubeNoteController();
         void NoteCutEffectSpawner();
         void MissionLevelScenesTransitionSetupDataSO();
         void MultiplayerLevelScenesTransitionSetupDataSO();

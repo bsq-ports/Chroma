@@ -12,6 +12,7 @@ void Chroma::InstallHooks() {
     Hooks::LightRotationEventEffect();
     Hooks::LightSwitchEventEffect();
     Hooks::LightWithIdManager();
+    Hooks::MirroredCubeNoteController();
     Hooks::NoteCutEffectSpawner();
     Hooks::MissionLevelScenesTransitionSetupDataSO();
     Hooks::MultiplayerLevelScenesTransitionSetupDataSO();

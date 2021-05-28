@@ -26,7 +26,7 @@ using namespace Chroma;
 //
 //std::vector<SaberColorizer::BSMColorManager *> SaberColorizer::_bsmColorManagers;
 
-std::unordered_map<int ,std::optional<UnityEngine::Color>> NoteColorizer::NoteColorOverride = {{0, std::nullopt}, {1, std::nullopt}};
+NoteColorStack NoteColorizer::NoteColorOverride = {};
 std::unordered_map<int ,std::optional<UnityEngine::Color>> NoteColorizer::CNVColorManager::GlobalColor = {{0, std::nullopt}, {1, std::nullopt}};
 
 void NoteColorizer::Reset(GlobalNamespace::NoteController *nc) {
@@ -76,6 +76,7 @@ void NoteColorizer::SetAllActiveColors() {
 void NoteColorizer::ClearCNVColorManagers() {
     ResetAllNotesColors();
     _cnvColorManagers.clear();
+    NoteColorOverride = NoteColorStack(); // clear
 }
 
 
@@ -93,18 +94,21 @@ void NoteColorizer::ClearCNVColorManagers() {
 void NoteColorizer::EnableNoteColorOverride(GlobalNamespace::NoteController *noteController) {
     auto chromaData = ChromaObjectDataManager::ChromaObjectDatas[noteController->noteData];
 
+    ColorPair colorPair;
+
     if (chromaData->Color) {
-        NoteColorOverride[0] = chromaData->Color;
-        NoteColorOverride[1] = chromaData->Color;
+        colorPair = ColorPair(chromaData->Color, chromaData->Color);
     } else {
-        NoteColorOverride[0] = CNVColorManager::GlobalColor[0];
-        NoteColorOverride[1] = CNVColorManager::GlobalColor[1];
+        colorPair = ColorPair(CNVColorManager::GlobalColor[0], CNVColorManager::GlobalColor[1]);
     }
+
+    NoteColorOverride.push(colorPair);
 }
 
 void NoteColorizer::DisableNoteColorOverride() {
-    NoteColorOverride[0] = std::nullopt;
-    NoteColorOverride[1] = std::nullopt;
+    if (!NoteColorOverride.empty()) {
+        NoteColorOverride.pop();
+    }
 }
 
 
@@ -132,7 +136,12 @@ void NoteColorizer::CNVStart(GlobalNamespace::ColorNoteVisuals *cnv, GlobalNames
 }
 
 std::optional<UnityEngine::Color> NoteColorizer::getNoteColorOverride(int color) {
-    return NoteColorizer::NoteColorOverride[color];
+    if (!NoteColorOverride.empty()) {
+        auto pair = NoteColorOverride.top();
+
+        return color == 0 ? pair.first : pair.second;
+    }
+    return std::nullopt;
 }
 
 NoteColorizer::CNVColorManager::CNVColorManager(GlobalNamespace::ColorNoteVisuals *cnv, GlobalNamespace::NoteController *nc) {

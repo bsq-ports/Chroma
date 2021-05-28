@@ -11,15 +11,18 @@
 #include <vector>
 #include <string>
 #include <optional>
+#include <stack>
+#include <tuple>
 
 
+typedef std::pair<std::optional<UnityEngine::Color>, std::optional<UnityEngine::Color>> ColorPair;
+using NoteColorStack = std::stack<ColorPair>;
 
 // TODO: Document properly
-// TODO: Does this need to become a custom type?
 namespace Chroma {
     class NoteColorizer {
     private:
-        static std::unordered_map<int ,std::optional<UnityEngine::Color>> NoteColorOverride;
+        static NoteColorStack NoteColorOverride;
 
     public:
         static std::optional<UnityEngine::Color> getNoteColorOverride(int color);
