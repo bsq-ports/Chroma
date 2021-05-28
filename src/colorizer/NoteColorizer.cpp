@@ -2,7 +2,11 @@
 
 #include "UnityEngine/SpriteRenderer.hpp"
 #include "UnityEngine/MaterialPropertyBlock.hpp"
+#include "UnityEngine/MeshRenderer.hpp"
+
 #include "GlobalNamespace/MaterialPropertyBlockController.hpp"
+
+#include "System/Action_2.hpp"
 
 #include <unordered_map>
 #include "colorizer/NoteColorizer.hpp"
@@ -234,16 +238,16 @@ void NoteColorizer::CNVColorManager::SetActiveColors() {
     }
 
     colorNoteVisuals->noteColor = noteColor;
-    SpriteRenderer* arrowGlowSpriteRenderer = colorNoteVisuals->arrowGlowSpriteRenderer;
-    SpriteRenderer* circleGlowSpriteRenderer = colorNoteVisuals->circleGlowSpriteRenderer;
-    arrowGlowSpriteRenderer->set_color(ColorWithAlpha(noteColor, arrowGlowSpriteRenderer->get_color().a));
-    circleGlowSpriteRenderer->set_color(ColorWithAlpha(noteColor, circleGlowSpriteRenderer->get_color().a));
     Array<MaterialPropertyBlockController *> *materialPropertyBlockControllers = colorNoteVisuals->materialPropertyBlockControllers;
     for (int i = 0; i < materialPropertyBlockControllers->Length(); i++)
     {
         auto *materialPropertyBlockController = materialPropertyBlockControllers->get(i);
-        materialPropertyBlockController->materialPropertyBlock->SetColor(_colorID, noteColor);
+        materialPropertyBlockController->materialPropertyBlock->SetColor(_colorID, ColorWithAlpha(noteColor, 1.0f));
         materialPropertyBlockController->ApplyChanges();
+    }
+
+    if (colorNoteVisuals->didInitEvent) {
+        colorNoteVisuals->didInitEvent->Invoke(colorNoteVisuals, colorNoteVisuals->noteController);
     }
 }
 

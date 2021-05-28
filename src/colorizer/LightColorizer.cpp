@@ -2,22 +2,22 @@
 #include "beatsaber-hook/shared/utils/il2cpp-utils.hpp"
 #include "beatsaber-hook/shared/utils/typedefs-array.hpp"
 
-#include "custom-json-data/shared/CustomBeatmapData.h"
-#include "GlobalNamespace/LightPairRotationEventEffect.hpp"
-#include "GlobalNamespace/ParticleSystemEventEffect.hpp"
-#include "UnityEngine/Transform.hpp"
-#include "UnityEngine/Mathf.hpp"
-#include "GlobalNamespace/LightWithIdManager.hpp"
-#include "GlobalNamespace/LightWithIdMonoBehaviour.hpp"
-#include "GlobalNamespace/LightWithIds.hpp"
 #include "lighting/LightIDTableManager.hpp"
+#include "colorizer/LightColorizer.hpp"
+#include "utils/ChromaUtils.hpp"
 
 #include <unordered_map>
 
-#include "colorizer/LightColorizer.hpp"
+#include "custom-json-data/shared/CustomBeatmapData.h"
+
+#include "UnityEngine/Mathf.hpp"
+
+#include "GlobalNamespace/LightWithIdMonoBehaviour.hpp"
+#include "GlobalNamespace/LightWithIds.hpp"
+#include "GlobalNamespace/LightWithIds_LightData.hpp"
 #include "GlobalNamespace/TrackLaneRingsManager.hpp"
 #include "GlobalNamespace/TrackLaneRing.hpp"
-#include "utils/ChromaUtils.hpp"
+#include "GlobalNamespace/ParticleSystemEventEffect.hpp"
 
 
 
@@ -153,7 +153,7 @@ void LightColorizer::RegisterLight(UnityEngine::MonoBehaviour *lightWithId) {
         auto lightWithIds = il2cpp_utils::cast<LightWithIds>(lightWithId);
 
 
-        auto lightsWithIdArray = lightWithIds->lightIntensityData;
+        auto* lightsWithIdArray = il2cpp_utils::cast<Array<LightWithIds::LightData*>>(lightWithIds->get_lightIntensityData());
 
 
         for (int i = 0; i < lightsWithIdArray->Length(); i++) {
