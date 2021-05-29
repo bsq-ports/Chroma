@@ -37,6 +37,6 @@ EXPOSE_API(setSaberColorSafe, void, int saberType, UnityEngine::Color color) {
     SaberColorizer::SetSaberColor(saberType, color);
 }
 
-EXPOSE_API(registerSaberCallbackSafe, void, std::function<void()> callback) {
+EXPOSE_API(registerSaberCallbackSafe, void, const std::function<void()>& callback) {
     SaberColorizer::registerCallback(std::move(callback));
 }

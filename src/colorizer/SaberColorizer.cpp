@@ -77,7 +77,7 @@ void SaberColorizer::BSMStart(GlobalNamespace::Saber *bcm, int saberType) {
     }
 }
 
-void SaberColorizer::registerCallback(std::function<void()> callback) {
+void SaberColorizer::registerCallback(const std::function<void()>& callback) {
     saberCallbacks.push_back(callback);
 }
 
@@ -231,7 +231,7 @@ custom_types::Helpers::Coroutine ChangeColorCoroutine(Saber *saber, UnityEngine:
     }
 
     // Call callbacks
-    for (auto& c : SaberColorizer::saberCallbacks)
+    for (const auto& c : SaberColorizer::saberCallbacks)
     {
         c();
     }

@@ -25,7 +25,7 @@ namespace Chroma {
         inline static std::vector<std::function<void()>> saberCallbacks;
         static std::vector<std::optional<UnityEngine::Color>> SaberColorOverride;
 
-        static void registerCallback(std::function<void()> callback);
+        static void registerCallback(const std::function<void()>& callback);
 
         static void clearCallbacks();
 
