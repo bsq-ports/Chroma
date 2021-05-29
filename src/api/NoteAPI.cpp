@@ -11,7 +11,7 @@ using namespace UnityEngine;
 
 
 // TODO: unsure of this
-EXPOSE_API(getNoteColorSafe, int, int colorType) {
+EXPOSE_API(getNoteColorSafe, OptColor, int colorType) {
     CRASH_UNLESS(colorType >= ColorType::ColorA && colorType <= ColorType::ColorB);
     auto optional = NoteColorizer::getNoteColorOverride(colorType);
 
@@ -21,26 +21,22 @@ EXPOSE_API(getNoteColorSafe, int, int colorType) {
 
         color = optional.value();
 
-        int rgba = Chroma::ColourManager::ColourToInt(color);
-
-        return rgba;
+        return OptColorFromColor(color);
     } else {
-        return -1;
+        return OptColor();
     }
 }
 
-EXPOSE_API(getNoteControllerColorSafe, int, NoteController* noteController, int colorType) {
+EXPOSE_API(getNoteControllerColorSafe, OptColor, NoteController* noteController, int colorType) {
     CRASH_UNLESS(colorType >= ColorType::ColorA && colorType <= ColorType::ColorB);
 
     auto cnv = NoteColorizer::CNVColorManager::GetCNVColorManager(noteController);
 
-    if (!cnv) return -1;
+    if (!cnv) return OptColor();
 
     auto color = cnv->ColorForCNVManager();
 
-    int rgba = Chroma::ColourManager::ColourToInt(color);
-
-    return rgba;
+    return OptColorFromColor(color);
 }
 
 EXPOSE_API(setNoteColorSafe, void, NoteController* nc, std::optional<UnityEngine::Color> color0, std::optional<UnityEngine::Color> color1) {

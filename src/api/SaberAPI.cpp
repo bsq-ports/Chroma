@@ -12,7 +12,7 @@ using namespace UnityEngine;
 
 
 
-EXPOSE_API(getSaberColorSafe, int, int saberType) {
+EXPOSE_API(getSaberColorSafe, OptColor, int saberType) {
     CRASH_UNLESS(saberType >= SaberType::SaberA && saberType <= SaberType::SaberB);
 
     auto optional = SaberColorizer::SaberColorOverride[saberType];
@@ -23,12 +23,19 @@ EXPOSE_API(getSaberColorSafe, int, int saberType) {
 
         color = optional.value();
 
-        int rgba = Chroma::ColourManager::ColourToInt(color);
 
-        return rgba;
+
+        return OptColorFromColor(color);
     } else {
-        return -1;
+        return OptColorNull();
     }
+}
+
+EXPOSE_API(getSabersColorSafe, SaberAPI::ColorOptPair) {
+    auto colorA = SaberColorizer::SaberColorOverride[SaberType::SaberA];
+    auto colorB = SaberColorizer::SaberColorOverride[SaberType::SaberB];
+
+    return SaberAPI::ColorOptPair {colorA ? OptColorFromColor(*colorA) : OptColorNull(), colorB ? OptColorFromColor(*colorB) : OptColorNull()};
 }
 
 EXPOSE_API(setSaberColorSafe, void, int saberType, UnityEngine::Color color) {
@@ -38,5 +45,5 @@ EXPOSE_API(setSaberColorSafe, void, int saberType, UnityEngine::Color color) {
 }
 
 EXPOSE_API(registerSaberCallbackSafe, void, const std::function<void()>& callback) {
-    SaberColorizer::registerCallback(std::move(callback));
+    SaberColorizer::registerCallback(callback);
 }

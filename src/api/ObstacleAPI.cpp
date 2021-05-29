@@ -11,20 +11,18 @@ using namespace UnityEngine;
 
 // TODO: unsure of this
 
-EXPOSE_API(getObstacleControllerColorSafe, int, ObstacleController* obstacleController) {
+EXPOSE_API(getObstacleControllerColorSafe, OptColor, ObstacleController* obstacleController) {
 
     auto ocm = OCColorManager::GetOCColorManager(obstacleController);
 
-    if (!ocm) return -1;
+    if (!ocm) return OptColor();
 
     auto color = ocm->_color;
 
     if (!color)
-        return -1;
+        return OptColor();
 
-    int rgba = Chroma::ColourManager::ColourToInt(color.value());
-
-    return rgba;
+    return OptColorFromColor(color.value());
 }
 
 EXPOSE_API(setObstacleColorSafe, void, ObstacleController* oc, UnityEngine::Color color1) {

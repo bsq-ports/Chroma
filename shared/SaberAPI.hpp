@@ -17,20 +17,35 @@ namespace Chroma {
 
         /// Gets the saber color or null if either Chroma is not setting the color or method was not found
         static std::optional<UnityEngine::Color> getSaberColorSafe(int saberType) noexcept {
-            auto function = CondDep::Find<int, int>("chroma", "getSaberColorSafe");
+            auto function = CondDep::Find<OptColor, int>("chroma", "getSaberColorSafe");
 
             if (function) {
-                // Returns the rgba value or -1 if it was a nullopt
-                auto rgba = function.value()(saberType);
+                // Returns the color struct
+                auto optColor = function.value()(saberType);
 
-                if (rgba == -1) return std::nullopt;
+                if (!optColor.isSet) return std::nullopt;
 
-                auto color = ColourManager::ColourFromInt(rgba);
-
-                return std::make_optional(color);
+                return optColor.getColor();
             }
 
             return std::nullopt;
+        }
+
+        using ColorPair = std::pair<std::optional<UnityEngine::Color>, std::optional<UnityEngine::Color>>;
+        using ColorOptPair = ExternPair<OptColor, OptColor>;
+        /// Gets the saber color or null if either Chroma is not setting the color or method was not found
+        static ColorPair getSabersColorSafe() noexcept {
+            auto function = CondDep::Find<ColorOptPair>("chroma", "getSabersColorSafe");
+
+            if (function) {
+                // Returns the two rgba values
+                auto pair = function.value()();
+
+                return {pair.first.isSet ? std::make_optional(pair.first.getColor()) : std::nullopt,
+                        pair.second.isSet ? std::make_optional(pair.second.getColor()) : std::nullopt};
+            }
+
+            return {std::nullopt, std::nullopt};
         }
 
         /// Sets the saber color if the method was found.

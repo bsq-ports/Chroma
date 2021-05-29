@@ -19,17 +19,15 @@ namespace Chroma {
         /// TODO: Unsure of whether this returns nullopt if Chroma sets the color or not.
         /// Gets the obstacle color or null if either Chroma is not setting the color or method was not found
         static std::optional<UnityEngine::Color> getObstacleControllerColorSafe(GlobalNamespace::ObstacleController *oc) noexcept {
-            auto function = CondDep::Find<int, GlobalNamespace::ObstacleController*>("chroma", "getObstacleControllerColorSafe");
+            auto function = CondDep::Find<OptColor, GlobalNamespace::ObstacleController*>("chroma", "getObstacleControllerColorSafe");
 
             if (function) {
-                // Returns the rgba value or -1 if it was a nullopt
-                auto rgba = function.value()(oc);
+                // Returns the color struct
+                auto optColor = function.value()(oc);
 
-                if (rgba == -1) return std::nullopt;
+                if (!optColor.isSet) return std::nullopt;
 
-                auto color = ColourManager::ColourFromInt(rgba);
-
-                return std::make_optional(color);
+                return optColor.getColor();
             }
 
             return std::nullopt;

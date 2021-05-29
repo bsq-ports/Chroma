@@ -161,8 +161,10 @@ void ChangeColorCoroutine2(Saber *instance, UnityEngine::Color color) {
     }
 }
 
+/// These color functions convert color to a single int so we can use it in extern functions
+/// Since extern functions can't return UnityEngine::Color
 float linearToGamma(float c) {
-    return 255.0f * std::pow(c/255.0f, 1/2.2f);
+    return 255.0f * std::pow(c / 255.0f, 1 / 2.2f);
 }
 
 UnityEngine::Color getGamma(UnityEngine::Color color) {

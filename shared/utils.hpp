@@ -16,6 +16,7 @@ namespace Chroma {
          */
 
     public:
+        // TODO: Remove
         inline static int ColourToInt(float rC, float gC, float bC, float aC) {
             int r = floorToInt(rC * 255);
             int g = floorToInt(gC * 255);
@@ -38,14 +39,57 @@ namespace Chroma {
         }
     };
 
-    /// These color functions convert color to a single int so we can use it in extern functions
-    /// Since extern functions can't return UnityEngine::Color
 
-    inline float linearToGamma(float c) {
-        return 255.0f * std::pow(c / 255.0f, 1 / 2.2f);
+
+    // Idk if this is better, I just know it works
+    inline uint8_t floatToByte(float c) {
+        return (uint8_t) std::floor(double(c * 255));
     }
 
-    inline float gammaToLinear(float c) {
-        return 255.0f * std::pow(c / 255.0f, 2.2f);
+    inline float byteToFloat(uint8_t c) {
+        return (float) c / 255.0f;
     }
+
+    template<typename T, typename V>
+    struct ExternPair {
+        T first;
+        V second;
+    };
+
+    struct OptColor
+    {
+        std::uint8_t r;
+        std::uint8_t g;
+        std::uint8_t b : 7;
+        bool isSet : 1;
+        std::uint8_t a;
+
+        [[nodiscard]] UnityEngine::Color getColor() const {
+            return UnityEngine::Color(byteToFloat(r), byteToFloat(g), byteToFloat(b), byteToFloat(a));
+        }
+    };
+
+    inline OptColor OptColorFromColor(UnityEngine::Color const& color) {
+        return {
+                floatToByte(color.r),
+                floatToByte(color.g),
+                floatToByte(color.b),
+                true,
+                floatToByte(color.a),
+        };
+    }
+
+    // This is probably not needed but it is verbose
+    inline OptColor OptColorNull() {
+        return {
+                0,
+                0,
+                0,
+                false,
+                0,
+        };
+    }
+
+
+    static_assert(sizeof(OptColor) == 4);
 }

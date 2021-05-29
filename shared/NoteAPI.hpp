@@ -19,17 +19,15 @@ namespace Chroma {
         /// TODO: unsure of this
         /// Gets the note type color or null if either Chroma is not setting the color or method was not found
         static std::optional<UnityEngine::Color> getNoteColorSafe(int colorType) noexcept {
-            auto function = CondDep::Find<int, int>("chroma", "getNoteColorSafe");
+            auto function = CondDep::Find<OptColor, int>("chroma", "getNoteColorSafe");
 
             if (function) {
-                // Returns the rgba value or -1 if it was a nullopt
-                auto rgba = function.value()(colorType);
+                // Returns the color struct
+                auto optColor = function.value()(colorType);
 
-                if (rgba == -1) return std::nullopt;
+                if (!optColor.isSet) return std::nullopt;
 
-                auto color = ColourManager::ColourFromInt(rgba);
-
-                return std::make_optional(color);
+                return optColor.getColor();
             }
 
             return std::nullopt;
@@ -38,17 +36,15 @@ namespace Chroma {
         /// TODO: Unsure of whether this returns nullopt if Chroma sets the color or not.
         /// Gets the note color or null if either Chroma is not setting the color or method was not found
         static std::optional<UnityEngine::Color> getNoteControllerColorSafe(GlobalNamespace::NoteController* noteController, int colorType) noexcept {
-            auto function = CondDep::Find<int, GlobalNamespace::NoteController*, int>("chroma", "getNoteControllerColorSafe");
+            auto function = CondDep::Find<OptColor, GlobalNamespace::NoteController*, int>("chroma", "getNoteControllerColorSafe");
 
             if (function) {
-                // Returns the rgba value or -1 if it was a nullopt
-                auto rgba = function.value()(noteController, colorType);
+                // Returns the color struct
+                auto optColor = function.value()(noteController, colorType);
 
-                if (rgba == -1) return std::nullopt;
+                if (!optColor.isSet) return std::nullopt;
 
-                auto color = ColourManager::ColourFromInt(rgba);
-
-                return std::make_optional(color);
+                return optColor.getColor();
             }
 
             return std::nullopt;
