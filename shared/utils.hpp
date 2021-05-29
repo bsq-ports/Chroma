@@ -39,17 +39,6 @@ namespace Chroma {
         }
     };
 
-
-
-    // Idk if this is better, I just know it works
-    inline uint8_t floatToByte(float c) {
-        return (uint8_t) std::floor(double(c * 255));
-    }
-
-    inline float byteToFloat(uint8_t c) {
-        return (float) c / 255.0f;
-    }
-
     template<typename T, typename V>
     struct ExternPair {
         T first;
@@ -58,24 +47,24 @@ namespace Chroma {
 
     struct OptColor
     {
-        std::uint8_t r;
-        std::uint8_t g;
-        std::uint8_t b : 7;
-        bool isSet : 1;
-        std::uint8_t a;
+        float r;
+        float g;
+        float b;
+        float a;
+        bool isSet;
 
         [[nodiscard]] UnityEngine::Color getColor() const {
-            return UnityEngine::Color(byteToFloat(r), byteToFloat(g), byteToFloat(b), byteToFloat(a));
+            return UnityEngine::Color(r, g, b,a);
         }
     };
 
     inline OptColor OptColorFromColor(UnityEngine::Color const& color) {
         return {
-                floatToByte(color.r),
-                floatToByte(color.g),
-                floatToByte(color.b),
-                true,
-                floatToByte(color.a),
+                color.r,
+                color.g,
+                color.b,
+                color.a,
+                true
         };
     }
 
@@ -85,11 +74,8 @@ namespace Chroma {
                 0,
                 0,
                 0,
-                false,
                 0,
+                false,
         };
     }
-
-
-    static_assert(sizeof(OptColor) == 4);
 }
