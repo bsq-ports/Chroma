@@ -33,8 +33,28 @@ namespace Chroma {
             return std::nullopt;
         }
 
-        /// TODO: Unsure of whether this returns nullopt if Chroma sets the color or not.
-        /// Gets the note color or null if either Chroma is not setting the color or method was not found
+
+        /// Gets the note color or null if Chroma method was not found
+        /// If Chroma is not setting the color, it returns the game's colors
+        /// THIS WILL NOT PLAY NICELY WITH MIRRORED NOTE CONTROLLER
+        static std::optional<UnityEngine::Color> getNoteControllerOverrideColorSafe(GlobalNamespace::NoteController* noteController, int colorType) noexcept {
+            auto function = CondDep::Find<OptColor, GlobalNamespace::NoteController*, int>("chroma", "getNoteControllerOverrideColorSafe");
+
+            if (function) {
+                // Returns the color struct
+                auto optColor = function.value()(noteController, colorType);
+
+                if (!optColor.isSet) return std::nullopt;
+
+                return optColor.getColor();
+            }
+
+            return std::nullopt;
+        }
+
+        /// Gets the note color or null if Chroma method was not found
+        /// If Chroma is not setting the color, it returns std::nullopt
+        /// THIS WILL NOT PLAY NICELY WITH MIRRORED NOTE CONTROLLER
         static std::optional<UnityEngine::Color> getNoteControllerColorSafe(GlobalNamespace::NoteController* noteController, int colorType) noexcept {
             auto function = CondDep::Find<OptColor, GlobalNamespace::NoteController*, int>("chroma", "getNoteControllerColorSafe");
 
@@ -50,7 +70,7 @@ namespace Chroma {
             return std::nullopt;
         }
 
-        /// Sets the saber color if the method was found.
+        /// Sets the note color if the method was found.
         static void setNoteColorSafe(GlobalNamespace::NoteController* nc, std::optional<UnityEngine::Color> color0, std::optional<UnityEngine::Color> color1) noexcept {
             auto function = CondDep::Find<void, GlobalNamespace::NoteController*, std::optional<UnityEngine::Color>, std::optional<UnityEngine::Color>>("chroma", "setNoteColorSafe");
 

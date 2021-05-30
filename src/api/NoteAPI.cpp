@@ -27,7 +27,7 @@ EXPOSE_API(getNoteColorSafe, OptColor, int colorType) {
     }
 }
 
-EXPOSE_API(getNoteControllerColorSafe, OptColor, NoteController* noteController, int colorType) {
+EXPOSE_API(getNoteControllerOverrideColorSafe, OptColor, NoteController* noteController, int colorType) {
     CRASH_UNLESS(colorType >= ColorType::ColorA && colorType <= ColorType::ColorB);
 
     auto cnv = NoteColorizer::CNVColorManager::GetCNVColorManager(noteController);
@@ -37,6 +37,22 @@ EXPOSE_API(getNoteControllerColorSafe, OptColor, NoteController* noteController,
     auto color = cnv->ColorForCNVManager();
 
     return OptColorFromColor(color);
+}
+
+EXPOSE_API(getNoteControllerColorSafe, OptColor, NoteController* noteController, int colorType) {
+    CRASH_UNLESS(colorType >= ColorType::ColorA && colorType <= ColorType::ColorB);
+
+    auto it = ChromaObjectDataManager::ChromaObjectDatas.find(noteController->noteData);
+
+    if (it == ChromaObjectDataManager::ChromaObjectDatas.end())
+        return OptColorNull();
+
+    auto color = it->second->Color;
+
+    if (!color)
+        return OptColorNull();
+
+    return OptColorFromColor(color.value());
 }
 
 EXPOSE_API(setNoteColorSafe, void, NoteController* nc, std::optional<UnityEngine::Color> color0, std::optional<UnityEngine::Color> color1) {
