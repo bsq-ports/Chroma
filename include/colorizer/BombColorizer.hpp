@@ -1,7 +1,11 @@
 #pragma once
 
+#include "ObjectColorizer.hpp"
+
+#include "UnityEngine/Renderer.hpp"
 #include "UnityEngine/MonoBehaviour.hpp"
 #include "GlobalNamespace/BombNoteController.hpp"
+#include "GlobalNamespace/NoteControllerBase.hpp"
 #include "UnityEngine/Material.hpp"
 #include <vector>
 #include <string>
@@ -9,57 +13,43 @@
 #include "custom-types/shared/types.hpp"
 #include "custom-types/shared/macros.hpp"
 
-// We use custom types here to avoid GC deleting our variables
-DECLARE_CLASS_CODEGEN(Chroma, BNCColorManager, Il2CppObject,
-    public:
+ namespace Chroma {
+     class BombColorizer : public ObjectColorizer {
+     private:
+         UnityEngine::Renderer *_bombRenderer;
 
-        static std::optional<UnityEngine::Color> _globalColor;
-        UnityEngine::Color _color_Original;
+         inline static std::optional<UnityEngine::Color> GlobalColor;
 
+         explicit BombColorizer(GlobalNamespace::NoteControllerBase *noteController);
+     protected:
+         void Refresh() override;
 
-        static BNCColorManager* GetBNCColorManager(GlobalNamespace::BombNoteController* nc);
+         std::optional<UnityEngine::Color> GlobalColorGetter() override;
 
-        static BNCColorManager* CreateBNCColorManager(GlobalNamespace::BombNoteController* nc);
+     public:
 
-        static void SetGlobalBombColor(std::optional<UnityEngine::Color> color);
+         static std::shared_ptr<BombColorizer> New(GlobalNamespace::NoteControllerBase* noteController);
 
-        static void ResetGlobal();
+         using ColorizerMap = std::unordered_map<GlobalNamespace::NoteControllerBase*, std::shared_ptr<BombColorizer>>;
+         static ColorizerMap Colorizers;
 
-        void SetBombColor(std::optional<UnityEngine::Color> color) const;
+         static std::optional<UnityEngine::Color> getGlobalColor();
 
-        DECLARE_METHOD(void, Reset);
-        DECLARE_INSTANCE_FIELD(UnityEngine::Material*, _bombMaterial);
-        DECLARE_INSTANCE_FIELD(GlobalNamespace::BombNoteController*, _nc);
+         static void GlobalColorize(std::optional<UnityEngine::Color> color);
 
-        DECLARE_CTOR(ctor, GlobalNamespace::BombNoteController* nc);
+         static void Reset();
 
-        REGISTER_FUNCTION(
-        getLogger().debug("Registering LSEColorManager!");
-        REGISTER_METHOD(ctor);
-        REGISTER_METHOD(Reset);
+         // extensions
+         inline static std::shared_ptr<BombColorizer> GetBombColorizer(GlobalNamespace::NoteControllerBase* noteController) {
+             if (Colorizers.find(noteController) == Colorizers.end())
+                 return nullptr;
 
-        REGISTER_FIELD(_bombMaterial);
-        REGISTER_FIELD(_nc);
-        )
-);
+             return Colorizers[noteController];
+         }
 
-// TODO: Document properly
-// TODO: Does this need to become a custom type?
-namespace Chroma {
-    class BombColorizer {
-    public:
-        static void Reset(GlobalNamespace::BombNoteController* bnc);
-        static void ResetAllBombColors();
-        static void SetBombColor(GlobalNamespace::BombNoteController* bnc, std::optional<UnityEngine::Color> color);
-        static void SetAllBombColors(std::optional<UnityEngine::Color> color);
-        static void ClearBNCColorManagers();
-
-        /*
-         * NC ColorSO holders
-         */
-        static void BNCStart(GlobalNamespace::BombNoteController* bnc);
-        inline static std::unordered_map<GlobalNamespace::BombNoteController*, BNCColorManager*> _bncColorManagers = {};
-    };
-}
-
+         inline static void ColorizeBomb(GlobalNamespace::NoteControllerBase* noteController, std::optional<UnityEngine::Color> color) {
+             GetBombColorizer(noteController)->Colorize(color);
+         }
+     };
+ }
 

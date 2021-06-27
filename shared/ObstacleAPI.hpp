@@ -19,7 +19,7 @@ namespace Chroma {
         /// TODO: Unsure of whether this returns nullopt if Chroma sets the color or not.
         /// Gets the obstacle color or null if either Chroma is not setting the color or method was not found
         static std::optional<UnityEngine::Color> getObstacleControllerColorSafe(GlobalNamespace::ObstacleController *oc) noexcept {
-            auto function = CondDep::Find<OptColor, GlobalNamespace::ObstacleController*>("chroma", "getObstacleControllerColorSafe");
+            auto function = CondDep::Find<OptColor, GlobalNamespace::ObstacleController*>(CHROMA_ID, "getObstacleControllerColorSafe");
 
             if (function) {
                 // Returns the color struct
@@ -35,7 +35,7 @@ namespace Chroma {
 
         /// Sets the obstacle color if the method was found.
         static void setObstacleColorSafe(GlobalNamespace::ObstacleController* nc, UnityEngine::Color color0) noexcept {
-            auto function = CondDep::Find<void, GlobalNamespace::ObstacleController*, UnityEngine::Color>("chroma", "setObstacleColorSafe");
+            auto function = CondDep::Find<void, GlobalNamespace::ObstacleController*, UnityEngine::Color>(CHROMA_ID, "setObstacleColorSafe");
 
             if (function) {
                 function.value()(nc, color0);
@@ -44,7 +44,7 @@ namespace Chroma {
 
         /// Sets all the obstacle color if the method was found.
         static void setAllObstacleColorSafe(UnityEngine::Color color0) noexcept {
-            auto function = CondDep::Find<void, UnityEngine::Color>("chroma", "setAllObstacleColorSafe");
+            auto function = CondDep::Find<void, UnityEngine::Color>(CHROMA_ID, "setAllObstacleColorSafe");
 
             if (function) {
                 function.value()(color0);

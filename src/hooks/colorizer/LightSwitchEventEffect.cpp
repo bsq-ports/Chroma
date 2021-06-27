@@ -27,29 +27,6 @@ using namespace UnityEngine;
 using namespace System::Collections;
 using namespace custom_types::Helpers;
 
-
-
-custom_types::Helpers::Coroutine WaitThenStart(LightSwitchEventEffect *instance, BeatmapEventType eventType) {
-    CRASH_UNLESS(instance);
-    co_yield reinterpret_cast<IEnumerator*>(CRASH_UNLESS(WaitForEndOfFrame::New_ctor()));
-    LightColorizer::LSEStart(instance, eventType);
-    co_return;
-}
-
-MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_Start, void, LightSwitchEventEffect* self) {
-    LightSwitchEventEffect_Start(self);
-
-    // Do nothing if Chroma shouldn't run
-    if (!ChromaController::GetChromaLegacy() && !ChromaController::DoChromaHooks()) {
-        return;
-    }
-
-    auto* coro = custom_types::Helpers::CoroutineHelper::New(WaitThenStart(self, self->event));
-
-    self->StartCoroutine(reinterpret_cast<IEnumerator*>(coro));
-
-}
-
 MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_SetColor, void, LightSwitchEventEffect* self, UnityEngine::Color color) {
     // Do nothing if Chroma shouldn't run
     if (!ChromaController::GetChromaLegacy() && !ChromaController::DoChromaHooks()) {
@@ -60,7 +37,7 @@ MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_SetColor, void, LightSwitchEventEffe
 
     if (LightSwitchEventEffectHolder::LightIDOverride) {
         auto lightOverride = LightSwitchEventEffectHolder::LightIDOverride.value();
-        auto lights = LightColorizer::GetLights(self);
+        auto lights = LightColorizer::GetLightColorizer(self->event)->Lights;
 
         int type = self->event;
         std::vector<int> newIds;
@@ -119,18 +96,14 @@ MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_HandleBeatmapObjectCallbackControlle
         return;
     }
 
-
-
     if (beatmapEventData->type == self->event) {
-        LightColorizer::SetLastValue(self, beatmapEventData->value);
-        LightColorManager::ColorLightSwitch(self, beatmapEventData);
+        LightColorManager::ColorLightSwitch(beatmapEventData);
     }
 
     LightSwitchEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);
 }
 
-void Chroma::Hooks::LightSwitchEventEffect() {
-    INSTALL_HOOK_OFFSETLESS(getLogger(), LightSwitchEventEffect_Start, il2cpp_utils::FindMethodUnsafe("", "LightSwitchEventEffect", "Start", 0));
+void Chroma::Hooks::colorizer_LightSwitchEventEffect() {
     INSTALL_HOOK_OFFSETLESS(getLogger(), LightSwitchEventEffect_SetColor, il2cpp_utils::FindMethodUnsafe("", "LightSwitchEventEffect", "SetColor", 1));
     INSTALL_HOOK_OFFSETLESS(getLogger(), LightSwitchEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger, il2cpp_utils::FindMethodUnsafe("", "LightSwitchEventEffect", "HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger", 1));
 }

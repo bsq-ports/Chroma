@@ -4,7 +4,9 @@
 #include <optional>
 
 #include "UnityEngine/Vector3.hpp"
+
 #include "GlobalNamespace/TrackLaneRing.hpp"
+#include "GlobalNamespace/BeatmapObjectsAvoidance.hpp"
 
 #include "custom-json-data/shared/CustomBeatmapData.h"
 
@@ -32,6 +34,8 @@ namespace Chroma {
 
     public:
         inline static std::unordered_map<GlobalNamespace::TrackLaneRing*, UnityEngine::Quaternion> RingRotationOffsets;
+        inline static std::unordered_map<GlobalNamespace::BeatmapObjectsAvoidance*, UnityEngine::Vector3> AvoidancePosition;
+        inline static std::unordered_map<GlobalNamespace::BeatmapObjectsAvoidance*, UnityEngine::Quaternion> AvoidanceRotation;
 
         static void Init(CustomJSONData::CustomBeatmapData* customBeatmapData, float noteLinesDistance);
 

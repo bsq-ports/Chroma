@@ -26,24 +26,19 @@ MAKE_HOOK_OFFSETLESS(
     float jumpDuration,
     float jumpGravity
 ) {
+    BombNoteController_Init(self, noteData, worldRotation, moveStartPos, moveEndPos, jumpEndPos, moveDuration, jumpDuration, jumpGravity);
     // Do nothing if Chroma shouldn't run
     if (!ChromaController::DoChromaHooks()) {
         BombNoteController_Init(self, noteData, worldRotation, moveStartPos, moveEndPos, jumpEndPos, moveDuration, jumpDuration, jumpGravity);
         return;
     }
 
-    BombColorizer::BNCStart(self);
+    auto chromaData = ChromaObjectDataManager::ChromaObjectDatas.find(noteData);
+    if (chromaData != ChromaObjectDataManager::ChromaObjectDatas.end()) {
+        auto color = chromaData->second->Color;
 
-    auto chromaData = ChromaObjectDataManager::ChromaObjectDatas[noteData];
-    auto color = chromaData->Color;
-
-    if (color) {
-        BombColorizer::SetBombColor(self, color);
-    } else {
-        BombColorizer::Reset(self);
+        BombColorizer::ColorizeBomb(self, color);
     }
-
-    BombNoteController_Init(self, noteData, worldRotation, moveStartPos, moveEndPos, jumpEndPos, moveDuration, jumpDuration, jumpGravity);
 }
 
 void Chroma::Hooks::BombNoteController() {

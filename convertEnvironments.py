@@ -27,7 +27,7 @@ def json_to_cpp(dict_json):
 
 repository = Github().get_repo('AeroLuna/Chroma')
 
-light_tables = repository.get_contents('Chroma/LightIDTables', 'v2.4.1')
+light_tables = repository.get_contents('Chroma/LightIDTables', 'v2.4.9')
 
 environmentFolder = "./environments_converted"
 

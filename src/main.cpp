@@ -8,8 +8,9 @@
 #include "Chroma.hpp"
 #include "colorizer/LightColorizer.hpp"
 #include "colorizer/ObstacleColorizer.hpp"
-#include "colorizer/BombColorizer.hpp"
-#include "colorizer/SaberColorizer.hpp"
+#include "colorizer/Monobehaviours/ChromaSaberController.hpp"
+#include "colorizer/Monobehaviours/ChromaParticleEventController.hpp"
+#include "colorizer/Monobehaviours/ChromaClashEffectController.hpp"
 #include "custom-types/shared/register.hpp"
 
 #include "lighting/ChromaRingsRotationEffect.hpp"
@@ -112,10 +113,10 @@ extern "C" void load() {
     getLogger().info("Installing types...");
 
     custom_types::Register::RegisterTypes<
-            Chroma::LSEColorManager,
             Chroma::ChromaGradientController,
-            Chroma::OCColorManager,
-            Chroma::BNCColorManager,
+            Chroma::ChromaSaberController,
+            ChromaParticleEventController,
+            ChromaClashEffectController,
             Chroma::ChromaRingsRotationEffect,
             Chroma::ChromaRotationEffect
     >();

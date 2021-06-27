@@ -1,18 +1,27 @@
 #include "Chroma.hpp"
 #include "ChromaController.hpp"
-
+#include "ChromaObjectData.hpp"
+#include "lighting/LightColorManager.hpp"
 #include "colorizer/LightColorizer.hpp"
-#include "GlobalNamespace/ColorManager.hpp"
+#include "colorizer/Monobehaviours/ChromaParticleEventController.hpp"
+#include "utils/ChromaUtils.hpp"
+
+
 #include "custom-json-data/shared/CustomBeatmapData.h"
 #include "GlobalNamespace/ParticleSystemEventEffect.hpp"
+#include "GlobalNamespace/ColorManager.hpp"
+
 #include "UnityEngine/WaitForEndOfFrame.hpp"
-#include "utils/ChromaUtils.hpp"
+#include "UnityEngine/Object.hpp"
+#include "UnityEngine/GameObject.hpp"
+
 #include "custom-types/shared/coroutine.hpp"
 
 #include <experimental/coroutine>
 
-#include "ChromaObjectData.hpp"
-#include "lighting/LightColorManager.hpp"
+
+
+
 
 using namespace CustomJSONData;
 using namespace GlobalNamespace;
@@ -23,7 +32,7 @@ using namespace custom_types::Helpers;
 Coroutine WaitThenStart(ParticleSystemEventEffect* instance, BeatmapEventType eventType)
 {
     co_yield reinterpret_cast<enumeratorT*>(UnityEngine::WaitForEndOfFrame::New_ctor());
-    LightColorizer::LSEStart(instance, eventType);
+    instance->get_gameObject()->AddComponent<ChromaParticleEventController*>()->Init(instance, eventType);
 }
 
 MAKE_HOOK_OFFSETLESS(
@@ -36,6 +45,13 @@ MAKE_HOOK_OFFSETLESS(
     // Do nothing if Chroma shouldn't run
     if (!ChromaController::DoChromaHooks()) {
         return;
+    }
+
+    // If duplicated, clean up before duping
+    auto oldController = self->GetComponent<ChromaParticleEventController*>();
+    if (oldController)
+    {
+        UnityEngine::Object::Destroy(oldController);
     }
 
     auto* coro = custom_types::Helpers::CoroutineHelper::New(WaitThenStart(self, self->colorEvent));
@@ -57,8 +73,9 @@ MAKE_HOOK_OFFSETLESS(
 
     if (beatmapEventData->type == self->colorEvent)
     {
-        LightColorizer::SetLastValue(self, beatmapEventData->value);
-        LightColorManager::ColorLightSwitch(self, beatmapEventData);
+        for (auto& colorizer : ParticleColorizer::GetParticleColorizers(self->colorEvent)) {
+            colorizer->PreviousValue = beatmapEventData->value;
+        }
     }
 
     ParticleSystemEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);

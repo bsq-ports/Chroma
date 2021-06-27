@@ -31,29 +31,23 @@ MAKE_HOOK_OFFSETLESS(
 ) {
     static auto MultiplayerConnectedPlayerObstacleControllerKlass = classof(MultiplayerConnectedPlayerObstacleController*);
 
-    // Do nothing if Chroma shouldn't run
-    if (!ChromaController::DoChromaHooks() || ASSIGNMENT_CHECK(MultiplayerConnectedPlayerObstacleControllerKlass, self->klass)) {
-        ObstacleController_Init(self, obstacleData, worldRotation, startPos, midPos, endPos, move1Duration, move2Duration, singleLineWidth, height);
-        return;
-    }
-    ObstacleColorizer::OCStart(self, self->colorManager->get_obstaclesColor());
-
-    auto chromaData = (ChromaObjectDataManager::ChromaObjectDatas[obstacleData]);
-    auto color = chromaData->Color;
-
-
-
-    if (color) {
-        ObstacleColorizer::SetObstacleColor(self, color.value());
-    } else {
-        ObstacleColorizer::Reset(self);
-    }
-
-
     ObstacleController_Init(self, obstacleData, worldRotation, startPos, midPos, endPos, move1Duration, move2Duration, singleLineWidth, height);
 
-    ObstacleColorizer::SetActiveColors(self);
+    // Do nothing if Chroma shouldn't run
+    if (!ChromaController::DoChromaHooks() || ASSIGNMENT_CHECK(MultiplayerConnectedPlayerObstacleControllerKlass, self->klass)) {
+        return;
+    }
+
+
+    auto chromaData = ChromaObjectDataManager::ChromaObjectDatas.find(obstacleData);
+    if (chromaData != ChromaObjectDataManager::ChromaObjectDatas.end()) {
+        auto color = chromaData->second->Color;
+
+        ObstacleColorizer::ColorizeObstacle(self, color);
+    }
 }
+
+// TODO: Heck Update
 
 void Chroma::Hooks::ObstacleController() {
     INSTALL_HOOK_OFFSETLESS(getLogger(), ObstacleController_Init, il2cpp_utils::FindMethodUnsafe("", "ObstacleController", "Init", 9));

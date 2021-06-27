@@ -36,9 +36,11 @@ inline void PrintJSONValue(const rapidjson::Value* json) {
 
 namespace Chroma {
     namespace Hooks {
+        void BaseNoteVisuals();
         void BeatEffectSpawner();
+        void colorizer_BeatEffectSpawner();
         void BeatmapDataTransformHelper();
-        void BeatmapObjectManager();
+        void BeatmapObjectsAvoidance();
         void BeatmapObjectSpawnController();
         void BombNoteController();
         void ColorManager();
@@ -46,15 +48,22 @@ namespace Chroma {
         void LightPairRotationEventEffect();
         void LightRotationEventEffect();
         void LightSwitchEventEffect();
+        void colorizer_LightSwitchEventEffect();
         void LightWithIdManager();
-        void MirroredCubeNoteController();
         void NoteCutEffectSpawner();
+        void MirroredObstacleController();
+        void MirroredNoteController();
         void MissionLevelScenesTransitionSetupDataSO();
         void MultiplayerLevelScenesTransitionSetupDataSO();
+        void ObstacleDissolve();
         void ObstacleController();
+        void ObstacleSaberSparkleEffectManager();
         void ParametricBoxController();
         void ParticleSystemEventEffect();
-        void SaberManager();
+        void SaberBurnMarkArea();
+        void SaberBurnMarkSparkles();
+        void SaberClashEffect();
+        void SaberModelContainer();
         void SceneManager_Internal();
         void StandardLevelScenesTransitionSetupDataSO();
         void TrackLaneRing();

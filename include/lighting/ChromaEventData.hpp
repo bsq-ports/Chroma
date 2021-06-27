@@ -13,34 +13,8 @@
 using namespace ChromaUtils;
 
 namespace Chroma {
-
-    enum class EventDataType {
-        LIGHT,
-        RING,
-        LASER_SPEED,
-        RING_STEP
-    };
-
     class ChromaEventData {
     public:
-        const EventDataType dataType;
-
-        explicit ChromaEventData(EventDataType dataType1) : dataType(dataType1) {};
-    };
-
-    class ChromaEventDataManager {
-    public:
-        typedef std::unordered_map<GlobalNamespace::BeatmapEventData *, std::shared_ptr<ChromaEventData>> EventMapType;
-        inline static EventMapType ChromaEventDatas;
-
-        static void deserialize(GlobalNamespace::IReadonlyBeatmapData *beatmapData);
-    };
-
-
-    class ChromaLightEventData : public ChromaEventData {
-    public:
-        ChromaLightEventData() : ChromaEventData(EventDataType::LIGHT) {};
-
         std::optional<std::reference_wrapper<rapidjson::Value>> LightID;
 
         std::optional<std::reference_wrapper<rapidjson::Value>> PropID;
@@ -58,11 +32,9 @@ namespace Chroma {
         };
 
         std::optional<GradientObjectData> GradientObject;
-    };
 
-    class ChromaRingRotationEventData : public ChromaEventData {
-    public:
-        ChromaRingRotationEventData() : ChromaEventData(EventDataType::RING) {};
+        // ChromaRingRotationEventData
+
         std::optional<std::string> NameFilter;
 
         std::optional<int> Direction;
@@ -84,25 +56,20 @@ namespace Chroma {
         float PropMult;
 
         float SpeedMult;
-    };
 
-    class ChromaLaserSpeedEventData : public ChromaEventData {
-    public:
-        ChromaLaserSpeedEventData() : ChromaEventData(EventDataType::LASER_SPEED) {};
+        // ChromaLaserSpeedEventData
 
         bool LockPosition;
-
-        float PreciseSpeed;
-
-        int Direction;
     };
 
-    class ChromaRingStepEventData  : public ChromaEventData  {
+    class ChromaEventDataManager {
     public:
-        ChromaRingStepEventData () : ChromaEventData(EventDataType::RING_STEP) {};
+        typedef std::unordered_map<GlobalNamespace::BeatmapEventData *, std::shared_ptr<ChromaEventData>> EventMapType;
+        inline static EventMapType ChromaEventDatas;
 
-
-        std::optional<float> Step;
+        static void deserialize(GlobalNamespace::IReadonlyBeatmapData *beatmapData);
     };
+
+
 
 }

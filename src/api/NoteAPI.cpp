@@ -13,7 +13,7 @@ using namespace UnityEngine;
 // TODO: unsure of this
 EXPOSE_API(getNoteColorSafe, OptColor, int colorType) {
     CRASH_UNLESS(colorType >= ColorType::ColorA && colorType <= ColorType::ColorB);
-    auto optional = NoteColorizer::getNoteColorOverride(colorType);
+    auto optional = NoteColorizer::GlobalColor[colorType];
 
     UnityEngine::Color color;
 
@@ -30,11 +30,11 @@ EXPOSE_API(getNoteColorSafe, OptColor, int colorType) {
 EXPOSE_API(getNoteControllerOverrideColorSafe, OptColor, NoteController* noteController, int colorType) {
     CRASH_UNLESS(colorType >= ColorType::ColorA && colorType <= ColorType::ColorB);
 
-    auto cnv = NoteColorizer::CNVColorManager::GetCNVColorManager(noteController);
+    auto cnv = NoteColorizer::GetNoteColorizer(noteController);
 
     if (!cnv) return OptColor();
 
-    auto color = cnv->ColorForCNVManager();
+    auto color = cnv->getColor();
 
     return OptColorFromColor(color);
 }
@@ -55,6 +55,6 @@ EXPOSE_API(getNoteControllerColorSafe, OptColor, NoteController* noteController,
     return OptColorFromColor(color.value());
 }
 
-EXPOSE_API(setNoteColorSafe, void, NoteController* nc, std::optional<UnityEngine::Color> color0, std::optional<UnityEngine::Color> color1) {
-    NoteColorizer::SetNoteColors(nc, color0, color1);
+EXPOSE_API(setNoteColorSafe, void, NoteControllerBase* nc, std::optional<UnityEngine::Color> color0) {
+    NoteColorizer::ColorizeNote(nc, color0);
 }

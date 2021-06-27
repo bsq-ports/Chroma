@@ -34,12 +34,7 @@ MAKE_HOOK_OFFSETLESS(BeatEffectSpawner_HandleNoteDidStartJump, void, BeatEffectS
             return;
         }
     }
-
-    NoteColorizer::EnableNoteColorOverride(noteController);
-
     BeatEffectSpawner_HandleNoteDidStartJump(self, noteController);
-
-    NoteColorizer::DisableNoteColorOverride();
 }
 
 

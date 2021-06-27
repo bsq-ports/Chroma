@@ -1,8 +1,10 @@
 #pragma once
 
 #include "UnityEngine/Color.hpp"
+#include "GlobalNamespace/SaberType.hpp"
 #include "conditional-dependencies/shared/main.hpp"
 #include "utils.hpp"
+#include "utils/EventCallback.hpp"
 
 #include <optional>
 #include <functional>
@@ -17,7 +19,7 @@ namespace Chroma {
 
         /// Gets the saber color or null if either Chroma is not setting the color or method was not found
         static std::optional<UnityEngine::Color> getSaberColorSafe(int saberType) noexcept {
-            auto function = CondDep::Find<OptColor, int>("chroma", "getSaberColorSafe");
+            auto function = CondDep::Find<OptColor, int>(CHROMA_ID, "getSaberColorSafe");
 
             if (function) {
                 // Returns the color struct
@@ -35,7 +37,7 @@ namespace Chroma {
         using ColorOptPair = ExternPair<OptColor, OptColor>;
         /// Gets the saber color or null if either Chroma is not setting the color or method was not found
         static ColorPair getSabersColorSafe() noexcept {
-            auto function = CondDep::Find<ColorOptPair>("chroma", "getSabersColorSafe");
+            auto function = CondDep::Find<ColorOptPair>(CHROMA_ID, "getSabersColorSafe");
 
             if (function) {
                 // Returns the two rgba values
@@ -50,7 +52,7 @@ namespace Chroma {
 
         /// Sets the saber color if the method was found.
         static void setSaberColorSafe(int saberType, UnityEngine::Color color) noexcept {
-            auto function = CondDep::Find<void, int, UnityEngine::Color>("chroma", "setSaberColorSafe");
+            auto function = CondDep::Find<void, int, UnityEngine::Color>(CHROMA_ID, "setSaberColorSafe");
 
             if (function) {
                 function.value()(saberType, color);
@@ -59,8 +61,8 @@ namespace Chroma {
 
         /// This registers a callback that is called whenever the saber color changes
         /// Do note however that every time a scene changes the callback is erased.
-        static void registerSaberCallback(const std::function<void()>& callback) {
-            auto function = CondDep::Find<void, const std::function<void()>&>("chroma", "registerSaberCallbackSafe");
+        static void registerSaberCallback(const ThinVirtualLayer<void (void*, int, UnityEngine::Color)>& callback) {
+            auto function = CondDep::Find<void, const ThinVirtualLayer<void (void*, int, UnityEngine::Color)>&>(CHROMA_ID, "registerSaberCallbackSafe");
 
             if (function) {
                 function.value()(callback);

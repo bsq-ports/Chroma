@@ -63,7 +63,7 @@ void ChromaRingsRotationEffect::FixedUpdate() {
         // Reverse iterate so we can delete while iterating
         for (auto it = _activeRingRotationEffects.rbegin(); it != _activeRingRotationEffects.rend(); it++) {
             ChromaRotationEffect *ringRotationEffect = *it;
-            int num = (int) ringRotationEffect->ProgressPos;
+            long num = (long) ringRotationEffect->ProgressPos;
             auto progressPos = ringRotationEffect->ProgressPos += ringRotationEffect->RotationPropagationSpeed;
 
             int length = (int) rings->Length();
@@ -75,7 +75,7 @@ void ChromaRingsRotationEffect::FixedUpdate() {
                 num++;
             }
 
-            if ((int) progressPos >= rings->Length()) {
+            if (progressPos >= rings->Length()) {
                 RecycleRingRotationEffect(ringRotationEffect);
                 _activeRingRotationEffects.erase(std::next(it).base());
             }

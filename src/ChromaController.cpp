@@ -61,8 +61,12 @@ custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(Global
     std::vector<GlobalNamespace::BeatmapEventData*> eventData;
     list->items->copy_to(eventData);
 
-    // please let me kill legacy
-    LegacyLightHelper::Activate(eventData);
+    try {
+        // please let me kill legacy
+        LegacyLightHelper::Activate(eventData);
+    } catch (Il2CppException& e) {
+        getLogger().error("Unable to run legacy due to exception?");
+    }
 
     co_return; // Reached end of coroutine
 }
@@ -75,20 +79,22 @@ void ChromaController::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene 
         ChromaGradientController::clearInstance();
         TrackLaneRingsManagerHolder::RingManagers.clear();
         TrackLaneRingsManagerHolder::RingManagers.shrink_to_fit(); // Deallocate unnecessary used memory
-        LightColorizer::ClearLSEColorManagers();
-        ObstacleColorizer::ClearOCColorManagers();
-        BombColorizer::ClearBNCColorManagers();
-        NoteColorizer::ClearCNVColorManagers();
-        SaberColorizer::ClearBSMColorManagers();
+        LightColorizer::Reset();
+        ObstacleColorizer::Reset();
+        BombColorizer::Reset();
+        NoteColorizer::Reset();
+        SaberColorizer::Reset();
     }
 }
 
 bool ChromaController::ChromaRequired() {
+    return !TutorialMode;
+
     // 1 is true
     char* reqVar = getenv("req_Chroma");
     char* sugVar = getenv("sug_Chroma");
 
-    return !TutorialMode && (true || (reqVar && std::string(reqVar) == "1") || (sugVar && std::string(sugVar) == "1"));
+    return !TutorialMode && ((reqVar && std::string(reqVar) == "1") || (sugVar && std::string(sugVar) == "1"));
 }
 
 bool ChromaController::DoColorizerSabers() {

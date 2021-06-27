@@ -51,7 +51,7 @@ DECLARE_CLASS_CODEGEN(Chroma, ChromaGradientController, UnityEngine::MonoBehavio
         // internal
         gradientMap Gradients;
 
-        static UnityEngine::Color AddGradient(ChromaLightEventData::GradientObjectData gradientObject, GlobalNamespace::BeatmapEventType id, float time);
+        static UnityEngine::Color AddGradient(ChromaEventData::GradientObjectData gradientObject, GlobalNamespace::BeatmapEventType id, float time);
         DECLARE_METHOD(static Chroma::ChromaGradientController*, getInstance);
         DECLARE_METHOD(static void, clearInstance);
 

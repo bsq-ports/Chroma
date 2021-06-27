@@ -1,80 +1,80 @@
 #pragma once
 
 #include "UnityEngine/MonoBehaviour.hpp"
+#include "UnityEngine/Shader.hpp"
+
+
+#include "GlobalNamespace/NoteControllerBase.hpp"
 #include "GlobalNamespace/NoteController.hpp"
 #include "GlobalNamespace/NoteCutInfo.hpp"
 #include "GlobalNamespace/ColorNoteVisuals.hpp"
 #include "GlobalNamespace/ColorManager.hpp"
-#include "custom-json-data/shared/CustomBeatmapData.h"
-#include "UnityEngine/Shader.hpp"
-#include "ChromaObjectData.hpp"
+
+
 #include <vector>
 #include <string>
 #include <optional>
 #include <stack>
 #include <tuple>
 
+#include "ChromaObjectData.hpp"
+#include "ObjectColorizer.hpp"
+
+#include "custom-json-data/shared/CustomBeatmapData.h"
 
 typedef std::pair<std::optional<UnityEngine::Color>, std::optional<UnityEngine::Color>> ColorPair;
 using NoteColorStack = std::stack<ColorPair>;
 
 // TODO: Document properly
 namespace Chroma {
-    class NoteColorizer {
+    class NoteColorizer : public ObjectColorizer
+    {
     private:
-        static NoteColorStack NoteColorOverride;
+        static int _colorID();
+
+        GlobalNamespace::NoteControllerBase* _noteController;
+
+
+        GlobalNamespace::ColorNoteVisuals* _colorNoteVisuals;
+        std::vector<GlobalNamespace::MaterialPropertyBlockController*> _materialPropertyBlockControllers;
+        std::optional<std::vector<UnityEngine::Color>> _originalColors;
+
+        NoteColorizer(GlobalNamespace::NoteControllerBase* noteController);
+
+    protected:
+//        override Color? GlobalColorGetter => GlobalColor[(int)ColorType];
+//        override Color OriginalColorGetter => OriginalColors[(int)ColorType];
+        std::optional<UnityEngine::Color> GlobalColorGetter() override;
+
+        std::optional<UnityEngine::Color> OriginalColorGetter() override;
+
+        void Refresh() override;
 
     public:
-        static std::optional<UnityEngine::Color> getNoteColorOverride(int color);
-     static void Reset(GlobalNamespace::NoteController* nc);
-     static void ResetAllNotesColors();
-     static void SetNoteColors(GlobalNamespace::NoteController* cnv, std::optional<UnityEngine::Color> color0, std::optional<UnityEngine::Color> color1);
-     static void SetAllNoteColors(std::optional<UnityEngine::Color> color0, std::optional<UnityEngine::Color> color1);
-     static void SetActiveColors(GlobalNamespace::NoteController* nc);
-     static void SetAllActiveColors();
-     static void ClearCNVColorManagers();
-     static void EnableNoteColorOverride(GlobalNamespace::NoteController* noteController);
-     static void DisableNoteColorOverride();
-     static void ColorizeSaber(GlobalNamespace::NoteController* noteController, GlobalNamespace::NoteCutInfo* noteCutInfo);
-    /*
-     * CNV ColorSO holders
-     */
-    static void CNVStart(GlobalNamespace::ColorNoteVisuals* cnv, GlobalNamespace::NoteController* nc);
+        inline static std::unordered_map<GlobalNamespace::NoteControllerBase*, std::shared_ptr<NoteColorizer>> Colorizers;
+        inline static std::vector<std::optional<UnityEngine::Color>> GlobalColor;
+        std::vector<UnityEngine::Color> getOriginalColors();
+        GlobalNamespace::ColorType getColorType();
 
-    class CNVColorManager
-        {
-        private:
-         inline static int _colorID = -1;
-         std::shared_ptr<ChromaNoteData> _chromaData;
+        static std::shared_ptr<NoteColorizer> New(GlobalNamespace::NoteControllerBase* noteControllerBase);
 
-         GlobalNamespace::ColorNoteVisuals* _cnv;
-         GlobalNamespace::NoteController* _nc;
-         GlobalNamespace::ColorManager* _colorManager;
-         CustomJSONData::CustomNoteData* _noteData;
+        static void GlobalColorize(std::optional<UnityEngine::Color> color, GlobalNamespace::ColorType colorType);;
 
-        public:
-            CNVColorManager(GlobalNamespace::ColorNoteVisuals* cnv, GlobalNamespace::NoteController* nc);
+        static void Reset();
 
-            static std::unordered_map<int, std::optional<UnityEngine::Color>> GlobalColor;
+        static void ColorizeSaber(GlobalNamespace::NoteController* noteController, GlobalNamespace::NoteCutInfo& noteCutInfo);
 
-            static std::shared_ptr<CNVColorManager> GetCNVColorManager(GlobalNamespace::NoteController* nc);
+        // extensions
+        inline static std::shared_ptr<NoteColorizer> GetNoteColorizer(GlobalNamespace::NoteControllerBase* noteController) {
+            if (Colorizers.find(noteController) == Colorizers.end())
+                return nullptr;
 
-            static std::shared_ptr<CNVColorManager> CreateCNVColorManager(GlobalNamespace::ColorNoteVisuals* cnv, GlobalNamespace::NoteController* nc);
+            return Colorizers[noteController];
+        }
 
-            static void SetGlobalNoteColors(std::optional<UnityEngine::Color> color0, std::optional<UnityEngine::Color> color1);
-
-            static void ResetGlobal();
-
-            void Reset();
-
-            void SetNoteColors(std::optional<UnityEngine::Color> color0, std::optional<UnityEngine::Color> color1);
-
-            UnityEngine::Color ColorForCNVManager();
-
-            void SetActiveColors();
-    };
-    private:
-        inline static std::unordered_map<GlobalNamespace::NoteController*, std::shared_ptr<CNVColorManager>> _cnvColorManagers = {};
+        inline static void ColorizeNote(GlobalNamespace::NoteControllerBase* noteController, std::optional<UnityEngine::Color> color) {
+            GetNoteColorizer(noteController)->Colorize(color);
+        }
     };
 }
 

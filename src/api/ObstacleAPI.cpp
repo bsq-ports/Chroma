@@ -13,24 +13,22 @@ using namespace UnityEngine;
 
 EXPOSE_API(getObstacleControllerColorSafe, OptColor, ObstacleController* obstacleController) {
 
-    auto ocm = OCColorManager::GetOCColorManager(obstacleController);
+    auto ocm = ObstacleColorizer::GetObstacleColorizer(obstacleController);
 
     if (!ocm) return OptColor();
 
-    auto color = ocm->_color;
+    auto color = ocm->getColor();
 
-    if (!color)
-        return OptColor();
 
-    return OptColorFromColor(color.value());
+    return OptColorFromColor(color);
 }
 
 EXPOSE_API(setObstacleColorSafe, void, ObstacleController* oc, UnityEngine::Color color1) {
-    ObstacleColorizer::SetObstacleColor(oc, color1);
+    ObstacleColorizer::ColorizeObstacle(oc, color1);
 }
 
 EXPOSE_API(setAllObstacleColorSafe, void, UnityEngine::Color color1) {
-    ObstacleColorizer::SetAllObstacleColors(color1);
+    ObstacleColorizer::GlobalColorize(color1);
 }
 
 

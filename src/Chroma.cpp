@@ -1,9 +1,11 @@
 #include "Chroma.hpp"
 
 void Chroma::InstallHooks() {
+    Hooks::BaseNoteVisuals();
     Hooks::BeatEffectSpawner();
+    Hooks::colorizer_BeatEffectSpawner();
     Hooks::BeatmapDataTransformHelper();
-    Hooks::BeatmapObjectManager();
+    Hooks::BeatmapObjectsAvoidance();
     Hooks::BeatmapObjectSpawnController();
     Hooks::BombNoteController();
     Hooks::ColorManager();
@@ -11,15 +13,22 @@ void Chroma::InstallHooks() {
     Hooks::LightPairRotationEventEffect();
     Hooks::LightRotationEventEffect();
     Hooks::LightSwitchEventEffect();
+    Hooks::colorizer_LightSwitchEventEffect();
     Hooks::LightWithIdManager();
-    Hooks::MirroredCubeNoteController();
     Hooks::NoteCutEffectSpawner();
+    Hooks::MirroredNoteController();
+    Hooks::MirroredObstacleController();
     Hooks::MissionLevelScenesTransitionSetupDataSO();
     Hooks::MultiplayerLevelScenesTransitionSetupDataSO();
+    Hooks::ObstacleDissolve();
     Hooks::ObstacleController();
+    Hooks::ObstacleSaberSparkleEffectManager();
     Hooks::ParametricBoxController();
     Hooks::ParticleSystemEventEffect();
-    Hooks::SaberManager();
+    Hooks::SaberBurnMarkArea();
+    Hooks::SaberBurnMarkSparkles();
+    Hooks::SaberClashEffect();
+    Hooks::SaberModelContainer();
     Hooks::SceneManager_Internal();
     Hooks::StandardLevelScenesTransitionSetupDataSO();
     Hooks::TrackLaneRing();

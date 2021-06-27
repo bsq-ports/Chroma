@@ -2,6 +2,8 @@
 
 #include "UnityEngine/Color.hpp"
 
+#define CHROMA_ID "chroma"
+
 namespace Chroma {
 
     inline static int floorToInt(float f) {

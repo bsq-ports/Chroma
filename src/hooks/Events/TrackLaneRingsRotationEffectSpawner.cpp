@@ -135,12 +135,11 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCall
             return;
         }
 
-        auto chromaData = std::static_pointer_cast<ChromaRingRotationEventData>(chromaIt->second);
+        auto chromaData = chromaIt->second;
 
 
-        debugSpamLog(contextLogger, "Doing stuff with custom Data ring %s", chromaData->dataType == EventDataType::RING ? "true" : "false");
+        debugSpamLog(contextLogger, "Doing stuff with custom Data ring");
 
-        if (chromaData->dataType == EventDataType::RING) {
 
             float rotationStep = 0.0f;
 
@@ -206,7 +205,7 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCall
                             speed * speedMult);
             debugSpamLog(contextLogger, "Finished spawn, returning");
             return;
-        }
+
     }
 
 

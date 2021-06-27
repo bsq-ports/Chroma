@@ -56,7 +56,7 @@ void ChromaGradientController::CancelGradient(GlobalNamespace::BeatmapEventType 
     getInstance()->Gradients.erase(eventType);
 }
 
-UnityEngine::Color ChromaGradientController::AddGradient(ChromaLightEventData::GradientObjectData gradientObject,
+UnityEngine::Color ChromaGradientController::AddGradient(ChromaEventData::GradientObjectData gradientObject,
                                                          GlobalNamespace::BeatmapEventType id, float time) {
     CancelGradient(id);
 
@@ -92,8 +92,7 @@ void Chroma::ChromaGradientController::Update() {
             // Accessing VALUE from element pointed by it.
             UnityEngine::Color color = it->second.Interpolate(modified);
 
-            LightColorizer::SetLightingColors(eventType, color, color, color, color);
-            LightColorizer::SetActiveColors(eventType);
+            LightColorizer::ColorizeLight(eventType, true, {color, color, color, color});
 
             if (!modified)
                 it++;

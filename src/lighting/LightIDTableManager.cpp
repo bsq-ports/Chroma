@@ -11,6 +11,7 @@
 #include "lighting/environments/GlassDesertEnvironment.hpp"
 #include "lighting/environments/GreenDayEnvironment.hpp"
 #include "lighting/environments/GreenDayGrenadeEnvironment.hpp"
+#include "lighting/environments/InterscopeEnvironment.hpp"
 #include "lighting/environments/KaleidoscopeEnvironment.hpp"
 #include "lighting/environments/KDAEnvironment.hpp"
 #include "lighting/environments/LinkinParkEnvironment.hpp"
@@ -34,6 +35,7 @@
     DO(GlassDesertEnvironment) \
     DO(GreenDayEnvironment) \
     DO(GreenDayGrenadeEnvironment) \
+    DO(InterscopeEnvironment) \
     DO(KaleidoscopeEnvironment) \
     DO(KDAEnvironment) \
     DO(LinkinParkEnvironment) \
@@ -98,23 +100,27 @@ std::optional<int> LightIDTableManager::GetActiveTableValue(int type, int id) {
     return std::nullopt;
 }
 
-void LightIDTableManager::RegisterIndex(int type, int index) {
+void LightIDTableManager::RegisterIndex(int type, int index, std::optional<int> requestedKey) {
     auto table = activeTable.value();
 
     // To make fun of Aero, I'll keep the typo ;) https://github.com/Aeroluna/Chroma/commit/0f379e54e006de9dba0b64debcb64fb913b453cf#diff-efd8021f3aec91a9e88e1e6823f48c13605a7ef8b27790c9c3d4545860f43849R47
     auto dictioanry = table[type];
 
-    // TODO: Will this work?
-    int maxSize = std::max_element(dictioanry.begin(), dictioanry.end())->first + 1;
+    int key;
 
-//    // You made me resort to this Aero, damn you
-//    for (auto& o : dictioanry) {
-//        maxSize = std::max(o.first, maxSize);
-//    }
+    if (requestedKey) {
+        key = *requestedKey;
+        while (table.find(key) != table.end())
+            key++;
+    } else {
+        // TODO: Will this work?
+        key = std::max_element(dictioanry.begin(), dictioanry.end())->first + 1;
+    }
 
-    dictioanry[maxSize] = index;
+
+    dictioanry[key] = index;
     if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue())
     {
-        getLogger().info("Registered key [%d] to type [%d]", maxSize, type);
+        getLogger().info("Registered key [%d] to type [%d]", key, type);
     }
 }

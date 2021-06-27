@@ -36,7 +36,7 @@ MAKE_HOOK_OFFSETLESS(
         return;
     }
 
-    auto chromaData = std::static_pointer_cast<ChromaLaserSpeedEventData>(chromaIt->second);
+    auto chromaData = std::static_pointer_cast<ChromaEventData>(chromaIt->second);
 
 
     bool isLeftEvent = self->event == BeatmapEventType::Event12;
@@ -44,18 +44,20 @@ MAKE_HOOK_OFFSETLESS(
 
     bool lockPosition = chromaData->LockPosition;
 
-    float precisionSpeed = chromaData->PreciseSpeed;
+    float precisionSpeed = chromaData->Speed.value_or(beatmapEventData->value);
 
-    int dir = chromaData->Direction;
+    std::optional<int> dir = chromaData->Direction;
 
     float direction = (randomNumber() > 0.5f) ? 1.0f : -1.0f;
-    switch (dir) {
-        case 0:
-            direction = isLeftEvent ? -1.0f : 1.0f;
-            break;
-        case 1:
-            direction = isLeftEvent ? 1.0f : -1.0f;
-            break;
+    if (dir) {
+        switch (dir.value()) {
+            case 0:
+                direction = isLeftEvent ? -1.0f : 1.0f;
+                break;
+            case 1:
+                direction = isLeftEvent ? 1.0f : -1.0f;
+                break;
+        }
     }
 
     if (beatmapEventData->value == 0) {

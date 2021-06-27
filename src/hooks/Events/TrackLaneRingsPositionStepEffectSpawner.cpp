@@ -17,7 +17,7 @@ static float GetPrecisionStep(float defaultF, GlobalNamespace::BeatmapEventData*
     auto it = map.find(beatmapEventData);
 
     if (it != map.end()) {
-        auto chromaData = std::static_pointer_cast<ChromaRingStepEventData>(it->second);
+        auto chromaData = it->second;
 
         if (chromaData->Step) {
             return chromaData->Step.value();

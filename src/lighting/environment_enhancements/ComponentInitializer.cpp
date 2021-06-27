@@ -54,15 +54,15 @@ void GetComponentAndOriginal(UnityEngine::Transform*& root, UnityEngine::Transfo
 }
 
 void
-Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root, UnityEngine::Transform *original, std::vector<GameObjectInfo>& gameObjectInfos, std::vector<std::shared_ptr<IComponentData>>& componentDatas) {
+Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root, UnityEngine::Transform *original, std::vector<GameObjectInfo>& gameObjectInfos, std::vector<std::shared_ptr<IComponentData>>& componentDatas, std::optional<int>& lightId) {
     GetComponentAndOriginal<LightWithIdMonoBehaviour>(root, original, [=](LightWithIdMonoBehaviour* rootComponent, LightWithIdMonoBehaviour* originalComponent) {
         rootComponent->lightManager = originalComponent->lightManager;
-        LightColorizer::RegisterLight(rootComponent);
+        LightColorizer::RegisterLight(rootComponent, lightId);
     });
 
     GetComponentAndOriginal<LightWithIds>(root, original, [=](LightWithIds* rootComponent, LightWithIds* originalComponent) {
         rootComponent->lightManager = originalComponent->lightManager;
-        LightColorizer::RegisterLight(rootComponent);
+        LightColorizer::RegisterLight(rootComponent, lightId);
     });
 
     GetComponentAndOriginal<TrackLaneRing>(root, original, [=](TrackLaneRing* rootComponent, TrackLaneRing* originalComponent) {
@@ -206,7 +206,7 @@ Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root,
         auto transform = root->GetChild(i);
 
         int index = transform->GetSiblingIndex();
-        InitializeComponents(transform, original->GetChild(index), gameObjectInfos, componentDatas);
+        InitializeComponents(transform, original->GetChild(index), gameObjectInfos, componentDatas, lightId);
     }
 }
 

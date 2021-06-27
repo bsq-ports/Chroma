@@ -1,5 +1,7 @@
 #pragma once
 
+#include "utils/EventCallback.hpp"
+
 #include "UnityEngine/MonoBehaviour.hpp"
 #include "GlobalNamespace/ILightWithId.hpp"
 #include "GlobalNamespace/LightSwitchEventEffect.hpp"
@@ -20,143 +22,65 @@ namespace Chroma {
     class LSEColorManager;
 
     class LightColorizer {
+    private:
+        static const int COLOR_FIELDS = 4;
+
+        GlobalNamespace::LightSwitchEventEffect *_lightSwitchEventEffect;
+        GlobalNamespace::BeatmapEventType _eventType;
+        std::vector<std::optional<UnityEngine::Color>> _colors;
+
+        std::vector<UnityEngine::Color> _originalColors;
+        std::unordered_map<int, SafePtr<GlobalNamespace::SimpleColorSO>> _simpleColorSOs;
+
+        LightColorizer(GlobalNamespace::LightSwitchEventEffect *lightSwitchEventEffect,GlobalNamespace::BeatmapEventType beatmapEventType);
+
     public:
-        static void Reset(UnityEngine::MonoBehaviour *behaviour);
+        static std::shared_ptr<LightColorizer> New(GlobalNamespace::LightSwitchEventEffect *lightSwitchEventEffect,GlobalNamespace::BeatmapEventType beatmapEventType);
 
-        static void ResetAllLightingColors();
+        inline static std::vector<std::optional<UnityEngine::Color>> GlobalColor;
 
-        static void RegisterLight(UnityEngine::MonoBehaviour* lightWithId);
+        inline static UnorderedEventCallback<GlobalNamespace::BeatmapEventType, std::vector<UnityEngine::Color>> LightColorChanged;
 
-        static void
-        SetLightingColors(UnityEngine::MonoBehaviour *monoBehaviour, std::optional<UnityEngine::Color> Color0,
-                          std::optional<UnityEngine::Color> Color1,
-                          std::optional<UnityEngine::Color> Color0Boost = std::nullopt,
-                          std::optional<UnityEngine::Color> Color1Boost = std::nullopt);
+        inline static std::unordered_map<int, std::shared_ptr<LightColorizer>> Colorizers;
 
-        static void
-        SetLightingColors(GlobalNamespace::BeatmapEventType beatmapEventType, std::optional<UnityEngine::Color> Color0,
-                          std::optional<UnityEngine::Color> Color1,
-                          std::optional<UnityEngine::Color> Color0Boost = std::nullopt,
-                          std::optional<UnityEngine::Color> Color1Boost = std::nullopt);
+        std::unordered_map<int, GlobalNamespace::ILightWithId *> Lights;
 
-        static void
-        SetAllLightingColors(std::optional<UnityEngine::Color> Color0, std::optional<UnityEngine::Color> Color1,
-                             std::optional<UnityEngine::Color> Color0Boost = std::nullopt,
-                             std::optional<UnityEngine::Color> Color1Boost = std::nullopt);
+        std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId *>> LightsPropagationGrouped;
 
-        static void SetActiveColors(GlobalNamespace::BeatmapEventType lse);
 
-        static void SetAllActiveColors();
 
-        static void ClearLSEColorManagers();
+        std::vector<UnityEngine::Color> getColor() const;
 
-        static void SetLastValue(UnityEngine::MonoBehaviour *monoBehaviour, int val);
+        static void GlobalColorize(bool refresh, std::vector<std::optional<UnityEngine::Color>> colors);
 
-        // Returns array of ILightWithId*
-        static std::unordered_map<int, GlobalNamespace::ILightWithId *> GetLights(GlobalNamespace::LightSwitchEventEffect *lse);
+        static void RegisterLight(UnityEngine::MonoBehaviour *lightWithId, std::optional<int> lightId);
 
-        // Returns 2d array of ILightWithId*
-        static std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId *>>
-        GetLightsPropagationGrouped(GlobalNamespace::LightSwitchEventEffect *lse);
+        void Colorize(bool refresh, std::vector<std::optional<UnityEngine::Color>> colors);
 
-        static void
-        LSEStart(UnityEngine::MonoBehaviour *monoBehaviour, GlobalNamespace::BeatmapEventType beatmapEventType);
+        static void Reset();
 
-        inline static std::unordered_map<UnityEngine::MonoBehaviour*, Chroma::LSEColorManager *> lseColorManagers;
+        // extensions
+        inline static std::shared_ptr<LightColorizer> GetLightColorizer(GlobalNamespace::BeatmapEventType beatmapEventType) {
+            if (Colorizers.find(beatmapEventType) == Colorizers.end())
+                return nullptr;
+
+            return Colorizers[beatmapEventType];
+        }
+
+        inline static void ColorizeLight(GlobalNamespace::BeatmapEventType beatmapEventType, bool refresh, std::vector<std::optional<UnityEngine::Color>> colors) {
+            GetLightColorizer(beatmapEventType)->Colorize(refresh, colors);
+        }
+
+    private:
+        void SetSOs(std::vector<UnityEngine::Color> colors);
+
+        void Refresh();
+
+        void InitializeSO(const std::string &id, int index);
     };
 }
 
 typedef std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId *>> LightGroupMap;
 
-// We use custom types here to avoid GC deleting our variables
-DECLARE_CLASS_CODEGEN(Chroma, LSEColorManager, Il2CppObject,
-
-        public:
-
-
-            std::unordered_map<int, GlobalNamespace::ILightWithId*> Lights = {};
-
-            // 2d array of ILightWithId*
-            LightGroupMap LightsPropagationGrouped;
-
-            // TODO: Is this the proper return type?
-            static std::vector<LSEColorManager *> GetLSEColorManager(GlobalNamespace::BeatmapEventType type);
-
-            static LSEColorManager *GetLSEColorManager(UnityEngine::MonoBehaviour *m);
-
-            static LSEColorManager *CreateLSEColorManager(UnityEngine::MonoBehaviour *lse, GlobalNamespace::BeatmapEventType type);
-
-            void Reset() const;
-
-
-            void SetLightingColors(std::optional<UnityEngine::Color> Color0, std::optional<UnityEngine::Color> Color1,
-            std::optional<UnityEngine::Color> Color0Boost = std::nullopt, std::optional<UnityEngine::Color> Color1Boost = std::nullopt) const;
-
-            void SetLastValue(int value);
-
-            void SetActiveColors() const;
-
-            void InitializeSOs(UnityEngine::MonoBehaviour *lse, const std::string& id, GlobalNamespace::SimpleColorSO *&sColorSO,
-            UnityEngine::Color& originalColor, GlobalNamespace::MultipliedColorSO *&mColorSO);
-
-            DECLARE_INSTANCE_FIELD(UnityEngine::MonoBehaviour *, _lse);
-            DECLARE_INSTANCE_FIELD(GlobalNamespace::BeatmapEventType, _type);
-
-            DECLARE_INSTANCE_FIELD(UnityEngine::Color, _lightColor0_Original);
-            DECLARE_INSTANCE_FIELD(UnityEngine::Color, _lightColor1_Original);
-            DECLARE_INSTANCE_FIELD(UnityEngine::Color, _lightColor0Boost_Original);
-            DECLARE_INSTANCE_FIELD(UnityEngine::Color, _lightColor1Boost_Original);
-
-            DECLARE_INSTANCE_FIELD(GlobalNamespace::SimpleColorSO*, _lightColor0);
-            DECLARE_INSTANCE_FIELD(GlobalNamespace::SimpleColorSO*, _lightColor1);
-            DECLARE_INSTANCE_FIELD(GlobalNamespace::SimpleColorSO*, _lightColor0Boost);
-            DECLARE_INSTANCE_FIELD(GlobalNamespace::SimpleColorSO*, _lightColor1Boost);
-
-            DECLARE_INSTANCE_FIELD(GlobalNamespace::MultipliedColorSO*, _mLightColor0);
-            DECLARE_INSTANCE_FIELD(GlobalNamespace::MultipliedColorSO*, _mHighlightColor0);
-            DECLARE_INSTANCE_FIELD(GlobalNamespace::MultipliedColorSO*, _mLightColor1);
-            DECLARE_INSTANCE_FIELD(GlobalNamespace::MultipliedColorSO*, _mHighlightColor1);
-
-            DECLARE_INSTANCE_FIELD(GlobalNamespace::MultipliedColorSO*, _mLightColor0Boost);
-            DECLARE_INSTANCE_FIELD(GlobalNamespace::MultipliedColorSO*, _mHighlightColor0Boost);
-            DECLARE_INSTANCE_FIELD(GlobalNamespace::MultipliedColorSO*, _mLightColor1Boost);
-            DECLARE_INSTANCE_FIELD(GlobalNamespace::MultipliedColorSO*, _mHighlightColor1Boost);
-
-            DECLARE_INSTANCE_FIELD(bool, _supportBoostColor);
-
-            DECLARE_INSTANCE_FIELD(float, _lastValue);
-
-            DECLARE_SIMPLE_DTOR();
-            DECLARE_CTOR(ctor, UnityEngine::MonoBehaviour* mono, GlobalNamespace::BeatmapEventType type);
-
-            REGISTER_FUNCTION(
-                getLogger().debug("Registering LSEColorManager!");
-                REGISTER_METHOD(ctor);
-                REGISTER_SIMPLE_DTOR();
-
-                REGISTER_FIELD(_lse);
-                REGISTER_FIELD(_type);
-
-                REGISTER_FIELD(_lightColor0_Original);
-                REGISTER_FIELD(_lightColor1_Original);
-                REGISTER_FIELD(_lightColor0Boost_Original);
-                REGISTER_FIELD(_lightColor1Boost_Original);
-
-                REGISTER_FIELD(_lightColor0);
-                REGISTER_FIELD(_lightColor1);
-                REGISTER_FIELD(_lightColor0Boost);
-                REGISTER_FIELD(_lightColor1Boost);
-
-                REGISTER_FIELD(_mLightColor0);
-                REGISTER_FIELD(_mHighlightColor0);
-                REGISTER_FIELD(_mLightColor1);
-                REGISTER_FIELD(_mHighlightColor1);
-
-                REGISTER_FIELD(_mLightColor0Boost);
-                REGISTER_FIELD(_mHighlightColor0Boost);
-                REGISTER_FIELD(_mLightColor1Boost);
-                REGISTER_FIELD(_mHighlightColor1Boost);
-            )
-)
 
 

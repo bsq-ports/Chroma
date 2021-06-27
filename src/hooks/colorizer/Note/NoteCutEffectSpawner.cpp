@@ -11,6 +11,8 @@
 #include "UnityEngine/Space.hpp"
 #include "UnityEngine/Transform.hpp"
 
+#include "hooks/colorizer/Note/ColorManager.hpp"
+
 using namespace CustomJSONData;
 using namespace GlobalNamespace;
 using namespace UnityEngine;
@@ -22,9 +24,9 @@ MAKE_HOOK_OFFSETLESS(NoteCutEffectSpawner_SpawnNoteCutEffect,void,NoteCutCoreEff
         NoteCutEffectSpawner_SpawnNoteCutEffect(self, noteCutInfo, noteController);
         return;
     }
-    NoteColorizer::EnableNoteColorOverride(noteController);
+    ColorManagerColorForType::EnableColorOverride(noteController);
     NoteCutEffectSpawner_SpawnNoteCutEffect(self, noteCutInfo, noteController);
-    NoteColorizer::DisableNoteColorOverride();
+    ColorManagerColorForType::DisableColorOverride();
 }
 
 void Chroma::Hooks::NoteCutEffectSpawner() {

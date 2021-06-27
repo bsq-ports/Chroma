@@ -32,7 +32,7 @@
     },
     {
       "id": "custom-json-data",
-      "versionRange": "^0.6.0",
+      "versionRange": "^0.7.0",
       "additionalData": {}
     },
     {
@@ -42,7 +42,7 @@
     },
     {
       "id": "questui",
-      "versionRange": "^0.6.9",
+      "versionRange": "^0.7.0",
       "additionalData": {}
     },
     {

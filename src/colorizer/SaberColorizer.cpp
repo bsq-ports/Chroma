@@ -37,75 +37,6 @@ using namespace System::Collections;
 using namespace custom_types::Helpers;
 using namespace Chroma;
 
-std::vector<std::optional<UnityEngine::Color>> SaberColorizer::SaberColorOverride = {std::nullopt, std::nullopt};
-
-void SaberColorizer::SetSaberColor(int saberType, UnityEngine::Color color) {
-    auto scm = SaberColorizer::BSMColorManager::GetBSMColorManager(saberType);
-
-    if (scm)
-        scm->SetSaberColor(color);
-}
-
-void SaberColorizer::SetAllSaberColors(std::optional<UnityEngine::Color> color0, std::optional<UnityEngine::Color> color1) {
-
-    if (color0) {
-        auto scm = SaberColorizer::BSMColorManager::GetBSMColorManager(SaberType::SaberA);
-
-        if (scm)
-            scm->SetSaberColor(color0.value());
-    }
-
-    if (color1) {
-        auto scm = SaberColorizer::BSMColorManager::GetBSMColorManager(SaberType::SaberB);
-
-        if (scm)
-            scm->SetSaberColor(color1.value());
-    }
-}
-
-void SaberColorizer::ClearBSMColorManagers() {
-    SaberColorOverride = {std::nullopt, std::nullopt};
-    _bsmColorManagers.clear();
-    clearCallbacks();
-}
-
-void SaberColorizer::BSMStart(GlobalNamespace::Saber *bcm, int saberType) {
-    if (saberType == SaberType::SaberA || saberType == SaberType::SaberB)
-    {
-        getLogger().debug("Saber start was called, doing stuff");
-        BSMColorManager::CreateBSMColorManager(bcm, saberType);
-    }
-}
-
-void SaberColorizer::registerCallback(const std::function<void()>& callback) {
-    saberCallbacks.push_back(callback);
-}
-
-void SaberColorizer::clearCallbacks() {
-    saberCallbacks.clear();
-}
-
-SaberColorizer::BSMColorManager::BSMColorManager(GlobalNamespace::Saber *bsm, int saberType) {
-    _saberType = saberType;
-    saberBurnMarkArea = UnityEngine::Resources::FindObjectsOfTypeAll<SaberBurnMarkArea*>()->get(0);
-    saberBurnMarkSparkles = UnityEngine::Resources::FindObjectsOfTypeAll<SaberBurnMarkSparkles*>()->get(0);
-}
-
-std::shared_ptr<SaberColorizer::BSMColorManager> SaberColorizer::BSMColorManager::GetBSMColorManager(int saberType) {
-    auto it = _bsmColorManagers.find(saberType);
-
-    if (it != _bsmColorManagers.end()) return it->second;
-
-    return nullptr;
-}
-
-std::shared_ptr<SaberColorizer::BSMColorManager> SaberColorizer::BSMColorManager::CreateBSMColorManager(GlobalNamespace::Saber *bsm,
-                                                                                         int saberType) {
-    getLogger().debug("Creating a beat saber model manager");
-    std::shared_ptr<BSMColorManager> bsmcm = std::make_shared<SaberColorizer::BSMColorManager>(bsm, saberType);
-    _bsmColorManagers[saberType] = bsmcm;
-    return bsmcm;
-}
 
 
 // Sira utils methods
@@ -233,41 +164,135 @@ custom_types::Helpers::Coroutine ChangeColorCoroutine(Saber *saber, UnityEngine:
     }
 
     // Call callbacks
-    for (const auto& c : SaberColorizer::saberCallbacks)
-    {
-        c();
-    }
+    SaberColorizer::SaberColorChanged.invoke(saber->get_saberType(), saberColor);
 
 
     coroutineSabers.erase(saber->get_saberType().value);
 
     co_return;
 }
+// SIRA UTIL METHODS
+SaberColorizer::SaberColorizer(GlobalNamespace::Saber *saber) {
+    _saberType = saber->get_saberType();
 
-// Must be down here to avoid compile issues
-void SaberColorizer::BSMColorManager::SetSaberColor(UnityEngine::Color color) {
-    if (color == _lastColor) {
+    auto saberModelController = saber->get_gameObject()->GetComponentInChildren<SaberModelController *>(true);
+
+    _doColor = true;
+
+    _saberTrail = saberModelController->saberTrail;
+    _trailTintColor = saberModelController->initData->trailTintColor;
+    saberModelController->setSaberGlowColors->copy_to(_setSaberGlowColors);
+    saberModelController->setSaberFakeGlowColors->copy_to(_setSaberFakeGlowColors);
+    _saberLight = saberModelController->saberLight;
+
+
+    _lastColor = saberModelController->colorManager->ColorForSaberType(_saberType);
+    OriginalColor = _lastColor;
+
+
+}
+
+std::shared_ptr<SaberColorizer> SaberColorizer::New(GlobalNamespace::Saber *saber) {
+    std::shared_ptr<SaberColorizer> saberColorizer(new SaberColorizer(saber));
+    GetOrCreateColorizerList(saberColorizer->_saberType).emplace(saberColorizer);
+
+    return saberColorizer;
+}
+
+std::optional<UnityEngine::Color> SaberColorizer::GlobalColorGetter() {
+    return GlobalColor[(int) _saberType];
+}
+
+void SaberColorizer::GlobalColorize(std::optional<UnityEngine::Color> color, GlobalNamespace::SaberType saberType) {
+    GlobalColor[(int)saberType] = color;
+    for (auto& c : GetSaberColorizer(saberType))
+        c->Refresh();
+}
+
+void SaberColorizer::Reset() {
+    GlobalColor[0] = std::nullopt;
+    GlobalColor[1] = std::nullopt;
+    SaberColorChanged.clear();
+}
+
+void SaberColorizer::Refresh() {
+    Color color = getColor();
+    if (color == _lastColor)
+    {
         return;
     }
 
     _lastColor = color;
-    SaberColorOverride[_saberType] = color;
-    auto _bsm = getSaber();
-    auto runningCoro = coroutineSabers.find(_saberType);
-    if (runningCoro != coroutineSabers.end()) {
-        _bsm->StopCoroutine(reinterpret_cast<enumeratorT *>(runningCoro->second));
-        coroutineSabers.erase(runningCoro);
+    if (_doColor)
+    {
+        auto saberTrail = _saberTrail;
+        saberTrail->color = (color * _trailTintColor).get_linear();
+
+        for (int i = 0; i < _setSaberGlowColors.size(); i++)
+        {
+            auto setSaberGlowColor = _setSaberGlowColors[i];
+            auto propertyTintColorPairs = setSaberGlowColor->propertyTintColorPairs;
+            SafePtr<MaterialPropertyBlock> materialPropertyBlock(setSaberGlowColor->materialPropertyBlock);
+            if (!materialPropertyBlock)
+            {
+                materialPropertyBlock = MaterialPropertyBlock::New_ctor();
+                setSaberGlowColor->materialPropertyBlock = (MaterialPropertyBlock*) materialPropertyBlock;
+            }
+
+            std::vector<SetSaberGlowColor::PropertyTintColorPair*> propertyTintColorPairsVec(propertyTintColorPairs->Length());
+            propertyTintColorPairs->copy_to(propertyTintColorPairsVec);
+            for (auto& propertyTintColorPair : propertyTintColorPairsVec)
+            {
+                materialPropertyBlock->SetColor(propertyTintColorPair->property, color * propertyTintColorPair->tintColor);
+            }
+
+            setSaberGlowColor->meshRenderer->SetPropertyBlock((MaterialPropertyBlock*) materialPropertyBlock);
+        }
+
+        for (int i = 0; i < _setSaberFakeGlowColors.size(); i++)
+        {
+            auto setSaberFakeGlowColor = _setSaberFakeGlowColors[i];
+            auto parametric3SliceSprite = setSaberFakeGlowColor->parametric3SliceSprite;
+            parametric3SliceSprite->color = color * setSaberFakeGlowColor->tintColor;
+            parametric3SliceSprite->Refresh();
+        }
+
+        if (_saberLight)
+        {
+            _saberLight->color = color;
+        }
+    }
+    else
+    {
+        ColorColorable(color);
+    }
+    float h;
+    float s;
+    float _;
+
+    Color::RGBToHSV(color, h, s, _);
+    Color effectColor = Color::HSVToRGB(h, s, 1);
+    SaberColorChanged.invoke(_saberType, effectColor);
+}
+
+std::unordered_set<std::shared_ptr<SaberColorizer>>
+SaberColorizer::GetOrCreateColorizerList(GlobalNamespace::SaberType saberType) {
+    auto it = Colorizers.find(saberType);
+
+    if (it == Colorizers.end()) {
+        std::unordered_set<std::shared_ptr<SaberColorizer>> colorizers;
+        Colorizers[saberType] = colorizers;
+        return colorizers;
     }
 
-    custom_types::Helpers::StandardCoroutine *coro = custom_types::Helpers::CoroutineHelper::New(
-            ChangeColorCoroutine(_bsm, color, saberBurnMarkSparkles, saberBurnMarkArea)
-    );
+    return it->second;
+}
 
-    _bsm->StartCoroutine(reinterpret_cast<enumeratorT *>(coro));
-    coroutineSabers[_saberType] = coro;
+bool SaberColorizer::IsColorable(GlobalNamespace::SaberModelController *saberModelController) {
+    return false;
+}
+
+void SaberColorizer::ColorColorable(UnityEngine::Color color) {
 
 }
 
-GlobalNamespace::Saber *SaberColorizer::BSMColorManager::getSaber() const {
-    return Chroma::SaberManagerHolder::saberManager->SaberForType(_saberType);
-}

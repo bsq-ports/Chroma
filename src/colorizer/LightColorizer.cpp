@@ -18,6 +18,7 @@
 #include "GlobalNamespace/TrackLaneRingsManager.hpp"
 #include "GlobalNamespace/TrackLaneRing.hpp"
 #include "GlobalNamespace/ParticleSystemEventEffect.hpp"
+#include "GlobalNamespace/ColorSO.hpp"
 
 
 
@@ -27,456 +28,262 @@ using namespace UnityEngine;
 
 using namespace Chroma;
 
+LightColorizer::LightColorizer(GlobalNamespace::LightSwitchEventEffect *lightSwitchEventEffect,
+                               GlobalNamespace::BeatmapEventType beatmapEventType) {
+//        INVOKE_CTOR(LSEColorManager);
+    static auto contextLogger = getLogger().WithContext(ChromaLogger::LightColorizer);
+
+    _lightSwitchEventEffect = lightSwitchEventEffect;
+    _eventType = beatmapEventType;
+    InitializeSO("_lightColor0", 0);
+    InitializeSO("_highlightColor0", 0);
+    InitializeSO("_lightColor1", 1);
+    InitializeSO("_highlightColor1", 1);
+    InitializeSO("_lightColor0Boost", 2);
+    InitializeSO("_highlightColor0Boost", 2);
+    InitializeSO("_lightColor1Boost", 3);
+    InitializeSO("_highlightColor1Boost", 3);
+
+    // AAAAAA PROPAGATION STUFFF
+
+        auto lightManager = lightSwitchEventEffect->lightManager;
+        System::Collections::Generic::List_1<GlobalNamespace::ILightWithId *> *lightList = lightManager->lights->get((lightSwitchEventEffect)->lightsID);
+        Array<ILightWithId *> *lightArray = lightList->items;
 
 
+        Lights = std::unordered_map<int, ILightWithId*>(lightArray->Length());
 
-DEFINE_TYPE(Chroma::LSEColorManager);
 
-void LightColorizer::Reset(MonoBehaviour *behaviour) {
-    LSEColorManager* manager = Chroma::LSEColorManager::GetLSEColorManager(behaviour);
+        // Keep track of order
+        int index = 0;
+        std::unordered_map<int, int> insertionOrder;
 
-    if (manager != nullptr) {
-        manager->Reset();
-    }
-}
+        std::unordered_map<int, std::vector<ILightWithId *>> lightsPreGroup;
 
-void LightColorizer::ResetAllLightingColors() {
-    for (auto& manager : lseColorManagers) {
-        manager.second->Reset();
-    }
-}
+        auto managers = UnityEngine::Object::FindObjectsOfType<TrackLaneRingsManager*>();
 
-void LightColorizer::SetLightingColors(MonoBehaviour *monoBehaviour, std::optional<UnityEngine::Color> Color0, std::optional<UnityEngine::Color> Color1,
-                                       std::optional<UnityEngine::Color> Color0Boost, std::optional<UnityEngine::Color> Color1Boost) {
-    auto manager = Chroma::LSEColorManager::GetLSEColorManager(monoBehaviour);
+        for (int i = 0; i < lightArray->Length(); i++) {
+            auto light = lightArray->get(i);
+            if (light == nullptr) continue;
 
-    if (manager != nullptr) {
-        manager->SetLightingColors(Color0, Color1, Color0Boost, Color1Boost);
-    }
-}
+            debugSpamLog(contextLogger, "Adding light to list");
+            Lights[i] = light;
 
-void LightColorizer::SetLightingColors(BeatmapEventType beatmapEventType, std::optional<UnityEngine::Color> Color0, std::optional<UnityEngine::Color> Color1,
-                                       std::optional<UnityEngine::Color> Color0Boost, std::optional<UnityEngine::Color> Color1Boost) {
-    auto manager = Chroma::LSEColorManager::GetLSEColorManager(beatmapEventType);
+            auto object = il2cpp_utils::cast<Il2CppObject>(light);
+            debugSpamLog(contextLogger, "Doing light %s", object->klass->name);
+            auto monoBehaviour = il2cpp_utils::try_cast<MonoBehaviour>(object);
 
-    for (auto& l : LSEColorManager::GetLSEColorManager(beatmapEventType)) {
-        l->SetLightingColors(Color0, Color1, Color0Boost, Color1Boost);
-    }
-}
+            if (monoBehaviour) {
 
-void LightColorizer::SetAllLightingColors(std::optional<UnityEngine::Color> Color0, std::optional<UnityEngine::Color> Color1,
-                                          std::optional<UnityEngine::Color> Color0Boost, std::optional<UnityEngine::Color> Color1Boost) {
-    for (auto& manager : lseColorManagers) {
-        manager.second->SetLightingColors(Color0, Color1, Color0Boost, Color1Boost);
-    }
-}
+                int z = UnityEngine::Mathf::RoundToInt((*monoBehaviour)->get_transform()->get_position().z);
 
-void LightColorizer::SetActiveColors(BeatmapEventType lse) {
-    for (auto& l : LSEColorManager::GetLSEColorManager(lse)) {
-        l->SetActiveColors();
-    }
-}
+                auto ring = (*monoBehaviour)->GetComponentInParent<TrackLaneRing*>();
 
-void LightColorizer::SetAllActiveColors() {
-    for (auto& lseColorManager : lseColorManagers)
-    {
-        lseColorManager.second->SetActiveColors();
-    }
-}
+                if (ring) {
 
-void LightColorizer::ClearLSEColorManagers() {
-    lseColorManagers.clear();
-}
+                    TrackLaneRingsManager* mngr = nullptr;
+                    auto indexR = 0;
 
-void LightColorizer::SetLastValue(MonoBehaviour *monoBehaviour, int val) {
-    auto manager = LSEColorManager::GetLSEColorManager(monoBehaviour);
+                    for (int ii = 0; ii < managers->Length(); ii++) {
+                        auto m = managers->get(ii);
 
-    if (manager != nullptr) {
-        manager->SetLastValue(val);
-    }
-}
+                        if (m) {
+                            indexR = m->rings->IndexOf(ring);
+                            if (indexR >= 0) {
+                                mngr = m;
+                                break;
+                            }
+                        }
+                    }
 
-std::unordered_map<int, ILightWithId *> LightColorizer::GetLights(LightSwitchEventEffect *lse) {
-    auto manager = LSEColorManager::GetLSEColorManager(lse);
+                    if (mngr != nullptr)
+                        z = 1000 + indexR;
 
-    if (manager != nullptr) {
-        return manager->Lights;
-    }
-
-    return {};
-}
-
-std::unordered_map<int, std::vector<ILightWithId *>> LightColorizer::GetLightsPropagationGrouped(LightSwitchEventEffect *lse) {
-    auto manager = LSEColorManager::GetLSEColorManager(lse);
-
-    if (manager != nullptr) {
-        return manager->LightsPropagationGrouped;
-    }
-
-    return {};
-
-}
-
-void LightColorizer::LSEStart(MonoBehaviour *monoBehaviour, BeatmapEventType beatmapEventType) {
-    LSEColorManager::CreateLSEColorManager(monoBehaviour, beatmapEventType);
-}
-
-void LightColorizer::RegisterLight(UnityEngine::MonoBehaviour *lightWithId) {
-
-    static auto LightWithIdMonoBehaviourKlass = classof(LightWithIdMonoBehaviour*);
-    static auto LightWithIdsKlass = classof(LightWithIds*);
-
-    if (ASSIGNMENT_CHECK(LightWithIdMonoBehaviourKlass, lightWithId->klass)) {
-        auto monoBehaviour = il2cpp_utils::cast<LightWithIdMonoBehaviour>(lightWithId);
-
-        auto lse = LSEColorManager::GetLSEColorManager((monoBehaviour->get_lightId() - 1));
-
-        LSEColorManager * monomanager;
-
-            for (auto l : lse)
-                if(l) {
-                    monomanager = l;
-                    break;
                 }
 
+                debugSpamLog(contextLogger, "Grouping to %d", z);
 
-            if (!monomanager) {
-                return;
+                std::vector<ILightWithId *> list;
+
+                auto it = lightsPreGroup.find(z);
+                // Not found
+                if (it == lightsPreGroup.end()) {
+                    insertionOrder[index] = z;
+                    index++;
+                } else list = it->second;
+
+                list.push_back(light);
+
+                lightsPreGroup.insert_or_assign(it, z, list);
             }
+        }
 
 
-            LightIDTableManager::RegisterIndex(monoBehaviour->get_lightId() - 1, monomanager->Lights.size());
+        std::unordered_map<int, std::vector<ILightWithId *>> lightsPreGroupFinal;
 
-            monomanager->Lights[(int) monomanager->Lights.size()] = il2cpp_utils::cast<ILightWithId>(monoBehaviour);
+        int i = 0;
 
-    } else if (ASSIGNMENT_CHECK(LightWithIdsKlass, lightWithId->klass)) {
-        auto lightWithIds = il2cpp_utils::cast<LightWithIds>(lightWithId);
+        while (i <= index) {
+            debugSpamLog(contextLogger, "Doing the final grouping, prop id %d", i);
+            int z = insertionOrder[i];
 
+            lightsPreGroupFinal[i] = lightsPreGroup[z];
+            i++;
+        }
 
+        debugSpamLog(contextLogger, "Done grouping, size %d", lightsPreGroup.size());
+
+        LightsPropagationGrouped = lightsPreGroupFinal;
+}
+
+std::shared_ptr<LightColorizer> LightColorizer::New(GlobalNamespace::LightSwitchEventEffect *lightSwitchEventEffect,GlobalNamespace::BeatmapEventType beatmapEventType) {
+    std::shared_ptr<LightColorizer> lightColorizer = std::shared_ptr<LightColorizer>(new LightColorizer(lightSwitchEventEffect, beatmapEventType));
+
+    Colorizers[beatmapEventType.value] = lightColorizer;
+    return lightColorizer;
+}
+
+std::vector<UnityEngine::Color> LightColorizer::getColor() const {
+    std::vector<UnityEngine::Color> colors(COLOR_FIELDS);
+    for (int i = 0; i < COLOR_FIELDS; i++)
+    {
+        auto color = _colors[i];
+        if (color) {
+            colors[i] = *color;
+            continue;
+        }
+
+        color = GlobalColor[i];
+        if (color) {
+            colors[i] = *color;
+            continue;
+        }
+
+        colors[i] = _originalColors[i];
+    }
+
+    return colors;
+}
+
+void LightColorizer::GlobalColorize(bool refresh, std::vector<std::optional<UnityEngine::Color>> colors) {
+    for (int i = 0; i < colors.size(); i++)
+    {
+        GlobalColor[i] = colors[i];
+    }
+
+    for (auto& valuePair : Colorizers)
+    {
+        // Allow light colorizer to not force color
+        if (refresh)
+        {
+            valuePair.second->Refresh();
+        }
+        else
+        {
+            valuePair.second->SetSOs(valuePair.second->getColor());
+        }
+    }
+}
+
+void LightColorizer::RegisterLight(UnityEngine::MonoBehaviour *lightWithId, std::optional<int> lightId) {
+    std::shared_ptr<LightColorizer> lightColorizer;
+
+    auto monoBehaviourCast = il2cpp_utils::try_cast<LightWithIdMonoBehaviour>(lightWithId);;
+
+    if (monoBehaviourCast) {
+        auto monoBehaviour = *monoBehaviourCast;
+        lightColorizer = GetLightColorizer((monoBehaviour->get_lightId() - 1));
+        LightIDTableManager::RegisterIndex(monoBehaviour->get_lightId() - 1, lightColorizer->Lights.size(), lightId);
+        lightColorizer->Lights[(int) lightColorizer->Lights.size()] = reinterpret_cast<ILightWithId *>(monoBehaviour);
+        return;
+    }
+
+    auto lightWithIdsCast = il2cpp_utils::try_cast<LightWithIds>(lightWithId);
+
+    if (lightWithIdsCast) {
+        auto lightWithIds = *lightWithIdsCast;
         auto* lightsWithIdArray = il2cpp_utils::cast<Array<LightWithIds::LightData*>>(lightWithIds->get_lightIntensityData());
 
 
         for (int i = 0; i < lightsWithIdArray->Length(); i++) {
             auto light = il2cpp_utils::cast<ILightWithId>(lightsWithIdArray->get(i));
-            auto manager = LSEColorManager::GetLSEColorManager((light->get_lightId() - 1)).front();
+            lightColorizer = GetLightColorizer((light->get_lightId() - 1));
 
-            LightIDTableManager::RegisterIndex(light->get_lightId() - 1, (int) manager->Lights.size());
-            manager->Lights[(int) manager->Lights.size()] = light;
-        }
-
-    }
-}
-
-
-namespace Chroma {
-
-    void LSEColorManager::ctor(MonoBehaviour *mono, BeatmapEventType type) {
-//        INVOKE_CTOR(LSEColorManager);
-        static auto contextLogger = getLogger().WithContext(ChromaLogger::LightColorizer);
-
-        _lse = mono;
-        _type = type;
-        InitializeSOs(mono, "_lightColor0", _lightColor0, _lightColor0_Original, _mLightColor0);
-        InitializeSOs(mono, "_highlightColor0", _lightColor0, _lightColor0_Original, _mHighlightColor0);
-        InitializeSOs(mono, "_lightColor1", _lightColor1, _lightColor1_Original, _mLightColor1);
-        InitializeSOs(mono, "_highlightColor1", _lightColor1, _lightColor1_Original, _mHighlightColor1);
-
-
-        auto lse = il2cpp_utils::try_cast<LightSwitchEventEffect>(mono);
-        if (lse) {
-
-
-            InitializeSOs(mono, "_lightColor0Boost", _lightColor0Boost, _lightColor0Boost_Original, _mLightColor0Boost);
-            InitializeSOs(mono, "_highlightColor0Boost", _lightColor0Boost, _lightColor0Boost_Original,
-                          _mHighlightColor0Boost);
-            InitializeSOs(mono, "_lightColor1Boost", _lightColor1Boost, _lightColor1Boost_Original, _mLightColor1Boost);
-            InitializeSOs(mono, "_highlightColor1Boost", _lightColor1Boost, _lightColor1Boost_Original,
-                          _mHighlightColor1Boost);
-            _supportBoostColor = true;
-
-            auto lightManager = (*lse)->lightManager;
-            System::Collections::Generic::List_1<GlobalNamespace::ILightWithId *> *lightList = lightManager->lights->get((*lse)->lightsID);
-            Array<ILightWithId *> *lightArray = lightList->items;
-
-
-            Lights = std::unordered_map<int, ILightWithId*>(lightArray->Length());
-
-
-            // Keep track of order
-            int index = 0;
-            std::unordered_map<int, int> insertionOrder;
-
-            std::unordered_map<int, std::vector<ILightWithId *>> lightsPreGroup;
-
-            auto managers = UnityEngine::Object::FindObjectsOfType<TrackLaneRingsManager*>();
-
-            for (int i = 0; i < lightArray->Length(); i++) {
-                auto light = lightArray->get(i);
-                if (light == nullptr) continue;
-
-                debugSpamLog(contextLogger, "Adding light to list");
-                Lights[i] = light;
-
-                auto object = il2cpp_utils::cast<Il2CppObject>(light);
-                debugSpamLog(contextLogger, "Doing light %s", object->klass->name);
-                auto monoBehaviour = il2cpp_utils::try_cast<MonoBehaviour>(object);
-
-                if (monoBehaviour) {
-
-                    int z = UnityEngine::Mathf::RoundToInt((*monoBehaviour)->get_transform()->get_position().z);
-
-                    auto ring = (*monoBehaviour)->GetComponentInParent<TrackLaneRing*>();
-
-                    if (ring) {
-
-                        TrackLaneRingsManager* mngr = nullptr;
-                        auto indexR = 0;
-
-                        for (int ii = 0; ii < managers->Length(); ii++) {
-                            auto m = managers->get(ii);
-
-                            if (m) {
-                                indexR = m->rings->IndexOf(ring);
-                                if (indexR >= 0) {
-                                    mngr = m;
-                                    break;
-                                }
-                            }
-                        }
-
-                        if (mngr != nullptr)
-                            z = 1000 + indexR;
-
-                    }
-
-                    debugSpamLog(contextLogger, "Grouping to %d", z);
-
-                    std::vector<ILightWithId *> list;
-
-                    auto it = lightsPreGroup.find(z);
-                    // Not found
-                    if (it == lightsPreGroup.end()) {
-                        insertionOrder[index] = z;
-                        index++;
-                    } else list = it->second;
-
-                    list.push_back(light);
-
-                    lightsPreGroup.insert_or_assign(it, z, list);
-                }
-            }
-
-
-            std::unordered_map<int, std::vector<ILightWithId *>> lightsPreGroupFinal;
-
-            int i = 0;
-
-            while (i <= index) {
-                debugSpamLog(contextLogger, "Doing the final grouping, prop id %d", i);
-                int z = insertionOrder[i];
-
-                lightsPreGroupFinal[i] = lightsPreGroup[z];
-                i++;
-            }
-
-            debugSpamLog(contextLogger, "Done grouping, size %d", lightsPreGroup.size());
-
-            LightsPropagationGrouped = lightsPreGroupFinal;
-        }
-    }
-
-    std::vector<LSEColorManager *> LSEColorManager::GetLSEColorManager(BeatmapEventType type) {
-        std::vector<LSEColorManager *> colorManagers;
-
-        for (auto& man : LightColorizer::lseColorManagers) {
-            if (man.second->_type == type)
-                colorManagers.push_back(man.second);
-        }
-
-        return colorManagers;
-    }
-
-    LSEColorManager *LSEColorManager::GetLSEColorManager(MonoBehaviour *m) {
-        auto it = LightColorizer::lseColorManagers.find(m);
-
-        if (it != LightColorizer::lseColorManagers.end()) return it->second;
-
-        return nullptr;
-    }
-
-    LSEColorManager *LSEColorManager::CreateLSEColorManager(MonoBehaviour *lse, BeatmapEventType type) {
-        LSEColorManager * lsecm = CRASH_UNLESS(il2cpp_utils::New<LSEColorManager *>(lse, type));
-        LightColorizer::lseColorManagers[lse] = lsecm;
-        return lsecm;
-    }
-
-    void LSEColorManager::Reset() const {
-        _lightColor0->SetColor(_lightColor0_Original);
-        _lightColor1->SetColor(_lightColor1_Original);
-        if (_supportBoostColor) {
-            _lightColor0Boost->SetColor(_lightColor0Boost_Original);
-            _lightColor1Boost->SetColor(_lightColor1Boost_Original);
-        }
-    }
-
-    void LSEColorManager::SetLightingColors(std::optional<UnityEngine::Color> Color0,
-                                            std::optional<UnityEngine::Color> Color1,
-                                            std::optional<UnityEngine::Color> Color0Boost,
-                                            std::optional<UnityEngine::Color> Color1Boost) const {
-        static auto contextLogger = getLogger().WithContext(ChromaLogger::LightColorizer);
-        debugSpamLog(contextLogger, "_lightColor0 is null %s", _lightColor0 ? "false" : "true");
-        if (Color0) {
-            _lightColor0->SetColor(Color0.value());
-        }
-
-        debugSpamLog(contextLogger, "_lightColor1 is null %s", _lightColor1 ? "false" : "true");
-        if (Color1) {
-            _lightColor1->SetColor(Color1.value());
-        }
-
-        if (_supportBoostColor) {
-            debugSpamLog(contextLogger, "_lightColor0Boost is null %s", _lightColor0Boost ? "false" : "true");
-            if (Color0Boost) {
-                _lightColor0Boost->SetColor(Color0Boost.value());
-            }
-
-            debugSpamLog(contextLogger, "_lightColor1Boost is null %s", _lightColor1Boost ? "false" : "true");
-            if (Color1Boost) {
-                _lightColor1Boost->SetColor(Color1Boost.value());
-            }
-        }
-    }
-
-    void LSEColorManager::SetLastValue(int value) {
-        _lastValue = (float) value;
-    }
-
-    void LSEColorManager::SetActiveColors() const {
-        // Replace with ProcessLightSwitchEvent
-        if (_lastValue <= 0) {
-            return;
-        }
-
-        bool warm;
-
-        switch ((int) _lastValue) {
-            case 1:
-            case 2:
-            case 3:
-            default:
-                warm = false;
-                break;
-
-            case 5:
-            case 6:
-            case 7:
-                warm = true;
-                break;
-        }
-
-        UnityEngine::Color c;
-        switch ((int) _lastValue) {
-            case 1:
-            case 5:
-            default:
-                c = warm ? _mLightColor0->get_color() : _mLightColor1->get_color();
-                break;
-
-            case 2:
-            case 6:
-            case 3:
-            case 7:
-                c = warm ? _mHighlightColor0->get_color() : _mHighlightColor1->get_color();
-                break;
-        }
-
-        auto l1 = il2cpp_utils::try_cast<LightSwitchEventEffect>(_lse);
-        auto p1 = il2cpp_utils::try_cast<ParticleSystemEventEffect>(_lse);
-        if (_lse->get_enabled()) {
-            if (l1) {
-                (*l1)->highlightColor = c;
-            } else if (p1) {
-                (*p1)->highlightColor = c;
-            }
-
-            if (_lastValue == 3 || _lastValue == 7) {
-                if (l1) {
-
-                    c.a = 0.0f;
-                    (*l1)->afterHighlightColor = c;
-                } else if (p1) {
-                    c.a = 0.0f;
-                    (*p1)->afterHighlightColor = c;
-                }
-            } else {
-                if (l1) {
-                    (*l1)->afterHighlightColor = c;
-                } else if (p1) {
-                    (*p1)->afterHighlightColor = c;
-                }
-            }
-        } else {
-            if (_lastValue == 1 || _lastValue == 5 || _lastValue == 2 || _lastValue == 6) {
-                if (l1) {
-                    (*l1)->SetColor(c);
-                } else if (p1) {
-                    (*p1)->particleColor = c;
-                    (*p1)->RefreshParticles();
-                }
-            }
-        }
-
-        if (l1) {
-            c.a = 0.0f;
-            (*l1)->offColor = c;
-        } else if (p1) {
-            c.a = 0.0f;
-            (*p1)->offColor = c;
-        }
-    }
-
-
-    void LSEColorManager::InitializeSOs(MonoBehaviour *lse, const std::string &id, SimpleColorSO *&sColorSO,
-                                        UnityEngine::Color &originalColor, MultipliedColorSO *&mColorSO) {
-
-        // Todo: Use codegen here
-        MultipliedColorSO *lightMultSO = nullptr;
-        auto l1 = il2cpp_utils::try_cast<LightSwitchEventEffect>(lse);
-        auto p1 = il2cpp_utils::try_cast<ParticleSystemEventEffect>(lse);
-        if (l1) {
-
-            lightMultSO = il2cpp_utils::cast<MultipliedColorSO>(il2cpp_utils::GetFieldValue<ColorSO *>((*l1), id).value()); //l1.GetField<ColorSO, LightSwitchEventEffect>(id);
-        } else if (p1) {
-
-            lightMultSO = il2cpp_utils::cast<MultipliedColorSO>(il2cpp_utils::GetFieldValue<ColorSO *>((*p1), id).value()); //l1.GetField<ColorSO, LightSwitchEventEffect>(id);
-        }
-
-        UnityEngine::Color multiplierColor = lightMultSO->multiplierColor;
-        SimpleColorSO *lightSO = lightMultSO->baseColor;
-        originalColor = lightSO->color;
-
-        if (mColorSO == nullptr) {
-            mColorSO = ScriptableObject::CreateInstance<MultipliedColorSO *>();
-            mColorSO->multiplierColor = multiplierColor; //.SetField("_multiplierColor", multiplierColor);
-
-            if (sColorSO == nullptr) {
-                sColorSO = ScriptableObject::CreateInstance<SimpleColorSO *>();
-                sColorSO->SetColor(originalColor);
-            }
-
-            mColorSO->baseColor = sColorSO; //SetField("_baseColor", sColorSO);
-        }
-
-        static auto contextLogger = getLogger().WithContext(ChromaLogger::LightColorizer);
-        debugSpamLog(contextLogger, "Overwriting %s", id.c_str());
-        if (l1) {
-            CRASH_UNLESS(mColorSO);
-            il2cpp_utils::SetFieldValue<LightSwitchEventEffect *, ColorSO *>((*l1), id,
-                                                                             mColorSO); //l1.GetField<ColorSO, LightSwitchEventEffect>(id);
-        } else if (p1) {
-            CRASH_UNLESS(mColorSO);
-            il2cpp_utils::SetFieldValue<ParticleSystemEventEffect *, ColorSO *>((*p1), id,
-                                                                                mColorSO); //l1.GetField<ColorSO, LightSwitchEventEffect>(id);
+            LightIDTableManager::RegisterIndex(light->get_lightId() - 1, (int) lightColorizer->Lights.size(), lightId);
+            lightColorizer->Lights[(int) lightColorizer->Lights.size()] = light;
         }
     }
 }
+
+void LightColorizer::Colorize(bool refresh, std::vector<std::optional<UnityEngine::Color>> colors) {
+    for (int i = 0; i < colors.size(); i++)
+    {
+        _colors[i] = colors[i];
+    }
+
+    // Allow light colorizer to not force color
+    if (refresh)
+    {
+        Refresh();
+    }
+    else
+    {
+        std::vector<UnityEngine::Color> nonNullColors;
+        for (auto& color: colors) {
+            if (color)
+                nonNullColors.emplace_back(*color);
+        }
+        nonNullColors.shrink_to_fit();
+        SetSOs(nonNullColors);
+    }
+}
+
+void LightColorizer::Reset() {
+    for (int i = 0; i < COLOR_FIELDS; i++)
+    {
+        GlobalColor[i] = std::nullopt;
+    }
+}
+
+void LightColorizer::SetSOs(std::vector<UnityEngine::Color> colors) {
+    for (int i = 0; i < colors.size(); i++)
+    {
+        _simpleColorSOs[i]->SetColor(colors[i]);
+    }
+
+    LightColorChanged.invoke(_eventType.value, colors);
+}
+
+void LightColorizer::Refresh() {
+    auto colors = getColor();
+    SetSOs(colors);
+
+    _lightSwitchEventEffect->ProcessLightSwitchEvent(_lightSwitchEventEffect->prevLightSwitchBeatmapEventDataValue, true);
+}
+
+void LightColorizer::InitializeSO(const std::string &id, int index) {
+    auto colorSOAcessor = il2cpp_utils::FindField(classof(LightSwitchEventEffect*), id);
+    auto lightMultSO = CRASH_UNLESS(il2cpp_utils::GetFieldValue<GlobalNamespace::MultipliedColorSO>(_lightSwitchEventEffect, colorSOAcessor));
+
+    Color multiplierColor = lightMultSO.multiplierColor;
+    auto lightSO = lightMultSO.baseColor;
+    _originalColors[index] = lightSO->color;
+
+    SafePtr<MultipliedColorSO> mColorSO(ScriptableObject::CreateInstance<MultipliedColorSO*>());
+    mColorSO->multiplierColor = multiplierColor;
+
+
+    if (!_simpleColorSOs[index])
+    {
+        SafePtr<SimpleColorSO> sColorSO(ScriptableObject::CreateInstance<SimpleColorSO*>());
+        sColorSO->SetColor(lightSO->color);
+        _simpleColorSOs.emplace(index, sColorSO);
+    }
+
+    SafePtr<SimpleColorSO>& sColorSO = _simpleColorSOs[index];
+
+    mColorSO->baseColor = (SimpleColorSO*) sColorSO;
+
+    il2cpp_utils::SetFieldValue<ColorSO*>(_lightSwitchEventEffect, colorSOAcessor, (MultipliedColorSO*) mColorSO);
+}
+

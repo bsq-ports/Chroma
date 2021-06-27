@@ -172,6 +172,8 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                 auto localPosition = GetVectorData(gameObjectDataVal, LOCALPOSITION);
                 auto localRotation = GetVectorData(gameObjectDataVal, LOCALROTATION);
 
+                auto lightID = getIfExists<int>(gameObjectDataVal, LIGHTID);
+
                 auto foundObjects = LookupId(id, lookupMethod);
 
                 std::vector<GameObjectInfo> gameObjectInfos;
@@ -201,7 +203,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
 
                             ComponentInitializer::InitializeComponents(newGameObject->get_transform(),
                                                                        gameObject->get_transform(), gameObjectInfos,
-                                                                       componentDatas);
+                                                                       componentDatas, lightID);
                             for (auto &o : _gameObjectInfos) {
                                 if (o.GameObject == newGameObject)
                                     gameObjectInfos.push_back(o);
@@ -211,6 +213,11 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                         }
                     }
                 } else {
+                    if (lightID)
+                    {
+                        getLogger().error("LightID requested but no duplicated object to apply to.");
+                    }
+
                     gameObjectInfos = foundObjects;
                 }
 
@@ -272,6 +279,17 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                         }
                     }
 
+                    GlobalNamespace::BeatmapObjectsAvoidance* beatmapObjectsAvoidance = gameObject->GetComponent<GlobalNamespace::BeatmapObjectsAvoidance*>();
+
+                    if (beatmapObjectsAvoidance) {
+                        if (position || localPosition) {
+                            AvoidancePosition[beatmapObjectsAvoidance] = transform->get_localPosition();
+                        }
+
+                        if (rotation || localRotation) {
+                            AvoidanceRotation[beatmapObjectsAvoidance] = transform->get_localRotation();
+                        }
+                    }
 
                     if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {
                         getLogger().info("ID [\"%s\"] using method [%s] found:", id.c_str(), lookupString.c_str());

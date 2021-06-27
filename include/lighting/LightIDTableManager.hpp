@@ -29,7 +29,7 @@ namespace Chroma {
 
         static void InitTable();
 
-        static void RegisterIndex(int type, int index);
+        static void RegisterIndex(int type, int index, std::optional<int> requestedKey);
     };
 
 }

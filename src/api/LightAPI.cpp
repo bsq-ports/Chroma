@@ -11,16 +11,18 @@ using namespace UnityEngine;
 
 // TODO: unsure of this
 
-EXPOSE_API(getLightColorSafe, LightAPI::LSEData*, MonoBehaviour* mb) {
+EXPOSE_API(getLightColorSafe, LightAPI::LSEData*, BeatmapEventType mb) {
 
-    auto lse = LSEColorManager::GetLSEColorManager(mb);
+    auto lse = LightColorizer::GetLightColorizer(mb);
 
     if (!lse) return nullptr;
 
-    auto _lightColor0 = lse->_lightColor0->color;
-    auto _lightColor1 = lse->_lightColor1->color;
-    auto _lightColor0Boost = lse->_lightColor0Boost->color;
-    auto _lightColor1Boost = lse->_lightColor1Boost->color;
+    auto colors = lse->getColor();
+
+    auto _lightColor0 = colors[0];
+    auto _lightColor1 = colors[1];
+    auto _lightColor0Boost = colors[2];
+    auto _lightColor1Boost = colors[3];
 
     auto lseData = new LightAPI::LSEData {
         std::make_optional(_lightColor0),
@@ -32,20 +34,21 @@ EXPOSE_API(getLightColorSafe, LightAPI::LSEData*, MonoBehaviour* mb) {
     return lseData;
 }
 
-EXPOSE_API(setLightColorSafe, void, MonoBehaviour* mb, std::optional<LightAPI::LSEData> lseData) {
+EXPOSE_API(setLightColorSafe, void, BeatmapEventType mb, bool refresh, std::optional<LightAPI::LSEData> lseData) {
+
     if (lseData)
-        LightColorizer::SetLightingColors(mb, lseData->_lightColor0, lseData->_lightColor1, lseData->_lightColor0Boost, lseData->_lightColor1Boost);
+        LightColorizer::ColorizeLight(mb, refresh, {lseData->_lightColor0, lseData->_lightColor1, lseData->_lightColor0Boost, lseData->_lightColor1Boost});
     else
-        LightColorizer::Reset(mb);
+        LightColorizer::ColorizeLight(mb, refresh, {std::nullopt, std::nullopt, std::nullopt, std::nullopt});
 }
 
 
-EXPOSE_API(SetAllLightingColors, void, std::optional<LightAPI::LSEData> data) {
+EXPOSE_API(SetAllLightingColors, void, bool refresh, std::optional<LightAPI::LSEData> data) {
     if (data) {
-        LightColorizer::SetAllLightingColors(data.value()._lightColor0, data.value()._lightColor1, data.value()._lightColor0Boost,
-                                             data.value()._lightColor1Boost);
+        LightColorizer::GlobalColorize(refresh, {data.value()._lightColor0, data.value()._lightColor1, data.value()._lightColor0Boost,
+                                             data.value()._lightColor1Boost});
     } else {
-        LightColorizer::ResetAllLightingColors();
+        LightColorizer::GlobalColorize(refresh, {std::nullopt, std::nullopt, std::nullopt, std::nullopt});
     }
 }
 
@@ -55,7 +58,7 @@ EXPOSE_API(SetAllLightingColors, void, std::optional<LightAPI::LSEData> data) {
 // While it does create a pointer on the heap,
 // the API side of this should move the elements back into a value type then delete this pointer.
 extern "C" std::unordered_map<int, GlobalNamespace::ILightWithId *>* getLightsSafe(GlobalNamespace::LightSwitchEventEffect *lse) {
-    auto vectorOrg = LightColorizer::GetLights(lse);
+    auto vectorOrg = LightColorizer::GetLightColorizer(lse->event)->Lights;
     auto vectorPtr = new std::unordered_map<int, GlobalNamespace::ILightWithId *>(std::move(vectorOrg));
 
     return vectorPtr;
@@ -67,7 +70,7 @@ extern "C" std::unordered_map<int, GlobalNamespace::ILightWithId *>* getLightsSa
 
 //EXPOSE_API(, std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId *>>, GlobalNamespace::LightSwitchEventEffect *lse) {
 extern "C" std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId *>>* getLightsPropagationGroupedSafe(GlobalNamespace::LightSwitchEventEffect *lse) {
-    auto mapOrg = LightColorizer::GetLightsPropagationGrouped(lse);
+    auto mapOrg = LightColorizer::GetLightColorizer(lse->event)->LightsPropagationGrouped;
     auto mapPtr = new std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId *>>(std::move(mapOrg));
 
     return mapPtr;
