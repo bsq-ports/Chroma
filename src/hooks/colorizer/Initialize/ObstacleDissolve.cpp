@@ -27,8 +27,8 @@ using namespace UnityEngine;
 using namespace System::Collections;
 using namespace custom_types::Helpers;
 
-MAKE_HOOK_OFFSETLESS(ObstacleDissolve_Start, void, ObstacleDissolve* self) {
-    ObstacleDissolve_Start(self);
+MAKE_HOOK_OFFSETLESS(ObstacleDissolve_Awake, void, ObstacleDissolve* self) {
+    ObstacleDissolve_Awake(self);
 
     // Do nothing if Chroma shouldn't run
     if (!ChromaController::GetChromaLegacy() && !ChromaController::DoChromaHooks()) {
@@ -49,6 +49,6 @@ MAKE_HOOK_OFFSETLESS(ObstacleDissolve_OnDestroy, void, ObstacleDissolve* self) {
 }
 
 void Chroma::Hooks::ObstacleDissolve() {
-    INSTALL_HOOK_OFFSETLESS(getLogger(), ObstacleDissolve_Start, il2cpp_utils::FindMethodUnsafe("", "ObstacleDissolve", "Start", 0));
+    INSTALL_HOOK_OFFSETLESS(getLogger(), ObstacleDissolve_Awake, il2cpp_utils::FindMethodUnsafe("", "ObstacleDissolve", "Awake", 0));
     INSTALL_HOOK_OFFSETLESS(getLogger(), ObstacleDissolve_OnDestroy, il2cpp_utils::FindMethodUnsafe("", "ObstacleDissolve", "OnDestroy", 0));
 }

@@ -6,6 +6,8 @@
 #include "GlobalNamespace/BombNoteController.hpp"
 #include "GlobalNamespace/MirroredBombNoteController.hpp"
 #include "GlobalNamespace/MirroredNoteController_1.hpp"
+#include "GlobalNamespace/INoteMirrorable.hpp"
+#include "GlobalNamespace/ICubeNoteMirrorable.hpp"
 #include "GlobalNamespace/MultiplayerConnectedPlayerNoteController.hpp"
 #include "GlobalNamespace/TutorialNoteController.hpp"
 #include "GlobalNamespace/MirroredCubeNoteController.hpp"
@@ -50,5 +52,9 @@ MAKE_HOOK_OFFSETLESS(MirroredNoteController_UpdatePositionAndRotation, void, Mir
 
 
 void Chroma::Hooks::MirroredNoteController() {
-    INSTALL_HOOK_OFFSETLESS(getLogger(), MirroredNoteController_UpdatePositionAndRotation, il2cpp_utils::FindMethodUnsafe("", "MirroredNoteController", "UpdatePositionAndRotation", 0));
+    auto iNoteGeneric = classof(GlobalNamespace::MirroredNoteController_1<INoteMirrorable*>*);
+    auto iNoteCubeGeneric = classof(GlobalNamespace::MirroredNoteController_1<ICubeNoteMirrorable*>*);
+
+    INSTALL_HOOK_OFFSETLESS(getLogger(), MirroredNoteController_UpdatePositionAndRotation, il2cpp_utils::FindMethodUnsafe(iNoteGeneric, "UpdatePositionAndRotation", 0));
+    INSTALL_HOOK_OFFSETLESS(getLogger(), MirroredNoteController_UpdatePositionAndRotation, il2cpp_utils::FindMethodUnsafe(iNoteCubeGeneric, "UpdatePositionAndRotation", 0));
 }
