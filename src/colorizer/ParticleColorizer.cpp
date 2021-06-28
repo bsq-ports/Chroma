@@ -55,7 +55,16 @@ void ParticleColorizer::OnLightColorChanged(GlobalNamespace::BeatmapEventType ev
     {
         for (int i = 0; i < COLOR_FIELDS; i++)
         {
-            _simpleColorSOs[i]->SetColor(colors[i]);
+            if (i >= colors.size()) {
+                // is this normal?
+                continue;
+            }
+
+            auto color = colors[i];
+
+            auto it = _simpleColorSOs.find(i); // std::unordered_map<int, SafePtr<GlobalNamespace::SimpleColorSO>>
+            if (it != _simpleColorSOs.end() && it->second && (SimpleColorSO*) it->second)
+                it->second->SetColor(color);
         }
 
         auto particleSystemEventEffect = _particleSystemEventEffect;

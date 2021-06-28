@@ -74,56 +74,55 @@ void Chroma::LightColorManager::ColorLightSwitch(BeatmapEventData* beatmapEventD
 
             LightSwitchEventEffectHolder::LightIDOverride = std::make_optional(lightIDArray);
         }
+    }
 
 
-        // Prop ID is deprecated apparently.  https://github.com/Aeroluna/Chroma/commit/711cb19f7d03a1776a24cef52fd8ef6fd7685a2b#diff-b8fcfff3ebc4ceb7b43d8401d9f50750dc88326d0a87897c5593923e55b23879R41
-        auto propMember = chromaData->PropID;
-        if (propMember) {
-            debugSpamLog(contextLogger, "JSON data 3");
-            rapidjson::Value &propIDData = *propMember;
+    // Prop ID is deprecated apparently.  https://github.com/Aeroluna/Chroma/commit/711cb19f7d03a1776a24cef52fd8ef6fd7685a2b#diff-b8fcfff3ebc4ceb7b43d8401d9f50750dc88326d0a87897c5593923e55b23879R41
+    auto propMember = chromaData->PropID;
+    if (propMember) {
+        debugSpamLog(contextLogger, "JSON data 3");
+        rapidjson::Value &propIDData = *propMember;
 
-            std::unordered_map<int, std::vector<ILightWithId *>> lights = LightColorizer::GetLightColorizer(
-                    beatmapEventData->type)->LightsPropagationGrouped;
-            int lightCount = (int) lights.size();
+        std::unordered_map<int, std::vector<ILightWithId *>> lights = LightColorizer::GetLightColorizer(
+                beatmapEventData->type)->LightsPropagationGrouped;
+        int lightCount = (int) lights.size();
 
-            debugSpamLog(contextLogger, "Prop id data is");
-            PrintJSONValue(propIDData);
+        debugSpamLog(contextLogger, "Prop id data is");
+        PrintJSONValue(propIDData);
 
-            if (propIDData.IsInt64() || propIDData.IsInt() || propIDData.IsUint() || propIDData.IsUint64()) {
-                auto propIdLong = propIDData.GetInt();
-                debugSpamLog(contextLogger, "It is an int prop %d %d", lightCount, propIdLong);
-                if (lightCount > propIdLong) {
-                    SetLegacyPropIdOverride(lights[propIdLong]);
-                }
-            } else {
-                debugSpamLog(contextLogger, "It is a list prop");
-                // It's a list
-                auto propIDobjects = propIDData.GetObject();
+        if (propIDData.IsInt64() || propIDData.IsInt() || propIDData.IsUint() || propIDData.IsUint64()) {
+            auto propIdLong = propIDData.GetInt();
+            debugSpamLog(contextLogger, "It is an int prop %d %d", lightCount, propIdLong);
+            if (lightCount > propIdLong) {
+                SetLegacyPropIdOverride(lights[propIdLong]);
+            }
+        } else {
+            debugSpamLog(contextLogger, "It is a list prop");
+            // It's a list
+            auto propIDobjects = propIDData.GetObject();
 
-                std::vector<ILightWithId *> overrideLights;
+            std::vector<ILightWithId *> overrideLights;
 
-                for (auto &lightId : propIDobjects) {
-                    int propId = lightId.value.GetInt();
-                    if (lightCount > propId) {
-                        for (auto l : lights[propId]) {
-                            overrideLights.push_back(l);
-                        }
+            for (auto &lightId : propIDobjects) {
+                int propId = lightId.value.GetInt();
+                if (lightCount > propId) {
+                    for (auto l : lights[propId]) {
+                        overrideLights.push_back(l);
                     }
                 }
-
-                SetLegacyPropIdOverride(overrideLights);
             }
+
+            SetLegacyPropIdOverride(overrideLights);
         }
-
-
-        auto gradient = chromaData->GradientObject;
-        if (gradient) {
-            color = ChromaGradientController::AddGradient(gradient.value(), beatmapEventData->type,
-                                                          beatmapEventData->time);
-        }
-
-
     }
+
+
+    auto gradient = chromaData->GradientObject;
+    if (gradient) {
+        color = ChromaGradientController::AddGradient(gradient.value(), beatmapEventData->type,
+                                                      beatmapEventData->time);
+    }
+
 
     std::optional<UnityEngine::Color> colorData = chromaData->ColorData;
     if (colorData) {

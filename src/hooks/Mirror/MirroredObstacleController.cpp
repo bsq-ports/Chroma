@@ -31,6 +31,9 @@ MAKE_HOOK_OFFSETLESS(MirroredObstacleController_UpdatePositionAndRotation, void,
         return;
     }
 
+    if (!self->followedObstacle)
+        return;
+
     ObstacleColorizer::ColorizeObstacle(self, ObstacleColorizer::GetObstacleColorizer(self->followedObstacle)->getColor());
 }
 

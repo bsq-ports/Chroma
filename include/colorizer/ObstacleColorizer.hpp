@@ -56,7 +56,7 @@ namespace Chroma {
         }
 
         inline static void ColorizeObstacle(GlobalNamespace::ObstacleControllerBase* obstacleControllerBase, std::optional<UnityEngine::Color> color) {
-            GetObstacleColorizer(obstacleControllerBase)->Colorize(color);
+            CRASH_UNLESS(GetObstacleColorizer(obstacleControllerBase))->Colorize(color);
         }
     };
 }

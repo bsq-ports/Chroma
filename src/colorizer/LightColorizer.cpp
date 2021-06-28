@@ -150,19 +150,11 @@ std::vector<UnityEngine::Color> LightColorizer::getColor() {
     std::vector<UnityEngine::Color> colors(COLOR_FIELDS);
     for (int i = 0; i < COLOR_FIELDS; i++)
     {
-        auto color = _colors[i];
-        if (color) {
-            colors[i] = *color;
-            continue;
-        }
-
-        color = GlobalColor[i];
-        if (color) {
-            colors[i] = *color;
-            continue;
-        }
-
-        colors[i] = _originalColors[i];
+        auto color = _colors[i]
+                .value_or(GlobalColor[i]
+                .value_or(_originalColors[i]
+                ));
+        colors[i] = color;
     }
 
     return colors;
@@ -231,13 +223,7 @@ void LightColorizer::Colorize(bool refresh, std::vector<std::optional<UnityEngin
     }
     else
     {
-        std::vector<UnityEngine::Color> nonNullColors;
-        for (auto& color: colors) {
-            if (color)
-                nonNullColors.emplace_back(*color);
-        }
-        nonNullColors.shrink_to_fit();
-        SetSOs(nonNullColors);
+        SetSOs(getColor());
     }
 }
 
