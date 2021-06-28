@@ -20,7 +20,7 @@ using namespace GlobalNamespace;
 using namespace Chroma;
 using namespace UnityEngine;
 
-std::vector<LineRenderer*> _lineRenderers;
+std::vector<LineRenderer*> _lineRenderers = {nullptr, nullptr};
 
 int saberBurnMarkCount = 0;
 
@@ -57,7 +57,7 @@ MAKE_HOOK_OFFSETLESS(SaberBurnMarkArea_OnDestroy, void, SaberBurnMarkArea* self)
     saberBurnMarkCount--;
 
     if (saberBurnMarkCount == 0) {
-        SaberColorizer::SaberColorChanged -= OnSaberColorChanged_SaberBurnMarkArea;
+        SaberColorizer::SaberColorChanged -= &OnSaberColorChanged_SaberBurnMarkArea;
     }
 }
 

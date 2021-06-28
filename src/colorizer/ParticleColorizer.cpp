@@ -51,7 +51,6 @@ ParticleColorizer::GetOrCreateColorizerList(GlobalNamespace::BeatmapEventType ev
 
 void ParticleColorizer::OnLightColorChanged(GlobalNamespace::BeatmapEventType eventType,
                                             std::vector<UnityEngine::Color> colors) {
-
     if (eventType == _eventType)
     {
         for (int i = 0; i < COLOR_FIELDS; i++)
@@ -122,7 +121,7 @@ void ParticleColorizer::InitializeSO(const std::string& id, int index, bool high
     {
         SafePtr<SimpleColorSO> sColorSO(ScriptableObject::CreateInstance<SimpleColorSO*>());
         sColorSO->SetColor(lightSO->color);
-        _simpleColorSOs.emplace(index, std::move(sColorSO));
+        _simpleColorSOs.emplace(index, sColorSO);
     }
 
     SafePtr<SimpleColorSO>& sColorSO = _simpleColorSOs[index];
@@ -132,11 +131,11 @@ void ParticleColorizer::InitializeSO(const std::string& id, int index, bool high
 
     if (highlight)
     {
-        _multipliedHighlightColorSOs.emplace(index, std::move(mColorSO));
+        _multipliedHighlightColorSOs.emplace(index, mColorSO);
     }
     else
     {
-        _multipliedColorSOs.emplace(index, std::move(mColorSO));
+        _multipliedColorSOs.emplace(index, mColorSO);
     }
 
     il2cpp_utils::SetFieldValue<ColorSO*>(_particleSystemEventEffect, colorSOAcessor, mColorPtr);

@@ -13,9 +13,7 @@ LegacyLightHelper::ColorMap LegacyLightHelper::LegacyColorEvents = LegacyLightHe
 void LegacyLightHelper::Activate(const std::vector<GlobalNamespace::BeatmapEventData*>& eventData) {
     static auto contextLogger = getLogger().WithContext(ChromaLogger::LegacyLightColor);
 
-    getLogger().debug("Legacy starting now!");
     LegacyColorEvents = LegacyLightHelper::ColorMap();
-    getLogger().debug("Legacy going now!");
     debugSpamLog(contextLogger, "Got the events, checking for legacy %d", eventData.size());
     for (auto& d : eventData)
     {

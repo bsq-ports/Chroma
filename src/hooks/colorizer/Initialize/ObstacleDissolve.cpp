@@ -31,7 +31,7 @@ MAKE_HOOK_OFFSETLESS(ObstacleDissolve_Awake, void, ObstacleDissolve* self) {
     ObstacleDissolve_Awake(self);
 
     // Do nothing if Chroma shouldn't run
-    if (!ChromaController::GetChromaLegacy() && !ChromaController::DoChromaHooks()) {
+    if (!ChromaController::DoChromaHooks()) {
         return;
     }
     ObstacleColorizer::New(self->obstacleController);
@@ -41,7 +41,7 @@ MAKE_HOOK_OFFSETLESS(ObstacleDissolve_OnDestroy, void, ObstacleDissolve* self) {
     ObstacleDissolve_OnDestroy(self);
 
     // Do nothing if Chroma shouldn't run
-    if (!ChromaController::GetChromaLegacy() && !ChromaController::DoChromaHooks()) {
+    if (!ChromaController::DoChromaHooks()) {
         return;
     }
 

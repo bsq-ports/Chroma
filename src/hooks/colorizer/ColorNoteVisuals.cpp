@@ -21,7 +21,6 @@ MAKE_HOOK_OFFSETLESS(ColorNoteVisuals_HandleNoteControllerDidInit, void, ColorNo
         return;
     }
 
-
     if (ASSIGNMENT_CHECK(classof(NoteController*), noteController->klass)) {
         auto it = ChromaObjectDataManager::ChromaObjectDatas.find(noteController->noteData);
 

@@ -3,6 +3,8 @@
 #include "ChromaController.hpp"
 #include "utils/ChromaUtils.hpp"
 
+#include "GlobalNamespace/ColorExtensions.hpp"
+#include "hooks/colorizer/Note/ColorManager.hpp"
 #include "GlobalNamespace/BeatEffectSpawner.hpp"
 #include "GlobalNamespace/BeatmapObjectSpawnController.hpp"
 #include "GlobalNamespace/NoteController.hpp"
@@ -11,6 +13,7 @@
 
 #include "custom-json-data/shared/CustomBeatmapData.h"
 
+#include "colorizer/BombColorizer.hpp"
 #include "colorizer/NoteColorizer.hpp"
 #include "ChromaObjectData.hpp"
 
@@ -34,7 +37,17 @@ MAKE_HOOK_OFFSETLESS(BeatEffectSpawner_HandleNoteDidStartJump, void, BeatEffectS
             return;
         }
     }
+
+
+
+    if (noteController->noteData->colorType == ColorType::None) {
+        self->bombColorEffect = ColorExtensions::ColorWithAlpha(BombColorizer::GetBombColorizer(noteController)->getColor(), 0.5f);
+    } else {
+        ColorManagerColorForType::EnableColorOverride(noteController);
+    }
     BeatEffectSpawner_HandleNoteDidStartJump(self, noteController);
+
+    ColorManagerColorForType::DisableColorOverride();
 }
 
 

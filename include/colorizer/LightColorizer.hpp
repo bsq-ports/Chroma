@@ -27,7 +27,7 @@ namespace Chroma {
 
         GlobalNamespace::LightSwitchEventEffect *_lightSwitchEventEffect;
         GlobalNamespace::BeatmapEventType _eventType;
-        std::vector<std::optional<UnityEngine::Color>> _colors;
+        std::unordered_map<int, std::optional<UnityEngine::Color>> _colors;
 
         std::vector<UnityEngine::Color> _originalColors;
         std::unordered_map<int, SafePtr<GlobalNamespace::SimpleColorSO>> _simpleColorSOs;
@@ -43,33 +43,34 @@ namespace Chroma {
 
         inline static std::unordered_map<int, std::shared_ptr<LightColorizer>> Colorizers;
 
-        std::unordered_map<int, GlobalNamespace::ILightWithId *> Lights;
+        std::unordered_map<int, GlobalNamespace::ILightWithId *> Lights{};
 
-        std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId *>> LightsPropagationGrouped;
+        std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId *>> LightsPropagationGrouped{};
 
 
 
-        std::vector<UnityEngine::Color> getColor() const;
+        std::vector<UnityEngine::Color> getColor();
 
         static void GlobalColorize(bool refresh, std::vector<std::optional<UnityEngine::Color>> colors);
 
         static void RegisterLight(UnityEngine::MonoBehaviour *lightWithId, std::optional<int> lightId);
 
-        void Colorize(bool refresh, std::vector<std::optional<UnityEngine::Color>> colors);
+        void Colorize(bool refresh, std::vector<std::optional<UnityEngine::Color>>& colors);
 
         static void Reset();
 
         // extensions
         inline static std::shared_ptr<LightColorizer> GetLightColorizer(GlobalNamespace::BeatmapEventType beatmapEventType) {
-            auto it = Colorizers.find(beatmapEventType);
-            if (it == Colorizers.end())
+            auto it = Colorizers.find(beatmapEventType.value);
+            if (it == Colorizers.end()) {
                 return nullptr;
+            }
 
             return it->second;
         }
 
         inline static void ColorizeLight(GlobalNamespace::BeatmapEventType beatmapEventType, bool refresh, std::vector<std::optional<UnityEngine::Color>> colors) {
-            GetLightColorizer(beatmapEventType)->Colorize(refresh, colors);
+            CRASH_UNLESS(GetLightColorizer(beatmapEventType))->Colorize(refresh, colors);
         }
 
     private:

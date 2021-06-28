@@ -38,7 +38,6 @@ namespace Chroma {
     namespace Hooks {
         void BaseNoteVisuals();
         void BeatEffectSpawner();
-        void colorizer_BeatEffectSpawner();
         void BeatmapDataTransformHelper();
         void BeatmapObjectsAvoidance();
         void BeatmapObjectSpawnController();
@@ -48,7 +47,6 @@ namespace Chroma {
         void LightPairRotationEventEffect();
         void LightRotationEventEffect();
         void LightSwitchEventEffect();
-        void colorizer_LightSwitchEventEffect();
         void LightWithIdManager();
         void NoteCutEffectSpawner();
         void MirroredObstacleController();

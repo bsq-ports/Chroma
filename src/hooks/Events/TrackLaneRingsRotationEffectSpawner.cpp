@@ -126,7 +126,7 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCall
 //                      beatmapEventData->customData != nullptr && beatmapEventData->customData->value != nullptr ? 0 : 1);
     static auto contextLogger = getLogger().WithContext(Chroma::ChromaLogger::TrackLaneRings);
 
-    if (beatmapEventData->type == beatmapEventData->type) {
+    if (beatmapEventData->type == self->beatmapEventType) {
         auto chromaIt = ChromaEventDataManager::ChromaEventDatas.find(beatmapEventData);
 
         // Not found

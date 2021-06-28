@@ -29,7 +29,7 @@ using namespace Chroma;
 using namespace ChromaUtils;
 using namespace custom_types::Helpers;
 
-Coroutine WaitThenStart(ParticleSystemEventEffect* instance, BeatmapEventType eventType) {
+Coroutine WaitThenStartParticle(ParticleSystemEventEffect* instance, BeatmapEventType eventType) {
     co_yield reinterpret_cast<enumeratorT*>(UnityEngine::WaitForEndOfFrame::New_ctor());
     instance->get_gameObject()->AddComponent<ChromaParticleEventController*>()->Init(instance, eventType);
 }
@@ -53,7 +53,7 @@ MAKE_HOOK_OFFSETLESS(
         UnityEngine::Object::Destroy(oldController);
     }
 
-    auto* coro = custom_types::Helpers::CoroutineHelper::New(WaitThenStart(self, self->colorEvent));
+    auto* coro = custom_types::Helpers::CoroutineHelper::New(WaitThenStartParticle(self, self->colorEvent));
 
     self->StartCoroutine(reinterpret_cast<enumeratorT*>(coro));
 }

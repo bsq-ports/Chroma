@@ -36,7 +36,7 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffect_FixedUpdate, void, GlobalNames
 }
 
 void Hooks::TrackLaneRingsRotationEffect() {
-    INSTALL_HOOK_OFFSETLESS(getLogger(), TrackLaneRingsRotationEffect_AddRingRotationEffect, il2cpp_utils::FindMethodUnsafe("", "TrackLaneRingsRotationEffect", "AddRingRotationEffect", 4));
-    INSTALL_HOOK_OFFSETLESS(getLogger(), TrackLaneRingsRotationEffect_FixedUpdate, il2cpp_utils::FindMethodUnsafe("", "TrackLaneRingsRotationEffect", "FixedUpdate", 0));
-    //    INSTALL_HOOK_OFFSETLESS(getLogger(), SaberManager_Finalize, il2cpp_utils::FindMethodUnsafe("System", "Object", "Finalize", 0));
+    // TODO: Remove?
+    //    INSTALL_HOOK_OFFSETLESS(getLogger(), TrackLaneRingsRotationEffect_AddRingRotationEffect, il2cpp_utils::FindMethodUnsafe("", "TrackLaneRingsRotationEffect", "AddRingRotationEffect", 4));
+    //    INSTALL_HOOK_OFFSETLESS(getLogger(), TrackLaneRingsRotationEffect_FixedUpdate, il2cpp_utils::FindMethodUnsafe("", "TrackLaneRingsRotationEffect", "FixedUpdate", 0));
 }

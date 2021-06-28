@@ -68,7 +68,7 @@ void ChromaRingsRotationEffect::FixedUpdate() {
 
             int length = (int) rings->Length();
 
-            while ((float) num < progressPos && num < length) {
+            while (num < progressPos && num < length) {
                 rings->get(num)->SetDestRotation(
                         ringRotationEffect->RotationAngle + ((float) num * ringRotationEffect->RotationStep),
                         ringRotationEffect->RotationFlexySpeed);

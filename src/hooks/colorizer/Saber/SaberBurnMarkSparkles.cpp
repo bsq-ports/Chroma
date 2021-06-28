@@ -24,7 +24,7 @@ using namespace UnityEngine;
 
 int subCount = 0;
 
-std::vector<ParticleSystem*> _burnMarksPS;
+std::vector<ParticleSystem*> _burnMarksPS = {nullptr, nullptr};
 
 void OnSaberColorChanged(int saberType, Color color)
 {

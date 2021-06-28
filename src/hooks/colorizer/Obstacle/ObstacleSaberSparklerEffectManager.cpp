@@ -38,10 +38,10 @@ MAKE_HOOK_OFFSETLESS(ObstacleSaberSparkleEffectManager_Update, void, ObstacleSab
     }
 
 
-    self->wasSystemActive->set_Item(0, self->isSystemActive->get(0));
-    self->wasSystemActive->set_Item(1, self->isSystemActive->get(1));
-    self->isSystemActive->set_Item(0, false);
-    self->isSystemActive->set_Item(1, false);
+    self->wasSystemActive->values[0] = self->isSystemActive->get(0);
+    self->wasSystemActive->values[1] = self->isSystemActive->get(1);
+    self->isSystemActive->values[0] = false;
+    self->isSystemActive->values[1] = false;
 
     std::vector<GlobalNamespace::ObstacleController*> activeObstacleControllersVec(self->beatmapObjectManager->get_activeObstacleControllers()->items->Length());
 
@@ -49,14 +49,17 @@ MAKE_HOOK_OFFSETLESS(ObstacleSaberSparkleEffectManager_Update, void, ObstacleSab
 
     for (auto& obstacleController : activeObstacleControllersVec)
     {
+        if (!obstacleController)
+            continue;
+
         auto bounds = obstacleController->bounds;
         for (int i = 0; i < 2; i++) {
             Vector3 vector;
             if (self->sabers->get(i)->get_isActiveAndEnabled() &&
             self->GetBurnMarkPos(bounds, obstacleController->get_transform(), self->sabers->get(i)->saberBladeBottomPos,self->sabers->get(i)->saberBladeTopPos,vector))
             {
-                self->isSystemActive->set_Item(i, true);
-                self->burnMarkPositions->set_Item(i, vector);
+                self->isSystemActive->values[i] = true;
+                self->burnMarkPositions->values[i] = vector;
                 self->effects->get(i)->SetPositionAndRotation(vector, self->GetEffectRotation(vector, obstacleController->get_transform(),bounds));
 
                 // TRANSPILE IS HERE

@@ -18,7 +18,7 @@ using namespace GlobalNamespace;
 using namespace UnityEngine;
 using namespace Chroma;
 
-MAKE_HOOK_OFFSETLESS(NoteCutEffectSpawner_SpawnNoteCutEffect,void,NoteCutCoreEffectsSpawner* self, GlobalNamespace::NoteCutInfo* noteCutInfo, GlobalNamespace::NoteController* noteController) {
+MAKE_HOOK_OFFSETLESS(NoteCutEffectSpawner_SpawnNoteCutEffect,void,NoteCutCoreEffectsSpawner* self, GlobalNamespace::NoteCutInfo& noteCutInfo, GlobalNamespace::NoteController* noteController) {
     // Do nothing if Chroma shouldn't run
     if (!ChromaController::DoChromaHooks()) {
         NoteCutEffectSpawner_SpawnNoteCutEffect(self, noteCutInfo, noteController);

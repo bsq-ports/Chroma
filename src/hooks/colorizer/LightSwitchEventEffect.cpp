@@ -27,6 +27,40 @@ using namespace UnityEngine;
 using namespace System::Collections;
 using namespace custom_types::Helpers;
 
+
+
+custom_types::Helpers::Coroutine WaitThenStartLight(LightSwitchEventEffect *instance, BeatmapEventType eventType) {
+    co_yield reinterpret_cast<IEnumerator*>(CRASH_UNLESS(WaitForEndOfFrame::New_ctor()));
+    LightColorizer::New(instance, eventType);
+    co_return;
+}
+
+MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_Start, void, LightSwitchEventEffect* self) {
+    LightSwitchEventEffect_Start(self);
+
+    // Do nothing if Chroma shouldn't run
+    if (!ChromaController::GetChromaLegacy() && !ChromaController::DoChromaHooks()) {
+        return;
+    }
+
+    auto* coro = custom_types::Helpers::CoroutineHelper::New(WaitThenStartLight(self, self->event));
+
+    self->StartCoroutine(reinterpret_cast<IEnumerator*>(coro));
+
+}
+
+MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_OnDestroy, void, LightSwitchEventEffect* self) {
+    LightSwitchEventEffect_OnDestroy(self);
+
+    // Do nothing if Chroma shouldn't run
+    if (!ChromaController::GetChromaLegacy() && !ChromaController::DoChromaHooks()) {
+        return;
+    }
+
+    LightColorizer::Colorizers.erase(self->event);
+
+}
+
 MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_SetColor, void, LightSwitchEventEffect* self, UnityEngine::Color color) {
     // Do nothing if Chroma shouldn't run
     if (!ChromaController::GetChromaLegacy() && !ChromaController::DoChromaHooks()) {
@@ -103,7 +137,9 @@ MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_HandleBeatmapObjectCallbackControlle
     LightSwitchEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);
 }
 
-void Chroma::Hooks::colorizer_LightSwitchEventEffect() {
+void Chroma::Hooks::LightSwitchEventEffect() {
     INSTALL_HOOK_OFFSETLESS(getLogger(), LightSwitchEventEffect_SetColor, il2cpp_utils::FindMethodUnsafe("", "LightSwitchEventEffect", "SetColor", 1));
     INSTALL_HOOK_OFFSETLESS(getLogger(), LightSwitchEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger, il2cpp_utils::FindMethodUnsafe("", "LightSwitchEventEffect", "HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger", 1));
+    INSTALL_HOOK_OFFSETLESS(getLogger(), LightSwitchEventEffect_Start, il2cpp_utils::FindMethodUnsafe("", "LightSwitchEventEffect", "Start", 0));
+    INSTALL_HOOK_OFFSETLESS(getLogger(), LightSwitchEventEffect_OnDestroy, il2cpp_utils::FindMethodUnsafe("", "LightSwitchEventEffect", "OnDestroy", 0));
 }

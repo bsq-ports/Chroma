@@ -29,7 +29,6 @@ MAKE_HOOK_OFFSETLESS(
     BombNoteController_Init(self, noteData, worldRotation, moveStartPos, moveEndPos, jumpEndPos, moveDuration, jumpDuration, jumpGravity);
     // Do nothing if Chroma shouldn't run
     if (!ChromaController::DoChromaHooks()) {
-        BombNoteController_Init(self, noteData, worldRotation, moveStartPos, moveEndPos, jumpEndPos, moveDuration, jumpDuration, jumpGravity);
         return;
     }
 

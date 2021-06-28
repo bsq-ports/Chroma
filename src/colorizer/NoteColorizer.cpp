@@ -122,7 +122,12 @@ void NoteColorizer::Refresh() {
     _colorNoteVisuals->noteColor = color;
     for (auto materialPropertyBlockController : _materialPropertyBlockControllers)
     {
-        materialPropertyBlockController->materialPropertyBlock->SetColor(_colorID(), color);
+        if (!materialPropertyBlockController)
+            continue;
+
+        if (materialPropertyBlockController->materialPropertyBlock)
+            materialPropertyBlockController->materialPropertyBlock->SetColor(_colorID(), color);
+
         materialPropertyBlockController->ApplyChanges();
     }
 }

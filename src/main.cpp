@@ -113,12 +113,14 @@ extern "C" void load() {
     getLogger().info("Installing types...");
 
     custom_types::Register::RegisterTypes<
-            Chroma::ChromaGradientController,
-            Chroma::ChromaSaberController,
+            ChromaGradientController,
+
+            ChromaSaberController,
             ChromaParticleEventController,
             ChromaClashEffectController,
-            Chroma::ChromaRingsRotationEffect,
-            Chroma::ChromaRotationEffect
+
+            ChromaRingsRotationEffect,
+            ChromaRotationEffect
     >();
 
     getLogger().info("Installed types");

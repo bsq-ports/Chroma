@@ -3,7 +3,6 @@
 void Chroma::InstallHooks() {
     Hooks::BaseNoteVisuals();
     Hooks::BeatEffectSpawner();
-    Hooks::colorizer_BeatEffectSpawner();
     Hooks::BeatmapDataTransformHelper();
     Hooks::BeatmapObjectsAvoidance();
     Hooks::BeatmapObjectSpawnController();
@@ -13,7 +12,6 @@ void Chroma::InstallHooks() {
     Hooks::LightPairRotationEventEffect();
     Hooks::LightRotationEventEffect();
     Hooks::LightSwitchEventEffect();
-    Hooks::colorizer_LightSwitchEventEffect();
     Hooks::LightWithIdManager();
     Hooks::NoteCutEffectSpawner();
     Hooks::MirroredNoteController();
