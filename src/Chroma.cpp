@@ -4,6 +4,7 @@ void Chroma::InstallHooks() {
     Hooks::BaseNoteVisuals();
     Hooks::BeatEffectSpawner();
     Hooks::BeatmapDataTransformHelper();
+    Hooks::BeatmapObjectManager();
     Hooks::BeatmapObjectsAvoidance();
     Hooks::BeatmapObjectSpawnController();
     Hooks::BombNoteController();
