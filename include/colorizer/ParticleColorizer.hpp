@@ -59,12 +59,8 @@ namespace Chroma {
         void UnsubscribeEvent();
 
         // extensions
-        inline static std::unordered_set<std::shared_ptr<ParticleColorizer>> GetParticleColorizers(GlobalNamespace::BeatmapEventType beatmapEventType) {
-            auto it = Colorizers.find(beatmapEventType);
-            if (it == Colorizers.end())
-                return {};
-
-            return it->second;
+        inline static std::unordered_set<std::shared_ptr<ParticleColorizer>>& GetParticleColorizers(GlobalNamespace::BeatmapEventType beatmapEventType) {
+            return Colorizers[beatmapEventType];
         }
     };
 }

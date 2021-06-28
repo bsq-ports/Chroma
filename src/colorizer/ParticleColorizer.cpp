@@ -41,9 +41,8 @@ ParticleColorizer::GetOrCreateColorizerList(GlobalNamespace::BeatmapEventType ev
     auto it = Colorizers.find(eventType);
 
     if (it == Colorizers.end()) {
-        std::unordered_set<std::shared_ptr<ParticleColorizer>> colorizers;
-        Colorizers[eventType] = colorizers;
-        return colorizers;
+        Colorizers[eventType] = std::unordered_set<std::shared_ptr<ParticleColorizer>>();
+        return Colorizers[eventType];
     }
 
     return it->second;
