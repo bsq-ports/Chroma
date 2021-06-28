@@ -82,7 +82,5 @@ namespace Chroma {
     };
 }
 
-typedef std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId *>> LightGroupMap;
-
 
 

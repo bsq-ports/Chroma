@@ -42,7 +42,7 @@ namespace Chroma {
         ParticleColorizer(GlobalNamespace::ParticleSystemEventEffect *particleSystemEventEffect,
                           GlobalNamespace::BeatmapEventType beatmapEventType);
 
-        static std::unordered_set<std::shared_ptr<ParticleColorizer>> GetOrCreateColorizerList(GlobalNamespace::BeatmapEventType eventType);
+        static std::unordered_set<std::shared_ptr<ParticleColorizer>>& GetOrCreateColorizerList(GlobalNamespace::BeatmapEventType eventType);
 
         void OnLightColorChanged(GlobalNamespace::BeatmapEventType eventType, std::vector<UnityEngine::Color> colors);
 

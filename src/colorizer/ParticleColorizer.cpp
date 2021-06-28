@@ -36,7 +36,7 @@ void ParticleColorizer::UnsubscribeEvent() {
     LightColorizer::LightColorChanged -= {&ParticleColorizer::OnLightColorChanged, this};
 }
 
-std::unordered_set<std::shared_ptr<ParticleColorizer>>
+std::unordered_set<std::shared_ptr<ParticleColorizer>>&
 ParticleColorizer::GetOrCreateColorizerList(GlobalNamespace::BeatmapEventType eventType) {
     auto it = Colorizers.find(eventType);
 

@@ -107,7 +107,7 @@ void NoteColorizer::ColorizeSaber(GlobalNamespace::NoteController *noteControlle
         SaberType saberType = noteCutInfo.saberType;
         if ((int)noteData->colorType == (int)saberType)
         {
-            SaberColorizer::ColorizeSaber(saberType, GetNoteColorizer(noteController)->getColor());
+            SaberColorizer::GlobalColorize(saberType, GetNoteColorizer(noteController)->getColor());
         }
     }
 }

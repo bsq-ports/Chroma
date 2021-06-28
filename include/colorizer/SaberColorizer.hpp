@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Chroma.hpp"
+
 #include "UnityEngine/MonoBehaviour.hpp"
 #include "GlobalNamespace/BeatmapEventType.hpp"
 #include "GlobalNamespace/SaberBurnMarkArea.hpp"
@@ -29,8 +31,6 @@ namespace Chroma {
     private:
         GlobalNamespace::SaberTrail* _saberTrail;
         UnityEngine::Color _trailTintColor;
-        std::vector<GlobalNamespace::SetSaberGlowColor*> _setSaberGlowColors;
-        std::vector<GlobalNamespace::SetSaberFakeGlowColor*> _setSaberFakeGlowColors;
         GlobalNamespace::TubeBloomPrePassLight* _saberLight;
         GlobalNamespace::SaberType _saberType;
         bool _doColor;
@@ -39,7 +39,7 @@ namespace Chroma {
 
         explicit SaberColorizer(GlobalNamespace::Saber* saber);
 
-        static std::unordered_set<std::shared_ptr<SaberColorizer>> GetOrCreateColorizerList(GlobalNamespace::SaberType saberType);
+        static std::unordered_set<std::shared_ptr<SaberColorizer>>& GetOrCreateColorizerList(GlobalNamespace::SaberType saberType);
 
         // SiraUtil stuff
         bool IsColorable(GlobalNamespace::SaberModelController* saberModelController);
@@ -62,26 +62,12 @@ namespace Chroma {
         inline static std::vector<std::optional<UnityEngine::Color>> GlobalColor = {std::nullopt, std::nullopt};
 
 
-        static void GlobalColorize(std::optional<UnityEngine::Color> color, GlobalNamespace::SaberType saberType);
+        static void GlobalColorize(GlobalNamespace::SaberType saberType, std::optional<UnityEngine::Color> color);
         static void Reset();
 
-        inline static std::unordered_set<std::shared_ptr<SaberColorizer>> GetSaberColorizer(GlobalNamespace::SaberType saberType) {
-            return GetSaberColorizer(saberType.value);
-        }
-
         // extensions
-        inline static std::unordered_set<std::shared_ptr<SaberColorizer>> GetSaberColorizer(int saberType) {
-            auto it = Colorizers.find(saberType);
-            if (it == Colorizers.end())
-                return {};
-
-            return it->second;
-        }
-
-        inline static void ColorizeSaber(GlobalNamespace::SaberType saberType, std::optional<UnityEngine::Color> color) {
-            for(auto& colorizer : GetSaberColorizer(saberType)) {
-                colorizer->Colorize(color);
-            }
+        inline static std::unordered_set<std::shared_ptr<SaberColorizer>>& GetSaberColorizer(int saberType) {
+            return GetOrCreateColorizerList(saberType);
         }
     };
 }

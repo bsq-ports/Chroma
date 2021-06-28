@@ -41,7 +41,7 @@ EXPOSE_API(getSabersColorSafe, SaberAPI::ColorOptPair) {
 EXPOSE_API(setSaberColorSafe, void, int saberType, UnityEngine::Color color) {
     CRASH_UNLESS(saberType >= SaberType::SaberA && saberType <= SaberType::SaberB);
 
-    SaberColorizer::ColorizeSaber(saberType, color);
+    SaberColorizer::GlobalColorize(saberType, color);
 }
 
 extern "C" void registerSaberCallbackSafe(const ThinVirtualLayer<void (void*, int, UnityEngine::Color)>& callback) {
