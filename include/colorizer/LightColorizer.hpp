@@ -61,10 +61,11 @@ namespace Chroma {
 
         // extensions
         inline static std::shared_ptr<LightColorizer> GetLightColorizer(GlobalNamespace::BeatmapEventType beatmapEventType) {
-            if (Colorizers.find(beatmapEventType) == Colorizers.end())
+            auto it = Colorizers.find(beatmapEventType);
+            if (it == Colorizers.end())
                 return nullptr;
 
-            return Colorizers[beatmapEventType];
+            return it->second;
         }
 
         inline static void ColorizeLight(GlobalNamespace::BeatmapEventType beatmapEventType, bool refresh, std::vector<std::optional<UnityEngine::Color>> colors) {

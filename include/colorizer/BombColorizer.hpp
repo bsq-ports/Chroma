@@ -41,10 +41,11 @@
 
          // extensions
          inline static std::shared_ptr<BombColorizer> GetBombColorizer(GlobalNamespace::NoteControllerBase* noteController) {
-             if (Colorizers.find(noteController) == Colorizers.end())
+             auto it = Colorizers.find(noteController);
+             if (it == Colorizers.end())
                  return nullptr;
 
-             return Colorizers[noteController];
+             return it->second;
          }
 
          inline static void ColorizeBomb(GlobalNamespace::NoteControllerBase* noteController, std::optional<UnityEngine::Color> color) {

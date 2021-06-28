@@ -48,10 +48,11 @@ namespace Chroma {
 
         // extensions
         inline static std::shared_ptr<ObstacleColorizer> GetObstacleColorizer(GlobalNamespace::ObstacleControllerBase* obstacleController) {
-            if (Colorizers.find(obstacleController) == Colorizers.end())
+            auto it = Colorizers.find(obstacleController);
+            if (it == Colorizers.end())
                 return nullptr;
 
-            return Colorizers[obstacleController];
+            return it->second;
         }
 
         inline static void ColorizeObstacle(GlobalNamespace::ObstacleControllerBase* obstacleControllerBase, std::optional<UnityEngine::Color> color) {

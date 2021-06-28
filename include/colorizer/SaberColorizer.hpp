@@ -71,10 +71,11 @@ namespace Chroma {
 
         // extensions
         inline static std::unordered_set<std::shared_ptr<SaberColorizer>> GetSaberColorizer(int saberType) {
-            if (Colorizers.find(saberType) == Colorizers.end())
+            auto it = Colorizers.find(saberType);
+            if (it == Colorizers.end())
                 return {};
 
-            return Colorizers[saberType];
+            return it->second;
         }
 
         inline static void ColorizeSaber(GlobalNamespace::SaberType saberType, std::optional<UnityEngine::Color> color) {

@@ -66,10 +66,11 @@ namespace Chroma {
 
         // extensions
         inline static std::shared_ptr<NoteColorizer> GetNoteColorizer(GlobalNamespace::NoteControllerBase* noteController) {
-            if (Colorizers.find(noteController) == Colorizers.end())
+            auto it = Colorizers.find(noteController);
+            if (it == Colorizers.end())
                 return nullptr;
 
-            return Colorizers[noteController];
+            return it->second;
         }
 
         inline static void ColorizeNote(GlobalNamespace::NoteControllerBase* noteController, std::optional<UnityEngine::Color> color) {
