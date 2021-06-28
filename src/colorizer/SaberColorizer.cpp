@@ -208,6 +208,8 @@ void SaberColorizer::GlobalColorize(GlobalNamespace::SaberType saberType, std::o
 void SaberColorizer::Reset() {
     GlobalColor[0] = std::nullopt;
     GlobalColor[1] = std::nullopt;
+    Colorizers.clear();
+    Colorizers = {};
     SaberColorChanged.clear();
 }
 

@@ -98,6 +98,8 @@ void NoteColorizer::GlobalColorize(std::optional<UnityEngine::Color> color, Glob
 void NoteColorizer::Reset() {
     GlobalColor[0] = std::nullopt;
     GlobalColor[1] = std::nullopt;
+    Colorizers.clear();
+    Colorizers = {};
 }
 
 void NoteColorizer::ColorizeSaber(GlobalNamespace::NoteController *noteController, NoteCutInfo &noteCutInfo) {

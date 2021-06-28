@@ -56,6 +56,8 @@ std::optional<UnityEngine::Color> ObstacleColorizer::GlobalColorGetter() {
 
 void ObstacleColorizer::Reset() {
     GlobalColor = std::nullopt;
+    Colorizers.clear();
+    Colorizers = {};
 }
 
 void ObstacleColorizer::Refresh() {

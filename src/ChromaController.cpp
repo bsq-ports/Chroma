@@ -23,6 +23,8 @@
 #include "colorizer/ObstacleColorizer.hpp"
 #include "colorizer/BombColorizer.hpp"
 #include "colorizer/LightColorizer.hpp"
+#include "colorizer/ParticleColorizer.hpp"
+
 #include "lighting/LegacyLightHelper.hpp"
 #include "lighting/environment_enhancements/EnvironmentEnhancementManager.hpp"
 #include "lighting/ChromaGradientController.hpp"
@@ -86,6 +88,7 @@ void ChromaController::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene 
         BombColorizer::Reset();
         NoteColorizer::Reset();
         SaberColorizer::Reset();
+        ParticleColorizer::Reset();
     }
 }
 

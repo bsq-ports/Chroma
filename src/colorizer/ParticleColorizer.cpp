@@ -148,3 +148,8 @@ void ParticleColorizer::InitializeSO(const std::string& id, int index, bool high
 
     il2cpp_utils::SetFieldValue<ColorSO*>(_particleSystemEventEffect, colorSOAcessor, mColorPtr);
 }
+
+void ParticleColorizer::Reset() {
+    Colorizers.clear();
+    Colorizers = {};
+}

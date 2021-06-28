@@ -67,6 +67,8 @@ std::optional<UnityEngine::Color> BombColorizer::GlobalColorGetter() {
 
 void BombColorizer::Reset() {
     GlobalColor = std::nullopt;
+    Colorizers.clear();
+    Colorizers = {};
 }
 
 

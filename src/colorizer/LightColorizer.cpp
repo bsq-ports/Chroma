@@ -232,6 +232,9 @@ void LightColorizer::Reset() {
     {
         GlobalColor[i] = std::nullopt;
     }
+    Colorizers.clear();
+    Colorizers = {};
+    LightColorChanged.clear();
 }
 
 void LightColorizer::SetSOs(std::vector<UnityEngine::Color> colors) {

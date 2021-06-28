@@ -140,6 +140,8 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
         if (environmentData != dynData.MemberEnd()) {
             GetAllGameObjects();
 
+            AvoidanceRotation.clear();
+            AvoidancePosition.clear();
             RingRotationOffsets.clear();
             ParametricBoxControllerParameters::TransformParameters.clear();
 
