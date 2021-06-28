@@ -29,7 +29,10 @@ using namespace UnityEngine;
 using namespace Chroma;
 
 LightColorizer::LightColorizer(GlobalNamespace::LightSwitchEventEffect *lightSwitchEventEffect,
-                               GlobalNamespace::BeatmapEventType beatmapEventType) {
+                               GlobalNamespace::BeatmapEventType beatmapEventType)
+                               : _simpleColorSOs(COLOR_FIELDS),
+                               _colors(COLOR_FIELDS),
+                               _originalColors(COLOR_FIELDS) {
 //        INVOKE_CTOR(LSEColorManager);
     static auto contextLogger = getLogger().WithContext(ChromaLogger::LightColorizer);
 
@@ -262,22 +265,22 @@ void LightColorizer::Refresh() {
 }
 
 void LightColorizer::InitializeSO(const std::string &id, int index) {
-    auto colorSOAcessor = il2cpp_utils::FindField(classof(LightSwitchEventEffect*), id);
-    auto lightMultSO = CRASH_UNLESS(il2cpp_utils::GetFieldValue<GlobalNamespace::MultipliedColorSO>(_lightSwitchEventEffect, colorSOAcessor));
+    auto colorSOAcessor = il2cpp_utils::FindField(classof(LightSwitchEventEffect*), (std::string_view) id);
+    auto lightMultSO = il2cpp_utils::cast<MultipliedColorSO>(CRASH_UNLESS(il2cpp_utils::GetFieldValue<GlobalNamespace::ColorSO*>(_lightSwitchEventEffect, colorSOAcessor)));
 
-    Color multiplierColor = lightMultSO.multiplierColor;
-    auto lightSO = lightMultSO.baseColor;
+    Color multiplierColor = lightMultSO->multiplierColor;
+    auto lightSO = lightMultSO->baseColor;
     _originalColors[index] = lightSO->color;
 
     SafePtr<MultipliedColorSO> mColorSO(ScriptableObject::CreateInstance<MultipliedColorSO*>());
     mColorSO->multiplierColor = multiplierColor;
 
 
-    if (!_simpleColorSOs[index])
+    if (_simpleColorSOs.find(index) == _simpleColorSOs.end())
     {
         SafePtr<SimpleColorSO> sColorSO(ScriptableObject::CreateInstance<SimpleColorSO*>());
         sColorSO->SetColor(lightSO->color);
-        _simpleColorSOs.emplace(index, sColorSO);
+        _simpleColorSOs.emplace(index, std::move(sColorSO));
     }
 
     SafePtr<SimpleColorSO>& sColorSO = _simpleColorSOs[index];

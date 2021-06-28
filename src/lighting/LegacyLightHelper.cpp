@@ -1,6 +1,7 @@
 #include "lighting/LegacyLightHelper.hpp"
 #include "main.hpp"
 #include "Chroma.hpp"
+#include "utils/ChromaUtils.hpp"
 
 using namespace Chroma;
 using namespace GlobalNamespace;
@@ -12,7 +13,9 @@ LegacyLightHelper::ColorMap LegacyLightHelper::LegacyColorEvents = LegacyLightHe
 void LegacyLightHelper::Activate(const std::vector<GlobalNamespace::BeatmapEventData*>& eventData) {
     static auto contextLogger = getLogger().WithContext(ChromaLogger::LegacyLightColor);
 
+    getLogger().debug("Legacy starting now!");
     LegacyColorEvents = LegacyLightHelper::ColorMap();
+    getLogger().debug("Legacy going now!");
     debugSpamLog(contextLogger, "Got the events, checking for legacy %d", eventData.size());
     for (auto& d : eventData)
     {
@@ -20,6 +23,12 @@ void LegacyLightHelper::Activate(const std::vector<GlobalNamespace::BeatmapEvent
         if (d == nullptr) {
             continue;
         }
+
+        if (!ASSIGNMENT_CHECK(classof(BeatmapEventData*), d->klass)) {
+            getLogger().debug("Beatmap data: %s not what expected", il2cpp_utils::ClassStandardName(d->klass).c_str());
+            continue;
+        }
+
 
         debugSpamLog(contextLogger, "Checking d %d %s", d->value, d->value >= RGB_INT_OFFSET ? "true" : "false");
         if (d->value >= RGB_INT_OFFSET)

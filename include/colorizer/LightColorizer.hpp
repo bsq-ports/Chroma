@@ -37,7 +37,7 @@ namespace Chroma {
     public:
         static std::shared_ptr<LightColorizer> New(GlobalNamespace::LightSwitchEventEffect *lightSwitchEventEffect,GlobalNamespace::BeatmapEventType beatmapEventType);
 
-        inline static std::vector<std::optional<UnityEngine::Color>> GlobalColor;
+        inline static std::vector<std::optional<UnityEngine::Color>> GlobalColor {std::nullopt,std::nullopt,std::nullopt,std::nullopt };
 
         inline static UnorderedEventCallback<GlobalNamespace::BeatmapEventType, std::vector<UnityEngine::Color>> LightColorChanged;
 

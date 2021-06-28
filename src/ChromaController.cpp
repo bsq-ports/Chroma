@@ -46,8 +46,10 @@ bool ChromaController::TutorialMode = false;
 custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnController *beatmapObjectSpawnController) {
     co_yield reinterpret_cast<enumeratorT *>(CRASH_UNLESS(il2cpp_utils::New<UnityEngine::WaitForEndOfFrame *>()));
 
+
     Chroma::ChromaController::BeatmapObjectSpawnController = beatmapObjectSpawnController;
-    BeatmapObjectCallbackController *coreSetup = il2cpp_utils::cast<BeatmapObjectCallbackController>(beatmapObjectSpawnController->beatmapObjectCallbackController);
+    BeatmapObjectCallbackController *coreSetup = il2cpp_utils::cast<BeatmapObjectCallbackController>(
+            beatmapObjectSpawnController->beatmapObjectCallbackController);
     Chroma::ChromaController::IAudioTimeSource = coreSetup->audioTimeSource;
 
     IReadonlyBeatmapData *beatmapData = coreSetup->beatmapData;
@@ -58,13 +60,13 @@ custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(Global
     }
 
     auto list = il2cpp_utils::cast<Generic::List_1<BeatmapEventData *>>(beatmapData->get_beatmapEventsData());
-    std::vector<GlobalNamespace::BeatmapEventData*> eventData;
+    std::vector<GlobalNamespace::BeatmapEventData *> eventData;
     list->items->copy_to(eventData);
 
     try {
         // please let me kill legacy
         LegacyLightHelper::Activate(eventData);
-    } catch (Il2CppException& e) {
+    } catch (const Il2CppException &e) {
         getLogger().error("Unable to run legacy due to exception?");
     }
 
