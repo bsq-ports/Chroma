@@ -13,6 +13,7 @@
 
 #include <unordered_map>
 #include "colorizer/ObstacleColorizer.hpp"
+#include "utils/ChromaUtils.hpp"
 #include "beatsaber-hook/shared/utils/il2cpp-utils.hpp"
 
 
@@ -62,7 +63,7 @@ void ObstacleColorizer::Reset() {
 
 void ObstacleColorizer::Refresh() {
     Color color = getColor();
-    if (color == _obstacleFrame->color)
+    if (ChromaUtils::ColorEquals(color, _obstacleFrame->color))
     {
         return;
     }

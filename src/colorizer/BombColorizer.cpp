@@ -8,6 +8,7 @@
 
 #include <unordered_map>
 #include "colorizer/BombColorizer.hpp"
+#include "utils/ChromaUtils.hpp"
 
 #include "beatsaber-hook/shared/utils/il2cpp-utils.hpp"
 
@@ -26,7 +27,7 @@ void BombColorizer::Refresh() {
 
     static auto colorName = il2cpp_utils::newcsstr<il2cpp_utils::CreationType::Manual>("_SimpleColor");
 
-    if (color == bombMaterial->GetColor(colorName)) {
+    if (ChromaUtils::ColorEquals(color, bombMaterial->GetColor(colorName))) {
         return;
     }
 

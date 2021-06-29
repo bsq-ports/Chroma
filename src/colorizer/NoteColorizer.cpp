@@ -116,7 +116,7 @@ void NoteColorizer::ColorizeSaber(GlobalNamespace::NoteController *noteControlle
 
 void NoteColorizer::Refresh() {
     Color color = getColor();
-    if (color == _colorNoteVisuals->noteColor)
+    if (ChromaUtils::ColorEquals(color, _colorNoteVisuals->noteColor))
     {
         return;
     }

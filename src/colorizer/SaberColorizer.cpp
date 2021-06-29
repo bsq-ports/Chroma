@@ -215,7 +215,7 @@ void SaberColorizer::Reset() {
 
 void SaberColorizer::Refresh() {
     Color color = getColor();
-    if (color == _lastColor)
+    if (ChromaUtils::ColorEquals(color, _lastColor))
     {
         return;
     }

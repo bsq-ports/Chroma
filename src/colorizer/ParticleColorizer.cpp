@@ -79,7 +79,7 @@ void ParticleColorizer::OnLightColorChanged(GlobalNamespace::BeatmapEventType ev
             case 1:
             case 5:
                 color = (PreviousValue == 1) ? _multipliedColorSOs[0]->get_color() : _multipliedColorSOs[1]->get_color();
-                particleSystemEventEffect->particleColor = color;;
+                particleSystemEventEffect->particleColor = color;
                 particleSystemEventEffect->offColor = ColorExtensions::ColorWithAlpha(color, 0);
                 particleSystemEventEffect->RefreshParticles();
                 break;
