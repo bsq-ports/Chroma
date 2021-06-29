@@ -150,11 +150,16 @@ std::vector<UnityEngine::Color> LightColorizer::getColor() {
     std::vector<UnityEngine::Color> colors(COLOR_FIELDS);
     for (int i = 0; i < COLOR_FIELDS; i++)
     {
-        auto color = _colors[i]
-                .value_or(GlobalColor[i]
-                .value_or(_originalColors[i]
-                ));
-        colors[i] = color;
+        auto color = _colors[i];
+
+        if (!color)
+            color = GlobalColor[i];
+
+        if (!color)
+            color = _originalColors[i];
+
+
+        colors[i] = *color;
     }
 
     return colors;
