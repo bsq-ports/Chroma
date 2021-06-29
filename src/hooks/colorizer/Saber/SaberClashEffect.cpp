@@ -38,6 +38,6 @@ MAKE_HOOK_OFFSETLESS(SaberClashEffect_Start, void, SaberClashEffect* self) {
     self->get_gameObject()->AddComponent<ChromaClashEffectController*>()->Init(self->sparkleParticleSystem, self->glowParticleSystem, self->colorManager);
 }
 
-void Chroma::Hooks::SaberClashEffect() {
+void SaberClashEffect() {
     INSTALL_HOOK_OFFSETLESS(getLogger(), SaberClashEffect_Start, il2cpp_utils::FindMethodUnsafe("", "SaberClashEffect", "Start", 0));
 }

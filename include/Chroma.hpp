@@ -1,6 +1,7 @@
 #pragma once
 
 #include "main.hpp"
+#include "ChromaHooks.hpp"
 #include "UnityEngine/Color.hpp"
 #include <optional>
 #include "GlobalNamespace/ILightWithId.hpp"
@@ -35,44 +36,6 @@ inline void PrintJSONValue(const rapidjson::Value* json) {
 }
 
 namespace Chroma {
-    namespace Hooks {
-        void BaseNoteVisuals();
-        void BeatEffectSpawner();
-        void BeatmapDataTransformHelper();
-        void BeatmapObjectsAvoidance();
-        void BeatmapObjectManager();
-        void BeatmapObjectSpawnController();
-        void BombNoteController();
-        void ColorManager();
-        void ColorNoteVisuals();
-        void LightPairRotationEventEffect();
-        void LightRotationEventEffect();
-        void LightSwitchEventEffect();
-        void LightWithIdManager();
-        void NoteCutEffectSpawner();
-        void MirroredObstacleController();
-        void MirroredNoteController();
-        void MissionLevelScenesTransitionSetupDataSO();
-        void MultiplayerLevelScenesTransitionSetupDataSO();
-        void ObstacleDissolve();
-        void ObstacleController();
-        void ObstacleSaberSparkleEffectManager();
-        void ParametricBoxController();
-        void ParticleSystemEventEffect();
-        void SaberBurnMarkArea();
-        void SaberBurnMarkSparkles();
-        void SaberClashEffect();
-        void SaberModelContainer();
-        void SceneManager_Internal();
-        void StandardLevelScenesTransitionSetupDataSO();
-        void TrackLaneRing();
-        void TrackLaneRingsManager();
-        void TrackLaneRingsPositionStepEffectSpawner();
-        void TrackLaneRingsRotationEffect();
-        void TrackLaneRingsRotationEffectSpawner();
-        void TutorialScenesTransitionSetupDataSO();
-    }
-
     namespace ChromaLogger {
         inline const char* ColorLightSwitch = "ColorLightSwitch";
         inline const char* EnvironmentRemoval = "EnvironmentRemoval";
@@ -116,6 +79,4 @@ namespace Chroma {
     inline const std::string LOCALPOSITION = "_localPosition";
     inline const std::string OBJECTROTATION = "_rotation";
     inline const std::string LOCALROTATION = "_localRotation";
-
-    void InstallHooks();
 }

@@ -34,7 +34,9 @@ MAKE_HOOK_OFFSETLESS(BeatmapObjectsAvoidance_Update, void, BeatmapObjectsAvoidan
     }
 }
 
-void Chroma::Hooks::BeatmapObjectsAvoidance() {
-    INSTALL_HOOK_OFFSETLESS(getLogger(), BeatmapObjectsAvoidance_Update,
+void BeatmapObjectsAvoidanceHook(Logger& logger) {
+    INSTALL_HOOK_OFFSETLESS(logger, BeatmapObjectsAvoidance_Update,
                             il2cpp_utils::FindMethodUnsafe("", "BeatmapObjectsAvoidance", "Update", 0));
 }
+
+ChromaInstallHooks(BeatmapObjectsAvoidanceHook)

@@ -75,6 +75,8 @@ MAKE_HOOK_OFFSETLESS(
     }
 }
 
-void Chroma::Hooks::LightRotationEventEffect() {
-    INSTALL_HOOK_OFFSETLESS(getLogger(), LightRotationEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger, il2cpp_utils::FindMethodUnsafe("", "LightRotationEventEffect", "HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger", 1));
+void LightRotationEventEffectHook(Logger& logger) {
+    INSTALL_HOOK_OFFSETLESS(logger, LightRotationEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger, il2cpp_utils::FindMethodUnsafe("", "LightRotationEventEffect", "HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger", 1));
 }
+
+ChromaInstallHooks(LightRotationEventEffectHook)

@@ -61,7 +61,9 @@ MAKE_HOOK_OFFSETLESS(SaberBurnMarkSparkles_OnDestroy, void, SaberBurnMarkSparkle
     }
 }
 
-void Chroma::Hooks::SaberBurnMarkSparkles() {
-    INSTALL_HOOK_OFFSETLESS(getLogger(), SaberBurnMarkSparkles_Start, il2cpp_utils::FindMethodUnsafe("", "SaberBurnMarkSparkles", "Start", 0));
-    INSTALL_HOOK_OFFSETLESS(getLogger(), SaberBurnMarkSparkles_OnDestroy, il2cpp_utils::FindMethodUnsafe("", "SaberBurnMarkSparkles", "OnDestroy", 0));
+void SaberBurnMarkSparklesHook(Logger& logger) {
+    INSTALL_HOOK_OFFSETLESS(logger, SaberBurnMarkSparkles_Start, il2cpp_utils::FindMethodUnsafe("", "SaberBurnMarkSparkles", "Start", 0));
+    INSTALL_HOOK_OFFSETLESS(logger, SaberBurnMarkSparkles_OnDestroy, il2cpp_utils::FindMethodUnsafe("", "SaberBurnMarkSparkles", "OnDestroy", 0));
 }
+
+ChromaInstallHooks(SaberBurnMarkSparklesHook)

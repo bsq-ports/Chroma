@@ -19,6 +19,8 @@ MAKE_HOOK_OFFSETLESS(TutorialScenesTransitionSetupDataSO_Init,void,TutorialScene
     TutorialScenesTransitionSetupDataSO_Init(self);
 }
 
-void Chroma::Hooks::TutorialScenesTransitionSetupDataSO() {
+void TutorialScenesTransitionSetupDataSOHook(Logger& logger) {
     INSTALL_HOOK_OFFSETLESS(getLogger(), TutorialScenesTransitionSetupDataSO_Init, il2cpp_utils::FindMethodUnsafe("", "TutorialScenesTransitionSetupDataSO", "Init", 0));
 }
+
+ChromaInstallHooks(TutorialScenesTransitionSetupDataSOHook)

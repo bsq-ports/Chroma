@@ -32,6 +32,8 @@ MAKE_HOOK_OFFSETLESS(MissionLevelScenesTransitionSetupDataSO_Init,void,MissionLe
     SceneTransitionHelper::Patch(difficultyBeatmap);
 }
 
-void Chroma::Hooks::MissionLevelScenesTransitionSetupDataSO() {
-    INSTALL_HOOK_OFFSETLESS(getLogger(), MissionLevelScenesTransitionSetupDataSO_Init, il2cpp_utils::FindMethodUnsafe("", "MissionLevelScenesTransitionSetupDataSO", "Init", 8));
+void MissionLevelScenesTransitionSetupDataSOHook(Logger& logger) {
+    INSTALL_HOOK_OFFSETLESS(logger, MissionLevelScenesTransitionSetupDataSO_Init, il2cpp_utils::FindMethodUnsafe("", "MissionLevelScenesTransitionSetupDataSO", "Init", 8));
 }
+
+ChromaInstallHooks(MissionLevelScenesTransitionSetupDataSOHook)

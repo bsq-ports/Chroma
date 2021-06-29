@@ -49,6 +49,8 @@ MAKE_HOOK_OFFSETLESS(
 
 // TODO: Heck Update
 
-void Chroma::Hooks::ObstacleController() {
+void ObstacleControllerHook(Logger& logger) {
     INSTALL_HOOK_OFFSETLESS(getLogger(), ObstacleController_Init, il2cpp_utils::FindMethodUnsafe("", "ObstacleController", "Init", 9));
 }
+
+ChromaInstallHooks(ObstacleControllerHook)

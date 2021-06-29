@@ -50,7 +50,8 @@ MAKE_HOOK_OFFSETLESS(BeatEffectSpawner_HandleNoteDidStartJump, void, BeatEffectS
     ColorManagerColorForType::DisableColorOverride();
 }
 
-
-void Chroma::Hooks::BeatEffectSpawner() {
-    INSTALL_HOOK_OFFSETLESS(getLogger(), BeatEffectSpawner_HandleNoteDidStartJump, il2cpp_utils::FindMethodUnsafe("", "BeatEffectSpawner", "HandleNoteDidStartJump", 1));
+void BeatEffectSpawnerHook(Logger& logger) {
+    INSTALL_HOOK_OFFSETLESS(logger, BeatEffectSpawner_HandleNoteDidStartJump, il2cpp_utils::FindMethodUnsafe("", "BeatEffectSpawner", "HandleNoteDidStartJump", 1));
 }
+
+ChromaInstallHooks(BeatEffectSpawnerHook)

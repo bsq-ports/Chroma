@@ -80,7 +80,9 @@ MAKE_HOOK_OFFSETLESS(
     ParticleSystemEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);
 }
 
-void Chroma::Hooks::ParticleSystemEventEffect() {
+void ParticleSystemEventEffectHook(Logger& logger) {
     INSTALL_HOOK_OFFSETLESS(getLogger(), ParticleSystemEventEffect_Start, il2cpp_utils::FindMethodUnsafe("", "ParticleSystemEventEffect", "Start", 0));
     INSTALL_HOOK_OFFSETLESS(getLogger(), ParticleSystemEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger, il2cpp_utils::FindMethodUnsafe("", "ParticleSystemEventEffect", "HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger", 1));
 }
+
+ChromaInstallHooks(ParticleSystemEventEffectHook)

@@ -38,6 +38,8 @@ MAKE_HOOK_OFFSETLESS(MirroredObstacleController_UpdatePositionAndRotation, void,
 }
 
 
-void Chroma::Hooks::MirroredObstacleController() {
-    INSTALL_HOOK_OFFSETLESS(getLogger(), MirroredObstacleController_UpdatePositionAndRotation, il2cpp_utils::FindMethodUnsafe("", "MirroredObstacleController", "UpdatePositionAndRotation", 0));
+void MirroredObstacleControllerHook(Logger& logger) {
+    INSTALL_HOOK_OFFSETLESS(logger, MirroredObstacleController_UpdatePositionAndRotation, il2cpp_utils::FindMethodUnsafe("", "MirroredObstacleController", "UpdatePositionAndRotation", 0));
 }
+
+ChromaInstallHooks(MirroredObstacleControllerHook)

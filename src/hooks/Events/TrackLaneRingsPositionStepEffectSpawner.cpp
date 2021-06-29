@@ -55,7 +55,9 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRingsPositionStepEffectSpawner_HandleBeatmapObject
 
 }
 
-void Hooks::TrackLaneRingsPositionStepEffectSpawner() {
-    INSTALL_HOOK_OFFSETLESS(getLogger(), TrackLaneRingsPositionStepEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger, il2cpp_utils::FindMethodUnsafe("", "TrackLaneRingsPositionStepEffectSpawner", "HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger", 1));
+void TrackLaneRingsPositionStepEffectSpawnerHook(Logger& logger) {
+    INSTALL_HOOK_OFFSETLESS(logger, TrackLaneRingsPositionStepEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger, il2cpp_utils::FindMethodUnsafe("", "TrackLaneRingsPositionStepEffectSpawner", "HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger", 1));
 //    INSTALL_HOOK_OFFSETLESS(getLogger(), SaberManager_Finalize, il2cpp_utils::FindMethodUnsafe("System", "Object", "Finalize", 0));
 }
+
+ChromaInstallHooks(TrackLaneRingsPositionStepEffectSpawnerHook)

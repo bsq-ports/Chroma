@@ -96,6 +96,8 @@ MAKE_HOOK_OFFSETLESS(ParametricBoxController_Refresh,void, ParametricBoxControll
 
 }
 
-void Chroma::Hooks::ParametricBoxController() {
-    INSTALL_HOOK_OFFSETLESS(getLogger(), ParametricBoxController_Refresh, il2cpp_utils::FindMethodUnsafe("", "ParametricBoxController", "Refresh", 0));
+void ParametricBoxControllerHook(Logger& logger) {
+    INSTALL_HOOK_OFFSETLESS(logger, ParametricBoxController_Refresh, il2cpp_utils::FindMethodUnsafe("", "ParametricBoxController", "Refresh", 0));
 }
+
+ChromaInstallHooks(ParametricBoxControllerHook)

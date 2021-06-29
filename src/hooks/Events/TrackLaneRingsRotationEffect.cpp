@@ -35,8 +35,10 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffect_FixedUpdate, void, GlobalNames
     TrackLaneRingsRotationEffect_FixedUpdate(self);
 }
 
-void Hooks::TrackLaneRingsRotationEffect() {
+void TrackLaneRingsRotationEffectHook(Logger& logger) {
     // TODO: Remove?
     //    INSTALL_HOOK_OFFSETLESS(getLogger(), TrackLaneRingsRotationEffect_AddRingRotationEffect, il2cpp_utils::FindMethodUnsafe("", "TrackLaneRingsRotationEffect", "AddRingRotationEffect", 4));
     //    INSTALL_HOOK_OFFSETLESS(getLogger(), TrackLaneRingsRotationEffect_FixedUpdate, il2cpp_utils::FindMethodUnsafe("", "TrackLaneRingsRotationEffect", "FixedUpdate", 0));
 }
+
+ChromaInstallHooks(TrackLaneRingsRotationEffectHook)

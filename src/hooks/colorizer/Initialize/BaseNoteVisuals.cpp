@@ -59,7 +59,9 @@ MAKE_HOOK_OFFSETLESS(BaseNoteVisuals_OnDestroy, void, BaseNoteVisuals* self) {
     }
 }
 
-void Chroma::Hooks::BaseNoteVisuals() {
-    INSTALL_HOOK_OFFSETLESS(getLogger(), BaseNoteVisuals_Awake, il2cpp_utils::FindMethodUnsafe("", "BaseNoteVisuals", "Awake", 0));
-    INSTALL_HOOK_OFFSETLESS(getLogger(), BaseNoteVisuals_OnDestroy, il2cpp_utils::FindMethodUnsafe("", "BaseNoteVisuals", "OnDestroy", 0));
+void BaseNoteVisualsHook(Logger& logger) {
+    INSTALL_HOOK_OFFSETLESS(logger, BaseNoteVisuals_Awake, il2cpp_utils::FindMethodUnsafe("", "BaseNoteVisuals", "Awake", 0));
+    INSTALL_HOOK_OFFSETLESS(logger, BaseNoteVisuals_OnDestroy, il2cpp_utils::FindMethodUnsafe("", "BaseNoteVisuals", "OnDestroy", 0));
 }
+
+ChromaInstallHooks(BaseNoteVisualsHook)

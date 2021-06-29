@@ -40,6 +40,8 @@ MAKE_HOOK_OFFSETLESS(
     }
 }
 
-void Chroma::Hooks::BombNoteController() {
-    INSTALL_HOOK_OFFSETLESS(getLogger(), BombNoteController_Init, il2cpp_utils::FindMethodUnsafe("", "BombNoteController", "Init", 8));
+void BombNoteControllerHook(Logger& logger) {
+    INSTALL_HOOK_OFFSETLESS(logger, BombNoteController_Init, il2cpp_utils::FindMethodUnsafe("", "BombNoteController", "Init", 8));
 }
+
+ChromaInstallHooks(BombNoteControllerHook)

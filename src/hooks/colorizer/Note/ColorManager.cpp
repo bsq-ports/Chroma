@@ -32,6 +32,8 @@ MAKE_HOOK_OFFSETLESS(ColorManager_ColorForType, Color, ColorManager* self, Globa
 }
 
 
-void Chroma::Hooks::ColorManager() {
-    INSTALL_HOOK_OFFSETLESS(getLogger(), ColorManager_ColorForType, il2cpp_utils::FindMethodUnsafe("", "ColorManager", "ColorForType", 1));
+void ColorManagerHook(Logger& logger) {
+    INSTALL_HOOK_OFFSETLESS(logger, ColorManager_ColorForType, il2cpp_utils::FindMethodUnsafe("", "ColorManager", "ColorForType", 1));
 }
+
+ChromaInstallHooks(ColorManagerHook)

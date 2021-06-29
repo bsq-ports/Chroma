@@ -44,6 +44,10 @@ EXPOSE_API(setSaberColorSafe, void, int saberType, UnityEngine::Color color) {
     SaberColorizer::GlobalColorize(saberType, color);
 }
 
-extern "C" void registerSaberCallbackSafe(const ThinVirtualLayer<void (void*, int, UnityEngine::Color)>& callback) {
+extern "C" UnorderedEventCallback<int, UnityEngine::Color>* __getSaberChangedColorCallbackSafe() {
+    return &SaberColorizer::SaberColorChanged;
+}
+
+extern "C" void __registerSaberCallbackSafe(const ThinVirtualLayer<void (void*, int, UnityEngine::Color)>& callback) {
     SaberColorizer::SaberColorChanged += callback;
 }

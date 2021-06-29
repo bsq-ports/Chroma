@@ -85,6 +85,6 @@ bool SceneTransitionHelper::BasicPatch(GlobalNamespace::IDifficultyBeatmap* cust
     return ChromaController::ChromaRequired();
 }
 
-//void Chroma::Hooks::SceneTransitionHelper() {
+//void SceneTransitionHelper() {
 //
 //}

@@ -41,6 +41,8 @@ MAKE_HOOK_OFFSETLESS(BeatmapDataTransformHelper_CreateTransformedBeatmapData, Gl
     return result;
 }
 
-void Chroma::Hooks::BeatmapDataTransformHelper() {
+void BeatmapDataTransformHelperHook(Logger& logger) {
     INSTALL_HOOK_OFFSETLESS(getLogger(), BeatmapDataTransformHelper_CreateTransformedBeatmapData, il2cpp_utils::FindMethodUnsafe("", "BeatmapDataTransformHelper", "CreateTransformedBeatmapData", 7) );
 }
+
+ChromaInstallHooks(BeatmapDataTransformHelperHook)

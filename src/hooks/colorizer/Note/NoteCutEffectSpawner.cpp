@@ -29,6 +29,8 @@ MAKE_HOOK_OFFSETLESS(NoteCutEffectSpawner_SpawnNoteCutEffect,void,NoteCutCoreEff
     ColorManagerColorForType::DisableColorOverride();
 }
 
-void Chroma::Hooks::NoteCutEffectSpawner() {
+void NoteCutEffectSpawnerHook(Logger& logger) {
     INSTALL_HOOK_OFFSETLESS(getLogger(), NoteCutEffectSpawner_SpawnNoteCutEffect, il2cpp_utils::FindMethodUnsafe("", "NoteCutCoreEffectsSpawner", "SpawnNoteCutEffect", 2));
 }
+
+ChromaInstallHooks(NoteCutEffectSpawnerHook)

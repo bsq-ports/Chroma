@@ -29,6 +29,8 @@ MAKE_HOOK_OFFSETLESS(SaberModelContainer_Start, void, SaberModelContainer* self)
 }
 
 
-void Chroma::Hooks::SaberModelContainer() {
-    INSTALL_HOOK_OFFSETLESS(getLogger(), SaberModelContainer_Start, il2cpp_utils::FindMethodUnsafe("", "SaberModelContainer", "Start", 0));
+void SaberModelContainerHook(Logger& logger) {
+    INSTALL_HOOK_OFFSETLESS(logger, SaberModelContainer_Start, il2cpp_utils::FindMethodUnsafe("", "SaberModelContainer", "Start", 0));
 }
+
+ChromaInstallHooks(SaberModelContainerHook)

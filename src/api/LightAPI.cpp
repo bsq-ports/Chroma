@@ -57,7 +57,7 @@ EXPOSE_API(SetAllLightingColors, void, bool refresh, std::optional<LightAPI::LSE
 
 // While it does create a pointer on the heap,
 // the API side of this should move the elements back into a value type then delete this pointer.
-extern "C" std::unordered_map<int, GlobalNamespace::ILightWithId *>* getLightsSafe(GlobalNamespace::LightSwitchEventEffect *lse) {
+extern "C" std::unordered_map<int, GlobalNamespace::ILightWithId *>* __getLightsSafe(GlobalNamespace::LightSwitchEventEffect *lse) {
     auto vectorOrg = LightColorizer::GetLightColorizer(lse->event)->Lights;
     auto vectorPtr = new std::unordered_map<int, GlobalNamespace::ILightWithId *>(std::move(vectorOrg));
 
@@ -69,7 +69,7 @@ extern "C" std::unordered_map<int, GlobalNamespace::ILightWithId *>* getLightsSa
 // the API side of this should move the elements back into a value type then delete this pointer.
 
 //EXPOSE_API(, std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId *>>, GlobalNamespace::LightSwitchEventEffect *lse) {
-extern "C" std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId *>>* getLightsPropagationGroupedSafe(GlobalNamespace::LightSwitchEventEffect *lse) {
+extern "C" std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId *>>* __getLightsPropagationGroupedSafe(GlobalNamespace::LightSwitchEventEffect *lse) {
     auto mapOrg = LightColorizer::GetLightColorizer(lse->event)->LightsPropagationGrouped;
     auto mapPtr = new std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId *>>(std::move(mapOrg));
 

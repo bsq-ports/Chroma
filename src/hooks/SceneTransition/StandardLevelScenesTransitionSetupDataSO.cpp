@@ -37,6 +37,8 @@ MAKE_HOOK_OFFSETLESS(StandardLevelScenesTransitionSetupDataSO_Init,void,Standard
                                                   useTestNoteCutSoundEffects);
 }
 
-void Chroma::Hooks::StandardLevelScenesTransitionSetupDataSO() {
-    INSTALL_HOOK_OFFSETLESS(getLogger(), StandardLevelScenesTransitionSetupDataSO_Init, il2cpp_utils::FindMethodUnsafe("", "StandardLevelScenesTransitionSetupDataSO", "Init", 10));
+void StandardLevelScenesTransitionSetupDataSOHook(Logger& logger) {
+    INSTALL_HOOK_OFFSETLESS(logger, StandardLevelScenesTransitionSetupDataSO_Init, il2cpp_utils::FindMethodUnsafe("", "StandardLevelScenesTransitionSetupDataSO", "Init", 10));
 }
+
+ChromaInstallHooks(StandardLevelScenesTransitionSetupDataSOHook)

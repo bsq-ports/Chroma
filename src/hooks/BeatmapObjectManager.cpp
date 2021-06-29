@@ -22,7 +22,9 @@ MAKE_HOOK_OFFSETLESS(BeatmapObjectManager_NoteCutEvent, void, BeatmapObjectManag
     BeatmapObjectManager_NoteCutEvent(self, noteController, noteCutInfo);
 }
 
-void Chroma::Hooks::BeatmapObjectManager() {
-    INSTALL_HOOK_OFFSETLESS(getLogger(), BeatmapObjectManager_NoteCutEvent,
+void BeatmapObjectManagerHook(Logger& logger) {
+    INSTALL_HOOK_OFFSETLESS(logger, BeatmapObjectManager_NoteCutEvent,
                             il2cpp_utils::FindMethodUnsafe("", "BeatmapObjectManager", "HandleNoteControllerNoteWasCut", 2));
 }
+
+ChromaInstallHooks(BeatmapObjectManagerHook)

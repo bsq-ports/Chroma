@@ -22,6 +22,8 @@ MAKE_HOOK_OFFSETLESS(BeatmapObjectSpawnController_Start, void, BeatmapObjectSpaw
     self->StartCoroutine(reinterpret_cast<enumeratorT*>(delayedStartCoro));
 }
 
-void Chroma::Hooks::BeatmapObjectSpawnController() {
-    INSTALL_HOOK_OFFSETLESS(getLogger(), BeatmapObjectSpawnController_Start, il2cpp_utils::FindMethodUnsafe("", "BeatmapObjectSpawnController", "Start", 0));
+void BeatmapObjectSpawnControllerHook(Logger& logger) {
+    INSTALL_HOOK_OFFSETLESS(logger, BeatmapObjectSpawnController_Start, il2cpp_utils::FindMethodUnsafe("", "BeatmapObjectSpawnController", "Start", 0));
 }
+
+ChromaInstallHooks(BeatmapObjectSpawnControllerHook)

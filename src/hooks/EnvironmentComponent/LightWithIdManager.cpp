@@ -19,6 +19,8 @@ MAKE_HOOK_OFFSETLESS(LightWithIdManager_LateUpdate, void,LightWithIdManager* sel
     self->lightsToUnregister->Clear();
 }
 
-void Chroma::Hooks::LightWithIdManager() {
-    INSTALL_HOOK_OFFSETLESS(getLogger(), LightWithIdManager_LateUpdate, il2cpp_utils::FindMethodUnsafe("", "LightWithIdManager", "LateUpdate", 0));
+void LightWithIdManagerHook(Logger& logger) {
+    INSTALL_HOOK_OFFSETLESS(logger, LightWithIdManager_LateUpdate, il2cpp_utils::FindMethodUnsafe("", "LightWithIdManager", "LateUpdate", 0));
 }
+
+ChromaInstallHooks(LightWithIdManagerHook)

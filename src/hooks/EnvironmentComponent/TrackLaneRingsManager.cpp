@@ -26,7 +26,9 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRingsManager_Awake, void, GlobalNamespace::TrackLa
     TrackLaneRingsManagerHolder::RingManagers.push_back(self);
 }
 
-void Hooks::TrackLaneRingsManager() {
-    INSTALL_HOOK_OFFSETLESS(getLogger(), TrackLaneRingsManager_Awake, il2cpp_utils::FindMethodUnsafe("", "TrackLaneRingsManager", "Awake", 0));
+void TrackLaneRingsManagerHook(Logger& logger) {
+    INSTALL_HOOK_OFFSETLESS(logger, TrackLaneRingsManager_Awake, il2cpp_utils::FindMethodUnsafe("", "TrackLaneRingsManager", "Awake", 0));
 //    INSTALL_HOOK_OFFSETLESS(getLogger(), SaberManager_Finalize, il2cpp_utils::FindMethodUnsafe("System", "Object", "Finalize", 0));
 }
+
+ChromaInstallHooks(TrackLaneRingsManagerHook)

@@ -34,6 +34,8 @@ MAKE_HOOK_OFFSETLESS(ColorNoteVisuals_HandleNoteControllerDidInit, void, ColorNo
     }
 }
 
-void Chroma::Hooks::ColorNoteVisuals() {
-    INSTALL_HOOK_OFFSETLESS(getLogger(), ColorNoteVisuals_HandleNoteControllerDidInit, il2cpp_utils::FindMethodUnsafe("", "ColorNoteVisuals", "HandleNoteControllerDidInit", 1));
+void ColorNoteVisualsHook(Logger& logger) {
+    INSTALL_HOOK_OFFSETLESS(logger, ColorNoteVisuals_HandleNoteControllerDidInit, il2cpp_utils::FindMethodUnsafe("", "ColorNoteVisuals", "HandleNoteControllerDidInit", 1));
 }
+
+ChromaInstallHooks(ColorNoteVisualsHook)

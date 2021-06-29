@@ -126,7 +126,7 @@ extern "C" void load() {
     getLogger().info("Installed types");
 
     getLogger().info("Installing Chroma hooks...");
-    Chroma::InstallHooks();
+    Chroma::Hooks::InstallHooks(getLogger());
     getLogger().info("Installed Chroma hooks!");
 
     LightIDTableManager::InitTable();

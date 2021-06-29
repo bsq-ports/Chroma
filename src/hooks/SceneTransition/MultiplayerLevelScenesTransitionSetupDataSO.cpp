@@ -34,6 +34,8 @@ MAKE_HOOK_OFFSETLESS(MultiplayerLevelScenesTransitionSetupDataSO_Init,void,Multi
     SceneTransitionHelper::Patch(difficultyBeatmap);
 }
 
-void Chroma::Hooks::MultiplayerLevelScenesTransitionSetupDataSO() {
-    INSTALL_HOOK_OFFSETLESS(getLogger(), MultiplayerLevelScenesTransitionSetupDataSO_Init, il2cpp_utils::FindMethodUnsafe("", "MultiplayerLevelScenesTransitionSetupDataSO", "Init", 10));
+void MultiplayerLevelScenesTransitionSetupDataSOHook(Logger& logger) {
+    INSTALL_HOOK_OFFSETLESS(logger, MultiplayerLevelScenesTransitionSetupDataSO_Init, il2cpp_utils::FindMethodUnsafe("", "MultiplayerLevelScenesTransitionSetupDataSO", "Init", 10));
 }
+
+ChromaInstallHooks(MultiplayerLevelScenesTransitionSetupDataSOHook)

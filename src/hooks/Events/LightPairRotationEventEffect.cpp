@@ -72,7 +72,7 @@ MAKE_HOOK_OFFSETLESS(
         return;
     }
 
-    auto chromaData = std::static_pointer_cast<ChromaEventData>(chromaIt->second);
+    auto chromaData = chromaIt->second;
 
 
     bool isLeftEvent = beatmapEventData->type == self->eventL;
@@ -129,7 +129,9 @@ MAKE_HOOK_OFFSETLESS(
     }
 }
 
-void Chroma::Hooks::LightPairRotationEventEffect() {
+void LightPairRotationEventEffectHook(Logger& logger) {
     INSTALL_HOOK_OFFSETLESS(getLogger(), LightPairRotationEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger, il2cpp_utils::FindMethodUnsafe("", "LightPairRotationEventEffect", "HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger", 1));
     INSTALL_HOOK_OFFSETLESS(getLogger(), LightPairRotationEventEffect_UpdateRotationData, il2cpp_utils::FindMethodUnsafe("", "LightPairRotationEventEffect", "UpdateRotationData", 4));
 }
+
+ChromaInstallHooks(LightPairRotationEventEffectHook)

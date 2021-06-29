@@ -88,6 +88,8 @@ MAKE_HOOK_OFFSETLESS(ObstacleSaberSparkleEffectManager_Update, void, ObstacleSab
     }
 }
 
-void Chroma::Hooks::ObstacleSaberSparkleEffectManager() {
+void ObstacleSaberSparkleEffectManagerHook(Logger& logger) {
     INSTALL_HOOK_OFFSETLESS(getLogger(), ObstacleSaberSparkleEffectManager_Update, il2cpp_utils::FindMethodUnsafe("", "ObstacleSaberSparkleEffectManager", "Update", 0));
 }
+
+ChromaInstallHooks(ObstacleSaberSparkleEffectManagerHook)

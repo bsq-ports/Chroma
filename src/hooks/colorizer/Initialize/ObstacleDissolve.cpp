@@ -48,7 +48,9 @@ MAKE_HOOK_OFFSETLESS(ObstacleDissolve_OnDestroy, void, ObstacleDissolve* self) {
     ObstacleColorizer::Colorizers.erase(self->obstacleController);
 }
 
-void Chroma::Hooks::ObstacleDissolve() {
-    INSTALL_HOOK_OFFSETLESS(getLogger(), ObstacleDissolve_Awake, il2cpp_utils::FindMethodUnsafe("", "ObstacleDissolve", "Awake", 0));
-    INSTALL_HOOK_OFFSETLESS(getLogger(), ObstacleDissolve_OnDestroy, il2cpp_utils::FindMethodUnsafe("", "ObstacleDissolve", "OnDestroy", 0));
+void ObstacleDissolveHook(Logger& logger) {
+    INSTALL_HOOK_OFFSETLESS(logger, ObstacleDissolve_Awake, il2cpp_utils::FindMethodUnsafe("", "ObstacleDissolve", "Awake", 0));
+    INSTALL_HOOK_OFFSETLESS(logger, ObstacleDissolve_OnDestroy, il2cpp_utils::FindMethodUnsafe("", "ObstacleDissolve", "OnDestroy", 0));
 }
+
+ChromaInstallHooks(ObstacleDissolveHook)

@@ -18,6 +18,8 @@ MAKE_HOOK_OFFSETLESS(SceneManager_Internal_SceneLoaded, void, UnityEngine::Scene
     SceneManager_Internal_SceneLoaded(scene, mode);
 }
 
-void Chroma::Hooks::SceneManager_Internal() {
+void SceneManager_Internal(Logger& logger) {
     INSTALL_HOOK_OFFSETLESS(getLogger(), SceneManager_Internal_SceneLoaded, il2cpp_utils::FindMethodUnsafe("UnityEngine.SceneManagement", "SceneManager", "Internal_SceneLoaded", 2));
 }
+
+ChromaInstallHooks(SceneManager_Internal)
