@@ -21,7 +21,7 @@ using namespace Chroma;
 using namespace ChromaUtils;
 
 
-UnityEngine::Vector3 GetTransformScale(UnityEngine::Vector3 defaultV, ParametricBoxControllerParameters& parameters) {
+UnityEngine::Vector3& GetTransformScale(UnityEngine::Vector3& defaultV, ParametricBoxControllerParameters& parameters) {
 
     if (parameters.Position) {
         return parameters.Scale.value();
@@ -30,7 +30,7 @@ UnityEngine::Vector3 GetTransformScale(UnityEngine::Vector3 defaultV, Parametric
     return defaultV;
 }
 
-UnityEngine::Vector3 GetTransformPosition(UnityEngine::Vector3 defaultV, ParametricBoxControllerParameters& parameters) {
+UnityEngine::Vector3& GetTransformPosition(UnityEngine::Vector3& defaultV, ParametricBoxControllerParameters& parameters) {
 
     if (parameters.Position) {
         return parameters.Position.value();
