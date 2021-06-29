@@ -43,8 +43,9 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRing_LateUpdateRing, void, GlobalNamespace::TrackL
         return;
     }
 
-    UnityEngine::Quaternion rotation = UnityEngine::Quaternion::get_identity();
+    static UnityEngine::Quaternion identity = UnityEngine::Quaternion::get_identity();
 
+    auto& rotation = identity;
 
     auto it2 = EnvironmentEnhancementManager::RingRotationOffsets.find(self);
 
@@ -53,12 +54,14 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRing_LateUpdateRing, void, GlobalNamespace::TrackL
     }
 
 
+    static UnityEngine::Vector3 vectorForward = UnityEngine::Vector3::get_forward();
+
     float interpolatedZPos = self->prevPosZ + ((self->posZ - self->prevPosZ) * interpolationFactor);
-    UnityEngine::Vector3 positionZOffset = vectorMultiply(quaternionMultiply(rotation, UnityEngine::Vector3::get_forward()), interpolatedZPos);
+    UnityEngine::Vector3 positionZOffset = vectorMultiply(quaternionMultiply(rotation, vectorForward), interpolatedZPos);
     UnityEngine::Vector3 pos = vectorAdd(self->positionOffset, positionZOffset);
 
     float interpolatedZRot = self->prevRotZ + ((self->rotZ - self->prevRotZ) * interpolationFactor);
-    auto rotationZOffset = UnityEngine::Quaternion::AngleAxis(interpolatedZRot, UnityEngine::Vector3::get_forward());
+    auto rotationZOffset = UnityEngine::Quaternion::AngleAxis(interpolatedZRot, vectorForward);
     UnityEngine::Quaternion rot = quaternionMultiply(rotation, rotationZOffset);
 
     self->transform->set_localRotation(rot);
