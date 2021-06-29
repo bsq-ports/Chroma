@@ -2,68 +2,14 @@
 
 #include "lighting/LightIDTableManager.hpp"
 
-#include "lighting/environments/BigMirrorEnvironment.hpp"
-#include "lighting/environments/BTSEnvironment.hpp"
-#include "lighting/environments/CrabRaveEnvironment.hpp"
-#include "lighting/environments/DefaultEnvironment.hpp"
-#include "lighting/environments/DragonsEnvironment.hpp"
-#include "lighting/environments/FitBeatEnvironment.hpp"
-#include "lighting/environments/GlassDesertEnvironment.hpp"
-#include "lighting/environments/GreenDayEnvironment.hpp"
-#include "lighting/environments/GreenDayGrenadeEnvironment.hpp"
-#include "lighting/environments/InterscopeEnvironment.hpp"
-#include "lighting/environments/KaleidoscopeEnvironment.hpp"
-#include "lighting/environments/KDAEnvironment.hpp"
-#include "lighting/environments/LinkinParkEnvironment.hpp"
-#include "lighting/environments/MonstercatEnvironment.hpp"
-#include "lighting/environments/NiceEnvironment.hpp"
-#include "lighting/environments/OriginsEnvironment.hpp"
-#include "lighting/environments/PanicEnvironment.hpp"
-#include "lighting/environments/RocketEnvironment.hpp"
-#include "lighting/environments/TimbalandEnvironment.hpp"
-#include "lighting/environments/TriangleEnvironment.hpp"
-
-
-// Macros are addicting but so bad
-#define ENVIRONMENT_MACRO(DO) \
-    DO(BigMirrorEnvironment) \
-    DO(BTSEnvironment) \
-    DO(CrabRaveEnvironment) \
-    DO(DefaultEnvironment) \
-    DO(DragonsEnvironment) \
-    DO(FitBeatEnvironment) \
-    DO(GlassDesertEnvironment) \
-    DO(GreenDayEnvironment) \
-    DO(GreenDayGrenadeEnvironment) \
-    DO(InterscopeEnvironment) \
-    DO(KaleidoscopeEnvironment) \
-    DO(KDAEnvironment) \
-    DO(LinkinParkEnvironment) \
-    DO(MonstercatEnvironment) \
-    DO(NiceEnvironment) \
-    DO(OriginsEnvironment) \
-    DO(PanicEnvironment) \
-    DO(RocketEnvironment) \
-    DO(TimbalandEnvironment) \
-    DO(TriangleEnvironment) \
+#include "lighting/environments/AllEnvironments.hpp"
 
 using namespace Chroma;
 
-#define STATIC_ENVIRONMENT(VAR) static VAR VAR##_static;
-ENVIRONMENT_MACRO(STATIC_ENVIRONMENT)
-#undef STATIC_ENVIRONMENT
-
-static const std::unordered_map<std::string, Chroma::EnvironmentData&> ENVIRONMENTS {
-    #define MAKE_ENVIRONMENT(VAR) {#VAR, VAR##_static},
-        ENVIRONMENT_MACRO(MAKE_ENVIRONMENT)
-    #undef MAKE_ENVIRONMENT
-};
-
-
 void Chroma::LightIDTableManager::InitTable() {
-    for (auto data : ENVIRONMENTS) {
+    for (auto& data : environmentsToInstall) {
         getLogger().info("Initializing environment data for %s", data.first.c_str());
-        lightIdTable[data.first] = data.second.getEnvironmentLights();
+        lightIdTable.emplace(data);
     }
 }
 
@@ -122,5 +68,14 @@ void LightIDTableManager::RegisterIndex(int type, int index, std::optional<int> 
     if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue())
     {
         getLogger().info("Registered key [%d] to type [%d]", key, type);
+    }
+}
+
+void LightIDTableManager::AddEnvironment(InstallEnvironmentFunc environmentData) {
+    if (installed) {
+        getLogger().info("Initializing environment data for %s", environmentData.first.c_str());
+        lightIdTable.emplace(environmentData);
+    } else {
+        environmentsToInstall.emplace(environmentData);
     }
 }

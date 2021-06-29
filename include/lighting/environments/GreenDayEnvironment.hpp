@@ -1,6 +1,8 @@
+
 #pragma once
 
 #include "lighting/LightIDTableManager.hpp"
+
 
 namespace Chroma {
     class GreenDayEnvironment : public EnvironmentData {
@@ -8,5 +10,3 @@ namespace Chroma {
         EnvironmentLightDataT getEnvironmentLights() override;
     };
 }
-
-
