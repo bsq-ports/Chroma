@@ -11,6 +11,7 @@
 #include "UnityEngine/Vector3.hpp"
 #include "UnityEngine/MaterialPropertyBlock.hpp"
 #include "UnityEngine/MeshRenderer.hpp"
+#include "UnityEngine/GameObject.hpp"
 #include "utils/ChromaUtils.hpp"
 
 #include "ChromaObjectData.hpp"
@@ -54,8 +55,6 @@ MAKE_HOOK_OFFSETLESS(ParametricBoxController_Refresh,void, ParametricBoxControll
     auto scale = UnityEngine::Vector3(self->width * 0.5f, self->height * 0.5f, self->length * 0.5f);
     auto pos = UnityEngine::Vector3(0.0f, (0.5f - self->heightCenter) * self->height, 0.0f);
 
-
-
     auto it = ParametricBoxControllerParameters::TransformParameters.find(self);
 
     if (it != ParametricBoxControllerParameters::TransformParameters.end()) {
@@ -63,14 +62,23 @@ MAKE_HOOK_OFFSETLESS(ParametricBoxController_Refresh,void, ParametricBoxControll
         pos = GetTransformPosition(pos, it->second);
     }
 
-    self->get_transform()->set_localScale(scale);
-    self->get_transform()->set_localPosition(pos);
+    static auto transformProp = il2cpp_utils::FindProperty(classof(UnityEngine::Component*), "transform");
+
+//        auto transform = self->get_transform();
+
+    auto transform = CRASH_UNLESS(il2cpp_utils::GetPropertyValue<UnityEngine::Transform*>(self, transformProp));
+
+    static auto localScaleProp = il2cpp_utils::FindProperty(classof(UnityEngine::Transform*), "localScale");
+    static auto localPosProp = il2cpp_utils::FindProperty(classof(UnityEngine::Transform*), "localPosition");
+
+    CRASH_UNLESS(il2cpp_utils::SetPropertyValue(transform, localScaleProp, scale));
+    CRASH_UNLESS(il2cpp_utils::SetPropertyValue(transform, localPosProp, pos));
 
     static auto materialPropertyBlock = ParametricBoxController::_get__materialPropertyBlock();
 
     if (materialPropertyBlock == nullptr) {
-        ParametricBoxController::_set__materialPropertyBlock(UnityEngine::MaterialPropertyBlock::New_ctor());
-        materialPropertyBlock = ParametricBoxController::_get__materialPropertyBlock();
+        materialPropertyBlock = UnityEngine::MaterialPropertyBlock::New_ctor();
+        ParametricBoxController::_set__materialPropertyBlock(materialPropertyBlock);
     }
 
 
@@ -87,13 +95,30 @@ MAKE_HOOK_OFFSETLESS(ParametricBoxController_Refresh,void, ParametricBoxControll
     static auto widthStartID = ParametricBoxController::_get__widthStartID();
     static auto widthEndID = ParametricBoxController::_get__widthEndID();
 
+//    static auto SetColor = il2cpp_utils::FindMethodUnsafe(materialPropertyBlock, "SetColor", 2);
+//    static auto SetFloat = il2cpp_utils::FindMethodUnsafe(materialPropertyBlock, "SetFloat", 2);
+//
+//
+//    CRASH_UNLESS(materialPropertyBlock);
+//    CRASH_UNLESS(SetColor);
+//
+//    il2cpp_utils::RunMethodThrow<void>(materialPropertyBlock, SetColor, colorId, color);
+//    il2cpp_utils::RunMethodThrow<void>(materialPropertyBlock, SetFloat, alphaStartID, self->alphaStart);
+//    il2cpp_utils::RunMethodThrow<void>(materialPropertyBlock, SetFloat, alphaEndID, self->alphaEnd);
+//    il2cpp_utils::RunMethodThrow<void>(materialPropertyBlock, SetFloat, widthStartID, self->widthStart);
+//    il2cpp_utils::RunMethodThrow<void>(materialPropertyBlock, SetFloat, widthEndID, self->widthEnd);
+
     materialPropertyBlock->SetColor(colorId, color);
     materialPropertyBlock->SetFloat(alphaStartID, self->alphaStart);
     materialPropertyBlock->SetFloat(alphaEndID, self->alphaEnd);
     materialPropertyBlock->SetFloat(widthStartID, self->widthStart);
     materialPropertyBlock->SetFloat(widthEndID, self->widthEnd);
-    self->meshRenderer->SetPropertyBlock(materialPropertyBlock);
 
+    static auto SetPropertyBlock = il2cpp_utils::FindMethodUnsafe(classof(UnityEngine::MeshRenderer*), "SetPropertyBlock", 1);
+
+    il2cpp_utils::RunMethodThrow<void>(self->meshRenderer, SetPropertyBlock, materialPropertyBlock);
+
+//    self->meshRenderer->SetPropertyBlock(materialPropertyBlock);
 }
 
 void ParametricBoxControllerHook(Logger& logger) {
