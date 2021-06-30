@@ -80,8 +80,9 @@ void ObstacleColorizer::Refresh() {
     value.a = 0.0f;
     for (auto& materialPropertyBlockController : _materialPropertyBlockControllers)
     {
+        static auto white = Color::get_white();
         materialPropertyBlockController->materialPropertyBlock->SetColor(_addColorID(), value);
-        materialPropertyBlockController->materialPropertyBlock->SetColor(_tintColorID(), Color::Lerp(color, Color::get_white(), _obstacleCoreLerpToWhiteFactor));
+        materialPropertyBlockController->materialPropertyBlock->SetColor(_tintColorID(), Color::Lerp(color, white, _obstacleCoreLerpToWhiteFactor));
         materialPropertyBlockController->ApplyChanges();
     }
 }
