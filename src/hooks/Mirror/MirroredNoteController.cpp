@@ -19,7 +19,8 @@ using namespace UnityEngine;
 
 void UpdateMirror(NoteControllerBase* noteController, GlobalNamespace::NoteControllerBase* followedNote)
 {
-    if (ASSIGNMENT_CHECK(classof(MirroredBombNoteController*), noteController->klass) )
+    static auto MirroredBombNoteControllerKlass = classof(MirroredBombNoteController*);
+    if (ASSIGNMENT_CHECK(MirroredBombNoteControllerKlass, noteController->klass) )
     {
         BombColorizer::ColorizeBomb(noteController, BombColorizer::GetBombColorizer(followedNote)->getColor());
     }

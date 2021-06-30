@@ -43,9 +43,11 @@ MAKE_HOOK_OFFSETLESS(ObstacleSaberSparkleEffectManager_Update, void, ObstacleSab
     self->isSystemActive->values[0] = false;
     self->isSystemActive->values[1] = false;
 
-    std::vector<GlobalNamespace::ObstacleController*> activeObstacleControllersVec(self->beatmapObjectManager->get_activeObstacleControllers()->items->Length());
+    auto obstacleControllers = self->beatmapObjectManager->get_activeObstacleControllers();
 
-    self->beatmapObjectManager->get_activeObstacleControllers()->items->copy_to(activeObstacleControllersVec);
+    std::vector<GlobalNamespace::ObstacleController*> activeObstacleControllersVec(obstacleControllers->items->Length());
+
+    obstacleControllers->items->copy_to(activeObstacleControllersVec);
 
     for (auto& obstacleController : activeObstacleControllersVec)
     {
