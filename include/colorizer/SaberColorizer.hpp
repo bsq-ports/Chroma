@@ -33,23 +33,19 @@ namespace Chroma {
         UnityEngine::Color _trailTintColor;
         GlobalNamespace::TubeBloomPrePassLight* _saberLight;
         GlobalNamespace::SaberType _saberType;
-        bool _doColor;
         UnityEngine::Color _lastColor;
         GlobalNamespace::SaberModelController* _saberModelController;
 
         explicit SaberColorizer(GlobalNamespace::Saber* saber);
 
-        static std::unordered_set<std::shared_ptr<SaberColorizer>>& GetOrCreateColorizerList(GlobalNamespace::SaberType saberType);
-
         // SiraUtil stuff
-        bool IsColorable(GlobalNamespace::SaberModelController* saberModelController);
+        inline static std::unordered_set<GlobalNamespace::SaberModelController*> ColorableModels;
 
         void ColorColorable(UnityEngine::Color color);
 
-
-
-    public:
-        static std::shared_ptr<SaberColorizer> New(GlobalNamespace::Saber* saber);
+        // constructor will add to this, destructor will remove
+        // linked list of Colorizers
+        inline static std::unordered_map<int, std::unordered_set<GlobalNamespace::SaberModelController*>> SaberColorizersSet{{0, {}}, {1, {}}};
 
     protected:
         std::optional<UnityEngine::Color> GlobalColorGetter() override;
@@ -57,17 +53,30 @@ namespace Chroma {
         void Refresh() override;
 
     public:
-        inline static UnorderedEventCallback<int, UnityEngine::Color> SaberColorChanged;
-        inline static std::unordered_map<int, std::unordered_set<std::shared_ptr<SaberColorizer>>> Colorizers;
+        ~SaberColorizer();
+        static std::shared_ptr<SaberColorizer> New(GlobalNamespace::Saber* saber);
+
+        inline static UnorderedEventCallback<int, GlobalNamespace::SaberModelController*, UnityEngine::Color> SaberColorChanged;
+
+        inline static std::unordered_map<GlobalNamespace::SaberModelController*, std::shared_ptr<SaberColorizer>> Colorizers;
+
+
         inline static std::vector<std::optional<UnityEngine::Color>> GlobalColor = {std::nullopt, std::nullopt};
 
+        static bool IsColorable(GlobalNamespace::SaberModelController* saberModelController);
+        static void SetColorable(GlobalNamespace::SaberModelController* saberModelController, bool colorable);
 
         static void GlobalColorize(GlobalNamespace::SaberType saberType, std::optional<UnityEngine::Color> color);
         static void Reset();
 
         // extensions
-        inline static std::unordered_set<std::shared_ptr<SaberColorizer>>& GetSaberColorizer(int saberType) {
-            return GetOrCreateColorizerList(saberType);
+        static std::unordered_set<SaberColorizer*> GetColorizerList(GlobalNamespace::SaberType saberType);
+
+        static void RemoveColorizer(GlobalNamespace::SaberModelController* saberModelController);
+        static std::shared_ptr<SaberColorizer>& GetColorizer(GlobalNamespace::SaberModelController* saberModelController);
+
+        inline static void ColorizeSaber(GlobalNamespace::SaberModelController* saberModelController, std::optional<UnityEngine::Color> color) {
+            GetColorizer(saberModelController)->Colorize(color);
         }
     };
 }

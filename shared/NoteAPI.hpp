@@ -19,7 +19,7 @@ namespace Chroma {
         /// TODO: unsure of this
         /// Gets the note type color or null if either Chroma is not setting the color or method was not found
         static std::optional<UnityEngine::Color> getNoteColorSafe(int colorType) noexcept {
-            auto function = CondDep::Find<OptColor, int>(CHROMA_ID, "getNoteColorSafe");
+            static auto function = CondDep::Find<OptColor, int>(CHROMA_ID, "getNoteColorSafe");
 
             if (function) {
                 // Returns the color struct
@@ -38,7 +38,7 @@ namespace Chroma {
         /// If Chroma is not setting the color, it returns the game's colors
         /// THIS WILL NOT PLAY NICELY WITH MIRRORED NOTE CONTROLLER
         static std::optional<UnityEngine::Color> getNoteControllerOverrideColorSafe(GlobalNamespace::NoteController* noteController, int colorType) noexcept {
-            auto function = CondDep::Find<OptColor, GlobalNamespace::NoteController*, int>(CHROMA_ID, "getNoteControllerOverrideColorSafe");
+            static auto function = CondDep::Find<OptColor, GlobalNamespace::NoteController*, int>(CHROMA_ID, "getNoteControllerOverrideColorSafe");
 
             if (function) {
                 // Returns the color struct
@@ -56,7 +56,7 @@ namespace Chroma {
         /// If Chroma is not setting the color, it returns std::nullopt
         /// THIS WILL NOT PLAY NICELY WITH MIRRORED NOTE CONTROLLER
         static std::optional<UnityEngine::Color> getNoteControllerColorSafe(GlobalNamespace::NoteController* noteController, int colorType) noexcept {
-            auto function = CondDep::Find<OptColor, GlobalNamespace::NoteController*, int>(CHROMA_ID, "getNoteControllerColorSafe");
+            static auto function = CondDep::Find<OptColor, GlobalNamespace::NoteController*, int>(CHROMA_ID, "getNoteControllerColorSafe");
 
             if (function) {
                 // Returns the color struct
@@ -72,7 +72,7 @@ namespace Chroma {
 
         /// Sets the note color if the method was found.
         static void setNoteColorSafe(GlobalNamespace::NoteController* nc, std::optional<UnityEngine::Color> color0) noexcept {
-            auto function = CondDep::Find<void, GlobalNamespace::NoteController*, std::optional<UnityEngine::Color>>(CHROMA_ID, "setNoteColorSafe");
+            static auto function = CondDep::Find<void, GlobalNamespace::NoteController*, std::optional<UnityEngine::Color>>(CHROMA_ID, "setNoteColorSafe");
 
             if (function) {
                 function.value()(nc, color0);
@@ -81,11 +81,33 @@ namespace Chroma {
 
         /// Sets the note color if the method was found.
         static void setGlobalNoteColorSafe(std::optional<UnityEngine::Color> color0, std::optional<UnityEngine::Color> color1) noexcept {
-            auto function = CondDep::Find<void, std::optional<UnityEngine::Color>,  std::optional<UnityEngine::Color>>(CHROMA_ID, "setGlobalNoteColorSafe");
+            static auto function = CondDep::Find<void, std::optional<UnityEngine::Color>,  std::optional<UnityEngine::Color>>(CHROMA_ID, "setGlobalNoteColorSafe");
 
             if (function) {
                 function.value()(color0, color1);
             }
+        }
+
+        /// Sets if the note is colorable. If this is set to true, Chroma will NOT color the note and
+        /// instead the work should be done by the mod handling coloring notes usually a custom note mod
+        static void setNoteColorable(bool colorable) {
+            static auto function = CondDep::Find<void, bool>(CHROMA_ID, "setSaberColorable");
+
+            if (function) {
+                function.value()(colorable);
+            }
+        }
+
+        /// Checks if the note is colorable. If this is set to true, Chroma will NOT color the note and
+        /// instead the work should be done by the mod handling coloring notes usually a custom note mod
+        static std::optional<bool> isNoteColorable() {
+            static auto function = CondDep::Find<bool>(CHROMA_ID, "isSaberColorable");
+
+            if (function) {
+                return function.value()();
+            }
+
+            return std::nullopt;
         }
     };
 }

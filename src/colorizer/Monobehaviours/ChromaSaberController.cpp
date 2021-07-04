@@ -10,8 +10,9 @@ using namespace UnityEngine;
 void Chroma::ChromaSaberController::Init(GlobalNamespace::Saber *saber) {
     _saberType = saber->get_saberType();
     _colorizer = SaberColorizer::New(saber);
+    _saberModelController = saber->get_gameObject()->GetComponentInChildren<SaberModelController *>(true);
 }
 
 void Chroma::ChromaSaberController::OnDestroy() {
-    SaberColorizer::GetSaberColorizer(_saberType).erase(_colorizer);
+    SaberColorizer::RemoveColorizer(_saberModelController);
 }

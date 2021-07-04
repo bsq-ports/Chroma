@@ -31,4 +31,10 @@ EXPOSE_API(setAllObstacleColorSafe, void, UnityEngine::Color color1) {
     ObstacleColorizer::GlobalColorize(color1);
 }
 
+extern "C" void __setObstacleColorable(bool colorable) {
+    ObstacleColorizer::ObstacleColorable = colorable;
+}
 
+extern "C" bool __isObstacleColorable() {
+    return ObstacleColorizer::ObstacleColorable;
+}

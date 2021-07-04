@@ -18,6 +18,8 @@ namespace Chroma {
         virtual void Refresh() = 0;
 
     public:
+        std::optional<UnityEngine::Color> getSelfColor();
+
         virtual UnityEngine::Color getColor();
 
         void Colorize(std::optional<UnityEngine::Color> color);

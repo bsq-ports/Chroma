@@ -51,6 +51,7 @@ namespace Chroma {
         void Refresh() override;
 
     public:
+        inline static bool NoteColorable = false;
         inline static std::unordered_map<GlobalNamespace::NoteControllerBase*, std::shared_ptr<NoteColorizer>> Colorizers;
         inline static std::vector<std::optional<UnityEngine::Color>> GlobalColor = {std::nullopt, std::nullopt};
         std::vector<UnityEngine::Color> getOriginalColors();

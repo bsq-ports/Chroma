@@ -24,11 +24,17 @@ std::vector<LineRenderer*> _lineRenderers = {nullptr, nullptr};
 
 int saberBurnMarkCount = 0;
 
-void OnSaberColorChanged_SaberBurnMarkArea(int saberType, Color color)
+void OnSaberColorChanged_SaberBurnMarkArea(int saberType, GlobalNamespace::SaberModelController* saberModelController, Color color)
 {
+    float h;
+    float s;
+    float _;
+
+    Color::RGBToHSV(color, h, s, _);
+    Color effectColor = Color::HSVToRGB(h, s, 1);
     int intType = saberType;
-    _lineRenderers[intType]->set_startColor(color);
-    _lineRenderers[intType]->set_endColor(color);
+    _lineRenderers[intType]->set_startColor(effectColor);
+    _lineRenderers[intType]->set_endColor(effectColor);
 }
 
 MAKE_HOOK_OFFSETLESS(SaberBurnMarkArea_Start, void, SaberBurnMarkArea* self) {

@@ -7,7 +7,7 @@
 #include <type_traits>
 #include <memory>
 
-template<template<typename Item> typename Container, typename Item>
+template<template<typename> typename Container, typename Item>
 concept is_valid_container = requires (Container<Item> coll, Item item) {
     coll.erase(item);
     coll.emplace(item);
@@ -78,6 +78,27 @@ struct FunctionWrapper<R (T::*)(TArgs...)> : AbstractFunction<R (void*, TArgs...
     }
 };
 
+template<typename R, typename... TArgs>
+struct FunctionWrapper<std::function<R (TArgs...)>> : AbstractFunction<R (void*, TArgs...)> {
+    [[nodiscard]] void* instance() const override {
+        return nullptr;
+    }
+    [[nodiscard]] void* ptr() const override {
+        return handle;
+    }
+    std::function<R (TArgs...)> const held;
+    void* handle;
+
+    FunctionWrapper(std::function<R (TArgs...)> const& f) : held(f), handle(const_cast<void*>(reinterpret_cast<const void*>(&f))) {}
+    R operator()(TArgs... args) const noexcept override {
+        if constexpr (std::is_same_v<R, void>) {
+            held(args...);
+        } else {
+            return held(args...);
+        }
+    }
+};
+
 namespace std {
     template<typename R, typename T, typename... TArgs>
     struct hash<AbstractFunction<R (T*, TArgs...)>> {
@@ -107,10 +128,11 @@ private:
     std::shared_ptr<AbstractFunction<R (T*, TArgs...)>> func;
 
 public:
-    template<class F>
-    ThinVirtualLayer(F&& f) : func(new FunctionWrapper<R (*)(TArgs...)>(f)) {}
+    ThinVirtualLayer(R (*ptr)(TArgs...)) : func(new FunctionWrapper<R (*)(TArgs...)>(ptr)) {}
     template<class F, typename Q>
     ThinVirtualLayer(F&& f, Q* inst) : func(new FunctionWrapper<R (Q::*)(TArgs...)>(f, inst)) {}
+    template<class F>
+    ThinVirtualLayer(F&& f) : func(new FunctionWrapper<std::function<R (TArgs...)>>(f)) {}
 
     R operator()(TArgs... args) const noexcept {
         (*func)(args...);

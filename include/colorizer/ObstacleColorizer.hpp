@@ -39,6 +39,7 @@ namespace Chroma {
 
 
     public:
+        inline static bool ObstacleColorable = false;
         static std::shared_ptr<ObstacleColorizer> New(GlobalNamespace::ObstacleControllerBase* obstacleController);
         inline static std::unordered_map<GlobalNamespace::ObstacleControllerBase*, std::shared_ptr<ObstacleColorizer>> Colorizers;
         inline static std::optional<UnityEngine::Color> GlobalColor;

@@ -62,6 +62,9 @@ void ObstacleColorizer::Reset() {
 }
 
 void ObstacleColorizer::Refresh() {
+    // We do not handle coloring in obstacle colorable
+    if (ObstacleColorable) return;
+
     Color color = getColor();
     if (ChromaUtils::ColorEquals(color, _obstacleFrame->color))
     {

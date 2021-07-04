@@ -23,7 +23,7 @@ EXPOSE_API(getNoteColorSafe, OptColor, int colorType) {
 
         return OptColorFromColor(color);
     } else {
-        return OptColor();
+        return OptColorNull;
     }
 }
 
@@ -45,16 +45,24 @@ EXPOSE_API(getNoteControllerColorSafe, OptColor, NoteController* noteController,
     auto it = ChromaObjectDataManager::ChromaObjectDatas.find(noteController->noteData);
 
     if (it == ChromaObjectDataManager::ChromaObjectDatas.end())
-        return OptColorNull();
+        return OptColorNull;
 
     auto color = it->second->Color;
 
     if (!color)
-        return OptColorNull();
+        return OptColorNull;
 
     return OptColorFromColor(color.value());
 }
 
 EXPOSE_API(setNoteColorSafe, void, NoteControllerBase* nc, std::optional<UnityEngine::Color> color0) {
     NoteColorizer::ColorizeNote(nc, color0);
+}
+
+extern "C" void __setNoteColorable(bool colorable) {
+    NoteColorizer::NoteColorable = colorable;
+}
+
+extern "C" bool __isNoteColorable() {
+    return NoteColorizer::NoteColorable;
 }

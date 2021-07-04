@@ -47,8 +47,7 @@ namespace Chroma {
         V second;
     };
 
-    struct OptColor
-    {
+    struct OptColor {
         float r;
         float g;
         float b;
@@ -56,11 +55,11 @@ namespace Chroma {
         bool isSet;
 
         [[nodiscard]] UnityEngine::Color getColor() const {
-            return UnityEngine::Color(r, g, b,a);
+            return UnityEngine::Color(r, g, b, a);
         }
     };
 
-    inline OptColor OptColorFromColor(UnityEngine::Color const& color) {
+    inline OptColor OptColorFromColor(UnityEngine::Color const &color) {
         return {
                 color.r,
                 color.g,
@@ -71,13 +70,16 @@ namespace Chroma {
     }
 
     // This is probably not needed but it is verbose
-    inline OptColor OptColorNull() {
-        return {
-                0,
-                0,
-                0,
-                0,
-                false,
-        };
+    inline const OptColor OptColorNull = {
+            0,
+            0,
+            0,
+            0,
+            false,
+    };
+
+
+    inline OptColor OptColorFromColor(std::optional<UnityEngine::Color> const &color) {
+        return color ? OptColorFromColor(*color) : OptColorNull;
     }
 }

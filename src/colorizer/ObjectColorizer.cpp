@@ -20,3 +20,7 @@ void Chroma::ObjectColorizer::Colorize(std::optional<UnityEngine::Color> color) 
 std::optional<UnityEngine::Color> Chroma::ObjectColorizer::OriginalColorGetter() {
     return OriginalColor;
 }
+
+std::optional<UnityEngine::Color> Chroma::ObjectColorizer::getSelfColor() {
+    return _color;
+}

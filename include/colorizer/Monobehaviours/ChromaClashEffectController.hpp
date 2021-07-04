@@ -5,6 +5,7 @@
 #include "UnityEngine/MonoBehaviour.hpp"
 #include "UnityEngine/Color.hpp"
 
+#include "GlobalNamespace/SaberModelController.hpp"
 #include "GlobalNamespace/ColorManager.hpp"
 #include "GlobalNamespace/SaberType.hpp"
 
@@ -22,7 +23,7 @@ DECLARE_CLASS_CODEGEN(Chroma, ChromaClashEffectController, UnityEngine::MonoBeha
           DECLARE_INSTANCE_FIELD(UnityEngine::ParticleSystem*, _glowParticleSystem);
           std::vector<UnityEngine::Color> _colors;
 
-          DECLARE_METHOD(void, OnSaberColorChanged, int saberType, UnityEngine::Color color);
+          DECLARE_METHOD(void, OnSaberColorChanged, int saberType, GlobalNamespace::SaberModelController* saberModelController, UnityEngine::Color color);
           public:
           DECLARE_METHOD(void, Init, UnityEngine::ParticleSystem* sparkleParticleSystem, UnityEngine::ParticleSystem* glowParticleSystem, GlobalNamespace::ColorManager* colorManager);
           DECLARE_METHOD(void, OnDestroy);

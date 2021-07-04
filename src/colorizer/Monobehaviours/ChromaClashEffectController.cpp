@@ -21,8 +21,15 @@ void ChromaClashEffectController::Init(UnityEngine::ParticleSystem *sparkleParti
     SaberColorizer::SaberColorChanged += {&ChromaClashEffectController::OnSaberColorChanged, this};
 }
 
-void ChromaClashEffectController::OnSaberColorChanged(int saberType, UnityEngine::Color color) {
-    _colors[(int)saberType] = color;
+void ChromaClashEffectController::OnSaberColorChanged(int saberType, GlobalNamespace::SaberModelController* saberModelController, UnityEngine::Color color) {
+    float h;
+    float s;
+    float _;
+
+    Color::RGBToHSV(color, h, s, _);
+    Color effectColor = Color::HSVToRGB(h, s, 1);
+
+    _colors[(int)saberType] = effectColor;
 
     Color average = Color::Lerp(_colors[0], _colors[1], 0.5f);
     auto sparkleMain = _sparkleParticleSystem->get_main();

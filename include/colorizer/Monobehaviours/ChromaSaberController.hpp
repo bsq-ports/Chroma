@@ -22,6 +22,7 @@ DECLARE_CLASS_CODEGEN(Chroma, ChromaSaberController, UnityEngine::MonoBehaviour,
   private:
           std::shared_ptr<SaberColorizer> _colorizer;
           GlobalNamespace::SaberType _saberType;
+          DECLARE_INSTANCE_FIELD(GlobalNamespace::SaberModelController*, _saberModelController);
 
           public:
           DECLARE_METHOD(void, Init, GlobalNamespace::Saber* saber);
@@ -33,6 +34,9 @@ DECLARE_CLASS_CODEGEN(Chroma, ChromaSaberController, UnityEngine::MonoBehaviour,
           REGISTER_FUNCTION(
               REGISTER_METHOD(Init);
               REGISTER_METHOD(OnDestroy);
+
+              REGISTER_FIELD(_saberModelController);
+
               REGISTER_DEFAULT_CTOR();
               REGISTER_SIMPLE_DTOR();
           )
