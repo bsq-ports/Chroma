@@ -310,8 +310,11 @@ std::unordered_set<SaberColorizer*> SaberColorizer::GetColorizerList(GlobalNames
 
     std::unordered_set<SaberColorizer*> colorizers;
 
-    for (auto& saber : sabers)
-        colorizers.emplace(Colorizers[saber].get());
+    for (auto& saber : sabers) {
+        auto colorizer = Colorizers[saber].get();
+        if (!colorizer) continue;
+        colorizers.emplace(colorizer);
+    }
 
     return colorizers;
 }

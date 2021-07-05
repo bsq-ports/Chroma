@@ -17,7 +17,9 @@ using namespace System::Collections;
 using namespace custom_types::Helpers;
 
 
-MAKE_HOOK_OFFSETLESS(SaberModelContainer_Start, void, SaberModelContainer* self) {
+MAKE_HOOK_MATCH(SaberModelContainer_Start,
+                &SaberModelContainer::Start,
+                void, SaberModelContainer* self) {
     SaberModelContainer_Start(self);
 
     // Do nothing if Chroma shouldn't run
@@ -30,7 +32,7 @@ MAKE_HOOK_OFFSETLESS(SaberModelContainer_Start, void, SaberModelContainer* self)
 
 
 void SaberModelContainerHook(Logger& logger) {
-    INSTALL_HOOK_OFFSETLESS(logger, SaberModelContainer_Start, il2cpp_utils::FindMethodUnsafe("", "SaberModelContainer", "Start", 0));
+    INSTALL_HOOK(logger, SaberModelContainer_Start);
 }
 
 ChromaInstallHooks(SaberModelContainerHook)

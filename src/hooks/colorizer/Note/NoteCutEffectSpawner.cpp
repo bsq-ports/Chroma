@@ -18,7 +18,9 @@ using namespace GlobalNamespace;
 using namespace UnityEngine;
 using namespace Chroma;
 
-MAKE_HOOK_OFFSETLESS(NoteCutEffectSpawner_SpawnNoteCutEffect,void,NoteCutCoreEffectsSpawner* self, GlobalNamespace::NoteCutInfo& noteCutInfo, GlobalNamespace::NoteController* noteController) {
+MAKE_HOOK_MATCH(NoteCutEffectSpawner_SpawnNoteCutEffect,
+                &NoteCutCoreEffectsSpawner::SpawnNoteCutEffect,
+                void,NoteCutCoreEffectsSpawner* self, GlobalNamespace::NoteCutInfo& noteCutInfo, GlobalNamespace::NoteController* noteController) {
     // Do nothing if Chroma shouldn't run
     if (!ChromaController::DoChromaHooks()) {
         NoteCutEffectSpawner_SpawnNoteCutEffect(self, noteCutInfo, noteController);
@@ -30,7 +32,7 @@ MAKE_HOOK_OFFSETLESS(NoteCutEffectSpawner_SpawnNoteCutEffect,void,NoteCutCoreEff
 }
 
 void NoteCutEffectSpawnerHook(Logger& logger) {
-    INSTALL_HOOK_OFFSETLESS(getLogger(), NoteCutEffectSpawner_SpawnNoteCutEffect, il2cpp_utils::FindMethodUnsafe("", "NoteCutCoreEffectsSpawner", "SpawnNoteCutEffect", 2));
+    INSTALL_HOOK(getLogger(), NoteCutEffectSpawner_SpawnNoteCutEffect);
 }
 
 ChromaInstallHooks(NoteCutEffectSpawnerHook)

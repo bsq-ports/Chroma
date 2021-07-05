@@ -1,6 +1,8 @@
 #pragma once
 #include "main.hpp"
 
+#include "beatsaber-hook/shared/utils/hooking.hpp"
+
 namespace Chroma {
     class Hooks {
     private:

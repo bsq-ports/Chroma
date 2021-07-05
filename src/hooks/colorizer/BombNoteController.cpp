@@ -13,11 +13,12 @@ using namespace GlobalNamespace;
 using namespace Chroma;
 using namespace ChromaUtils;
 
-MAKE_HOOK_OFFSETLESS(
+MAKE_HOOK_MATCH(
     BombNoteController_Init,
+    &BombNoteController::Init,
     void,
     BombNoteController* self,
-    CustomNoteData* noteData,
+    NoteData* noteData,
     float worldRotation,
     UnityEngine::Vector3 moveStartPos,
     UnityEngine::Vector3 moveEndPos,
@@ -41,7 +42,7 @@ MAKE_HOOK_OFFSETLESS(
 }
 
 void BombNoteControllerHook(Logger& logger) {
-    INSTALL_HOOK_OFFSETLESS(logger, BombNoteController_Init, il2cpp_utils::FindMethodUnsafe("", "BombNoteController", "Init", 8));
+    INSTALL_HOOK(logger, BombNoteController_Init);
 }
 
 ChromaInstallHooks(BombNoteControllerHook)

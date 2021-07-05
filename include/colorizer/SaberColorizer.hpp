@@ -22,7 +22,6 @@
 #include <optional>
 
 #include "ObjectColorizer.hpp"
-#include "utils/EventCallback.hpp"
 
 #include "custom-types/shared/coroutine.hpp"
 

@@ -30,7 +30,9 @@ void SetObstacleSaberSparkleColor(ObstacleSaberSparkleEffect* obstacleSaberSpark
     obstacleSaberSparkleEffect->set_color(Color::HSVToRGB(h, s, 1));
 }
 
-MAKE_HOOK_OFFSETLESS(ObstacleSaberSparkleEffectManager_Update, void, ObstacleSaberSparkleEffectManager* self) {
+MAKE_HOOK_MATCH(ObstacleSaberSparkleEffectManager_Update,
+                &ObstacleSaberSparkleEffectManager::Update,
+                void, ObstacleSaberSparkleEffectManager* self) {
     // Do nothing if Chroma shouldn't run
     if (!ChromaController::DoChromaHooks()) {
         ObstacleSaberSparkleEffectManager_Update(self);
@@ -91,7 +93,7 @@ MAKE_HOOK_OFFSETLESS(ObstacleSaberSparkleEffectManager_Update, void, ObstacleSab
 }
 
 void ObstacleSaberSparkleEffectManagerHook(Logger& logger) {
-    INSTALL_HOOK_OFFSETLESS(getLogger(), ObstacleSaberSparkleEffectManager_Update, il2cpp_utils::FindMethodUnsafe("", "ObstacleSaberSparkleEffectManager", "Update", 0));
+    INSTALL_HOOK(getLogger(), ObstacleSaberSparkleEffectManager_Update);
 }
 
 ChromaInstallHooks(ObstacleSaberSparkleEffectManagerHook)

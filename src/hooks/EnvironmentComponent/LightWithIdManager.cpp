@@ -7,7 +7,7 @@
 using namespace GlobalNamespace;
 using namespace Chroma;
 
-MAKE_HOOK_OFFSETLESS(LightWithIdManager_LateUpdate, void,LightWithIdManager* self) {
+MAKE_HOOK_MATCH(LightWithIdManager_LateUpdate, &LightWithIdManager::LateUpdate, void,LightWithIdManager* self) {
     LightWithIdManager_LateUpdate(self);
     // Do nothing if Chroma shouldn't run
     if (!ChromaController::DoChromaHooks()) {
@@ -20,7 +20,7 @@ MAKE_HOOK_OFFSETLESS(LightWithIdManager_LateUpdate, void,LightWithIdManager* sel
 }
 
 void LightWithIdManagerHook(Logger& logger) {
-    INSTALL_HOOK_OFFSETLESS(logger, LightWithIdManager_LateUpdate, il2cpp_utils::FindMethodUnsafe("", "LightWithIdManager", "LateUpdate", 0));
+    INSTALL_HOOK(logger, LightWithIdManager_LateUpdate);
 }
 
 ChromaInstallHooks(LightWithIdManagerHook)

@@ -23,19 +23,11 @@ DECLARE_CLASS_CODEGEN(Chroma, ChromaClashEffectController, UnityEngine::MonoBeha
           DECLARE_INSTANCE_FIELD(UnityEngine::ParticleSystem*, _glowParticleSystem);
           std::vector<UnityEngine::Color> _colors;
 
-          DECLARE_METHOD(void, OnSaberColorChanged, int saberType, GlobalNamespace::SaberModelController* saberModelController, UnityEngine::Color color);
+          DECLARE_INSTANCE_METHOD(void, OnSaberColorChanged, int saberType, GlobalNamespace::SaberModelController* saberModelController, UnityEngine::Color color);
           public:
-          DECLARE_METHOD(void, Init, UnityEngine::ParticleSystem* sparkleParticleSystem, UnityEngine::ParticleSystem* glowParticleSystem, GlobalNamespace::ColorManager* colorManager);
-          DECLARE_METHOD(void, OnDestroy);
+          DECLARE_INSTANCE_METHOD(void, Init, UnityEngine::ParticleSystem* sparkleParticleSystem, UnityEngine::ParticleSystem* glowParticleSystem, GlobalNamespace::ColorManager* colorManager);
+          DECLARE_INSTANCE_METHOD(void, OnDestroy);
 
           DECLARE_SIMPLE_DTOR();
           DECLARE_DEFAULT_CTOR();
-
-          REGISTER_FUNCTION(
-              REGISTER_METHOD(Init);
-              REGISTER_METHOD(OnDestroy);
-              REGISTER_METHOD(OnSaberColorChanged);
-              REGISTER_DEFAULT_CTOR();
-              REGISTER_SIMPLE_DTOR();
-          )
 )

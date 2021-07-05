@@ -27,7 +27,9 @@ using namespace UnityEngine;
 using namespace System::Collections;
 using namespace custom_types::Helpers;
 
-MAKE_HOOK_OFFSETLESS(ObstacleDissolve_Awake, void, ObstacleDissolve* self) {
+MAKE_HOOK_MATCH(ObstacleDissolve_Awake,
+                &ObstacleDissolve::Awake,
+                void, ObstacleDissolve* self) {
     ObstacleDissolve_Awake(self);
 
     // Do nothing if Chroma shouldn't run
@@ -37,7 +39,9 @@ MAKE_HOOK_OFFSETLESS(ObstacleDissolve_Awake, void, ObstacleDissolve* self) {
     ObstacleColorizer::New(self->obstacleController);
 }
 
-MAKE_HOOK_OFFSETLESS(ObstacleDissolve_OnDestroy, void, ObstacleDissolve* self) {
+MAKE_HOOK_MATCH(ObstacleDissolve_OnDestroy,
+                &ObstacleDissolve::OnDestroy,
+                void, ObstacleDissolve* self) {
     ObstacleDissolve_OnDestroy(self);
 
     // Do nothing if Chroma shouldn't run
@@ -49,8 +53,8 @@ MAKE_HOOK_OFFSETLESS(ObstacleDissolve_OnDestroy, void, ObstacleDissolve* self) {
 }
 
 void ObstacleDissolveHook(Logger& logger) {
-    INSTALL_HOOK_OFFSETLESS(logger, ObstacleDissolve_Awake, il2cpp_utils::FindMethodUnsafe("", "ObstacleDissolve", "Awake", 0));
-    INSTALL_HOOK_OFFSETLESS(logger, ObstacleDissolve_OnDestroy, il2cpp_utils::FindMethodUnsafe("", "ObstacleDissolve", "OnDestroy", 0));
+    INSTALL_HOOK(logger, ObstacleDissolve_Awake);
+    INSTALL_HOOK(logger, ObstacleDissolve_OnDestroy);
 }
 
 ChromaInstallHooks(ObstacleDissolveHook)

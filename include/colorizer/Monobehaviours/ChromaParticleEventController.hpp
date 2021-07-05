@@ -24,16 +24,9 @@ DECLARE_CLASS_CODEGEN(Chroma, ChromaParticleEventController, UnityEngine::MonoBe
           GlobalNamespace::BeatmapEventType _eventType;
 
           public:
-          DECLARE_METHOD(void, Init, GlobalNamespace::ParticleSystemEventEffect* particleSystemEventEffect, GlobalNamespace::BeatmapEventType eventType);
-          DECLARE_METHOD(void, OnDestroy);
+          DECLARE_INSTANCE_METHOD(void, Init, GlobalNamespace::ParticleSystemEventEffect* particleSystemEventEffect, GlobalNamespace::BeatmapEventType eventType);
+          DECLARE_INSTANCE_METHOD(void, OnDestroy);
 
           DECLARE_SIMPLE_DTOR();
           DECLARE_DEFAULT_CTOR();
-
-          REGISTER_FUNCTION(
-              REGISTER_METHOD(Init);
-              REGISTER_METHOD(OnDestroy);
-              REGISTER_DEFAULT_CTOR();
-              REGISTER_SIMPLE_DTOR();
-          )
 )

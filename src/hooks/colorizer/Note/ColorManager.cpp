@@ -22,7 +22,9 @@ using namespace Chroma;
 using namespace GlobalNamespace;
 using namespace UnityEngine;
 
-MAKE_HOOK_OFFSETLESS(ColorManager_ColorForType, Color, ColorManager* self, GlobalNamespace::ColorType type) {
+MAKE_HOOK_MATCH(ColorManager_ColorForType,
+                  &ColorManager::ColorForType,
+                  Color, ColorManager* self, GlobalNamespace::ColorType type) {
     // Do nothing if Chroma shouldn't run
     if (!ChromaController::DoChromaHooks() || !ColorManagerColorForType::_noteColorOverride) {
         return ColorManager_ColorForType(self, type);
@@ -33,7 +35,7 @@ MAKE_HOOK_OFFSETLESS(ColorManager_ColorForType, Color, ColorManager* self, Globa
 
 
 void ColorManagerHook(Logger& logger) {
-    INSTALL_HOOK_OFFSETLESS(logger, ColorManager_ColorForType, il2cpp_utils::FindMethodUnsafe("", "ColorManager", "ColorForType", 1));
+    INSTALL_HOOK(logger, ColorManager_ColorForType);
 }
 
 ChromaInstallHooks(ColorManagerHook)

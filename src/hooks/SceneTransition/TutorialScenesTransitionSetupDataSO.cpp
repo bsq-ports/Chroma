@@ -14,13 +14,15 @@ using namespace GlobalNamespace;
 using namespace UnityEngine;
 using namespace Chroma;
 
-MAKE_HOOK_OFFSETLESS(TutorialScenesTransitionSetupDataSO_Init,void,TutorialScenesTransitionSetupDataSO* self) {
+MAKE_HOOK_MATCH(TutorialScenesTransitionSetupDataSO_Init,
+                &TutorialScenesTransitionSetupDataSO::Init,
+                void,TutorialScenesTransitionSetupDataSO* self) {
     ChromaController::TutorialMode = true;
     TutorialScenesTransitionSetupDataSO_Init(self);
 }
 
 void TutorialScenesTransitionSetupDataSOHook(Logger& logger) {
-    INSTALL_HOOK_OFFSETLESS(getLogger(), TutorialScenesTransitionSetupDataSO_Init, il2cpp_utils::FindMethodUnsafe("", "TutorialScenesTransitionSetupDataSO", "Init", 0));
+    INSTALL_HOOK(getLogger(), TutorialScenesTransitionSetupDataSO_Init);
 }
 
 ChromaInstallHooks(TutorialScenesTransitionSetupDataSOHook)

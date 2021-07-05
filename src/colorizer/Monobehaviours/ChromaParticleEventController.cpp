@@ -1,6 +1,6 @@
 #include "colorizer/Monobehaviours/ChromaParticleEventController.hpp"
 
-DEFINE_TYPE(Chroma::ChromaParticleEventController);
+DEFINE_TYPE(Chroma, ChromaParticleEventController);
 
 using namespace Chroma;
 using namespace GlobalNamespace;

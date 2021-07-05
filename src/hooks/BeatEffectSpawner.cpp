@@ -20,7 +20,7 @@
 using namespace Chroma;
 using namespace GlobalNamespace;
 
-MAKE_HOOK_OFFSETLESS(BeatEffectSpawner_HandleNoteDidStartJump, void, BeatEffectSpawner* self, NoteController* noteController) {
+MAKE_HOOK_MATCH(BeatEffectSpawner_HandleNoteDidStartJump, &BeatEffectSpawner::HandleNoteDidStartJump, void, BeatEffectSpawner* self, NoteController* noteController) {
     // Do nothing if Chroma shouldn't run
     if (!ChromaController::DoChromaHooks()) {
         BeatEffectSpawner_HandleNoteDidStartJump(self, noteController);
@@ -51,7 +51,7 @@ MAKE_HOOK_OFFSETLESS(BeatEffectSpawner_HandleNoteDidStartJump, void, BeatEffectS
 }
 
 void BeatEffectSpawnerHook(Logger& logger) {
-    INSTALL_HOOK_OFFSETLESS(logger, BeatEffectSpawner_HandleNoteDidStartJump, il2cpp_utils::FindMethodUnsafe("", "BeatEffectSpawner", "HandleNoteDidStartJump", 1));
+    INSTALL_HOOK(logger, BeatEffectSpawner_HandleNoteDidStartJump);
 }
 
 ChromaInstallHooks(BeatEffectSpawnerHook)

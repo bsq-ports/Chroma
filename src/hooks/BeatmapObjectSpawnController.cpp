@@ -9,7 +9,7 @@ using namespace System::Collections;
 using namespace custom_types::Helpers;
 using namespace GlobalNamespace;
 
-MAKE_HOOK_OFFSETLESS(BeatmapObjectSpawnController_Start, void, BeatmapObjectSpawnController* self) {
+MAKE_HOOK_MATCH(BeatmapObjectSpawnController_Start,&BeatmapObjectSpawnController::Start, void, BeatmapObjectSpawnController* self) {
     BeatmapObjectSpawnController_Start(self);
 
     // Do nothing if Chroma shouldn't run
@@ -23,7 +23,7 @@ MAKE_HOOK_OFFSETLESS(BeatmapObjectSpawnController_Start, void, BeatmapObjectSpaw
 }
 
 void BeatmapObjectSpawnControllerHook(Logger& logger) {
-    INSTALL_HOOK_OFFSETLESS(logger, BeatmapObjectSpawnController_Start, il2cpp_utils::FindMethodUnsafe("", "BeatmapObjectSpawnController", "Start", 0));
+    INSTALL_HOOK(logger, BeatmapObjectSpawnController_Start);
 }
 
 ChromaInstallHooks(BeatmapObjectSpawnControllerHook)

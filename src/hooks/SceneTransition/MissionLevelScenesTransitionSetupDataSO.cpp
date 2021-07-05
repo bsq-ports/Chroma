@@ -20,7 +20,10 @@ using namespace GlobalNamespace;
 using namespace UnityEngine;
 using namespace Chroma;
 
-MAKE_HOOK_OFFSETLESS(MissionLevelScenesTransitionSetupDataSO_Init,void,MissionLevelScenesTransitionSetupDataSO* self,
+MAKE_HOOK_MATCH(MissionLevelScenesTransitionSetupDataSO_Init,
+                &MissionLevelScenesTransitionSetupDataSO::Init,
+                void,
+                MissionLevelScenesTransitionSetupDataSO* self,
                      Il2CppString* missionId, GlobalNamespace::IDifficultyBeatmap* difficultyBeatmap,
                      GlobalNamespace::IPreviewBeatmapLevel* previewBeatmapLevel, Array<GlobalNamespace::MissionObjective*>* missionObjectives,
                      GlobalNamespace::ColorScheme* overrideColorScheme, GlobalNamespace::GameplayModifiers* gameplayModifiers,
@@ -33,7 +36,7 @@ MAKE_HOOK_OFFSETLESS(MissionLevelScenesTransitionSetupDataSO_Init,void,MissionLe
 }
 
 void MissionLevelScenesTransitionSetupDataSOHook(Logger& logger) {
-    INSTALL_HOOK_OFFSETLESS(logger, MissionLevelScenesTransitionSetupDataSO_Init, il2cpp_utils::FindMethodUnsafe("", "MissionLevelScenesTransitionSetupDataSO", "Init", 8));
+    INSTALL_HOOK(logger, MissionLevelScenesTransitionSetupDataSO_Init);
 }
 
 ChromaInstallHooks(MissionLevelScenesTransitionSetupDataSOHook)

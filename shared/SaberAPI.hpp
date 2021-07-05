@@ -1,11 +1,11 @@
 #pragma once
 
+#include "beatsaber-hook/shared/utils/typedefs-wrappers.hpp"
 #include "UnityEngine/Color.hpp"
 #include "GlobalNamespace/SaberType.hpp"
 #include "GlobalNamespace/SaberModelContainer.hpp"
 #include "conditional-dependencies/shared/main.hpp"
 #include "utils.hpp"
-#include "utils/EventCallback.hpp"
 
 #include <optional>
 #include <functional>

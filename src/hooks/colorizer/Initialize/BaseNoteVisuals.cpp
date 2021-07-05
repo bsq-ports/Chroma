@@ -29,7 +29,9 @@ bool IsBombType(NoteControllerBase* noteController)
     return bombTypes.find(noteController->klass) != bombTypes.end();
 }
 
-MAKE_HOOK_OFFSETLESS(BaseNoteVisuals_Awake, void, BaseNoteVisuals* self) {
+MAKE_HOOK_MATCH(BaseNoteVisuals_Awake,
+                &BaseNoteVisuals::Awake,
+                void, BaseNoteVisuals* self) {
     // Do nothing if Chroma shouldn't run
     if (!ChromaController::DoChromaHooks()) {
         BaseNoteVisuals_Awake(self);
@@ -45,7 +47,9 @@ MAKE_HOOK_OFFSETLESS(BaseNoteVisuals_Awake, void, BaseNoteVisuals* self) {
     BaseNoteVisuals_Awake(self);
 }
 
-MAKE_HOOK_OFFSETLESS(BaseNoteVisuals_OnDestroy, void, BaseNoteVisuals* self) {
+MAKE_HOOK_MATCH(BaseNoteVisuals_OnDestroy,
+                &BaseNoteVisuals::OnDestroy,
+                void, BaseNoteVisuals* self) {
     BaseNoteVisuals_OnDestroy(self);
     // Do nothing if Chroma shouldn't run
     if (!ChromaController::DoChromaHooks()) {
@@ -60,8 +64,8 @@ MAKE_HOOK_OFFSETLESS(BaseNoteVisuals_OnDestroy, void, BaseNoteVisuals* self) {
 }
 
 void BaseNoteVisualsHook(Logger& logger) {
-    INSTALL_HOOK_OFFSETLESS(logger, BaseNoteVisuals_Awake, il2cpp_utils::FindMethodUnsafe("", "BaseNoteVisuals", "Awake", 0));
-    INSTALL_HOOK_OFFSETLESS(logger, BaseNoteVisuals_OnDestroy, il2cpp_utils::FindMethodUnsafe("", "BaseNoteVisuals", "OnDestroy", 0));
+    INSTALL_HOOK(logger, BaseNoteVisuals_Awake);
+    INSTALL_HOOK(logger, BaseNoteVisuals_OnDestroy);
 }
 
 ChromaInstallHooks(BaseNoteVisualsHook)

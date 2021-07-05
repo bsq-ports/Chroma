@@ -10,6 +10,7 @@
 #include "GlobalNamespace/TrackLaneRing.hpp"
 
 using namespace Chroma;
+using namespace GlobalNamespace;
 
 static float GetPrecisionStep(float defaultF, GlobalNamespace::BeatmapEventData* beatmapEventData)
 {
@@ -28,7 +29,9 @@ static float GetPrecisionStep(float defaultF, GlobalNamespace::BeatmapEventData*
 }
 
 // Aero why do you have to use transpilers for everything damn it? Just rewrite the method
-MAKE_HOOK_OFFSETLESS(TrackLaneRingsPositionStepEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger, void,
+MAKE_HOOK_MATCH(TrackLaneRingsPositionStepEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger,
+                &TrackLaneRingsPositionStepEffectSpawner::HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger,
+                void,
                      GlobalNamespace::TrackLaneRingsPositionStepEffectSpawner* self,
                      GlobalNamespace::BeatmapEventData* beatmapEventData) {
     // Essentially, here we cancel the original method. DO NOT call it IF it's a Chroma map
@@ -56,7 +59,7 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRingsPositionStepEffectSpawner_HandleBeatmapObject
 }
 
 void TrackLaneRingsPositionStepEffectSpawnerHook(Logger& logger) {
-    INSTALL_HOOK_OFFSETLESS(logger, TrackLaneRingsPositionStepEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger, il2cpp_utils::FindMethodUnsafe("", "TrackLaneRingsPositionStepEffectSpawner", "HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger", 1));
+    INSTALL_HOOK(logger, TrackLaneRingsPositionStepEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger);
 //    INSTALL_HOOK_OFFSETLESS(getLogger(), SaberManager_Finalize, il2cpp_utils::FindMethodUnsafe("System", "Object", "Finalize", 0));
 }
 

@@ -11,7 +11,7 @@
 #include "colorizer/LightColorizer.hpp"
 #include "UnityEngine/GameObject.hpp"
 
-DEFINE_TYPE(Chroma::ChromaGradientController);
+DEFINE_TYPE(Chroma, ChromaGradientController);
 
 using namespace Chroma;
 using namespace GlobalNamespace;

@@ -4,8 +4,9 @@
 #include "GlobalNamespace/TrackLaneRingsRotationEffect.hpp"
 
 using namespace Chroma;
+using namespace GlobalNamespace;
 
-MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffect_AddRingRotationEffect, void, GlobalNamespace::TrackLaneRingsRotationEffect* self, float angle, float step, int propagationSpeed, float flexySpeed) {
+MAKE_HOOK_MATCH(TrackLaneRingsRotationEffect_AddRingRotationEffect, &TrackLaneRingsRotationEffect::AddRingRotationEffect, void, GlobalNamespace::TrackLaneRingsRotationEffect* self, float angle, float step, int propagationSpeed, float flexySpeed) {
     // Essentially, here we cancel the original method. DO NOT call it IF it's a Chroma map
     if (!ChromaController::DoChromaHooks()) {
         TrackLaneRingsRotationEffect_AddRingRotationEffect(self, angle, step, propagationSpeed, flexySpeed);
@@ -20,7 +21,7 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffect_AddRingRotationEffect, void, G
     TrackLaneRingsRotationEffect_AddRingRotationEffect(self, angle, step, propagationSpeed, flexySpeed);
 }
 
-MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffect_FixedUpdate, void, GlobalNamespace::TrackLaneRingsRotationEffect* self) {
+MAKE_HOOK_MATCH(TrackLaneRingsRotationEffect_FixedUpdate, &TrackLaneRingsRotationEffect::FixedUpdate, void, GlobalNamespace::TrackLaneRingsRotationEffect* self) {
     // Essentially, here we cancel the original method. DO NOT call it IF it's a Chroma map
     if (!ChromaController::DoChromaHooks()) {
         TrackLaneRingsRotationEffect_FixedUpdate(self);

@@ -40,7 +40,7 @@ UnityEngine::Vector3& GetTransformPosition(UnityEngine::Vector3& defaultV, Param
     return defaultV;
 }
 
-MAKE_HOOK_OFFSETLESS(ParametricBoxController_Refresh,void, ParametricBoxController* self) {
+MAKE_HOOK_MATCH(ParametricBoxController_Refresh,&ParametricBoxController::Refresh, void, ParametricBoxController* self) {
     // Do nothing if Chroma shouldn't run
     if (!ChromaController::DoChromaHooks()) {
         ParametricBoxController_Refresh(self);
@@ -122,7 +122,7 @@ MAKE_HOOK_OFFSETLESS(ParametricBoxController_Refresh,void, ParametricBoxControll
 }
 
 void ParametricBoxControllerHook(Logger& logger) {
-    INSTALL_HOOK_OFFSETLESS(logger, ParametricBoxController_Refresh, il2cpp_utils::FindMethodUnsafe("", "ParametricBoxController", "Refresh", 0));
+    INSTALL_HOOK(logger, ParametricBoxController_Refresh);
 }
 
 ChromaInstallHooks(ParametricBoxControllerHook)

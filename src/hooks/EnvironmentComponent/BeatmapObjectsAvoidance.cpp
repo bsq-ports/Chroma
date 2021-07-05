@@ -15,7 +15,7 @@ using namespace System::Collections;
 using namespace custom_types::Helpers;
 using namespace GlobalNamespace;
 
-MAKE_HOOK_OFFSETLESS(BeatmapObjectsAvoidance_Update, void, BeatmapObjectsAvoidance *self) {
+MAKE_HOOK_MATCH(BeatmapObjectsAvoidance_Update,&BeatmapObjectsAvoidance::Update, void, BeatmapObjectsAvoidance *self) {
     BeatmapObjectsAvoidance_Update(self);
     if (!ChromaController::DoChromaHooks()) {
         return;
@@ -35,8 +35,7 @@ MAKE_HOOK_OFFSETLESS(BeatmapObjectsAvoidance_Update, void, BeatmapObjectsAvoidan
 }
 
 void BeatmapObjectsAvoidanceHook(Logger& logger) {
-    INSTALL_HOOK_OFFSETLESS(logger, BeatmapObjectsAvoidance_Update,
-                            il2cpp_utils::FindMethodUnsafe("", "BeatmapObjectsAvoidance", "Update", 0));
+    INSTALL_HOOK(logger, BeatmapObjectsAvoidance_Update);
 }
 
 ChromaInstallHooks(BeatmapObjectsAvoidanceHook)

@@ -17,6 +17,20 @@ using namespace GlobalNamespace;
 using namespace Chroma;
 using namespace UnityEngine;
 
+template<>
+struct ::il2cpp_utils::il2cpp_type_check::MetadataGetter<&GlobalNamespace::MirroredNoteController_1<ICubeNoteMirrorable*>::UpdatePositionAndRotation> {
+    static const MethodInfo* get() {
+        return il2cpp_utils::FindMethod(classof(GlobalNamespace::MirroredNoteController_1<ICubeNoteMirrorable*>*), "UpdatePositionAndRotation");
+    }
+};
+
+template<>
+struct ::il2cpp_utils::il2cpp_type_check::MetadataGetter<&GlobalNamespace::MirroredNoteController_1<INoteMirrorable*>::UpdatePositionAndRotation> {
+    static const MethodInfo* get() {
+        return il2cpp_utils::FindMethod(classof(GlobalNamespace::MirroredNoteController_1<INoteMirrorable*>*), "UpdatePositionAndRotation");
+    }
+};
+
 void UpdateMirror(NoteControllerBase* noteController, GlobalNamespace::NoteControllerBase* followedNote)
 {
     static auto MirroredBombNoteControllerKlass = classof(MirroredBombNoteController*);
@@ -30,7 +44,9 @@ void UpdateMirror(NoteControllerBase* noteController, GlobalNamespace::NoteContr
     }
 }
 
-MAKE_HOOK_OFFSETLESS(MirroredNoteController_UpdatePositionAndRotationGeneric, void, MirroredNoteController_1<INoteMirrorable*>* self) {
+MAKE_HOOK_MATCH(MirroredNoteController_UpdatePositionAndRotationGeneric,
+                &GlobalNamespace::MirroredNoteController_1<INoteMirrorable*>::UpdatePositionAndRotation,
+                void, MirroredNoteController_1<INoteMirrorable*>* self) {
     MirroredNoteController_UpdatePositionAndRotationGeneric(self);
 
     // Do nothing if Chroma shouldn't run
@@ -41,7 +57,10 @@ MAKE_HOOK_OFFSETLESS(MirroredNoteController_UpdatePositionAndRotationGeneric, vo
     UpdateMirror(self, il2cpp_utils::cast<NoteControllerBase>(self->followedNote));
 }
 
-MAKE_HOOK_OFFSETLESS(MirroredNoteController_UpdatePositionAndRotationCubeGeneric, void, MirroredNoteController_1<ICubeNoteMirrorable*>* self) {
+
+MAKE_HOOK_MATCH(MirroredNoteController_UpdatePositionAndRotationCubeGeneric,
+                &GlobalNamespace::MirroredNoteController_1<ICubeNoteMirrorable*>::UpdatePositionAndRotation,
+                void, MirroredNoteController_1<ICubeNoteMirrorable*>* self) {
     MirroredNoteController_UpdatePositionAndRotationCubeGeneric(self);
 
     // Do nothing if Chroma shouldn't run
@@ -57,8 +76,8 @@ void MirroredNoteControllerHook(Logger& logger) {
     auto iNoteGeneric = classof(GlobalNamespace::MirroredNoteController_1<INoteMirrorable*>*);
     auto iNoteCubeGeneric = classof(GlobalNamespace::MirroredNoteController_1<ICubeNoteMirrorable*>*);
 
-    INSTALL_HOOK_OFFSETLESS(logger, MirroredNoteController_UpdatePositionAndRotationGeneric, il2cpp_utils::FindMethodUnsafe(iNoteGeneric, "UpdatePositionAndRotation", 0));
-    INSTALL_HOOK_OFFSETLESS(logger, MirroredNoteController_UpdatePositionAndRotationCubeGeneric, il2cpp_utils::FindMethodUnsafe(iNoteCubeGeneric, "UpdatePositionAndRotation", 0));
+    INSTALL_HOOK(logger, MirroredNoteController_UpdatePositionAndRotationGeneric);
+    INSTALL_HOOK(logger, MirroredNoteController_UpdatePositionAndRotationCubeGeneric);
 }
 
 ChromaInstallHooks(MirroredNoteControllerHook)

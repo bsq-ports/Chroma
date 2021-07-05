@@ -21,7 +21,9 @@ using namespace GlobalNamespace;
 using namespace UnityEngine;
 using namespace Chroma;
 
-MAKE_HOOK_OFFSETLESS(MultiplayerLevelScenesTransitionSetupDataSO_Init,void,MultiplayerLevelScenesTransitionSetupDataSO* self,
+MAKE_HOOK_MATCH(MultiplayerLevelScenesTransitionSetupDataSO_Init,
+                &MultiplayerLevelScenesTransitionSetupDataSO::Init,
+                void,MultiplayerLevelScenesTransitionSetupDataSO* self,
                      Il2CppString* gameMode, GlobalNamespace::IPreviewBeatmapLevel* previewBeatmapLevel,
                      GlobalNamespace::BeatmapDifficulty beatmapDifficulty, GlobalNamespace::BeatmapCharacteristicSO* beatmapCharacteristic,
                      GlobalNamespace::IDifficultyBeatmap* difficultyBeatmap, GlobalNamespace::ColorScheme* overrideColorScheme,
@@ -35,7 +37,7 @@ MAKE_HOOK_OFFSETLESS(MultiplayerLevelScenesTransitionSetupDataSO_Init,void,Multi
 }
 
 void MultiplayerLevelScenesTransitionSetupDataSOHook(Logger& logger) {
-    INSTALL_HOOK_OFFSETLESS(logger, MultiplayerLevelScenesTransitionSetupDataSO_Init, il2cpp_utils::FindMethodUnsafe("", "MultiplayerLevelScenesTransitionSetupDataSO", "Init", 10));
+    INSTALL_HOOK(logger, MultiplayerLevelScenesTransitionSetupDataSO_Init);
 }
 
 ChromaInstallHooks(MultiplayerLevelScenesTransitionSetupDataSOHook)

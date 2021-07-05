@@ -21,11 +21,12 @@ using namespace ChromaUtils;
 
 static BeatmapEventData* LastLightPairRotationEventEffectData;
 
-MAKE_HOOK_OFFSETLESS(
+MAKE_HOOK_MATCH(
     LightPairRotationEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger,
+    &LightPairRotationEventEffect::HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger,
     void,
     LightPairRotationEventEffect* self,
-    CustomBeatmapEventData* beatmapEventData
+    BeatmapEventData* beatmapEventData
 ) {
     // Do nothing if Chroma shouldn't run
     if (!ChromaController::DoChromaHooks()) {
@@ -44,8 +45,9 @@ MAKE_HOOK_OFFSETLESS(
     LastLightPairRotationEventEffectData = nullptr;
 }
 
-MAKE_HOOK_OFFSETLESS(
+MAKE_HOOK_MATCH(
     LightPairRotationEventEffect_UpdateRotationData,
+    &LightPairRotationEventEffect::UpdateRotationData,
     void,
     LightPairRotationEventEffect* self,
     int beatmapEventDataValue,
@@ -130,8 +132,8 @@ MAKE_HOOK_OFFSETLESS(
 }
 
 void LightPairRotationEventEffectHook(Logger& logger) {
-    INSTALL_HOOK_OFFSETLESS(getLogger(), LightPairRotationEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger, il2cpp_utils::FindMethodUnsafe("", "LightPairRotationEventEffect", "HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger", 1));
-    INSTALL_HOOK_OFFSETLESS(getLogger(), LightPairRotationEventEffect_UpdateRotationData, il2cpp_utils::FindMethodUnsafe("", "LightPairRotationEventEffect", "UpdateRotationData", 4));
+    INSTALL_HOOK(getLogger(), LightPairRotationEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger);
+    INSTALL_HOOK(getLogger(), LightPairRotationEventEffect_UpdateRotationData);
 }
 
 ChromaInstallHooks(LightPairRotationEventEffectHook)

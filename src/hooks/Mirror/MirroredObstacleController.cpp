@@ -23,7 +23,9 @@ using namespace Chroma;
 using namespace UnityEngine;
 
 
-MAKE_HOOK_OFFSETLESS(MirroredObstacleController_UpdatePositionAndRotation, void, MirroredObstacleController* self) {
+MAKE_HOOK_MATCH(MirroredObstacleController_UpdatePositionAndRotation,
+                &MirroredObstacleController::UpdatePositionAndRotation,
+                void, MirroredObstacleController* self) {
     MirroredObstacleController_UpdatePositionAndRotation(self);
 
     // Do nothing if Chroma shouldn't run
@@ -39,7 +41,7 @@ MAKE_HOOK_OFFSETLESS(MirroredObstacleController_UpdatePositionAndRotation, void,
 
 
 void MirroredObstacleControllerHook(Logger& logger) {
-    INSTALL_HOOK_OFFSETLESS(logger, MirroredObstacleController_UpdatePositionAndRotation, il2cpp_utils::FindMethodUnsafe("", "MirroredObstacleController", "UpdatePositionAndRotation", 0));
+    INSTALL_HOOK(logger, MirroredObstacleController_UpdatePositionAndRotation);
 }
 
 ChromaInstallHooks(MirroredObstacleControllerHook)

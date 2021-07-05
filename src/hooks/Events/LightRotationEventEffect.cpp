@@ -16,8 +16,9 @@ using namespace UnityEngine;
 using namespace Chroma;
 using namespace ChromaUtils;
 
-MAKE_HOOK_OFFSETLESS(
+MAKE_HOOK_MATCH(
     LightRotationEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger,
+    &LightRotationEventEffect::HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger,
     void,
     LightRotationEventEffect* self,
     BeatmapEventData* beatmapEventData
@@ -76,7 +77,7 @@ MAKE_HOOK_OFFSETLESS(
 }
 
 void LightRotationEventEffectHook(Logger& logger) {
-    INSTALL_HOOK_OFFSETLESS(logger, LightRotationEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger, il2cpp_utils::FindMethodUnsafe("", "LightRotationEventEffect", "HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger", 1));
+    INSTALL_HOOK(logger, LightRotationEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger);
 }
 
 ChromaInstallHooks(LightRotationEventEffectHook)

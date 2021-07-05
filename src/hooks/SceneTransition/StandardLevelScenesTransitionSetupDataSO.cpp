@@ -21,7 +21,9 @@ using namespace GlobalNamespace;
 using namespace UnityEngine;
 using namespace Chroma;
 
-MAKE_HOOK_OFFSETLESS(StandardLevelScenesTransitionSetupDataSO_Init,void,StandardLevelScenesTransitionSetupDataSO* self, Il2CppString* gameMode,
+MAKE_HOOK_MATCH(StandardLevelScenesTransitionSetupDataSO_Init,
+                &StandardLevelScenesTransitionSetupDataSO::Init,
+                void,StandardLevelScenesTransitionSetupDataSO* self, Il2CppString* gameMode,
                      GlobalNamespace::IDifficultyBeatmap* difficultyBeatmap,
                      GlobalNamespace::IPreviewBeatmapLevel* previewBeatmapLevel,
                      GlobalNamespace::OverrideEnvironmentSettings* overrideEnvironmentSettings,
@@ -38,7 +40,7 @@ MAKE_HOOK_OFFSETLESS(StandardLevelScenesTransitionSetupDataSO_Init,void,Standard
 }
 
 void StandardLevelScenesTransitionSetupDataSOHook(Logger& logger) {
-    INSTALL_HOOK_OFFSETLESS(logger, StandardLevelScenesTransitionSetupDataSO_Init, il2cpp_utils::FindMethodUnsafe("", "StandardLevelScenesTransitionSetupDataSO", "Init", 10));
+    INSTALL_HOOK(logger, StandardLevelScenesTransitionSetupDataSO_Init);
 }
 
 ChromaInstallHooks(StandardLevelScenesTransitionSetupDataSOHook)

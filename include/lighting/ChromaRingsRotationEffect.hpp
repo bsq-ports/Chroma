@@ -25,15 +25,6 @@ public:
         DECLARE_INSTANCE_FIELD(float, RotationPropagationSpeed);
 
         DECLARE_INSTANCE_FIELD(float, ProgressPos);
-
-        REGISTER_FUNCTION(
-            REGISTER_FIELD(RotationAngle);
-            REGISTER_FIELD(RotationStep);
-            REGISTER_FIELD(RotationFlexySpeed);
-            REGISTER_FIELD(RotationPropagationSpeed);
-            REGISTER_FIELD(ProgressPos);
-
-      )
 )
 
 DECLARE_CLASS_CODEGEN(Chroma, ChromaRingsRotationEffect, GlobalNamespace::TrackLaneRingsRotationEffect,
@@ -52,44 +43,20 @@ public:
 
         DECLARE_CTOR(ctor);
         DECLARE_SIMPLE_DTOR();
-        DECLARE_METHOD(void, CopyValues, GlobalNamespace::TrackLaneRingsRotationEffect* trackLaneRingsRotationEffect);
+        DECLARE_INSTANCE_METHOD(void, CopyValues, GlobalNamespace::TrackLaneRingsRotationEffect* trackLaneRingsRotationEffect);
 
-        DECLARE_METHOD(float, GetFirstRingRotationAngle);
-        DECLARE_METHOD(float, GetFirstRingDestinationRotationAngle);
+        DECLARE_INSTANCE_METHOD(float, GetFirstRingRotationAngle);
+        DECLARE_INSTANCE_METHOD(float, GetFirstRingDestinationRotationAngle);
 
-        DECLARE_METHOD(void, AddRingRotationEffectF, float angle, float step, float propagationSpeed, float flexySpeed);
-        DECLARE_METHOD(void, AddRingRotationEffect, float angle, float step, int propagationSpeed, float flexySpeed);
+        DECLARE_INSTANCE_METHOD(void, AddRingRotationEffectF, float angle, float step, float propagationSpeed, float flexySpeed);
+        DECLARE_INSTANCE_METHOD(void, AddRingRotationEffect, float angle, float step, int propagationSpeed, float flexySpeed);
 
-        DECLARE_METHOD(void, SetNewRingManager, GlobalNamespace::TrackLaneRingsManager* trackLaneRingsManager);
+        DECLARE_INSTANCE_METHOD(void, SetNewRingManager, GlobalNamespace::TrackLaneRingsManager* trackLaneRingsManager);
 
-        DECLARE_METHOD(void, Awake);
-        DECLARE_METHOD(void, Start);
-        DECLARE_METHOD(void, FixedUpdate);
+        DECLARE_INSTANCE_METHOD(void, Awake);
+        DECLARE_INSTANCE_METHOD(void, Start);
+        DECLARE_INSTANCE_METHOD(void, FixedUpdate);
 
-        DECLARE_METHOD(ChromaRotationEffect*, SpawnRingRotationEffect);
-        DECLARE_METHOD(void, RecycleRingRotationEffect, ChromaRotationEffect* ringRotationEffect);
-
-        REGISTER_FUNCTION(
-            getLogger().debug("Registering ChromaRingsRotationEffect!");
-            REGISTER_METHOD(ctor);
-            REGISTER_SIMPLE_DTOR();
-            REGISTER_METHOD(AddRingRotationEffect);
-            REGISTER_METHOD(AddRingRotationEffectF);
-            REGISTER_METHOD(CopyValues);
-
-            REGISTER_FIELD(_trackLaneRingsManager);
-            REGISTER_FIELD(_startupRotationAngle);
-            REGISTER_FIELD(_startupRotationStep);
-            REGISTER_FIELD(_startupRotationPropagationSpeed);
-            REGISTER_FIELD(_startupRotationFlexySpeed);
-
-            REGISTER_METHOD(Awake);
-            REGISTER_METHOD(Start);
-            REGISTER_METHOD(FixedUpdate);
-
-            REGISTER_METHOD(SpawnRingRotationEffect);
-            REGISTER_METHOD(RecycleRingRotationEffect);
-            REGISTER_METHOD(GetFirstRingRotationAngle);
-            REGISTER_METHOD(GetFirstRingDestinationRotationAngle);
-        )
+        DECLARE_INSTANCE_METHOD(ChromaRotationEffect*, SpawnRingRotationEffect);
+        DECLARE_INSTANCE_METHOD(void, RecycleRingRotationEffect, ChromaRotationEffect* ringRotationEffect);
 )

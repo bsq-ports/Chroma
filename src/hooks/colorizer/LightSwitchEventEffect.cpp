@@ -35,7 +35,9 @@ custom_types::Helpers::Coroutine WaitThenStartLight(LightSwitchEventEffect *inst
     co_return;
 }
 
-MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_Start, void, LightSwitchEventEffect* self) {
+MAKE_HOOK_MATCH(LightSwitchEventEffect_Start,
+                &LightSwitchEventEffect::Start,
+                void, LightSwitchEventEffect* self) {
     LightSwitchEventEffect_Start(self);
 
     // Do nothing if Chroma shouldn't run
@@ -49,7 +51,9 @@ MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_Start, void, LightSwitchEventEffect*
 
 }
 
-MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_OnDestroy, void, LightSwitchEventEffect* self) {
+MAKE_HOOK_MATCH(LightSwitchEventEffect_OnDestroy,
+                &LightSwitchEventEffect::OnDestroy,
+                void, LightSwitchEventEffect* self) {
     LightSwitchEventEffect_OnDestroy(self);
 
     // Do nothing if Chroma shouldn't run
@@ -61,7 +65,9 @@ MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_OnDestroy, void, LightSwitchEventEff
 
 }
 
-MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_SetColor, void, LightSwitchEventEffect* self, UnityEngine::Color color) {
+MAKE_HOOK_MATCH(LightSwitchEventEffect_SetColor,
+                &LightSwitchEventEffect::SetColor,
+                void, LightSwitchEventEffect* self, UnityEngine::Color color) {
     // Do nothing if Chroma shouldn't run
     if (!ChromaController::GetChromaLegacy() && !ChromaController::DoChromaHooks()) {
         LightSwitchEventEffect_SetColor(self, color);
@@ -123,7 +129,9 @@ MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_SetColor, void, LightSwitchEventEffe
 
 }
 
-MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger, void, LightSwitchEventEffect* self, CustomBeatmapEventData* beatmapEventData) {
+MAKE_HOOK_MATCH(LightSwitchEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger,
+                &LightSwitchEventEffect::HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger,
+                void, LightSwitchEventEffect* self, BeatmapEventData* beatmapEventData) {
     // Do nothing if Chroma shouldn't run
     if (!ChromaController::GetChromaLegacy() && !ChromaController::DoChromaHooks()) {
         LightSwitchEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);
@@ -138,10 +146,10 @@ MAKE_HOOK_OFFSETLESS(LightSwitchEventEffect_HandleBeatmapObjectCallbackControlle
 }
 
 void LightSwitchEventEffectHook(Logger& logger) {
-    INSTALL_HOOK_OFFSETLESS(logger, LightSwitchEventEffect_SetColor, il2cpp_utils::FindMethodUnsafe("", "LightSwitchEventEffect", "SetColor", 1));
-    INSTALL_HOOK_OFFSETLESS(logger, LightSwitchEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger, il2cpp_utils::FindMethodUnsafe("", "LightSwitchEventEffect", "HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger", 1));
-    INSTALL_HOOK_OFFSETLESS(logger, LightSwitchEventEffect_Start, il2cpp_utils::FindMethodUnsafe("", "LightSwitchEventEffect", "Start", 0));
-    INSTALL_HOOK_OFFSETLESS(logger, LightSwitchEventEffect_OnDestroy, il2cpp_utils::FindMethodUnsafe("", "LightSwitchEventEffect", "OnDestroy", 0));
+    INSTALL_HOOK(logger, LightSwitchEventEffect_SetColor);
+    INSTALL_HOOK(logger, LightSwitchEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger);
+    INSTALL_HOOK(logger, LightSwitchEventEffect_Start);
+    INSTALL_HOOK(logger, LightSwitchEventEffect_OnDestroy);
 }
 
 ChromaInstallHooks(LightSwitchEventEffectHook)

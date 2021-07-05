@@ -20,7 +20,9 @@ using namespace ChromaUtils;
 
 
 
-MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffectSpawner_Start, void, GlobalNamespace::TrackLaneRingsRotationEffectSpawner* self) {
+MAKE_HOOK_MATCH(TrackLaneRingsRotationEffectSpawner_Start,
+                &TrackLaneRingsRotationEffectSpawner::Start,
+                void, GlobalNamespace::TrackLaneRingsRotationEffectSpawner* self) {
     static auto contextLogger = getLogger().WithContext(Chroma::ChromaLogger::TrackLaneRings);
     if (!ChromaController::DoChromaHooks()) {
         TrackLaneRingsRotationEffectSpawner_Start(self);
@@ -112,7 +114,9 @@ void origHandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(GlobalNames
     }
 }
 
-MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger, void, GlobalNamespace::TrackLaneRingsRotationEffectSpawner* self,
+MAKE_HOOK_MATCH(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger,
+                &TrackLaneRingsRotationEffectSpawner::HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger,
+                void, GlobalNamespace::TrackLaneRingsRotationEffectSpawner* self,
                      BeatmapEventData* beatmapEventData) {
     if (!ChromaController::DoChromaHooks()) {
         TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self,
@@ -217,8 +221,8 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCall
 
 
 void TrackLaneRingsRotationEffectSpawnerHook(Logger& logger) {
-    INSTALL_HOOK_OFFSETLESS(logger, TrackLaneRingsRotationEffectSpawner_Start, il2cpp_utils::FindMethodUnsafe("", "TrackLaneRingsRotationEffectSpawner", "Start", 0));
-    INSTALL_HOOK_OFFSETLESS(logger, TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger, il2cpp_utils::FindMethodUnsafe("", "TrackLaneRingsRotationEffectSpawner", "HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger", 1));
+    INSTALL_HOOK(logger, TrackLaneRingsRotationEffectSpawner_Start);
+    INSTALL_HOOK(logger, TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger);
     //    INSTALL_HOOK_OFFSETLESS(getLogger(), SaberManager_Finalize, il2cpp_utils::FindMethodUnsafe("System", "Object", "Finalize", 0));
 }
 

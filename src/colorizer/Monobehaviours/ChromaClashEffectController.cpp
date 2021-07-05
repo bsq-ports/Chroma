@@ -4,7 +4,7 @@
 #include "UnityEngine/ParticleSystem_MainModule.hpp"
 #include "UnityEngine/ParticleSystem_MinMaxGradient.hpp"
 
-DEFINE_TYPE(Chroma::ChromaClashEffectController);
+DEFINE_TYPE(Chroma, ChromaClashEffectController);
 
 using namespace Chroma;
 using namespace GlobalNamespace;

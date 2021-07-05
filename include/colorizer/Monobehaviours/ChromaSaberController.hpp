@@ -25,19 +25,9 @@ DECLARE_CLASS_CODEGEN(Chroma, ChromaSaberController, UnityEngine::MonoBehaviour,
           DECLARE_INSTANCE_FIELD(GlobalNamespace::SaberModelController*, _saberModelController);
 
           public:
-          DECLARE_METHOD(void, Init, GlobalNamespace::Saber* saber);
-          DECLARE_METHOD(void, OnDestroy);
+          DECLARE_INSTANCE_METHOD(void, Init, GlobalNamespace::Saber* saber);
+          DECLARE_INSTANCE_METHOD(void, OnDestroy);
 
           DECLARE_SIMPLE_DTOR();
           DECLARE_DEFAULT_CTOR();
-
-          REGISTER_FUNCTION(
-              REGISTER_METHOD(Init);
-              REGISTER_METHOD(OnDestroy);
-
-              REGISTER_FIELD(_saberModelController);
-
-              REGISTER_DEFAULT_CTOR();
-              REGISTER_SIMPLE_DTOR();
-          )
 )

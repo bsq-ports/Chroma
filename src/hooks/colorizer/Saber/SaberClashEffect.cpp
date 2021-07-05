@@ -27,7 +27,7 @@ using namespace UnityEngine;
 
 
 
-MAKE_HOOK_OFFSETLESS(SaberClashEffect_Start, void, SaberClashEffect* self) {
+MAKE_HOOK_MATCH(SaberClashEffect_Start, &SaberClashEffect::Start, void, SaberClashEffect* self) {
     SaberClashEffect_Start(self);
 
     // Do nothing if Chroma shouldn't run
@@ -39,5 +39,5 @@ MAKE_HOOK_OFFSETLESS(SaberClashEffect_Start, void, SaberClashEffect* self) {
 }
 
 void SaberClashEffect() {
-    INSTALL_HOOK_OFFSETLESS(getLogger(), SaberClashEffect_Start, il2cpp_utils::FindMethodUnsafe("", "SaberClashEffect", "Start", 0));
+    INSTALL_HOOK(getLogger(), SaberClashEffect_Start);
 }

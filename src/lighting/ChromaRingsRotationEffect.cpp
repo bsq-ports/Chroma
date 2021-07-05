@@ -5,8 +5,8 @@
 
 using namespace Chroma;
 
-DEFINE_TYPE(ChromaRingsRotationEffect);
-DEFINE_TYPE(ChromaRotationEffect);
+DEFINE_TYPE(Chroma, ChromaRingsRotationEffect);
+DEFINE_TYPE(Chroma, ChromaRotationEffect);
 
 void ChromaRingsRotationEffect::ctor() {
     INVOKE_CTOR();

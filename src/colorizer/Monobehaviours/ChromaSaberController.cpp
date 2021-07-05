@@ -1,7 +1,7 @@
 #include "colorizer/Monobehaviours/ChromaSaberController.hpp"
 
 
-DEFINE_TYPE(Chroma::ChromaSaberController);
+DEFINE_TYPE(Chroma, ChromaSaberController);
 
 using namespace Chroma;
 using namespace GlobalNamespace;

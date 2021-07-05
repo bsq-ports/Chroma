@@ -38,7 +38,7 @@ void OnSaberColorChanged(int saberType, GlobalNamespace::SaberModelController* s
     main.set_startColor(effectColor);
 }
 
-MAKE_HOOK_OFFSETLESS(SaberBurnMarkSparkles_Start, void, SaberBurnMarkSparkles* self) {
+MAKE_HOOK_MATCH(SaberBurnMarkSparkles_Start, &SaberBurnMarkSparkles::Start, void, SaberBurnMarkSparkles* self) {
     SaberBurnMarkSparkles_Start(self);
 
     // Do nothing if Chroma shouldn't run
@@ -53,7 +53,7 @@ MAKE_HOOK_OFFSETLESS(SaberBurnMarkSparkles_Start, void, SaberBurnMarkSparkles* s
     subCount++;
 }
 
-MAKE_HOOK_OFFSETLESS(SaberBurnMarkSparkles_OnDestroy, void, SaberBurnMarkSparkles* self) {
+MAKE_HOOK_MATCH(SaberBurnMarkSparkles_OnDestroy, &SaberBurnMarkSparkles::OnDestroy,void, SaberBurnMarkSparkles* self) {
     SaberBurnMarkSparkles_OnDestroy(self);
     // Do nothing if Chroma shouldn't run
     if (!ChromaController::DoChromaHooks()) {
@@ -68,8 +68,8 @@ MAKE_HOOK_OFFSETLESS(SaberBurnMarkSparkles_OnDestroy, void, SaberBurnMarkSparkle
 }
 
 void SaberBurnMarkSparklesHook(Logger& logger) {
-    INSTALL_HOOK_OFFSETLESS(logger, SaberBurnMarkSparkles_Start, il2cpp_utils::FindMethodUnsafe("", "SaberBurnMarkSparkles", "Start", 0));
-    INSTALL_HOOK_OFFSETLESS(logger, SaberBurnMarkSparkles_OnDestroy, il2cpp_utils::FindMethodUnsafe("", "SaberBurnMarkSparkles", "OnDestroy", 0));
+    INSTALL_HOOK(logger, SaberBurnMarkSparkles_Start);
+    INSTALL_HOOK(logger, SaberBurnMarkSparkles_OnDestroy);
 }
 
 ChromaInstallHooks(SaberBurnMarkSparklesHook)

@@ -34,8 +34,9 @@ Coroutine WaitThenStartParticle(ParticleSystemEventEffect* instance, BeatmapEven
     instance->get_gameObject()->AddComponent<ChromaParticleEventController*>()->Init(instance, eventType);
 }
 
-MAKE_HOOK_OFFSETLESS(
+MAKE_HOOK_MATCH(
         ParticleSystemEventEffect_Start,
+        &ParticleSystemEventEffect::Start,
         void,
         ParticleSystemEventEffect* self
 ) {
@@ -58,8 +59,9 @@ MAKE_HOOK_OFFSETLESS(
     self->StartCoroutine(reinterpret_cast<enumeratorT*>(coro));
 }
 
-MAKE_HOOK_OFFSETLESS(
+MAKE_HOOK_MATCH(
         ParticleSystemEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger,
+        &ParticleSystemEventEffect::HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger,
         void,
         ParticleSystemEventEffect* self,
         BeatmapEventData* beatmapEventData
@@ -81,8 +83,8 @@ MAKE_HOOK_OFFSETLESS(
 }
 
 void ParticleSystemEventEffectHook(Logger& logger) {
-    INSTALL_HOOK_OFFSETLESS(getLogger(), ParticleSystemEventEffect_Start, il2cpp_utils::FindMethodUnsafe("", "ParticleSystemEventEffect", "Start", 0));
-    INSTALL_HOOK_OFFSETLESS(getLogger(), ParticleSystemEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger, il2cpp_utils::FindMethodUnsafe("", "ParticleSystemEventEffect", "HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger", 1));
+    INSTALL_HOOK(logger, ParticleSystemEventEffect_Start);
+    INSTALL_HOOK(logger, ParticleSystemEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger);
 }
 
 ChromaInstallHooks(ParticleSystemEventEffectHook)

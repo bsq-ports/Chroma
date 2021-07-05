@@ -13,7 +13,9 @@
 using namespace GlobalNamespace;
 using namespace Chroma;
 
-MAKE_HOOK_OFFSETLESS(ColorNoteVisuals_HandleNoteControllerDidInit, void, ColorNoteVisuals* self, NoteController* noteController) {
+MAKE_HOOK_MATCH(ColorNoteVisuals_HandleNoteControllerDidInit,
+                &ColorNoteVisuals::HandleNoteControllerDidInit,
+                void, ColorNoteVisuals* self, NoteControllerBase* noteController) {
     ColorNoteVisuals_HandleNoteControllerDidInit(self, noteController); // This calls the original method
 
     // Do nothing if Chroma shouldn't run
@@ -21,8 +23,10 @@ MAKE_HOOK_OFFSETLESS(ColorNoteVisuals_HandleNoteControllerDidInit, void, ColorNo
         return;
     }
 
-    if (ASSIGNMENT_CHECK(classof(NoteController*), noteController->klass)) {
-        auto it = ChromaObjectDataManager::ChromaObjectDatas.find(noteController->noteData);
+    auto NoteControllerCast = il2cpp_utils::try_cast<NoteController>(noteController);
+
+    if (NoteControllerCast) {
+        auto it = ChromaObjectDataManager::ChromaObjectDatas.find(NoteControllerCast.value()->noteData);
 
         if (it != ChromaObjectDataManager::ChromaObjectDatas.end()) {
             auto chromaData = std::static_pointer_cast<ChromaNoteData>(it->second);
@@ -35,7 +39,7 @@ MAKE_HOOK_OFFSETLESS(ColorNoteVisuals_HandleNoteControllerDidInit, void, ColorNo
 }
 
 void ColorNoteVisualsHook(Logger& logger) {
-    INSTALL_HOOK_OFFSETLESS(logger, ColorNoteVisuals_HandleNoteControllerDidInit, il2cpp_utils::FindMethodUnsafe("", "ColorNoteVisuals", "HandleNoteControllerDidInit", 1));
+    INSTALL_HOOK(logger, ColorNoteVisuals_HandleNoteControllerDidInit);
 }
 
 ChromaInstallHooks(ColorNoteVisualsHook)

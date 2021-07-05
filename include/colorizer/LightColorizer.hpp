@@ -1,7 +1,5 @@
 #pragma once
 
-#include "utils/EventCallback.hpp"
-
 #include "UnityEngine/MonoBehaviour.hpp"
 #include "GlobalNamespace/ILightWithId.hpp"
 #include "GlobalNamespace/LightSwitchEventEffect.hpp"

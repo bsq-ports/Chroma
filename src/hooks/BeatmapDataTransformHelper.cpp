@@ -14,9 +14,10 @@
 
 #include "System/Diagnostics/StackTrace.hpp"
 
+using namespace GlobalNamespace;
 using namespace Chroma;
 
-MAKE_HOOK_OFFSETLESS(BeatmapDataTransformHelper_CreateTransformedBeatmapData, GlobalNamespace::IReadonlyBeatmapData*,
+MAKE_HOOK_MATCH(BeatmapDataTransformHelper_CreateTransformedBeatmapData,&BeatmapDataTransformHelper::CreateTransformedBeatmapData, GlobalNamespace::IReadonlyBeatmapData*,
                      GlobalNamespace::IReadonlyBeatmapData* beatmapData, GlobalNamespace::IPreviewBeatmapLevel* beatmapLevel,
                      GlobalNamespace::GameplayModifiers* gameplayModifiers, GlobalNamespace::PracticeSettings* practiceSettings,
                      bool leftHanded, GlobalNamespace::EnvironmentEffectsFilterPreset environmentEffectsFilterPreset,
@@ -42,7 +43,7 @@ MAKE_HOOK_OFFSETLESS(BeatmapDataTransformHelper_CreateTransformedBeatmapData, Gl
 }
 
 void BeatmapDataTransformHelperHook(Logger& logger) {
-    INSTALL_HOOK_OFFSETLESS(getLogger(), BeatmapDataTransformHelper_CreateTransformedBeatmapData, il2cpp_utils::FindMethodUnsafe("", "BeatmapDataTransformHelper", "CreateTransformedBeatmapData", 7) );
+    INSTALL_HOOK(getLogger(), BeatmapDataTransformHelper_CreateTransformedBeatmapData);
 }
 
 ChromaInstallHooks(BeatmapDataTransformHelperHook)

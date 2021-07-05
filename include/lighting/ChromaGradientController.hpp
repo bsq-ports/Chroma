@@ -52,28 +52,13 @@ DECLARE_CLASS_CODEGEN(Chroma, ChromaGradientController, UnityEngine::MonoBehavio
         gradientMap Gradients;
 
         static UnityEngine::Color AddGradient(ChromaEventData::GradientObjectData gradientObject, GlobalNamespace::BeatmapEventType id, float time);
-        DECLARE_METHOD(static Chroma::ChromaGradientController*, getInstance);
-        DECLARE_METHOD(static void, clearInstance);
+        DECLARE_STATIC_METHOD(Chroma::ChromaGradientController*, getInstance);
+        DECLARE_STATIC_METHOD(void, clearInstance);
 
-        DECLARE_METHOD(static bool, IsGradientActive, GlobalNamespace::BeatmapEventType eventType);
-        DECLARE_METHOD(static void, CancelGradient, GlobalNamespace::BeatmapEventType eventType);
-        DECLARE_METHOD(void, Update);
+        DECLARE_STATIC_METHOD(bool, IsGradientActive, GlobalNamespace::BeatmapEventType eventType);
+        DECLARE_STATIC_METHOD(void, CancelGradient, GlobalNamespace::BeatmapEventType eventType);
+        DECLARE_INSTANCE_METHOD(void, Update);
         DECLARE_CTOR(ctor);
-        DECLARE_METHOD(void, OnDestroy);
+        DECLARE_INSTANCE_METHOD(void, OnDestroy);
         DECLARE_SIMPLE_DTOR();
-
-
-        REGISTER_FUNCTION(
-            getLogger().debug("Registering ChromaGradientController!");
-            REGISTER_METHOD(ctor);
-            REGISTER_SIMPLE_DTOR();
-            REGISTER_METHOD(getInstance);
-            REGISTER_METHOD(IsGradientActive);
-            REGISTER_METHOD(CancelGradient);
-            REGISTER_METHOD(OnDestroy);
-            //                              REGISTER_METHOD(AddGradient);
-            REGISTER_METHOD(Update);
-
-
-        )
 )

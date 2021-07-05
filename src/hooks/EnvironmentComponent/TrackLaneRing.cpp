@@ -12,8 +12,9 @@
 
 using namespace Chroma;
 using namespace ChromaUtils;
+using namespace GlobalNamespace;
 
-MAKE_HOOK_OFFSETLESS(TrackLaneRing_Init, void, GlobalNamespace::TrackLaneRing* self, UnityEngine::Vector3 position, UnityEngine::Vector3 positionOffset) {
+MAKE_HOOK_MATCH(TrackLaneRing_Init, &TrackLaneRing::Init, void, GlobalNamespace::TrackLaneRing* self, UnityEngine::Vector3 position, UnityEngine::Vector3 positionOffset) {
     TrackLaneRing_Init(self, position, positionOffset);
     // Do nothing if Chroma shouldn't run
     if (!ChromaController::DoChromaHooks()) {
@@ -23,7 +24,7 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRing_Init, void, GlobalNamespace::TrackLaneRing* s
     self->posZ = position.z;
 }
 
-MAKE_HOOK_OFFSETLESS(TrackLaneRing_FixedUpdateRing, void, GlobalNamespace::TrackLaneRing* self, float fixedDeltaTime) {
+MAKE_HOOK_MATCH(TrackLaneRing_FixedUpdateRing, &TrackLaneRing::FixedUpdateRing, void, GlobalNamespace::TrackLaneRing* self, float fixedDeltaTime) {
     // Do nothing if Chroma shouldn't run
     if (!ChromaController::DoChromaHooks()) {
         TrackLaneRing_FixedUpdateRing(self, fixedDeltaTime);
@@ -36,7 +37,7 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRing_FixedUpdateRing, void, GlobalNamespace::Track
     self->posZ = Lerp(self->posZ, self->destPosZ, fixedDeltaTime * self->moveSpeed);
 }
 
-MAKE_HOOK_OFFSETLESS(TrackLaneRing_LateUpdateRing, void, GlobalNamespace::TrackLaneRing* self, float interpolationFactor) {
+MAKE_HOOK_MATCH(TrackLaneRing_LateUpdateRing, &TrackLaneRing::LateUpdateRing, void, GlobalNamespace::TrackLaneRing* self, float interpolationFactor) {
     // Do nothing if Chroma shouldn't run
     if (!ChromaController::DoChromaHooks()) {
         TrackLaneRing_LateUpdateRing(self, interpolationFactor);
@@ -69,9 +70,9 @@ MAKE_HOOK_OFFSETLESS(TrackLaneRing_LateUpdateRing, void, GlobalNamespace::TrackL
 }
 
 void TrackLaneRingHook(Logger& logger) {
-    INSTALL_HOOK_OFFSETLESS(logger, TrackLaneRing_Init, il2cpp_utils::FindMethodUnsafe("", "TrackLaneRing", "Init", 2));
-    INSTALL_HOOK_OFFSETLESS(logger, TrackLaneRing_FixedUpdateRing, il2cpp_utils::FindMethodUnsafe("", "TrackLaneRing", "FixedUpdateRing", 1));
-    INSTALL_HOOK_OFFSETLESS(logger, TrackLaneRing_LateUpdateRing, il2cpp_utils::FindMethodUnsafe("", "TrackLaneRing", "LateUpdateRing", 1));
+    INSTALL_HOOK(logger, TrackLaneRing_Init);
+    INSTALL_HOOK(logger, TrackLaneRing_FixedUpdateRing);
+    INSTALL_HOOK(logger, TrackLaneRing_LateUpdateRing);
     //    INSTALL_HOOK_OFFSETLESS(getLogger(), SaberManager_Finalize, il2cpp_utils::FindMethodUnsafe("System", "Object", "Finalize", 0));
 }
 

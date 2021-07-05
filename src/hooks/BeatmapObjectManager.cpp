@@ -12,7 +12,7 @@ using namespace System::Collections;
 using namespace custom_types::Helpers;
 using namespace GlobalNamespace;
 
-MAKE_HOOK_OFFSETLESS(BeatmapObjectManager_NoteCutEvent, void, BeatmapObjectManager *self, NoteController *noteController,
+MAKE_HOOK_MATCH(BeatmapObjectManager_NoteCutEvent, &BeatmapObjectManager::HandleNoteControllerNoteWasCut, void, BeatmapObjectManager *self, NoteController *noteController,
                      NoteCutInfo& noteCutInfo) {
     if (!ChromaController::DoChromaHooks()) {
         BeatmapObjectManager_NoteCutEvent(self, noteController, noteCutInfo);
@@ -23,8 +23,7 @@ MAKE_HOOK_OFFSETLESS(BeatmapObjectManager_NoteCutEvent, void, BeatmapObjectManag
 }
 
 void BeatmapObjectManagerHook(Logger& logger) {
-    INSTALL_HOOK_OFFSETLESS(logger, BeatmapObjectManager_NoteCutEvent,
-                            il2cpp_utils::FindMethodUnsafe("", "BeatmapObjectManager", "HandleNoteControllerNoteWasCut", 2));
+    INSTALL_HOOK(logger, BeatmapObjectManager_NoteCutEvent);
 }
 
 ChromaInstallHooks(BeatmapObjectManagerHook)

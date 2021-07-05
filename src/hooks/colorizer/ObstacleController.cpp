@@ -15,8 +15,9 @@ using namespace GlobalNamespace;
 using namespace Chroma;
 using namespace ChromaUtils;
 
-MAKE_HOOK_OFFSETLESS(
+MAKE_HOOK_MATCH(
     ObstacleController_Init,
+    &ObstacleController::Init,
     void,
     ObstacleController* self,
     ObstacleData* obstacleData,
@@ -50,7 +51,7 @@ MAKE_HOOK_OFFSETLESS(
 // TODO: Heck Update
 
 void ObstacleControllerHook(Logger& logger) {
-    INSTALL_HOOK_OFFSETLESS(getLogger(), ObstacleController_Init, il2cpp_utils::FindMethodUnsafe("", "ObstacleController", "Init", 9));
+    INSTALL_HOOK(getLogger(), ObstacleController_Init);
 }
 
 ChromaInstallHooks(ObstacleControllerHook)
