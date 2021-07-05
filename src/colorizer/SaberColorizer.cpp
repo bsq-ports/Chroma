@@ -187,17 +187,9 @@ SaberColorizer::SaberColorizer(GlobalNamespace::Saber *saber) {
 
 }
 
-SaberColorizer::~SaberColorizer() {
-    auto it = SaberColorizersSet.find(_saberType.value);
-
-    if (it != SaberColorizersSet.end())
-        it->second.erase(_saberModelController);
-}
-
 std::shared_ptr<SaberColorizer> SaberColorizer::New(GlobalNamespace::Saber *saber) {
     std::shared_ptr<SaberColorizer> saberColorizer(new SaberColorizer(saber));
 
-    SaberColorizersSet[saberColorizer->_saberType.value].emplace(saberColorizer->_saberModelController);
     Colorizers.emplace(saberColorizer->_saberModelController, saberColorizer);
 
     return saberColorizer;
@@ -208,9 +200,10 @@ std::optional<UnityEngine::Color> SaberColorizer::GlobalColorGetter() {
 }
 
 void SaberColorizer::GlobalColorize(GlobalNamespace::SaberType saberType, std::optional<UnityEngine::Color> color) {
-    GlobalColor[(int)saberType] = color;
-    for (auto& c : GetColorizerList(saberType))
+    GlobalColor[(int) saberType] = color;
+    for (auto &c : GetColorizerList(saberType)) {
         c->Refresh();
+    }
 }
 
 void SaberColorizer::Reset() {
@@ -290,7 +283,6 @@ void SaberColorizer::Refresh() {
         ColorColorable(color);
     }
 
-    getLogger().debug("Coloring %p", _saberModelController);
     SaberColorChanged.invoke(_saberType, _saberModelController, color);
 }
 
@@ -304,16 +296,12 @@ void SaberColorizer::RemoveColorizer(GlobalNamespace::SaberModelController *sabe
 }
 
 std::unordered_set<SaberColorizer*> SaberColorizer::GetColorizerList(GlobalNamespace::SaberType saberType) {
-    auto it = SaberColorizersSet.find(saberType.value);
-
-    std::unordered_set<SaberModelController *> sabers = it->second;
-
     std::unordered_set<SaberColorizer*> colorizers;
 
-    for (auto& saber : sabers) {
-        auto colorizer = Colorizers[saber].get();
-        if (!colorizer) continue;
-        colorizers.emplace(colorizer);
+    for (auto& saber : Colorizers) {
+        if (saber.second->_saberType.value == saberType.value) {
+            colorizers.emplace(saber.second.get());
+        }
     }
 
     return colorizers;

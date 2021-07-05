@@ -42,17 +42,12 @@ namespace Chroma {
 
         void ColorColorable(UnityEngine::Color color);
 
-        // constructor will add to this, destructor will remove
-        // linked list of Colorizers
-        inline static std::unordered_map<int, std::unordered_set<GlobalNamespace::SaberModelController*>> SaberColorizersSet{{0, {}}, {1, {}}};
-
     protected:
         std::optional<UnityEngine::Color> GlobalColorGetter() override;
 
         void Refresh() override;
 
     public:
-        ~SaberColorizer();
         static std::shared_ptr<SaberColorizer> New(GlobalNamespace::Saber* saber);
 
         inline static UnorderedEventCallback<int, GlobalNamespace::SaberModelController*, UnityEngine::Color> SaberColorChanged;
