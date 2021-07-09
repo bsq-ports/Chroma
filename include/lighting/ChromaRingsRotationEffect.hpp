@@ -27,8 +27,6 @@ public:
         DECLARE_INSTANCE_FIELD(float, ProgressPos);
 )
 
-#define GET_FIND_METHOD(mPtr) il2cpp_utils::il2cpp_type_check::MetadataGetter<mPtr>::get()
-
 DECLARE_CLASS_CODEGEN(Chroma, ChromaRingsRotationEffect, GlobalNamespace::TrackLaneRingsRotationEffect,
 public:
         std::vector<ChromaRotationEffect*> _activeRingRotationEffects;
@@ -51,7 +49,7 @@ public:
         DECLARE_INSTANCE_METHOD(float, GetFirstRingDestinationRotationAngle);
 
         DECLARE_INSTANCE_METHOD(void, AddRingRotationEffectF, float angle, float step, float propagationSpeed, float flexySpeed);
-        DECLARE_OVERRIDE_METHOD(void, AddRingRotationEffect, GET_FIND_METHOD(&GlobalNamespace::TrackLaneRingsRotationEffect::AddRingRotationEffect), float angle, float step, int propagationSpeed, float flexySpeed);
+        DECLARE_INSTANCE_METHOD(void, AddRingRotationEffect, float angle, float step, int propagationSpeed, float flexySpeed);
 
         DECLARE_INSTANCE_METHOD(void, SetNewRingManager, GlobalNamespace::TrackLaneRingsManager* trackLaneRingsManager);
 
