@@ -1,5 +1,7 @@
 #include "Chroma.hpp"
 #include "ChromaController.hpp"
+#include "hooks/MultiplayerConnectedPlayerInstaller.hpp"
+
 
 #include "GlobalNamespace/BeatmapDataTransformHelper.hpp"
 #include "GlobalNamespace/IReadonlyBeatmapData.hpp"
@@ -26,7 +28,7 @@ MAKE_HOOK_MATCH(BeatmapDataTransformHelper_CreateTransformedBeatmapData,&Beatmap
     auto result = BeatmapDataTransformHelper_CreateTransformedBeatmapData(beatmapData, beatmapLevel, gameplayModifiers, practiceSettings, leftHanded, environmentEffectsFilterPreset, environmentIntensityReductionOptions);
 
     // Essentially, here we cancel the original method. DO NOT call it IF it's a Chroma map
-    if (!ChromaController::DoChromaHooks()) {
+    if (!ChromaController::DoChromaHooks() || MultiplayerConnectedPlayerInstallerHookHolder::MultiplayerInvoked) {
         return result;
     }
 
