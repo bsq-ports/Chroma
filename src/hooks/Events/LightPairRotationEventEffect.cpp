@@ -109,8 +109,7 @@ MAKE_HOOK_MATCH(
             customRotationData->transform->set_localRotation(
                     quaternionMultiply(customRotationData->startRotation,
                                        UnityEngine::Quaternion::Euler(
-                                               vectorMultiply(self->rotationVector,
-                                                              customRotationData->startRotationAngle)
+                                               vectorMultiply(self->rotationVector, customRotationData->startRotationAngle)
                                        ))
             );
         }

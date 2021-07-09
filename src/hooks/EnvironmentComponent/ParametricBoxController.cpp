@@ -122,7 +122,7 @@ MAKE_HOOK_MATCH(ParametricBoxController_Refresh,&ParametricBoxController::Refres
 }
 
 void ParametricBoxControllerHook(Logger& logger) {
-    INSTALL_HOOK(logger, ParametricBoxController_Refresh);
+    INSTALL_HOOK_ORIG(logger, ParametricBoxController_Refresh);
 }
 
 ChromaInstallHooks(ParametricBoxControllerHook)

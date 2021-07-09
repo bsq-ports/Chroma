@@ -93,7 +93,7 @@ MAKE_HOOK_MATCH(ObstacleSaberSparkleEffectManager_Update,
 }
 
 void ObstacleSaberSparkleEffectManagerHook(Logger& logger) {
-    INSTALL_HOOK(getLogger(), ObstacleSaberSparkleEffectManager_Update);
+    INSTALL_HOOK_ORIG(getLogger(), ObstacleSaberSparkleEffectManager_Update);
 }
 
 ChromaInstallHooks(ObstacleSaberSparkleEffectManagerHook)
