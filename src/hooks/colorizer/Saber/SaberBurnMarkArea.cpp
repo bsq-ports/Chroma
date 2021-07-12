@@ -30,8 +30,8 @@ void OnSaberColorChanged_SaberBurnMarkArea(int saberType, GlobalNamespace::Saber
     float s;
     float _;
 
-    Color::RGBToHSV(color, h, s, _);
-    Color effectColor = Color::HSVToRGB(h, s, 1);
+    ChromaUtils::ColorRGBToHSV(color, h, s, _);
+    Color effectColor = ChromaUtils::ColorHSVToRGB(h, s, 1);
     int intType = saberType;
     _lineRenderers[intType]->set_startColor(effectColor);
     _lineRenderers[intType]->set_endColor(effectColor);

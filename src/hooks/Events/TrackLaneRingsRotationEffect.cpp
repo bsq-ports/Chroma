@@ -1,6 +1,7 @@
 #include "ChromaController.hpp"
 #include "main.hpp"
 #include "Chroma.hpp"
+#include "lighting/ChromaRingsRotationEffect.hpp"
 #include "GlobalNamespace/TrackLaneRingsRotationEffect.hpp"
 
 using namespace Chroma;
@@ -14,9 +15,15 @@ MAKE_HOOK_MATCH(TrackLaneRingsRotationEffect_AddRingRotationEffect, &TrackLaneRi
     }
 
     static auto TrackLaneRingsRotationEffectKlass = classof(GlobalNamespace::TrackLaneRingsRotationEffect*);
+    static auto ChromaTrackLaneRingsRotationEffectKlass = classof(Chroma::ChromaRingsRotationEffect*);
 
     if (self->klass == TrackLaneRingsRotationEffectKlass)
         return;
+
+    if (self->klass == ChromaTrackLaneRingsRotationEffectKlass) {
+        reinterpret_cast<Chroma::ChromaRingsRotationEffect*>(self)->AddRingRotationEffectF(angle, step, (float) propagationSpeed, flexySpeed);
+        return;
+    }
 
     TrackLaneRingsRotationEffect_AddRingRotationEffect(self, angle, step, propagationSpeed, flexySpeed);
 }

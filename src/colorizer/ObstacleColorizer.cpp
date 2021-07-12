@@ -38,8 +38,9 @@ ObstacleColorizer::ObstacleColorizer(GlobalNamespace::ObstacleControllerBase *ob
     }
     else
     {
+        static auto white = Color::get_white();
         // Fallback
-        OriginalColor = Color::get_white();
+        OriginalColor = white;
     }
 }
 
@@ -79,13 +80,13 @@ void ObstacleColorizer::Refresh() {
         _obstacleFakeGlow->Refresh();
     }
 
-    Color value = color * _addColorMultiplier;
+    Color value = ChromaUtils::ColorMultiply(color, _addColorMultiplier);
     value.a = 0.0f;
     for (auto& materialPropertyBlockController : _materialPropertyBlockControllers)
     {
         static auto white = Color::get_white();
         materialPropertyBlockController->materialPropertyBlock->SetColor(_addColorID(), value);
-        materialPropertyBlockController->materialPropertyBlock->SetColor(_tintColorID(), Color::Lerp(color, white, _obstacleCoreLerpToWhiteFactor));
+        materialPropertyBlockController->materialPropertyBlock->SetColor(_tintColorID(), ChromaUtils::ColorLerp(color, white, _obstacleCoreLerpToWhiteFactor));
         materialPropertyBlockController->ApplyChanges();
     }
 }

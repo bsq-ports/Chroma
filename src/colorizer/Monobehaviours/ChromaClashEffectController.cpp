@@ -1,3 +1,4 @@
+#include "utils/ChromaUtils.hpp"
 #include "colorizer/Monobehaviours/ChromaClashEffectController.hpp"
 #include "colorizer/SaberColorizer.hpp"
 
@@ -26,12 +27,12 @@ void ChromaClashEffectController::OnSaberColorChanged(int saberType, GlobalNames
     float s;
     float _;
 
-    Color::RGBToHSV(color, h, s, _);
-    Color effectColor = Color::HSVToRGB(h, s, 1);
+    ChromaUtils::ColorRGBToHSV(color, h, s, _);
+    Color effectColor = ChromaUtils::ColorHSVToRGB(h, s, 1);
 
     _colors[(int)saberType] = effectColor;
 
-    Color average = Color::Lerp(_colors[0], _colors[1], 0.5f);
+    Color average = ChromaUtils::ColorLerp(_colors[0], _colors[1], 0.5f);
     auto sparkleMain = _sparkleParticleSystem->get_main();
     sparkleMain.set_startColor(ParticleSystem::MinMaxGradient(average));
     auto glowMain = _glowParticleSystem->get_main();

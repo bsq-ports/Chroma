@@ -92,7 +92,7 @@ void ParticleColorizer::OnLightColorChanged(GlobalNamespace::BeatmapEventType ev
                 afterHighlightColor = (PreviousValue == 2) ? _multipliedColorSOs[0]->get_color() : _multipliedColorSOs[1]->get_color();
                 particleSystemEventEffect->afterHighlightColor = afterHighlightColor;
 
-                particleSystemEventEffect->particleColor = Color::Lerp(afterHighlightColor, color, particleSystemEventEffect->highlightValue);
+                particleSystemEventEffect->particleColor = ChromaUtils::ColorLerp(afterHighlightColor, color, particleSystemEventEffect->highlightValue);
                 particleSystemEventEffect->RefreshParticles();
                 break;
 
@@ -106,7 +106,7 @@ void ParticleColorizer::OnLightColorChanged(GlobalNamespace::BeatmapEventType ev
                 afterHighlightColor = particleSystemEventEffect->offColor;
                 particleSystemEventEffect->afterHighlightColor = afterHighlightColor;
 
-                particleSystemEventEffect->particleColor = Color::Lerp(afterHighlightColor, color, particleSystemEventEffect->highlightValue);
+                particleSystemEventEffect->particleColor = ChromaUtils::ColorLerp(afterHighlightColor, color, particleSystemEventEffect->highlightValue);
                 particleSystemEventEffect->RefreshParticles();
                 break;
         }
