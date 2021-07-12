@@ -1,3 +1,4 @@
+#include "hooks/LightSwitchEventEffect.hpp"
 #include "lighting/ChromaGradientController.hpp"
 
 #include "GlobalNamespace/BeatmapObjectSpawnController.hpp"
@@ -57,7 +58,7 @@ void ChromaGradientController::CancelGradient(GlobalNamespace::BeatmapEventType 
 }
 
 UnityEngine::Color ChromaGradientController::AddGradient(ChromaEventData::GradientObjectData gradientObject,
-                                                         GlobalNamespace::BeatmapEventType id, float time) {
+                                                         GlobalNamespace::BeatmapEventType id, float time, std::optional<std::vector<int>> lightIds) {
     CancelGradient(id);
 
     float duration = gradientObject.Duration;
@@ -65,7 +66,7 @@ UnityEngine::Color ChromaGradientController::AddGradient(ChromaEventData::Gradie
     Color endcolor = gradientObject.EndColor;
     Functions easing = gradientObject.Easing;
 
-    auto gradientEvent = ChromaGradientEvent(initcolor, endcolor, time, duration, id, easing);
+    auto gradientEvent = ChromaGradientEvent(initcolor, endcolor, time, duration, id, lightIds, easing);
     auto it = getInstance()->Gradients.emplace(id.value, gradientEvent);
 
     bool erased = false;
@@ -89,8 +90,16 @@ void Chroma::ChromaGradientController::Update() {
             bool modified = false;
             // Accessing KEY from element pointed by it.
             BeatmapEventType eventType = it->first;
+            auto lightIds = it->second._lightIds;
+
             // Accessing VALUE from element pointed by it.
             UnityEngine::Color color = it->second.Interpolate(modified);
+
+            if (lightIds) {
+                for (auto& light : *lightIds) {
+                    LightSwitchEventEffectHolder::LightIDOverride->push_back(light);
+                }
+            }
 
             LightColorizer::ColorizeLight(eventType, true, {color, color, color, color});
 
@@ -104,13 +113,14 @@ void Chroma::ChromaGradientController::Update() {
 
 Chroma::ChromaGradientEvent::ChromaGradientEvent(UnityEngine::Color initcolor, UnityEngine::Color endcolor, float start,
                                                  float duration, GlobalNamespace::BeatmapEventType eventType,
-                                                 ChromaUtils::Functions easing) {
+                                                 std::optional<std::vector<int>> lights, ChromaUtils::Functions easing) {
     _initcolor = initcolor;
     _endcolor = endcolor;
     _start = start;
     _duration = 60.0f * duration / ChromaController::BeatmapObjectSpawnController->get_currentBpm();
     _event = eventType;
     _easing = easing;
+    _lightIds = lights;
 }
 
 UnityEngine::Color lerpUnclamped(UnityEngine::Color a, UnityEngine::Color b, float t) {

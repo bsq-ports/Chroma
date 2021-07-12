@@ -33,8 +33,9 @@ namespace Chroma {
         float _duration;
         GlobalNamespace::BeatmapEventType _event;
         ChromaUtils::Functions _easing;
+        std::optional<std::vector<int>> _lightIds;
 
-        ChromaGradientEvent(UnityEngine::Color initcolor, UnityEngine::Color endcolor, float start, float duration, GlobalNamespace::BeatmapEventType eventType, ChromaUtils::Functions easing = ChromaUtils::Functions::easeLinear);
+        ChromaGradientEvent(UnityEngine::Color initcolor, UnityEngine::Color endcolor, float start, float duration, GlobalNamespace::BeatmapEventType eventType, std::optional<std::vector<int>> lightIds, ChromaUtils::Functions easing = ChromaUtils::Functions::easeLinear);
 
         [[nodiscard]] UnityEngine::Color Interpolate(bool &modified) const;
     };
@@ -51,7 +52,7 @@ DECLARE_CLASS_CODEGEN(Chroma, ChromaGradientController, UnityEngine::MonoBehavio
         // internal
         gradientMap Gradients;
 
-        static UnityEngine::Color AddGradient(ChromaEventData::GradientObjectData gradientObject, GlobalNamespace::BeatmapEventType id, float time);
+        static UnityEngine::Color AddGradient(ChromaEventData::GradientObjectData gradientObject, GlobalNamespace::BeatmapEventType id, float time, std::optional<std::vector<int>> lightIds);
         DECLARE_STATIC_METHOD(Chroma::ChromaGradientController*, getInstance);
         DECLARE_STATIC_METHOD(void, clearInstance);
 
