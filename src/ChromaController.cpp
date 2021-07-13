@@ -48,28 +48,35 @@ bool ChromaController::TutorialMode = false;
 custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnController *beatmapObjectSpawnController) {
     co_yield reinterpret_cast<enumeratorT *>(CRASH_UNLESS(il2cpp_utils::New<UnityEngine::WaitForEndOfFrame *>()));
 
-
-    Chroma::ChromaController::BeatmapObjectSpawnController = beatmapObjectSpawnController;
-    BeatmapObjectCallbackController *coreSetup = il2cpp_utils::cast<BeatmapObjectCallbackController>(
-            beatmapObjectSpawnController->beatmapObjectCallbackController);
-    Chroma::ChromaController::IAudioTimeSource = coreSetup->audioTimeSource;
-
-    IReadonlyBeatmapData *beatmapData = coreSetup->beatmapData;
-
-    if (DoChromaHooks() && getChromaConfig().environmentEnhancementsEnabled.GetValue()) {
-        auto customBeatmap = il2cpp_utils::cast<CustomJSONData::CustomBeatmapData>(beatmapData);
-        EnvironmentEnhancementManager::Init(customBeatmap, beatmapObjectSpawnController->get_noteLinesDistance());
-    }
-
-    auto list = il2cpp_utils::cast<Generic::List_1<BeatmapEventData *>>(beatmapData->get_beatmapEventsData());
-    std::vector<GlobalNamespace::BeatmapEventData *> eventData;
-    list->items->copy_to(eventData);
-
     try {
-        // please let me kill legacy
-        LegacyLightHelper::Activate(eventData);
-    } catch (const Il2CppException &e) {
-        getLogger().error("Unable to run legacy due to exception?");
+        Chroma::ChromaController::BeatmapObjectSpawnController = beatmapObjectSpawnController;
+        BeatmapObjectCallbackController *coreSetup = il2cpp_utils::cast<BeatmapObjectCallbackController>(
+                beatmapObjectSpawnController->beatmapObjectCallbackController);
+        Chroma::ChromaController::IAudioTimeSource = coreSetup->audioTimeSource;
+
+        IReadonlyBeatmapData *beatmapData = coreSetup->beatmapData;
+
+
+        if (DoChromaHooks() && getChromaConfig().environmentEnhancementsEnabled.GetValue()) {
+            auto customBeatmap = il2cpp_utils::cast<CustomJSONData::CustomBeatmapData>(beatmapData);
+            EnvironmentEnhancementManager::Init(customBeatmap, beatmapObjectSpawnController->get_noteLinesDistance());
+        }
+
+        auto list = il2cpp_utils::cast<Generic::List_1<BeatmapEventData *>>(beatmapData->get_beatmapEventsData());
+        std::vector<GlobalNamespace::BeatmapEventData *> eventData;
+        list->items->copy_to(eventData);
+
+
+        try {
+            // please let me kill legacy
+            LegacyLightHelper::Activate(eventData);
+        } catch (const Il2CppException &e) {
+            getLogger().error("Unable to run legacy due to exception?");
+        }
+
+    } catch (std::exception &e) {
+        getLogger().debug("Chroma controller failed: %s!", e.what());
+        throw e;
     }
 
     co_return; // Reached end of coroutine

@@ -22,41 +22,55 @@ std::vector<GameObjectInfo>
 Chroma::EnvironmentEnhancementManager::LookupId(const std::string& id, Chroma::LookupMethod lookupMethod) {
     std::function < bool(GameObjectInfo) > predicate;
 
-
+    std::string lookupMethodStr = "";
 //    Func<GameObjectInfo, bool> predicate;
-    switch (lookupMethod) {
-        case LookupMethod::Regex: {
 
-            predicate = [=](const GameObjectInfo &n) {
-                std::regex regex(id);
+    try {
+        switch (lookupMethod) {
+            case LookupMethod::Regex: {
+                lookupMethodStr = "Regex";
+                std::regex regex(id, std::regex_constants::ECMAScript | std::regex_constants::optimize);
+                predicate = [=](const GameObjectInfo &n) {
+                    return std::regex_search(n.FullID, regex);
+                };
+                break;
+            }
 
-                return std::regex_match(n.FullID, regex);
-            };
-            break;
+            case LookupMethod::Exact: {
+                lookupMethodStr = "Exact";
+                predicate = [=](const GameObjectInfo &n) { return n.FullID == id; };
+                break;
+            }
+
+            case LookupMethod::Contains: {
+                lookupMethodStr = "Contains";
+                predicate = [=](const GameObjectInfo &n) {
+                    return n.FullID.find(id) != std::string::npos;
+                };
+                break;
+            }
+
+            default: {
+                return {};
+            }
         }
-
-        case LookupMethod::Exact: {
-            predicate = [=](const GameObjectInfo &n) { return n.FullID == id;};
-            break;
-        }
-
-        case LookupMethod::Contains: {
-            predicate = [=](const GameObjectInfo &n) {
-                return n.FullID.find(id) != std::string::npos; };
-            break;
-        }
-
-        default: {
-            return {};
-        }
+    } catch (std::exception &e) {
+        getLogger().error("Failed to create match for lookup (%s) with id (%s)", lookupMethodStr.c_str(), id.c_str());
+        getLogger().error("Error: %s", e.what());
     }
 
     std::vector<GameObjectInfo> ret;
     ret.reserve(_gameObjectInfos.size());
 
     for (const auto &o : _gameObjectInfos) {
-        if(predicate(o))
-            ret.push_back(o);
+        // We have a try/catch here so the loop doesn't die
+        try {
+            if (predicate(o))
+                ret.push_back(o);
+        } catch (std::exception &e) {
+            getLogger().error("Failed to match (%s) for lookup (%s) with id (%s)", o.FullID.c_str(), lookupMethodStr.c_str(), id.c_str());
+            getLogger().error("Error: %s", e.what());
+        }
     }
 
     ret.shrink_to_fit();
