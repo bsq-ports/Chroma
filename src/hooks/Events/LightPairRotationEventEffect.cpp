@@ -99,7 +99,9 @@ MAKE_HOOK_MATCH(
         }
     }
 
-
+    static auto* euler = &::il2cpp_utils::GetClassFromName("UnityEngine", "Vector3")->byval_arg;
+    static const MethodInfo *QuaternionEuler = il2cpp_utils::FindMethod(classof(UnityEngine::Quaternion), "Euler", std::vector<Il2CppClass*>(), ::std::vector<const Il2CppType*>{euler});
+    static auto QuaternionEulerMPtr = reinterpret_cast<UnityEngine::Quaternion(*)(UnityEngine::Vector3)>(QuaternionEuler->methodPointer);
 
     //getLogger().debug("The time is: %d", beatmapEventData->time);
     if (beatmapEventData->value == 0) {
@@ -108,7 +110,7 @@ MAKE_HOOK_MATCH(
             customRotationData->rotationAngle = customRotationData->startRotationAngle;
             customRotationData->transform->set_localRotation(
                     quaternionMultiply(customRotationData->startRotation,
-                                       UnityEngine::Quaternion::Euler(
+                                       QuaternionEulerMPtr(
                                                vectorMultiply(self->rotationVector, customRotationData->startRotationAngle)
                                        ))
             );
@@ -122,7 +124,7 @@ MAKE_HOOK_MATCH(
             customRotationData->rotationAngle = rotationAngle;
             customRotationData->transform->set_localRotation(
                     quaternionMultiply(customRotationData->startRotation,
-                                       UnityEngine::Quaternion::Euler(
+                                       QuaternionEulerMPtr(
                                                vectorMultiply(self->rotationVector, rotationAngle)
                                        )
                     ));
