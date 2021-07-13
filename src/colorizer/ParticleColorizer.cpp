@@ -80,7 +80,7 @@ void ParticleColorizer::OnLightColorChanged(GlobalNamespace::BeatmapEventType ev
             case 5:
                 color = (PreviousValue == 1) ? _multipliedColorSOs[0]->get_color() : _multipliedColorSOs[1]->get_color();
                 particleSystemEventEffect->particleColor = color;
-                particleSystemEventEffect->offColor = ColorExtensions::ColorWithAlpha(color, 0);
+                particleSystemEventEffect->offColor = ChromaUtils::ColorAlpha(color, 0);
                 particleSystemEventEffect->RefreshParticles();
                 break;
 
@@ -88,7 +88,7 @@ void ParticleColorizer::OnLightColorChanged(GlobalNamespace::BeatmapEventType ev
             case 6:
                 color = (PreviousValue == 2) ? _multipliedHighlightColorSOs[0]->get_color() : _multipliedHighlightColorSOs[1]->get_color();
                 particleSystemEventEffect->highlightColor = color;
-                particleSystemEventEffect->offColor = ColorExtensions::ColorWithAlpha(color, 0);
+                particleSystemEventEffect->offColor = ChromaUtils::ColorAlpha(color, 0);
                 afterHighlightColor = (PreviousValue == 2) ? _multipliedColorSOs[0]->get_color() : _multipliedColorSOs[1]->get_color();
                 particleSystemEventEffect->afterHighlightColor = afterHighlightColor;
 
@@ -101,7 +101,7 @@ void ParticleColorizer::OnLightColorChanged(GlobalNamespace::BeatmapEventType ev
             case -1:
                 color = (PreviousValue == 3) ? _multipliedHighlightColorSOs[0]->get_color() : _multipliedHighlightColorSOs[1]->get_color();
                 particleSystemEventEffect->highlightColor = color;
-                particleSystemEventEffect->offColor = ColorExtensions::ColorWithAlpha(color, 0);
+                particleSystemEventEffect->offColor = ChromaUtils::ColorAlpha(color, 0);
                 particleSystemEventEffect->particleColor = color;
                 afterHighlightColor = particleSystemEventEffect->offColor;
                 particleSystemEventEffect->afterHighlightColor = afterHighlightColor;

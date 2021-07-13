@@ -13,6 +13,8 @@
 #include <string>
 #include <random>
 
+#define GET_FIND_METHOD(mPtr) il2cpp_utils::il2cpp_type_check::MetadataGetter<mPtr>::get()
+
 namespace ChromaUtils {
     class ChromaUtilities {
     public:
@@ -187,6 +189,11 @@ namespace ChromaUtils {
 
     inline static UnityEngine::Color ColorLinear(UnityEngine::Color a) {
         return UnityEngine::Color(GammaToLinearSpace(a.r), GammaToLinearSpace(a.g), GammaToLinearSpace(a.b), a.a);
+    }
+
+    inline static UnityEngine::Color ColorAlpha(UnityEngine::Color a, float alpha) {
+        a.a = alpha;
+        return a;
     }
 
     static void RGBToHSVHelper(float offset, float dominantcolor, float colorone, float colortwo, float& H, float& S, float& V)
