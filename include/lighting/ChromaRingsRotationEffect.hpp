@@ -41,7 +41,7 @@ public:
         DECLARE_INSTANCE_FIELD_DEFAULT(int, _startupRotationPropagationSpeed, 1);
         DECLARE_INSTANCE_FIELD_DEFAULT(float, _startupRotationFlexySpeed, 0.5f);
 
-        DECLARE_CTOR(ctor);
+        DECLARE_DEFAULT_CTOR();
         DECLARE_SIMPLE_DTOR();
         DECLARE_INSTANCE_METHOD(void, CopyValues, GlobalNamespace::TrackLaneRingsRotationEffect* trackLaneRingsRotationEffect);
 

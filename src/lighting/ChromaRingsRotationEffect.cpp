@@ -8,10 +8,6 @@ using namespace Chroma;
 DEFINE_TYPE(Chroma, ChromaRingsRotationEffect);
 DEFINE_TYPE(Chroma, ChromaRotationEffect);
 
-void ChromaRingsRotationEffect::ctor() {
-    INVOKE_CTOR();
-}
-
 void ChromaRingsRotationEffect::AddRingRotationEffect(float angle, float step, int propagationSpeed, float flexySpeed) {
     AddRingRotationEffectF(angle, step, (float) propagationSpeed, flexySpeed);
 }
