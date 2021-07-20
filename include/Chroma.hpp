@@ -5,9 +5,15 @@
 #include "UnityEngine/Color.hpp"
 #include <optional>
 #include "GlobalNamespace/ILightWithId.hpp"
+#include "UnityEngine/Quaternion.hpp"
 #include <vector>
 #include <string>
 
+#define GET_FIND_METHOD(mPtr) il2cpp_utils::il2cpp_type_check::MetadataGetter<mPtr>::get()
+
+#define MOD_PTR_CACHE(mPtr, func, ret, ...) \
+    static const MethodInfo* func##_info = GET_FIND_METHOD(mPtr); \
+    static auto func = reinterpret_cast<ret(*)(__VA_ARGS__)>(func##_info->methodPointer);
 
 inline void PrintJSONValue(const rapidjson::Value &json) {
     #if DEBUGB == 1
