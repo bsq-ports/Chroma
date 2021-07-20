@@ -71,7 +71,8 @@ UnityEngine::Color ChromaGradientController::AddGradient(ChromaEventData::Gradie
 
     bool erased = false;
 
-    auto r = gradientEvent.Interpolate(erased);
+
+    auto r = gradientEvent.Interpolate(erased, ChromaController::IAudioTimeSource->get_songTime());
 
     if (erased)
         getInstance()->Gradients.erase(it.first);
@@ -84,6 +85,7 @@ void Chroma::ChromaGradientController::Update() {
         // Create a map iterator and point to beginning of map
         auto it = Gradients.begin();
 
+        auto songTime = ChromaController::IAudioTimeSource->get_songTime();
         // Iterate over the map using Iterator till end.
         while (it != Gradients.end()) {
 
@@ -93,7 +95,7 @@ void Chroma::ChromaGradientController::Update() {
             auto lightIds = it->second._lightIds;
 
             // Accessing VALUE from element pointed by it.
-            UnityEngine::Color color = it->second.Interpolate(modified);
+            UnityEngine::Color color = it->second.Interpolate(modified, songTime);
 
             if (lightIds) {
                 for (auto& light : *lightIds) {
@@ -127,9 +129,9 @@ UnityEngine::Color lerpUnclamped(UnityEngine::Color a, UnityEngine::Color b, flo
     return UnityEngine::Color(a.r + (b.r - a.r) * t, a.g + (b.g - a.g) * t, a.b + (b.b - a.b) * t, a.a + (b.a - a.a) * t);
 }
 
-UnityEngine::Color Chroma::ChromaGradientEvent::Interpolate(bool &modified) const {
+UnityEngine::Color Chroma::ChromaGradientEvent::Interpolate(bool &modified, const float& songTime) const {
     modified = false;
-    float normalTime = ChromaController::IAudioTimeSource->get_songTime() - _start;
+    float normalTime = songTime - _start;
     if (normalTime < 0)
     {
         return _initcolor;
