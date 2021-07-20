@@ -48,6 +48,10 @@ public:
         DECLARE_INSTANCE_METHOD(float, GetFirstRingRotationAngle);
         DECLARE_INSTANCE_METHOD(float, GetFirstRingDestinationRotationAngle);
 
+    public:
+        float GetFirstRingRotationAngleCpp();
+        float GetFirstRingDestinationRotationAngleCpp();
+
         DECLARE_INSTANCE_METHOD(void, AddRingRotationEffectF, float angle, float step, float propagationSpeed, float flexySpeed);
         DECLARE_INSTANCE_METHOD(void, AddRingRotationEffect, float angle, float step, int propagationSpeed, float flexySpeed);
 

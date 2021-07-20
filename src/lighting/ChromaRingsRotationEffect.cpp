@@ -104,6 +104,14 @@ float ChromaRingsRotationEffect::GetFirstRingRotationAngle() {
     return _trackLaneRingsManager->rings->get(0)->GetRotation();
 }
 
+float ChromaRingsRotationEffect::GetFirstRingRotationAngleCpp() {
+    return _trackLaneRingsManager->rings->get(0)->GetRotation();
+}
+
 float ChromaRingsRotationEffect::GetFirstRingDestinationRotationAngle() {
+    return _trackLaneRingsManager->rings->get(0)->GetDestinationRotation();
+}
+
+float ChromaRingsRotationEffect::GetFirstRingDestinationRotationAngleCpp() {
     return _trackLaneRingsManager->rings->get(0)->GetDestinationRotation();
 }

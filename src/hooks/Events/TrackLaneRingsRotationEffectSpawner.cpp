@@ -65,7 +65,7 @@ void TriggerRotation(
 
     auto chromaRingRotation = il2cpp_utils::cast<ChromaRingsRotationEffect>(trackLaneRingsRotationEffect);
 
-    chromaRingRotation->AddRingRotationEffectF(chromaRingRotation->GetFirstRingDestinationRotationAngle() + (rotation * (rotRight ? -1.0f : 1.0f)), rotationStep, rotationPropagationSpeed, rotationFlexySpeed);
+    chromaRingRotation->AddRingRotationEffectF(chromaRingRotation->GetFirstRingDestinationRotationAngleCpp() + (rotation * (rotRight ? -1.0f : 1.0f)), rotationStep, rotationPropagationSpeed, rotationFlexySpeed);
 }
 
 
@@ -99,15 +99,16 @@ void origHandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(GlobalNames
 
     if (ASSIGNMENT_CHECK(ChromaRingsRotationEffectKlass, self->trackLaneRingsRotationEffect->klass)) {
 
-        reinterpret_cast<ChromaRingsRotationEffect*>
-        (rotationEffect)->AddRingRotationEffectF(
-                self->trackLaneRingsRotationEffect->GetFirstRingRotationAngle() + self->rotation * (float) ((randomNumber() < 0.5f) ? 1 : -1),
+        auto chromaRotation = reinterpret_cast<ChromaRingsRotationEffect*>(rotationEffect);
+
+        chromaRotation->AddRingRotationEffectF(
+                chromaRotation->GetFirstRingRotationAngleCpp() + self->rotation * (float) ((randomNumber() < 0.5f) ? 1 : -1),
                 step,
                 (float) self->rotationPropagationSpeed,
                 self->rotationFlexySpeed);
     } else {
         rotationEffect->AddRingRotationEffect(
-                self->trackLaneRingsRotationEffect->GetFirstRingRotationAngle() + self->rotation * (float) ((randomNumber() < 0.5f) ? 1 : -1),
+                rotationEffect->GetFirstRingRotationAngle() + self->rotation * (float) ((randomNumber() < 0.5f) ? 1 : -1),
                 step,
                 self->rotationPropagationSpeed,
                 self->rotationFlexySpeed);
@@ -165,6 +166,7 @@ MAKE_HOOK_MATCH(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCallbackC
             auto selfName = to_utf8(csstrtostr(self->get_name()));
 
             auto nameFilter = chromaData->NameFilter;
+            // If not equal with ignore case
             if (nameFilter && stringCompare(selfName, nameFilter.value()) != 0) {
                 debugSpamLog(contextLogger, "Name filter ignored");
                 return;
