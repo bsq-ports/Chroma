@@ -20,6 +20,6 @@ namespace Chroma {
         static void SetTransformPosition(GlobalNamespace::ParametricBoxController* parametricBoxController, UnityEngine::Vector3 position);
 
     private:
-        static std::optional<ParametricBoxControllerParameters> GetParameters(GlobalNamespace::ParametricBoxController* parametricBoxController);
+        static ParametricBoxControllerParameters& GetParameters(GlobalNamespace::ParametricBoxController* parametricBoxController);
     };
 }
