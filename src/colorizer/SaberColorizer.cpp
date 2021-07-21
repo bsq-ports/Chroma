@@ -88,6 +88,10 @@ void SaberColorizer::Refresh() {
         return;
     }
 
+    MOD_PTR_CACHE(static_cast<void (UnityEngine::MaterialPropertyBlock::*)(Il2CppString*, UnityEngine::Color)>(&UnityEngine::MaterialPropertyBlock::SetColor), SetColor, void, UnityEngine::MaterialPropertyBlock*, Il2CppString*, UnityEngine::Color)
+    MOD_PTR_CACHE(static_cast<void (UnityEngine::Renderer::*)(UnityEngine::MaterialPropertyBlock*)>(&UnityEngine::Renderer::SetPropertyBlock), SetPropertyBlock, void, UnityEngine::Renderer*, UnityEngine::MaterialPropertyBlock*)
+    MOD_PTR_CACHE(&Parametric3SliceSpriteController::Refresh, Refresh, void, Parametric3SliceSpriteController*)
+
     _lastColor = color;
     if (!IsColorable(_saberModelController))
     {
@@ -117,13 +121,13 @@ void SaberColorizer::Refresh() {
                     propertyTintColorPairs->copy_to(propertyTintColorPairsVec);
                     for (auto &propertyTintColorPair : propertyTintColorPairsVec) {
                         if (propertyTintColorPair)
-                            materialPropertyBlock->SetColor(propertyTintColorPair->property,
+                            SetColor(materialPropertyBlock, propertyTintColorPair->property,
                                                             ChromaUtils::ColorMultiply(color, propertyTintColorPair->tintColor));
                     }
                 }
 
                 if (setSaberGlowColor->meshRenderer)
-                    setSaberGlowColor->meshRenderer->SetPropertyBlock((MaterialPropertyBlock *) materialPropertyBlock);
+                    SetPropertyBlock(setSaberGlowColor->meshRenderer, materialPropertyBlock);
             }
         }
 
@@ -134,7 +138,7 @@ void SaberColorizer::Refresh() {
 
                 auto parametric3SliceSprite = setSaberFakeGlowColor->parametric3SliceSprite;
                 parametric3SliceSprite->color = ChromaUtils::ColorMultiply(color, setSaberFakeGlowColor->tintColor);
-                parametric3SliceSprite->Refresh();
+                Refresh(parametric3SliceSprite);
             }
         }
 

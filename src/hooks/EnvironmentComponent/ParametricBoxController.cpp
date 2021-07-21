@@ -108,15 +108,22 @@ MAKE_HOOK_MATCH(ParametricBoxController_Refresh,&ParametricBoxController::Refres
 //    il2cpp_utils::RunMethodThrow<void>(materialPropertyBlock, SetFloat, widthStartID, self->widthStart);
 //    il2cpp_utils::RunMethodThrow<void>(materialPropertyBlock, SetFloat, widthEndID, self->widthEnd);
 
-    materialPropertyBlock->SetColor(colorId, color);
-    materialPropertyBlock->SetFloat(alphaStartID, self->alphaStart);
-    materialPropertyBlock->SetFloat(alphaEndID, self->alphaEnd);
-    materialPropertyBlock->SetFloat(widthStartID, self->widthStart);
-    materialPropertyBlock->SetFloat(widthEndID, self->widthEnd);
+    MOD_PTR_CACHE(static_cast<void (UnityEngine::MaterialPropertyBlock::*)(int, UnityEngine::Color)>(&UnityEngine::MaterialPropertyBlock::SetColor), SetColor, void, UnityEngine::MaterialPropertyBlock*, int, UnityEngine::Color)
+    MOD_PTR_CACHE(static_cast<void (UnityEngine::MaterialPropertyBlock::*)(int, float)>(&UnityEngine::MaterialPropertyBlock::SetFloat), SetFloat, void, UnityEngine::MaterialPropertyBlock*, int, float)
+    MOD_PTR_CACHE(static_cast<void (UnityEngine::Renderer::*)(UnityEngine::MaterialPropertyBlock*)>(&UnityEngine::Renderer::SetPropertyBlock), SetPropertyBlock, void, UnityEngine::Renderer*, UnityEngine::MaterialPropertyBlock*)
 
-    static auto SetPropertyBlock = il2cpp_utils::FindMethodUnsafe(classof(UnityEngine::MeshRenderer*), "SetPropertyBlock", 1);
 
-    il2cpp_utils::RunMethodThrow<void>(self->meshRenderer, SetPropertyBlock, materialPropertyBlock);
+
+    SetColor(materialPropertyBlock, colorId, color);
+    SetFloat(materialPropertyBlock, alphaStartID, self->alphaStart);
+    SetFloat(materialPropertyBlock, alphaEndID, self->alphaEnd);
+    SetFloat(materialPropertyBlock, widthStartID, self->widthStart);
+    SetFloat(materialPropertyBlock, widthEndID, self->widthEnd);
+
+    SetPropertyBlock(self->meshRenderer, materialPropertyBlock);
+//    static auto SetPropertyBlock = il2cpp_utils::FindMethodUnsafe(classof(UnityEngine::MeshRenderer*), "SetPropertyBlock", 1);
+
+//    il2cpp_utils::RunMethodThrow<void>(self->meshRenderer, SetPropertyBlock, materialPropertyBlock);
 
 //    self->meshRenderer->SetPropertyBlock(materialPropertyBlock);
 }

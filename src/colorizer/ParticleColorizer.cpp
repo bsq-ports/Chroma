@@ -61,10 +61,15 @@ void ParticleColorizer::OnLightColorChanged(GlobalNamespace::BeatmapEventType ev
 
             auto color = colors[i];
 
+            MOD_PTR_CACHE(&GlobalNamespace::SimpleColorSO::SetColor, SetColor, void, GlobalNamespace::SimpleColorSO*, UnityEngine::Color)
+
             auto it = _simpleColorSOs.find(i); // std::unordered_map<int, SafePtr<GlobalNamespace::SimpleColorSO>>
             if (it != _simpleColorSOs.end() && it->second && (SimpleColorSO*) it->second)
-                it->second->SetColor(color);
+                SetColor((SimpleColorSO*) it->second, color);
         }
+
+       MOD_PTR_CACHE(&GlobalNamespace::ParticleSystemEventEffect::RefreshParticles, RefreshParticles, void, GlobalNamespace::ParticleSystemEventEffect*)
+
 
         auto particleSystemEventEffect = _particleSystemEventEffect;
         Color color;
@@ -73,7 +78,7 @@ void ParticleColorizer::OnLightColorChanged(GlobalNamespace::BeatmapEventType ev
         {
             case 0:
                 particleSystemEventEffect->particleColor = particleSystemEventEffect->offColor;
-                particleSystemEventEffect->RefreshParticles();
+                RefreshParticles(particleSystemEventEffect);
                 break;
 
             case 1:
@@ -81,7 +86,7 @@ void ParticleColorizer::OnLightColorChanged(GlobalNamespace::BeatmapEventType ev
                 color = (PreviousValue == 1) ? _multipliedColorSOs[0]->get_color() : _multipliedColorSOs[1]->get_color();
                 particleSystemEventEffect->particleColor = color;
                 particleSystemEventEffect->offColor = ChromaUtils::ColorAlpha(color, 0);
-                particleSystemEventEffect->RefreshParticles();
+                RefreshParticles(particleSystemEventEffect);
                 break;
 
             case 2:
@@ -93,7 +98,7 @@ void ParticleColorizer::OnLightColorChanged(GlobalNamespace::BeatmapEventType ev
                 particleSystemEventEffect->afterHighlightColor = afterHighlightColor;
 
                 particleSystemEventEffect->particleColor = ChromaUtils::ColorLerp(afterHighlightColor, color, particleSystemEventEffect->highlightValue);
-                particleSystemEventEffect->RefreshParticles();
+                RefreshParticles(particleSystemEventEffect);
                 break;
 
             case 3:
@@ -107,7 +112,7 @@ void ParticleColorizer::OnLightColorChanged(GlobalNamespace::BeatmapEventType ev
                 particleSystemEventEffect->afterHighlightColor = afterHighlightColor;
 
                 particleSystemEventEffect->particleColor = ChromaUtils::ColorLerp(afterHighlightColor, color, particleSystemEventEffect->highlightValue);
-                particleSystemEventEffect->RefreshParticles();
+                RefreshParticles(particleSystemEventEffect);
                 break;
         }
     }

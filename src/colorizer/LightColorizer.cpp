@@ -243,9 +243,11 @@ void LightColorizer::Reset() {
 }
 
 void LightColorizer::SetSOs(std::vector<UnityEngine::Color> colors) {
+    MOD_PTR_CACHE(&GlobalNamespace::SimpleColorSO::SetColor, SetColor, void, GlobalNamespace::SimpleColorSO*, UnityEngine::Color)
+
     for (int i = 0; i < colors.size(); i++)
     {
-        _simpleColorSOs[i]->SetColor(colors[i]);
+        SetColor((GlobalNamespace::SimpleColorSO*) _simpleColorSOs[i], colors[i]);
     }
 
     LightColorChanged.invoke(_eventType.value, colors);
@@ -255,7 +257,8 @@ void LightColorizer::Refresh() {
     auto colors = getColor();
     SetSOs(colors);
 
-    _lightSwitchEventEffect->ProcessLightSwitchEvent(_lightSwitchEventEffect->prevLightSwitchBeatmapEventDataValue, true);
+    MOD_PTR_CACHE(&LightSwitchEventEffect::ProcessLightSwitchEvent, ProcessLightSwitchEvent, void, LightSwitchEventEffect*, int, bool)
+    ProcessLightSwitchEvent(_lightSwitchEventEffect, _lightSwitchEventEffect->prevLightSwitchBeatmapEventDataValue, true);
 }
 
 void LightColorizer::InitializeSO(const std::string &id, int index) {

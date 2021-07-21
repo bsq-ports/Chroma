@@ -1,3 +1,4 @@
+#include "Chroma.hpp"
 #include "lighting/ChromaRingsRotationEffect.hpp"
 #include "GlobalNamespace/TrackLaneRingsRotationEffect_RingRotationEffect.hpp"
 #include "GlobalNamespace/TrackLaneRing.hpp"
@@ -56,6 +57,8 @@ void ChromaRingsRotationEffect::FixedUpdate() {
     if (!_activeRingRotationEffects.empty()) {
         auto rings = _trackLaneRingsManager->rings;
 
+        MOD_PTR_CACHE(&GlobalNamespace::TrackLaneRing::SetDestRotation, SetDestRotation, void, GlobalNamespace::TrackLaneRing*, float destRotZ, float rotateSpeed)
+
         // Reverse iterate so we can delete while iterating
         for (auto it = _activeRingRotationEffects.rbegin(); it != _activeRingRotationEffects.rend(); it++) {
             ChromaRotationEffect *ringRotationEffect = *it;
@@ -65,7 +68,7 @@ void ChromaRingsRotationEffect::FixedUpdate() {
             int length = (int) rings->Length();
 
             while (num < progressPos && num < length) {
-                rings->get(num)->SetDestRotation(
+                SetDestRotation(rings->get(num),
                         ringRotationEffect->RotationAngle + ((float) num * ringRotationEffect->RotationStep),
                         ringRotationEffect->RotationFlexySpeed);
                 num++;
@@ -101,17 +104,21 @@ void ChromaRingsRotationEffect::RecycleRingRotationEffect(ChromaRotationEffect* 
 }
 
 float ChromaRingsRotationEffect::GetFirstRingRotationAngle() {
-    return _trackLaneRingsManager->rings->get(0)->GetRotation();
+    MOD_PTR_CACHE(&GlobalNamespace::TrackLaneRing::GetRotation, GetRotation, float, GlobalNamespace::TrackLaneRing*)
+    return GetRotation(_trackLaneRingsManager->rings->get(0));
 }
 
 float ChromaRingsRotationEffect::GetFirstRingRotationAngleCpp() {
-    return _trackLaneRingsManager->rings->get(0)->GetRotation();
+    MOD_PTR_CACHE(&GlobalNamespace::TrackLaneRing::GetRotation, GetRotation, float, GlobalNamespace::TrackLaneRing*)
+    return GetRotation(_trackLaneRingsManager->rings->get(0));
 }
 
 float ChromaRingsRotationEffect::GetFirstRingDestinationRotationAngle() {
-    return _trackLaneRingsManager->rings->get(0)->GetDestinationRotation();
+    MOD_PTR_CACHE(&GlobalNamespace::TrackLaneRing::GetDestinationRotation, GetDestinationRotation, float, GlobalNamespace::TrackLaneRing*)
+    return GetDestinationRotation(_trackLaneRingsManager->rings->get(0));
 }
 
 float ChromaRingsRotationEffect::GetFirstRingDestinationRotationAngleCpp() {
-    return _trackLaneRingsManager->rings->get(0)->GetDestinationRotation();
+    MOD_PTR_CACHE(&GlobalNamespace::TrackLaneRing::GetDestinationRotation, GetDestinationRotation, float, GlobalNamespace::TrackLaneRing*)
+    return GetDestinationRotation(_trackLaneRingsManager->rings->get(0));
 }

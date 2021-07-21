@@ -123,6 +123,9 @@ void NoteColorizer::Refresh() {
         return;
     }
 
+    MOD_PTR_CACHE(static_cast<void (UnityEngine::MaterialPropertyBlock::*)(int, UnityEngine::Color)>(&UnityEngine::MaterialPropertyBlock::SetColor), SetColor, void, UnityEngine::MaterialPropertyBlock*, int, UnityEngine::Color)
+    MOD_PTR_CACHE(&GlobalNamespace::MaterialPropertyBlockController::ApplyChanges, ApplyChanges, void, GlobalNamespace::MaterialPropertyBlockController*)
+
     _colorNoteVisuals->noteColor = color;
     for (auto materialPropertyBlockController : _materialPropertyBlockControllers)
     {
@@ -130,9 +133,9 @@ void NoteColorizer::Refresh() {
             continue;
 
         if (materialPropertyBlockController->materialPropertyBlock)
-            materialPropertyBlockController->materialPropertyBlock->SetColor(_colorID(), color);
+            SetColor(materialPropertyBlockController->materialPropertyBlock, _colorID(), color);
 
-        materialPropertyBlockController->ApplyChanges();
+        ApplyChanges(materialPropertyBlockController);
     }
 }
 

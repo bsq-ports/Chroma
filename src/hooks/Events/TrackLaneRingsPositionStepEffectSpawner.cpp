@@ -53,7 +53,9 @@ MAKE_HOOK_MATCH(TrackLaneRingsPositionStepEffectSpawner_HandleBeatmapObjectCallb
     for (int i = 0; i < rings->Length(); i++)
     {
         float destPosZ = (float)i * num;
-        rings->get(i)->SetPosition(destPosZ, self->moveSpeed);
+        MOD_PTR_CACHE(&GlobalNamespace::TrackLaneRing::SetPosition, SetPosition, void, GlobalNamespace::TrackLaneRing*, float, float)
+
+        SetPosition(rings->get(i), destPosZ, self->moveSpeed);
     }
 
 }

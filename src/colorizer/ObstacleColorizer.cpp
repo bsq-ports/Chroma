@@ -82,12 +82,15 @@ void ObstacleColorizer::Refresh() {
 
     Color value = ChromaUtils::ColorMultiply(color, _addColorMultiplier);
     value.a = 0.0f;
+    MOD_PTR_CACHE(static_cast<void (UnityEngine::MaterialPropertyBlock::*)(int, UnityEngine::Color)>(&UnityEngine::MaterialPropertyBlock::SetColor), SetColor, void, UnityEngine::MaterialPropertyBlock*, int, UnityEngine::Color)
+    MOD_PTR_CACHE(&GlobalNamespace::MaterialPropertyBlockController::ApplyChanges, ApplyChanges, void, GlobalNamespace::MaterialPropertyBlockController*)
+
     for (auto& materialPropertyBlockController : _materialPropertyBlockControllers)
     {
         static auto white = Color::get_white();
-        materialPropertyBlockController->materialPropertyBlock->SetColor(_addColorID(), value);
-        materialPropertyBlockController->materialPropertyBlock->SetColor(_tintColorID(), ChromaUtils::ColorLerp(color, white, _obstacleCoreLerpToWhiteFactor));
-        materialPropertyBlockController->ApplyChanges();
+        SetColor(materialPropertyBlockController->materialPropertyBlock, _addColorID(), value);
+        SetColor(materialPropertyBlockController->materialPropertyBlock, _tintColorID(), ChromaUtils::ColorLerp(color, white, _obstacleCoreLerpToWhiteFactor));
+        ApplyChanges(materialPropertyBlockController);
     }
 }
 
