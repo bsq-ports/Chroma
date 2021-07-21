@@ -63,9 +63,9 @@ MAKE_HOOK_MATCH(TrackLaneRing_LateUpdateRing, &TrackLaneRing::LateUpdateRing, vo
 
     float interpolatedZRot = self->prevRotZ + ((self->rotZ - self->prevRotZ) * interpolationFactor);
 
-    MOD_PTR_CACHE(&UnityEngine::Quaternion::AngleAxis, angleAxis, UnityEngine::Quaternion, float, UnityEngine::Vector3)
+    static auto AngleAxis = FPtrWrapper<&UnityEngine::Quaternion::AngleAxis>::get();
 
-    auto rotationZOffset = angleAxis(interpolatedZRot, vectorForward);
+    auto rotationZOffset = AngleAxis(interpolatedZRot, vectorForward);
     UnityEngine::Quaternion rot = quaternionMultiply(rotation, rotationZOffset);
 
     self->transform->set_localRotation(rot);

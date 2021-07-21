@@ -123,8 +123,8 @@ void NoteColorizer::Refresh() {
         return;
     }
 
-    MOD_PTR_CACHE(static_cast<void (UnityEngine::MaterialPropertyBlock::*)(int, UnityEngine::Color)>(&UnityEngine::MaterialPropertyBlock::SetColor), SetColor, void, UnityEngine::MaterialPropertyBlock*, int, UnityEngine::Color)
-    MOD_PTR_CACHE(&GlobalNamespace::MaterialPropertyBlockController::ApplyChanges, ApplyChanges, void, GlobalNamespace::MaterialPropertyBlockController*)
+    static auto ApplyChanges = FPtrWrapper<&GlobalNamespace::MaterialPropertyBlockController::ApplyChanges>::get();
+    static auto SetColor = FPtrWrapper<static_cast<void (UnityEngine::MaterialPropertyBlock::*)(int, UnityEngine::Color)>(&UnityEngine::MaterialPropertyBlock::SetColor)>::get();
 
     _colorNoteVisuals->noteColor = color;
     for (auto materialPropertyBlockController : _materialPropertyBlockControllers)

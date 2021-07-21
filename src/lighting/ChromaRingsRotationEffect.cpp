@@ -57,7 +57,7 @@ void ChromaRingsRotationEffect::FixedUpdate() {
     if (!_activeRingRotationEffects.empty()) {
         auto rings = _trackLaneRingsManager->rings;
 
-        MOD_PTR_CACHE(&GlobalNamespace::TrackLaneRing::SetDestRotation, SetDestRotation, void, GlobalNamespace::TrackLaneRing*, float destRotZ, float rotateSpeed)
+        static auto SetDestRotation = FPtrWrapper<&GlobalNamespace::TrackLaneRing::SetDestRotation>::get();
 
         // Reverse iterate so we can delete while iterating
         for (auto it = _activeRingRotationEffects.rbegin(); it != _activeRingRotationEffects.rend(); it++) {
@@ -104,21 +104,21 @@ void ChromaRingsRotationEffect::RecycleRingRotationEffect(ChromaRotationEffect* 
 }
 
 float ChromaRingsRotationEffect::GetFirstRingRotationAngle() {
-    MOD_PTR_CACHE(&GlobalNamespace::TrackLaneRing::GetRotation, GetRotation, float, GlobalNamespace::TrackLaneRing*)
+    static auto GetRotation = FPtrWrapper<&GlobalNamespace::TrackLaneRing::GetRotation>::get();
     return GetRotation(_trackLaneRingsManager->rings->get(0));
 }
 
 float ChromaRingsRotationEffect::GetFirstRingRotationAngleCpp() {
-    MOD_PTR_CACHE(&GlobalNamespace::TrackLaneRing::GetRotation, GetRotation, float, GlobalNamespace::TrackLaneRing*)
+    static auto GetRotation = FPtrWrapper<&GlobalNamespace::TrackLaneRing::GetRotation>::get();
     return GetRotation(_trackLaneRingsManager->rings->get(0));
 }
 
 float ChromaRingsRotationEffect::GetFirstRingDestinationRotationAngle() {
-    MOD_PTR_CACHE(&GlobalNamespace::TrackLaneRing::GetDestinationRotation, GetDestinationRotation, float, GlobalNamespace::TrackLaneRing*)
+    static auto GetDestinationRotation = FPtrWrapper<&GlobalNamespace::TrackLaneRing::GetDestinationRotation>::get();
     return GetDestinationRotation(_trackLaneRingsManager->rings->get(0));
 }
 
 float ChromaRingsRotationEffect::GetFirstRingDestinationRotationAngleCpp() {
-    MOD_PTR_CACHE(&GlobalNamespace::TrackLaneRing::GetDestinationRotation, GetDestinationRotation, float, GlobalNamespace::TrackLaneRing*)
+    static auto GetDestinationRotation = FPtrWrapper<&GlobalNamespace::TrackLaneRing::GetDestinationRotation>::get();
     return GetDestinationRotation(_trackLaneRingsManager->rings->get(0));
 }

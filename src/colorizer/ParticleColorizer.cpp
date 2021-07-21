@@ -61,15 +61,14 @@ void ParticleColorizer::OnLightColorChanged(GlobalNamespace::BeatmapEventType ev
 
             auto color = colors[i];
 
-            MOD_PTR_CACHE(&GlobalNamespace::SimpleColorSO::SetColor, SetColor, void, GlobalNamespace::SimpleColorSO*, UnityEngine::Color)
+            static auto SetColor = FPtrWrapper<&GlobalNamespace::SimpleColorSO::SetColor>::get();
 
             auto it = _simpleColorSOs.find(i); // std::unordered_map<int, SafePtr<GlobalNamespace::SimpleColorSO>>
             if (it != _simpleColorSOs.end() && it->second && (SimpleColorSO*) it->second)
                 SetColor((SimpleColorSO*) it->second, color);
         }
 
-       MOD_PTR_CACHE(&GlobalNamespace::ParticleSystemEventEffect::RefreshParticles, RefreshParticles, void, GlobalNamespace::ParticleSystemEventEffect*)
-
+       static auto RefreshParticles = FPtrWrapper<&GlobalNamespace::ParticleSystemEventEffect::RefreshParticles>::get();
 
         auto particleSystemEventEffect = _particleSystemEventEffect;
         Color color;

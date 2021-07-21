@@ -88,9 +88,10 @@ void SaberColorizer::Refresh() {
         return;
     }
 
-    MOD_PTR_CACHE(static_cast<void (UnityEngine::MaterialPropertyBlock::*)(Il2CppString*, UnityEngine::Color)>(&UnityEngine::MaterialPropertyBlock::SetColor), SetColor, void, UnityEngine::MaterialPropertyBlock*, Il2CppString*, UnityEngine::Color)
-    MOD_PTR_CACHE(static_cast<void (UnityEngine::Renderer::*)(UnityEngine::MaterialPropertyBlock*)>(&UnityEngine::Renderer::SetPropertyBlock), SetPropertyBlock, void, UnityEngine::Renderer*, UnityEngine::MaterialPropertyBlock*)
-    MOD_PTR_CACHE(&Parametric3SliceSpriteController::Refresh, Refresh, void, Parametric3SliceSpriteController*)
+
+    static auto SetColor = FPtrWrapper<static_cast<void (UnityEngine::MaterialPropertyBlock::*)(Il2CppString*, UnityEngine::Color)>(&UnityEngine::MaterialPropertyBlock::SetColor)>::get();
+    static auto SetPropertyBlock = FPtrWrapper<static_cast<void (UnityEngine::Renderer::*)(UnityEngine::MaterialPropertyBlock*)>(&UnityEngine::Renderer::SetPropertyBlock)>::get();
+    static auto Refresh = FPtrWrapper<&Parametric3SliceSpriteController::Refresh>::get();
 
     _lastColor = color;
     if (!IsColorable(_saberModelController))
