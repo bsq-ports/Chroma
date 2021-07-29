@@ -20,7 +20,7 @@ using namespace Chroma;
 
 MAKE_HOOK_MATCH(NoteCutEffectSpawner_SpawnNoteCutEffect,
                 &NoteCutCoreEffectsSpawner::SpawnNoteCutEffect,
-                void,NoteCutCoreEffectsSpawner* self, GlobalNamespace::NoteCutInfo& noteCutInfo, GlobalNamespace::NoteController* noteController) {
+                void,NoteCutCoreEffectsSpawner* self, ByRef<GlobalNamespace::NoteCutInfo> noteCutInfo, GlobalNamespace::NoteController* noteController) {
     // Do nothing if Chroma shouldn't run
     if (!ChromaController::DoChromaHooks()) {
         NoteCutEffectSpawner_SpawnNoteCutEffect(self, noteCutInfo, noteController);

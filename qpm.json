@@ -27,12 +27,12 @@
     },
     {
       "id": "codegen",
-      "versionRange": "^0.10.0",
+      "versionRange": "^0.12.0",
       "additionalData": {}
     },
     {
       "id": "custom-json-data",
-      "versionRange": "^0.9.0",
+      "versionRange": "^0.11.0",
       "additionalData": {}
     },
     {
@@ -42,7 +42,7 @@
     },
     {
       "id": "questui",
-      "versionRange": "^0.9.0",
+      "versionRange": "^0.10.0",
       "additionalData": {}
     },
     {

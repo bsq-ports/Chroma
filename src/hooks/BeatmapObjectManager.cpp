@@ -13,12 +13,12 @@ using namespace custom_types::Helpers;
 using namespace GlobalNamespace;
 
 MAKE_HOOK_MATCH(BeatmapObjectManager_NoteCutEvent, &BeatmapObjectManager::HandleNoteControllerNoteWasCut, void, BeatmapObjectManager *self, NoteController *noteController,
-                     NoteCutInfo& noteCutInfo) {
+                     ByRef<NoteCutInfo> noteCutInfo) {
     if (!ChromaController::DoChromaHooks()) {
         BeatmapObjectManager_NoteCutEvent(self, noteController, noteCutInfo);
         return;
     }
-    NoteColorizer::ColorizeSaber(noteController, noteCutInfo);
+    NoteColorizer::ColorizeSaber(noteController, noteCutInfo.heldRef);
     BeatmapObjectManager_NoteCutEvent(self, noteController, noteCutInfo);
 }
 

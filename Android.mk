@@ -18,38 +18,38 @@ TARGET_ARCH_ABI := $(APP_ABI)
 
 rwildcard=$(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))
 
-# Creating prebuilt for dependency: beatsaber-hook - version: 1.3.5
+# Creating prebuilt for dependency: beatsaber-hook - version: 2.2.4
 include $(CLEAR_VARS)
-LOCAL_MODULE := beatsaber-hook_2_0_2
+LOCAL_MODULE := beatsaber-hook_2_2_4
 LOCAL_EXPORT_C_INCLUDES := extern/beatsaber-hook
-LOCAL_SRC_FILES := extern/libbeatsaber-hook_2_0_2.so
+LOCAL_SRC_FILES := extern/libbeatsaber-hook_2_2_4.so
 LOCAL_CPP_FEATURES += exceptions
 include $(PREBUILT_SHARED_LIBRARY)
-# Creating prebuilt for dependency: codegen - version: 0.8.1
+# Creating prebuilt for dependency: codegen - version: 0.12.5
 include $(CLEAR_VARS)
-LOCAL_MODULE := codegen_0_10_2
+LOCAL_MODULE := codegen_0_12_5
 LOCAL_EXPORT_C_INCLUDES := extern/codegen
-LOCAL_SRC_FILES := extern/libcodegen_0_10_2.so
+LOCAL_SRC_FILES := extern/libcodegen_0_12_5.so
 include $(PREBUILT_SHARED_LIBRARY)
-# Creating prebuilt for dependency: modloader - version: 1.1.0
+# Creating prebuilt for dependency: modloader - version: 1.2.3
 include $(CLEAR_VARS)
 LOCAL_MODULE := modloader
 LOCAL_EXPORT_C_INCLUDES := extern/modloader
 LOCAL_SRC_FILES := extern/libmodloader.so
 include $(PREBUILT_SHARED_LIBRARY)
-# Creating prebuilt for dependency: custom-json-data - version: 0.7.2
+# Creating prebuilt for dependency: custom-json-data - version: 0.11.0
 include $(CLEAR_VARS)
 LOCAL_MODULE := custom-json-data
 LOCAL_EXPORT_C_INCLUDES := extern/custom-json-data
 LOCAL_SRC_FILES := extern/libcustom-json-data.so
 include $(PREBUILT_SHARED_LIBRARY)
-# Creating prebuilt for dependency: custom-types - version: 0.8.3
+# Creating prebuilt for dependency: custom-types - version: 0.12.5
 include $(CLEAR_VARS)
 LOCAL_MODULE := custom-types
 LOCAL_EXPORT_C_INCLUDES := extern/custom-types
 LOCAL_SRC_FILES := extern/libcustom-types.so
 include $(PREBUILT_SHARED_LIBRARY)
-# Creating prebuilt for dependency: questui - version: 0.7.0
+# Creating prebuilt for dependency: questui - version: 0.10.0
 include $(CLEAR_VARS)
 LOCAL_MODULE := questui
 LOCAL_EXPORT_C_INCLUDES := extern/questui
@@ -62,8 +62,8 @@ LOCAL_SRC_FILES += $(call rwildcard,src/,*.cpp)
 LOCAL_SRC_FILES += $(call rwildcard,extern/beatsaber-hook/src/inline-hook,*.cpp)
 LOCAL_SRC_FILES += $(call rwildcard,extern/beatsaber-hook/src/inline-hook,*.c)
 LOCAL_SHARED_LIBRARIES += modloader
-LOCAL_SHARED_LIBRARIES += beatsaber-hook_2_0_2
-LOCAL_SHARED_LIBRARIES += codegen_0_10_2
+LOCAL_SHARED_LIBRARIES += beatsaber-hook_2_2_4
+LOCAL_SHARED_LIBRARIES += codegen_0_12_5
 LOCAL_SHARED_LIBRARIES += custom-json-data
 LOCAL_SHARED_LIBRARIES += custom-types
 LOCAL_SHARED_LIBRARIES += questui
@@ -71,7 +71,6 @@ LOCAL_LDLIBS += -llog
 LOCAL_CFLAGS += -I'extern/libil2cpp/il2cpp/libil2cpp' -DDEBUGB='1' -DID='"chroma"' -DVERSION='"0.1.0"' -I'./shared' -I'./extern' -isystem'extern/codegen/include' -O2
 LOCAL_CPPFLAGS += -std=c++2a -O2
 LOCAL_C_INCLUDES += ./include ./src
-LOCAL_EXPORT_C_FLAGS :=
-# rtti is needed for the function target member to actually work
 LOCAL_CPP_FEATURES += rtti
+LOCAL_EXPORT_C_FLAGS :=
 include $(BUILD_SHARED_LIBRARY)

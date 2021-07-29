@@ -11,36 +11,8 @@
 
 #define GET_FIND_METHOD(mPtr) il2cpp_utils::il2cpp_type_check::MetadataGetter<mPtr>::get()
 
-template<class T>
-struct MethodDecomposer;
-
-template<typename R, typename... TArgs>
-struct MethodDecomposer<R (*)(TArgs...)> {
-    using mPtr = R (*)(TArgs...);
-};
-
-template<typename R, typename T, typename... TArgs>
-struct MethodDecomposer<R (T::*)(TArgs...)> {
-    using mPtr = R (*)(T*, TArgs...);
-};
-
 template<auto val>
-struct FPtrWrapper {
-    static auto get() {
-        return reinterpret_cast<typename MethodDecomposer<decltype(val)>::mPtr>(GET_FIND_METHOD(val)->methodPointer);
-    }
-};
-
-
-
-
-#define MOD_METHODINFO_CACHE(methodInfo, func, ret, ...) static auto func = reinterpret_cast<ret(*)(__VA_ARGS__)>(methodInfo->methodPointer);
-
-//#define MOD_PTR_CACHE(mPtr, func, ret, ...) \
-//    static const MethodInfo* func##_info = GET_FIND_METHOD(mPtr); \
-//    MOD_METHODINFO_CACHE(func##_info, func, ret, __VA_ARGS__)
-
-
+using FPtrWrapper = il2cpp_utils::il2cpp_type_check::FPtrWrapper<val>;
 
 inline void PrintJSONValue(const rapidjson::Value &json) {
     #if DEBUGB == 1
