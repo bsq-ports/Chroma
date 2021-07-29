@@ -69,8 +69,8 @@ jobs:
         id: cache-qpm-deps
         uses: actions/cache@v2
         with:
-          path: QPM/QPM_Temp
-          key: ${{ runner.os }}-qpm-${{ hashFiles('**/qpm.shared.json') }}
+          path: ~/QPM_Temp
+          key: cache-qpm-deps
           restore-keys: |
             ${{ runner.os }}-qpm-
 
@@ -78,9 +78,7 @@ jobs:
         run: |
           chmod +x ./QPM/QPM
           ./QPM/QPM restore
-      - name: test
-        run: |
-          ls ./QPM/QPM_Temp
+
       - name: Build
         run: |
           cd ${GITHUB_WORKSPACE}
