@@ -47,5 +47,8 @@ namespace Chroma {
         static void OnActiveSceneChanged(UnityEngine::SceneManagement::Scene current);
 
         static custom_types::Helpers::Coroutine DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnController *beatmapObjectSpawnController);
+
+        // Since level data is freed on scene load, we copy it before we load.
+        inline static std::optional<rapidjson::Document> infoDatCopy = std::nullopt;
     };
 }

@@ -77,13 +77,21 @@ bool SceneTransitionHelper::BasicPatch(GlobalNamespace::IDifficultyBeatmap* cust
 
     LightIDTableManager::SetEnvironment(to_utf8(csstrtostr(environmentInfo->serializedName)));
 
-    bool chromaRequirement = true;
+    bool chromaRequirement = false;
+
+    ChromaController::infoDatCopy = std::nullopt;
 
     if (customBeatmapDataCustom->levelCustomData) {
         auto dynData = customBeatmapDataCustom->levelCustomData->value;
 
         if (dynData) {
             rapidjson::Value &rapidjsonData = *dynData;
+
+            // Copy this since it gets freed later on.
+            rapidjson::Document doc;
+            doc.CopyFrom(rapidjsonData, doc.GetAllocator());
+
+            ChromaController::infoDatCopy = std::make_optional(std::move(doc));
 
             auto requirements = rapidjsonData.FindMember("_requirements");
 
