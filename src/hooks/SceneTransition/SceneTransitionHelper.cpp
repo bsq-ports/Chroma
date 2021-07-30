@@ -1,4 +1,5 @@
 #include "ChromaConfig.hpp"
+#include "Chroma.hpp"
 #include "hooks/SceneTransition/SceneTransitionHelper.hpp"
 
 #include "lighting/LegacyLightHelper.hpp"
@@ -7,7 +8,6 @@
 
 #include "GlobalNamespace/BeatmapEnvironmentHelper.hpp"
 #include "GlobalNamespace/EnvironmentInfoSO.hpp"
-#include "Chroma.hpp"
 
 #include "utils/ChromaUtils.hpp"
 
@@ -18,19 +18,27 @@ using namespace UnityEngine;
 using namespace System::Collections;
 
 void SceneTransitionHelper::Patch(GlobalNamespace::IDifficultyBeatmap* customBeatmapData) {
-    SceneTransitionHelper::BasicPatch(customBeatmapData);
+    if (!customBeatmapData)
+        return;
+
+    std::optional<CustomBeatmapData *> customBeatmapDataCustom = il2cpp_utils::try_cast<CustomJSONData::CustomBeatmapData >(customBeatmapData->get_beatmapData());
+    if (customBeatmapDataCustom) {
+        SceneTransitionHelper::BasicPatch(customBeatmapData, *customBeatmapDataCustom);
+    }
 }
 
 void SceneTransitionHelper::Patch(GlobalNamespace::IDifficultyBeatmap* customBeatmapData, OverrideEnvironmentSettings*& overrideEnvironmentSettings) {
-    bool chromaRequirement = SceneTransitionHelper::BasicPatch(customBeatmapData);
-    if (chromaRequirement && getChromaConfig().environmentEnhancementsEnabled.GetValue() && customBeatmapData)
-    {
-        auto customBeatmapDataCustom = il2cpp_utils::try_cast<CustomJSONData::CustomBeatmapData>(customBeatmapData);
-        if (customBeatmapDataCustom) {
+    if (!customBeatmapData)
+        return;
 
+    std::optional<CustomBeatmapData *> customBeatmapDataCustomOpt = il2cpp_utils::try_cast<CustomJSONData::CustomBeatmapData>(customBeatmapData->get_beatmapData());
+    if (customBeatmapDataCustomOpt) {
+        auto customBeatmapDataCustom = *customBeatmapDataCustomOpt;
+        bool chromaRequirement = SceneTransitionHelper::BasicPatch(customBeatmapData, customBeatmapDataCustom);
+        if (chromaRequirement && getChromaConfig().environmentEnhancementsEnabled.GetValue()) {
 
-            if ((*customBeatmapDataCustom)->customData) {
-                auto dynData = (*customBeatmapDataCustom)->customData->value;
+            if (customBeatmapDataCustom->levelCustomData) {
+                auto dynData = customBeatmapDataCustom->levelCustomData->value;
 
                 if (dynData) {
                     auto it = dynData.value().get().FindMember(ENVIRONMENT);
@@ -45,15 +53,55 @@ void SceneTransitionHelper::Patch(GlobalNamespace::IDifficultyBeatmap* customBea
     }
 }
 
-bool SceneTransitionHelper::BasicPatch(GlobalNamespace::IDifficultyBeatmap* customBeatmapData) {
+bool CheckIfInArray(rapidjson::Value& val, const std::string& stringToCheck) {
+    if (val.IsArray()) {
+        for (auto &element : val.GetArray()) {
+            if (element.IsString() && element.GetString() == stringToCheck)
+                return true;
+        }
+    }
+
+    if (val.IsObject()) {
+        for (auto &element : val.GetObject()) {
+            if (element.value.IsString() && element.value.GetString() == stringToCheck)
+                return true;
+        }
+    }
+
+    return false;
+}
+
+bool SceneTransitionHelper::BasicPatch(GlobalNamespace::IDifficultyBeatmap* customBeatmapData, CustomJSONData::CustomBeatmapData* customBeatmapDataCustom) {
     ChromaController::TutorialMode = false;
     auto environmentInfo = BeatmapEnvironmentHelper::GetEnvironmentInfo(customBeatmapData);
 
     LightIDTableManager::SetEnvironment(to_utf8(csstrtostr(environmentInfo->serializedName)));
 
+    bool chromaRequirement = true;
+
+    if (customBeatmapDataCustom->levelCustomData) {
+        auto dynData = customBeatmapDataCustom->levelCustomData->value;
+
+        if (dynData) {
+            rapidjson::Value &rapidjsonData = *dynData;
+
+            auto requirements = rapidjsonData.FindMember("_requirements");
+
+            if (requirements != rapidjsonData.MemberEnd()) {
+                chromaRequirement |= CheckIfInArray(requirements->value, REQUIREMENTNAME);
+            }
+
+            auto suggestions = rapidjsonData.FindMember("_suggestions");
+
+            if (suggestions != rapidjsonData.MemberEnd()) {
+                chromaRequirement |= CheckIfInArray(suggestions->value, REQUIREMENTNAME);
+            }
+
+        }
+    }
+
     // please let me remove this shit
     bool legacyOverride = false;
-
 
 
     auto beatmapEvents = customBeatmapData->get_beatmapData()->beatmapEventsData->items;
@@ -71,20 +119,15 @@ bool SceneTransitionHelper::BasicPatch(GlobalNamespace::IDifficultyBeatmap* cust
             break;
     }
 
-    if (legacyOverride)
-    {
+    if (legacyOverride) {
         getLogger().warning("Legacy Chroma Detected...");
-        getLogger().warning("Please do not use Legacy Chroma for new maps as it is deprecated and its functionality in future versions of Chroma cannot be guaranteed");
+        getLogger().warning(
+                "Please do not use Legacy Chroma for new maps as it is deprecated and its functionality in future versions of Chroma cannot be guaranteed");
     }
 
     ChromaController::SetChromaLegacy(legacyOverride);
-
-//    ChromaController.ToggleChromaPatches((chromaRequirement || legacyOverride) && ChromaConfig.Instance.CustomColorEventsEnabled);
+    ChromaController::setChromaRequired(chromaRequirement);
 
 
     return ChromaController::ChromaRequired();
 }
-
-//void SceneTransitionHelper() {
-//
-//}

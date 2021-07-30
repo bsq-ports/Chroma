@@ -11,6 +11,6 @@ namespace Chroma {
     public:
         static void Patch(GlobalNamespace::IDifficultyBeatmap* difficultyBeatmap);
         static void Patch(GlobalNamespace::IDifficultyBeatmap* difficultyBeatmap, GlobalNamespace::OverrideEnvironmentSettings*& overrideEnvironmentSettings);
-        static bool BasicPatch(GlobalNamespace::IDifficultyBeatmap* customBeatmapData);
+        static bool BasicPatch(GlobalNamespace::IDifficultyBeatmap* customBeatmapData, CustomJSONData::CustomBeatmapData* customBeatmapDataCustom);
     };
 }

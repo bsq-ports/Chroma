@@ -41,6 +41,7 @@ using namespace System::Collections;
 using namespace custom_types::Helpers;
 
 bool ChromaController::ChromaLegacy = false;
+bool ChromaController::ChromaMap = false;
 bool ChromaController::TutorialMode = false;
 
 
@@ -100,13 +101,15 @@ void ChromaController::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene 
 }
 
 bool ChromaController::ChromaRequired() {
-    return !TutorialMode;
+//    return !TutorialMode;
+
+     return !TutorialMode && ChromaMap;
 
     // 1 is true
-    char* reqVar = getenv("req_Chroma");
-    char* sugVar = getenv("sug_Chroma");
+//    char* reqVar = getenv("req_Chroma");
+//    char* sugVar = getenv("sug_Chroma");
 
-    return !TutorialMode && ((reqVar && std::string(reqVar) == "1") || (sugVar && std::string(sugVar) == "1"));
+//    return !TutorialMode && ((reqVar && std::string(reqVar) == "1") || (sugVar && std::string(sugVar) == "1"));
 }
 
 bool ChromaController::DoColorizerSabers() {
@@ -125,4 +128,9 @@ bool ChromaController::GetChromaLegacy() {
 
 bool ChromaController::DoChromaHooks() {
     return getChromaConfig().customColorEventsEnabled.GetValue() && (ChromaRequired());
+}
+
+void ChromaController::setChromaRequired(bool chromaMap) {
+    getLogger().debug("Set chroma required/suggested to %s", chromaMap ? "true" : "false");
+    ChromaMap = chromaMap;
 }

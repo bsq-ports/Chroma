@@ -18,16 +18,19 @@ namespace Chroma {
     class ChromaController {
     private:
         static bool ChromaLegacy;
+        static bool ChromaMap;
 
     public:
         static bool TutorialMode;
 
     public:
         // Return true if Chroma should color the sabers
+        // Practically the same as DoChromaHooks, so yeet?
         static bool DoColorizerSabers();
 
         // Return true if Chroma is required/suggested in a map
         static bool ChromaRequired();
+        static void setChromaRequired(bool chromaMap);
 
         // Return true if Chroma hooks should run
         static bool DoChromaHooks();

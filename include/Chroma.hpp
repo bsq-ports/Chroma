@@ -50,6 +50,7 @@ namespace Chroma {
         inline const char* ObjectDataDeserialize = "ObjectDataDeserialize";
     }
 
+    inline const std::string REQUIREMENTNAME = "Chroma";
     inline const std::string DIRECTION = "_direction";
     inline const std::string ENVIRONMENTREMOVAL = "_environmentRemoval";
     inline const std::string COLOR = "_color";

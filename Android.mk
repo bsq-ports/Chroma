@@ -23,7 +23,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := beatsaber-hook_2_2_4
 LOCAL_EXPORT_C_INCLUDES := extern/beatsaber-hook
 LOCAL_SRC_FILES := extern/libbeatsaber-hook_2_2_4.so
-LOCAL_CPP_FEATURES += exceptions
+LOCAL_CPP_FEATURES += exceptions rtti
 include $(PREBUILT_SHARED_LIBRARY)
 # Creating prebuilt for dependency: codegen - version: 0.12.5
 include $(CLEAR_VARS)
@@ -49,7 +49,7 @@ LOCAL_MODULE := custom-types
 LOCAL_EXPORT_C_INCLUDES := extern/custom-types
 LOCAL_SRC_FILES := extern/libcustom-types.so
 include $(PREBUILT_SHARED_LIBRARY)
-# Creating prebuilt for dependency: questui - version: 0.10.0
+# Creating prebuilt for dependency: questui - version: 0.10.1
 include $(CLEAR_VARS)
 LOCAL_MODULE := questui
 LOCAL_EXPORT_C_INCLUDES := extern/questui
@@ -71,6 +71,5 @@ LOCAL_LDLIBS += -llog
 LOCAL_CFLAGS += -I'extern/libil2cpp/il2cpp/libil2cpp' -DDEBUGB='1' -DID='"chroma"' -DVERSION='"0.1.0"' -I'./shared' -I'./extern' -isystem'extern/codegen/include' -O2
 LOCAL_CPPFLAGS += -std=c++2a -O2
 LOCAL_C_INCLUDES += ./include ./src
-LOCAL_CPP_FEATURES += rtti
 LOCAL_EXPORT_C_FLAGS :=
 include $(BUILD_SHARED_LIBRARY)
