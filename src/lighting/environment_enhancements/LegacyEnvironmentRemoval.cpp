@@ -9,7 +9,7 @@
 
 using namespace Chroma;
 
-void Chroma::LegacyEnvironmentRemoval::Init() {
+void Chroma::LegacyEnvironmentRemoval::Init(CustomJSONData::CustomBeatmapData* customBeatmap) {
     static auto contextLogger = getLogger().WithContext(ChromaLogger::EnvironmentRemoval);
 
     auto& dynDataWrapper = ChromaController::infoDatCopy;
