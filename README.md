@@ -1,6 +1,6 @@
 # Chroma
 
-Is based on Chroma PC v2.4.2 as of this time
+Is based on Chroma PC v2.4.9 as of this time
 
 Colors!
 
