@@ -67,12 +67,13 @@ custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(Global
         std::vector<GlobalNamespace::BeatmapEventData *> eventData;
         list->items->copy_to(eventData);
 
-
-        try {
-            // please let me kill legacy
-            LegacyLightHelper::Activate(eventData);
-        } catch (const Il2CppException &e) {
-            getLogger().error("Unable to run legacy due to exception?");
+        if (GetChromaLegacy()) {
+            try {
+                // please let me kill legacy
+                LegacyLightHelper::Activate(eventData);
+            } catch (const Il2CppException &e) {
+                getLogger().error("Unable to run legacy due to exception?");
+            }
         }
 
     } catch (std::exception &e) {
