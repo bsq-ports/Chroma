@@ -66,13 +66,15 @@ UnityEngine::Color ChromaGradientController::AddGradient(ChromaEventData::Gradie
     Color endcolor = gradientObject.EndColor;
     Functions easing = gradientObject.Easing;
 
-    auto gradientEvent = ChromaGradientEvent(initcolor, endcolor, time, duration, id, lightIds, easing);
+    const auto gradientEvent = ChromaGradientEvent(initcolor, endcolor, time, duration, id, lightIds, easing);
     auto it = getInstance()->Gradients.emplace(id.value, gradientEvent);
-
+    // Grab by reference since assignment copies to the map
+    // This way calling interpolate actually modifies the struct itself.
+    auto& newGradientEvent = getInstance()->Gradients.find(id.value)->second;
     bool erased = false;
 
 
-    auto r = gradientEvent.Interpolate(erased, ChromaController::IAudioTimeSource->get_songTime());
+    auto r = newGradientEvent.Interpolate(erased, ChromaController::IAudioTimeSource->get_songTime());
 
     if (erased)
         getInstance()->Gradients.erase(it.first);
