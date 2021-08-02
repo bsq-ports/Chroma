@@ -65,14 +65,15 @@ jobs:
           chmod +x ./QPM/QPM
           ./QPM/QPM collect
 
-      - name: Cache QPM
+      - name: QPM Dependencies Cache
         id: cache-qpm-deps
         uses: actions/cache@v2
+        env:
+          cache-name: cache-qpm-deps
         with:
-          path: ~/QPM_Temp
+          path: QPM_Temp
           key: cache-qpm-deps
-          restore-keys: |
-            ${{ runner.os }}-qpm-
+          restore-keys: cache-qpm-deps
 
       - name: QPM Restore
         run: |
