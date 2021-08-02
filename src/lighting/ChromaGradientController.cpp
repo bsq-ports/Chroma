@@ -57,13 +57,13 @@ void ChromaGradientController::CancelGradient(GlobalNamespace::BeatmapEventType 
     getInstance()->Gradients.erase(eventType);
 }
 
-UnityEngine::Color ChromaGradientController::AddGradient(ChromaEventData::GradientObjectData gradientObject,
+Sombrero::FastColor ChromaGradientController::AddGradient(ChromaEventData::GradientObjectData gradientObject,
                                                          GlobalNamespace::BeatmapEventType id, float time, std::optional<std::vector<int>> lightIds) {
     CancelGradient(id);
 
     float duration = gradientObject.Duration;
-    Color initcolor = gradientObject.StartColor;
-    Color endcolor = gradientObject.EndColor;
+    Sombrero::FastColor initcolor = gradientObject.StartColor;
+    Sombrero::FastColor endcolor = gradientObject.EndColor;
     Functions easing = gradientObject.Easing;
 
     const auto gradientEvent = ChromaGradientEvent(initcolor, endcolor, time, duration, id, lightIds, easing);
@@ -97,7 +97,7 @@ void Chroma::ChromaGradientController::Update() {
             auto lightIds = it->second._lightIds;
 
             // Accessing VALUE from element pointed by it.
-            UnityEngine::Color color = it->second.Interpolate(modified, songTime);
+            Sombrero::FastColor color = it->second.Interpolate(modified, songTime);
 
             if (lightIds) {
                 for (auto& light : *lightIds) {
@@ -115,7 +115,7 @@ void Chroma::ChromaGradientController::Update() {
     }
 }
 
-Chroma::ChromaGradientEvent::ChromaGradientEvent(UnityEngine::Color initcolor, UnityEngine::Color endcolor, float start,
+Chroma::ChromaGradientEvent::ChromaGradientEvent(Sombrero::FastColor initcolor, Sombrero::FastColor endcolor, float start,
                                                  float duration, GlobalNamespace::BeatmapEventType eventType,
                                                  std::optional<std::vector<int>> lights, ChromaUtils::Functions easing) {
     _initcolor = initcolor;
@@ -127,11 +127,11 @@ Chroma::ChromaGradientEvent::ChromaGradientEvent(UnityEngine::Color initcolor, U
     _lightIds = lights;
 }
 
-UnityEngine::Color lerpUnclamped(UnityEngine::Color a, UnityEngine::Color b, float t) {
-    return UnityEngine::Color(a.r + (b.r - a.r) * t, a.g + (b.g - a.g) * t, a.b + (b.b - a.b) * t, a.a + (b.a - a.a) * t);
+Sombrero::FastColor lerpUnclamped(Sombrero::FastColor a, Sombrero::FastColor b, float t) {
+    return Sombrero::FastColor(a.r + (b.r - a.r) * t, a.g + (b.g - a.g) * t, a.b + (b.b - a.b) * t, a.a + (b.a - a.a) * t);
 }
 
-UnityEngine::Color Chroma::ChromaGradientEvent::Interpolate(bool &modified, const float& songTime) const {
+Sombrero::FastColor Chroma::ChromaGradientEvent::Interpolate(bool &modified, const float& songTime) const {
     modified = false;
     float normalTime = songTime - _start;
     if (normalTime < 0)

@@ -11,7 +11,7 @@
 namespace Chroma {
     class ColorManagerColorForType {
     public:
-        inline static std::optional<UnityEngine::Color> _noteColorOverride;
+        inline static std::optional<Sombrero::FastColor> _noteColorOverride;
 
         static void EnableColorOverride(GlobalNamespace::NoteControllerBase *noteController) {
             _noteColorOverride = NoteColorizer::GetNoteColorizer(noteController)->getColor();

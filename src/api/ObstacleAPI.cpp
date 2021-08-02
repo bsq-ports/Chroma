@@ -7,6 +7,7 @@
 using namespace Chroma;
 using namespace GlobalNamespace;
 using namespace UnityEngine;
+using namespace Sombrero;
 
 
 // TODO: unsure of this
@@ -23,11 +24,11 @@ EXPOSE_API(getObstacleControllerColorSafe, OptColor, ObstacleController* obstacl
     return OptColorFromColor(color);
 }
 
-EXPOSE_API(setObstacleColorSafe, void, ObstacleController* oc, UnityEngine::Color color1) {
+EXPOSE_API(setObstacleColorSafe, void, ObstacleController* oc, Sombrero::FastColor color1) {
     ObstacleColorizer::ColorizeObstacle(oc, color1);
 }
 
-EXPOSE_API(setAllObstacleColorSafe, void, UnityEngine::Color color1) {
+EXPOSE_API(setAllObstacleColorSafe, void, Sombrero::FastColor color1) {
     ObstacleColorizer::GlobalColorize(color1);
 }
 

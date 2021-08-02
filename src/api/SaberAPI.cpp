@@ -9,6 +9,7 @@
 using namespace Chroma;
 using namespace GlobalNamespace;
 using namespace UnityEngine;
+using namespace Sombrero;
 
 
 
@@ -17,7 +18,7 @@ EXPOSE_API(getGlobalSaberColorSafe, OptColor, int saberType) {
 
     auto optional = SaberColorizer::GlobalColor[saberType];
 
-    UnityEngine::Color color;
+    Sombrero::FastColor color;
 
     if (optional) {
 
@@ -29,7 +30,7 @@ EXPOSE_API(getGlobalSaberColorSafe, OptColor, int saberType) {
     }
 }
 
-EXPOSE_API(setGlobalSaberColorSafe, void, int saberType, std::optional<UnityEngine::Color> color) {
+EXPOSE_API(setGlobalSaberColorSafe, void, int saberType, std::optional<Sombrero::FastColor> color) {
     SaberColorizer::GlobalColorize(saberType, color);
 }
 
@@ -41,7 +42,7 @@ EXPOSE_API(getSaberColorSafe, OptColor, GlobalNamespace::SaberModelController* s
 
     auto optional = colorizer->getSelfColor();
 
-    UnityEngine::Color color;
+    Sombrero::FastColor color;
 
     if (optional) {
         color = optional.value();
@@ -51,7 +52,7 @@ EXPOSE_API(getSaberColorSafe, OptColor, GlobalNamespace::SaberModelController* s
     }
 }
 
-EXPOSE_API(setSaberColorSafe, void, GlobalNamespace::SaberModelController* saberModelController, std::optional<UnityEngine::Color> color) {
+EXPOSE_API(setSaberColorSafe, void, GlobalNamespace::SaberModelController* saberModelController, std::optional<Sombrero::FastColor> color) {
     SaberColorizer::ColorizeSaber(saberModelController, color);
 }
 
@@ -62,11 +63,11 @@ EXPOSE_API(getGlobalSabersColorSafe, SaberAPI::ColorOptPair) {
     return SaberAPI::ColorOptPair {OptColorFromColor(colorA), OptColorFromColor(colorB)};
 }
 
-extern "C" UnorderedEventCallback<int, GlobalNamespace::SaberModelController*, UnityEngine::Color>* __getSaberChangedColorCallbackSafe() {
+extern "C" UnorderedEventCallback<int, GlobalNamespace::SaberModelController*, Sombrero::FastColor>* __getSaberChangedColorCallbackSafe() {
     return &SaberColorizer::SaberColorChanged;
 }
 
-extern "C" void __registerSaberCallbackSafe(const ThinVirtualLayer<void (void*, int, GlobalNamespace::SaberModelController*, UnityEngine::Color)>& callback) {
+extern "C" void __registerSaberCallbackSafe(const ThinVirtualLayer<void (void*, int, GlobalNamespace::SaberModelController*, Sombrero::FastColor)>& callback) {
     SaberColorizer::SaberColorChanged += callback;
 }
 

@@ -4,7 +4,7 @@
 using namespace Chroma;
 using namespace ChromaUtils;
 
-std::optional<UnityEngine::Color> ChromaUtilities::GetColorFromData(std::optional<std::reference_wrapper<rapidjson::Value>> data, const std::string& member)
+std::optional<Sombrero::FastColor> ChromaUtilities::GetColorFromData(std::optional<std::reference_wrapper<rapidjson::Value>> data, const std::string& member)
 {
     if (!data) return std::nullopt;
 
@@ -17,10 +17,10 @@ std::optional<UnityEngine::Color> ChromaUtilities::GetColorFromData(std::optiona
 
 
     // TODO: Will this work? Probably not
-    return UnityEngine::Color(color->value[0].GetFloat(), color->value[1].GetFloat(), color->value[2].GetFloat(), color->value.MemberCount() > 3 ? color->value[3].GetFloat() : 1);
+    return Sombrero::FastColor(color->value[0].GetFloat(), color->value[1].GetFloat(), color->value[2].GetFloat(), color->value.MemberCount() > 3 ? color->value[3].GetFloat() : 1);
 }
 
-std::optional<UnityEngine::Color> ChromaUtilities::GetColorFromData(rapidjson::Value& data, const std::string& member)
+std::optional<Sombrero::FastColor> ChromaUtilities::GetColorFromData(rapidjson::Value& data, const std::string& member)
 {
     if (data.GetType() == rapidjson::kNullType || data.Empty()) return std::nullopt;
 
@@ -31,5 +31,5 @@ std::optional<UnityEngine::Color> ChromaUtilities::GetColorFromData(rapidjson::V
 
 
     // TODO: Will this work? Probably not
-    return UnityEngine::Color(color->value[0].GetFloat(), color->value[1].GetFloat(), color->value[2].GetFloat(), color->value.MemberCount() > 3 ? color->value[3].GetFloat() : 1);
+    return Sombrero::FastColor(color->value[0].GetFloat(), color->value[1].GetFloat(), color->value[2].GetFloat(), color->value.MemberCount() > 3 ? color->value[3].GetFloat() : 1);
 }

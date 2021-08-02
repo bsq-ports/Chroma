@@ -16,6 +16,7 @@
 
 #include "System/Diagnostics/StackTrace.hpp"
 
+
 using namespace GlobalNamespace;
 using namespace Chroma;
 

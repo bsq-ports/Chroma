@@ -32,7 +32,7 @@ void LegacyLightHelper::Activate(const std::vector<GlobalNamespace::BeatmapEvent
         if (d->value >= RGB_INT_OFFSET)
         {
             auto it = LegacyColorEvents.find(d->type);
-            auto list = it != LegacyColorEvents.end() ? it->second : std::vector<pair<float, UnityEngine::Color>>();
+            auto list = it != LegacyColorEvents.end() ? it->second : std::vector<pair<float, Sombrero::FastColor>>();
 
             list.emplace_back(d->time, ColorFromInt(d->value));
             LegacyColorEvents[d->type] = list;
@@ -40,13 +40,13 @@ void LegacyLightHelper::Activate(const std::vector<GlobalNamespace::BeatmapEvent
     }
 }
 
-std::optional<UnityEngine::Color> LegacyLightHelper::GetLegacyColor(GlobalNamespace::BeatmapEventData *beatmapEventData) {
+std::optional<Sombrero::FastColor> LegacyLightHelper::GetLegacyColor(GlobalNamespace::BeatmapEventData *beatmapEventData) {
     auto it = LegacyColorEvents.find(beatmapEventData->type);
     if (it != LegacyColorEvents.end()) {
         auto dictionaryID = it->second;
-        std::vector<pair<float, UnityEngine::Color>> colors;
+        std::vector<pair<float, Sombrero::FastColor>> colors;
 
-        for (pair<float, UnityEngine::Color>& n : dictionaryID) {
+        for (pair<float, Sombrero::FastColor>& n : dictionaryID) {
             if (n.first <= beatmapEventData->time)
                 colors.push_back(n);
         }
@@ -61,10 +61,10 @@ std::optional<UnityEngine::Color> LegacyLightHelper::GetLegacyColor(GlobalNamesp
     return std::nullopt;
 }
 
-UnityEngine::Color LegacyLightHelper::ColorFromInt(int rgb) {
+Sombrero::FastColor LegacyLightHelper::ColorFromInt(int rgb) {
     rgb -= RGB_INT_OFFSET;
     auto red = (float) ((rgb >> 16) & 0x0ff);
     auto green = (float) ((rgb >> 8) & 0x0ff);
     auto blue = (float ) (rgb & 0x0ff);
-    return UnityEngine::Color(red / 255.0f, green / 255.0f, blue / 255.0f, 1);
+    return Sombrero::FastColor(red / 255.0f, green / 255.0f, blue / 255.0f, 1);
 }

@@ -34,7 +34,7 @@ namespace Chroma {
     explicit ObstacleColorizer(GlobalNamespace::ObstacleControllerBase* obstacleController);
 
     protected:
-        std::optional<UnityEngine::Color> GlobalColorGetter() override;
+        std::optional<Sombrero::FastColor> GlobalColorGetter() override;
         void Refresh() override;
 
 
@@ -42,8 +42,8 @@ namespace Chroma {
         inline static bool ObstacleColorable = false;
         static std::shared_ptr<ObstacleColorizer> New(GlobalNamespace::ObstacleControllerBase* obstacleController);
         inline static std::unordered_map<GlobalNamespace::ObstacleControllerBase*, std::shared_ptr<ObstacleColorizer>> Colorizers;
-        inline static std::optional<UnityEngine::Color> GlobalColor;
-        static void GlobalColorize(std::optional<UnityEngine::Color> color);
+        inline static std::optional<Sombrero::FastColor> GlobalColor;
+        static void GlobalColorize(std::optional<Sombrero::FastColor> color);
 
         static void Reset();
 
@@ -56,7 +56,7 @@ namespace Chroma {
             return it->second;
         }
 
-        inline static void ColorizeObstacle(GlobalNamespace::ObstacleControllerBase* obstacleControllerBase, std::optional<UnityEngine::Color> color) {
+        inline static void ColorizeObstacle(GlobalNamespace::ObstacleControllerBase* obstacleControllerBase, std::optional<Sombrero::FastColor> color) {
             CRASH_UNLESS(GetObstacleColorizer(obstacleControllerBase))->Colorize(color);
         }
     };

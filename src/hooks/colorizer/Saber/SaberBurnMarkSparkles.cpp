@@ -32,8 +32,8 @@ void OnSaberColorChanged(int saberType, GlobalNamespace::SaberModelController* s
     float s;
     float _;
 
-    ChromaUtils::ColorRGBToHSV(color, h, s, _);
-    Color effectColor = ChromaUtils::ColorHSVToRGB(h, s, 1);
+    Sombrero::FastColor::RGBToHSV(color, h, s, _);
+    Sombrero::FastColor effectColor = Sombrero::FastColor::HSVToRGB(h, s, 1);
     ParticleSystem::MainModule main = _burnMarksPS[(int)saberType]->get_main();
     main.set_startColor(effectColor);
 }

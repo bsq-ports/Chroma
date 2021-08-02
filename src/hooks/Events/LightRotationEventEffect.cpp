@@ -9,6 +9,7 @@
 #include "UnityEngine/Transform.hpp"
 
 #include "lighting/ChromaEventData.hpp"
+#include "sombrero/shared/RandomUtils.hpp"
 
 using namespace CustomJSONData;
 using namespace GlobalNamespace;
@@ -49,7 +50,7 @@ MAKE_HOOK_MATCH(
 
     std::optional<int> dir = chromaData->Direction;
 
-    float direction = (randomNumber() > 0.5f) ? 1.0f : -1.0f;
+    float direction = (Sombrero::RandomFast::randomNumber() > 0.5f) ? 1.0f : -1.0f;
     if (dir) {
         switch (dir.value()) {
             case 0:
@@ -71,7 +72,7 @@ MAKE_HOOK_MATCH(
         self->rotationSpeed = precisionSpeed * 20.0f * direction;
         if (!lockPosition) {
             self->get_transform()->set_localRotation(self->startRotation);
-            self->get_transform()->Rotate(self->rotationVector, randomNumber(0.0f, 180.0f), Space::Self);
+            self->get_transform()->Rotate(self->rotationVector, Sombrero::RandomFast::randomNumber(0.0f, 180.0f), Space::Self);
         }
     }
 }

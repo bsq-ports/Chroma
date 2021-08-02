@@ -5,6 +5,8 @@
 
 #include "UnityEngine/Color.hpp"
 
+#include "sombrero/shared/ColorUtils.hpp"
+
 #include "System/Collections/Generic/List_1.hpp"
 #include "System/Collections/Generic/IReadOnlyList_1.hpp"
 
@@ -17,7 +19,7 @@ namespace Chroma {
 // Please let me delete this whole class
     class LegacyLightHelper {
     public:
-        typedef std::unordered_map<int, std::vector<pair<float, UnityEngine::Color>>> ColorMap;
+        typedef std::unordered_map<int, std::vector<pair<float, Sombrero::FastColor>>> ColorMap;
 
         //internal
         inline const static int RGB_INT_OFFSET = 2000000000;
@@ -29,9 +31,9 @@ namespace Chroma {
         static void Activate(const std::vector<GlobalNamespace::BeatmapEventData*>& eventData);
 
         // internal
-        static std::optional<UnityEngine::Color> GetLegacyColor(GlobalNamespace::BeatmapEventData* beatmapEventData);
+        static std::optional<Sombrero::FastColor> GetLegacyColor(GlobalNamespace::BeatmapEventData* beatmapEventData);
 
     private:
-        static UnityEngine::Color ColorFromInt(int rgb);
+        static Sombrero::FastColor ColorFromInt(int rgb);
     };
 }

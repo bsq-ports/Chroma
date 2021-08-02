@@ -29,10 +29,10 @@ namespace Chroma {
     class SaberColorizer : public ObjectColorizer {
     private:
         GlobalNamespace::SaberTrail* _saberTrail;
-        UnityEngine::Color _trailTintColor;
+        Sombrero::FastColor _trailTintColor;
         GlobalNamespace::TubeBloomPrePassLight* _saberLight;
         GlobalNamespace::SaberType _saberType;
-        UnityEngine::Color _lastColor;
+        Sombrero::FastColor _lastColor;
         GlobalNamespace::SaberModelController* _saberModelController;
 
         explicit SaberColorizer(GlobalNamespace::Saber* saber);
@@ -40,27 +40,27 @@ namespace Chroma {
         // SiraUtil stuff
         inline static std::unordered_set<GlobalNamespace::SaberModelController*> ColorableModels;
 
-        void ColorColorable(UnityEngine::Color color);
+        void ColorColorable(Sombrero::FastColor color);
 
     protected:
-        std::optional<UnityEngine::Color> GlobalColorGetter() override;
+        std::optional<Sombrero::FastColor> GlobalColorGetter() override;
 
         void Refresh() override;
 
     public:
         static std::shared_ptr<SaberColorizer> New(GlobalNamespace::Saber* saber);
 
-        inline static UnorderedEventCallback<int, GlobalNamespace::SaberModelController*, UnityEngine::Color> SaberColorChanged;
+        inline static UnorderedEventCallback<int, GlobalNamespace::SaberModelController*, Sombrero::FastColor> SaberColorChanged;
 
         inline static std::unordered_map<GlobalNamespace::SaberModelController*, std::shared_ptr<SaberColorizer>> Colorizers;
 
 
-        inline static std::vector<std::optional<UnityEngine::Color>> GlobalColor = {std::nullopt, std::nullopt};
+        inline static std::vector<std::optional<Sombrero::FastColor>> GlobalColor = {std::nullopt, std::nullopt};
 
         static bool IsColorable(GlobalNamespace::SaberModelController* saberModelController);
         static void SetColorable(GlobalNamespace::SaberModelController* saberModelController, bool colorable);
 
-        static void GlobalColorize(GlobalNamespace::SaberType saberType, std::optional<UnityEngine::Color> color);
+        static void GlobalColorize(GlobalNamespace::SaberType saberType, std::optional<Sombrero::FastColor> color);
         static void Reset();
 
         // extensions
@@ -69,7 +69,7 @@ namespace Chroma {
         static void RemoveColorizer(GlobalNamespace::SaberModelController* saberModelController);
         static std::shared_ptr<SaberColorizer>& GetColorizer(GlobalNamespace::SaberModelController* saberModelController);
 
-        inline static void ColorizeSaber(GlobalNamespace::SaberModelController* saberModelController, std::optional<UnityEngine::Color> color) {
+        inline static void ColorizeSaber(GlobalNamespace::SaberModelController* saberModelController, std::optional<Sombrero::FastColor> color) {
             GetColorizer(saberModelController)->Colorize(color);
         }
     };

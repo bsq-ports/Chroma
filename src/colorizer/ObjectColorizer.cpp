@@ -1,6 +1,8 @@
 #include "colorizer/ObjectColorizer.hpp"
 
-UnityEngine::Color Chroma::ObjectColorizer::getColor() {
+using namespace Sombrero;
+
+Sombrero::FastColor Chroma::ObjectColorizer::getColor() {
     if (_color)
         return *_color;
 
@@ -12,15 +14,15 @@ UnityEngine::Color Chroma::ObjectColorizer::getColor() {
     return *OriginalColorGetter();
 }
 
-void Chroma::ObjectColorizer::Colorize(std::optional<UnityEngine::Color> color) {
+void Chroma::ObjectColorizer::Colorize(std::optional<Sombrero::FastColor> color) {
     _color = color;
     Refresh();
 }
 
-std::optional<UnityEngine::Color> Chroma::ObjectColorizer::OriginalColorGetter() {
+std::optional<Sombrero::FastColor> Chroma::ObjectColorizer::OriginalColorGetter() {
     return OriginalColor;
 }
 
-std::optional<UnityEngine::Color> Chroma::ObjectColorizer::getSelfColor() {
+std::optional<Sombrero::FastColor> Chroma::ObjectColorizer::getSelfColor() {
     return _color;
 }

@@ -14,7 +14,7 @@
 
 using namespace GlobalNamespace;
 using namespace UnityEngine;
-
+using namespace Sombrero;
 using namespace Chroma;
 
 
@@ -23,11 +23,11 @@ BombColorizer::ColorizerMap BombColorizer::Colorizers = BombColorizer::Colorizer
 
 void BombColorizer::Refresh() {
     UnityEngine::Material* bombMaterial = _bombRenderer->get_material();
-    UnityEngine::Color color = getColor();
+    Sombrero::FastColor color = getColor();
 
     static auto colorName = il2cpp_utils::newcsstr<il2cpp_utils::CreationType::Manual>("_SimpleColor");
 
-    if (ChromaUtils::ColorEquals(color, bombMaterial->GetColor(colorName))) {
+    if (color == bombMaterial->GetColor(colorName)) {
         return;
     }
 
@@ -42,11 +42,11 @@ BombColorizer::BombColorizer(GlobalNamespace::NoteControllerBase *noteController
     OriginalColor = _bombRenderer->get_material()->GetColor(colorName);
 }
 
-std::optional<UnityEngine::Color> BombColorizer::getGlobalColor() {
+std::optional<Sombrero::FastColor> BombColorizer::getGlobalColor() {
     return GlobalColor;
 }
 
-void BombColorizer::GlobalColorize(std::optional<UnityEngine::Color> color) {
+void BombColorizer::GlobalColorize(std::optional<Sombrero::FastColor> color) {
     GlobalColor = color;
     for (auto& valuePair : Colorizers)
     {
@@ -62,7 +62,7 @@ std::shared_ptr<BombColorizer> BombColorizer::New(GlobalNamespace::NoteControlle
     return bombColorizer;
 }
 
-std::optional<UnityEngine::Color> BombColorizer::GlobalColorGetter() {
+std::optional<Sombrero::FastColor> BombColorizer::GlobalColorGetter() {
     return GlobalColor;
 }
 

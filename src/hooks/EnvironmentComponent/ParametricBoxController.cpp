@@ -22,7 +22,7 @@ using namespace Chroma;
 using namespace ChromaUtils;
 
 
-UnityEngine::Vector3& GetTransformScale(UnityEngine::Vector3& defaultV, ParametricBoxControllerParameters& parameters) {
+Sombrero::FastVector3& GetTransformScale(Sombrero::FastVector3& defaultV, ParametricBoxControllerParameters& parameters) {
 
     if (parameters.Position) {
         return parameters.Scale.value();
@@ -31,7 +31,7 @@ UnityEngine::Vector3& GetTransformScale(UnityEngine::Vector3& defaultV, Parametr
     return defaultV;
 }
 
-UnityEngine::Vector3& GetTransformPosition(UnityEngine::Vector3& defaultV, ParametricBoxControllerParameters& parameters) {
+Sombrero::FastVector3& GetTransformPosition(Sombrero::FastVector3& defaultV, ParametricBoxControllerParameters& parameters) {
 
     if (parameters.Position) {
         return parameters.Position.value();
@@ -52,8 +52,8 @@ MAKE_HOOK_MATCH(ParametricBoxController_Refresh,&ParametricBoxController::Refres
         return;
     }
 
-    auto scale = UnityEngine::Vector3(self->width * 0.5f, self->height * 0.5f, self->length * 0.5f);
-    auto pos = UnityEngine::Vector3(0.0f, (0.5f - self->heightCenter) * self->height, 0.0f);
+    auto scale = Sombrero::FastVector3(self->width * 0.5f, self->height * 0.5f, self->length * 0.5f);
+    auto pos = Sombrero::FastVector3(0.0f, (0.5f - self->heightCenter) * self->height, 0.0f);
 
     auto it = ParametricBoxControllerParameters::TransformParameters.find(self);
 

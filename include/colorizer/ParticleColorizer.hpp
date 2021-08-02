@@ -44,7 +44,7 @@ namespace Chroma {
 
         static std::unordered_set<std::shared_ptr<ParticleColorizer>>& GetOrCreateColorizerList(GlobalNamespace::BeatmapEventType eventType);
 
-        void OnLightColorChanged(GlobalNamespace::BeatmapEventType eventType, std::vector<UnityEngine::Color> colors);
+        void OnLightColorChanged(GlobalNamespace::BeatmapEventType eventType, std::vector<Sombrero::FastColor> colors);
 
         void InitializeSO(const std::string& id, int index, bool highlight = false);
 

@@ -18,13 +18,13 @@
      private:
          UnityEngine::Renderer *_bombRenderer;
 
-         inline static std::optional<UnityEngine::Color> GlobalColor;
+         inline static std::optional<Sombrero::FastColor> GlobalColor;
 
          explicit BombColorizer(GlobalNamespace::NoteControllerBase *noteController);
      protected:
          void Refresh() override;
 
-         std::optional<UnityEngine::Color> GlobalColorGetter() override;
+         std::optional<Sombrero::FastColor> GlobalColorGetter() override;
 
      public:
 
@@ -33,9 +33,9 @@
          using ColorizerMap = std::unordered_map<GlobalNamespace::NoteControllerBase*, std::shared_ptr<BombColorizer>>;
          static ColorizerMap Colorizers;
 
-         static std::optional<UnityEngine::Color> getGlobalColor();
+         static std::optional<Sombrero::FastColor> getGlobalColor();
 
-         static void GlobalColorize(std::optional<UnityEngine::Color> color);
+         static void GlobalColorize(std::optional<Sombrero::FastColor> color);
 
          static void Reset();
 
@@ -48,7 +48,7 @@
              return it->second;
          }
 
-         inline static void ColorizeBomb(GlobalNamespace::NoteControllerBase* noteController, std::optional<UnityEngine::Color> color) {
+         inline static void ColorizeBomb(GlobalNamespace::NoteControllerBase* noteController, std::optional<Sombrero::FastColor> color) {
              GetBombColorizer(noteController)->Colorize(color);
          }
      };

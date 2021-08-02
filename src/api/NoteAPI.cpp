@@ -8,14 +8,14 @@
 using namespace Chroma;
 using namespace GlobalNamespace;
 using namespace UnityEngine;
-
+using namespace Sombrero;
 
 // TODO: unsure of this
 EXPOSE_API(getNoteColorSafe, OptColor, int colorType) {
     CRASH_UNLESS(colorType >= ColorType::ColorA && colorType <= ColorType::ColorB);
     auto optional = NoteColorizer::GlobalColor[colorType];
 
-    UnityEngine::Color color;
+    Sombrero::FastColor color;
 
     if (optional) {
 
@@ -55,7 +55,7 @@ EXPOSE_API(getNoteControllerColorSafe, OptColor, NoteController* noteController,
     return OptColorFromColor(color.value());
 }
 
-EXPOSE_API(setNoteColorSafe, void, NoteControllerBase* nc, std::optional<UnityEngine::Color> color0) {
+EXPOSE_API(setNoteColorSafe, void, NoteControllerBase* nc, std::optional<Sombrero::FastColor> color0) {
     NoteColorizer::ColorizeNote(nc, color0);
 }
 

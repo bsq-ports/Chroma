@@ -3,6 +3,7 @@
 #include "GlobalNamespace/ParametricBoxController.hpp"
 
 #include "UnityEngine/Vector3.hpp"
+#include "sombrero/shared/Vector3Utils.hpp"
 
 #include <unordered_map>
 #include <optional>
@@ -12,12 +13,12 @@ namespace Chroma {
     public:
         inline static std::unordered_map<GlobalNamespace::ParametricBoxController*, ParametricBoxControllerParameters> TransformParameters;
 
-        std::optional<UnityEngine::Vector3> Scale;
-        std::optional<UnityEngine::Vector3> Position;
+        std::optional<Sombrero::FastVector3> Scale;
+        std::optional<Sombrero::FastVector3> Position;
 
-        static void SetTransformScale(GlobalNamespace::ParametricBoxController* parametricBoxController, UnityEngine::Vector3 scale);
+        static void SetTransformScale(GlobalNamespace::ParametricBoxController* parametricBoxController, Sombrero::FastVector3 scale);
 
-        static void SetTransformPosition(GlobalNamespace::ParametricBoxController* parametricBoxController, UnityEngine::Vector3 position);
+        static void SetTransformPosition(GlobalNamespace::ParametricBoxController* parametricBoxController, Sombrero::FastVector3 position);
 
     private:
         static ParametricBoxControllerParameters& GetParameters(GlobalNamespace::ParametricBoxController* parametricBoxController);

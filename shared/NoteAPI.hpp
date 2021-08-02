@@ -18,7 +18,7 @@ namespace Chroma {
 
         /// TODO: unsure of this
         /// Gets the note type color or null if either Chroma is not setting the color or method was not found
-        static std::optional<UnityEngine::Color> getNoteColorSafe(int colorType) noexcept {
+        static std::optional<Sombrero::FastColor> getNoteColorSafe(int colorType) noexcept {
             static auto function = CondDep::Find<OptColor, int>(CHROMA_ID, "getNoteColorSafe");
 
             if (function) {
@@ -37,7 +37,7 @@ namespace Chroma {
         /// Gets the note color or null if Chroma method was not found
         /// If Chroma is not setting the color, it returns the game's colors
         /// THIS WILL NOT PLAY NICELY WITH MIRRORED NOTE CONTROLLER
-        static std::optional<UnityEngine::Color> getNoteControllerOverrideColorSafe(GlobalNamespace::NoteController* noteController, int colorType) noexcept {
+        static std::optional<Sombrero::FastColor> getNoteControllerOverrideColorSafe(GlobalNamespace::NoteController* noteController, int colorType) noexcept {
             static auto function = CondDep::Find<OptColor, GlobalNamespace::NoteController*, int>(CHROMA_ID, "getNoteControllerOverrideColorSafe");
 
             if (function) {
@@ -55,7 +55,7 @@ namespace Chroma {
         /// Gets the note color or null if Chroma method was not found
         /// If Chroma is not setting the color, it returns std::nullopt
         /// THIS WILL NOT PLAY NICELY WITH MIRRORED NOTE CONTROLLER
-        static std::optional<UnityEngine::Color> getNoteControllerColorSafe(GlobalNamespace::NoteController* noteController, int colorType) noexcept {
+        static std::optional<Sombrero::FastColor> getNoteControllerColorSafe(GlobalNamespace::NoteController* noteController, int colorType) noexcept {
             static auto function = CondDep::Find<OptColor, GlobalNamespace::NoteController*, int>(CHROMA_ID, "getNoteControllerColorSafe");
 
             if (function) {
@@ -71,8 +71,8 @@ namespace Chroma {
         }
 
         /// Sets the note color if the method was found.
-        static void setNoteColorSafe(GlobalNamespace::NoteController* nc, std::optional<UnityEngine::Color> color0) noexcept {
-            static auto function = CondDep::Find<void, GlobalNamespace::NoteController*, std::optional<UnityEngine::Color>>(CHROMA_ID, "setNoteColorSafe");
+        static void setNoteColorSafe(GlobalNamespace::NoteController* nc, std::optional<Sombrero::FastColor> color0) noexcept {
+            static auto function = CondDep::Find<void, GlobalNamespace::NoteController*, std::optional<Sombrero::FastColor>>(CHROMA_ID, "setNoteColorSafe");
 
             if (function) {
                 function.value()(nc, color0);
@@ -80,8 +80,8 @@ namespace Chroma {
         }
 
         /// Sets the note color if the method was found.
-        static void setGlobalNoteColorSafe(std::optional<UnityEngine::Color> color0, std::optional<UnityEngine::Color> color1) noexcept {
-            static auto function = CondDep::Find<void, std::optional<UnityEngine::Color>,  std::optional<UnityEngine::Color>>(CHROMA_ID, "setGlobalNoteColorSafe");
+        static void setGlobalNoteColorSafe(std::optional<Sombrero::FastColor> color0, std::optional<Sombrero::FastColor> color1) noexcept {
+            static auto function = CondDep::Find<void, std::optional<Sombrero::FastColor>,  std::optional<Sombrero::FastColor>>(CHROMA_ID, "setGlobalNoteColorSafe");
 
             if (function) {
                 function.value()(color0, color1);

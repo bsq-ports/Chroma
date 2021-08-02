@@ -28,14 +28,14 @@
 #include "utils/ChromaUtils.hpp"
 #include "colorizer/SaberColorizer.hpp"
 
-#include <dlfcn.h>
-#include <stdlib.h>
+#include <cstdlib>
 
 using namespace GlobalNamespace;
 using namespace UnityEngine;
 using namespace System::Collections;
 using namespace custom_types::Helpers;
 using namespace Chroma;
+using namespace Sombrero;
 
 SaberColorizer::SaberColorizer(GlobalNamespace::Saber *saber) {
     _saberType = saber->get_saberType();
@@ -60,11 +60,11 @@ std::shared_ptr<SaberColorizer> SaberColorizer::New(GlobalNamespace::Saber *sabe
     return saberColorizer;
 }
 
-std::optional<UnityEngine::Color> SaberColorizer::GlobalColorGetter() {
+std::optional<Sombrero::FastColor> SaberColorizer::GlobalColorGetter() {
     return GlobalColor[(int) _saberType];
 }
 
-void SaberColorizer::GlobalColorize(GlobalNamespace::SaberType saberType, std::optional<UnityEngine::Color> color) {
+void SaberColorizer::GlobalColorize(GlobalNamespace::SaberType saberType, std::optional<Sombrero::FastColor> color) {
     GlobalColor[(int) saberType] = color;
     for (auto &c : GetColorizerList(saberType)) {
         c->Refresh();
@@ -82,8 +82,8 @@ void SaberColorizer::Reset() {
 }
 
 void SaberColorizer::Refresh() {
-    Color color = getColor();
-    if (ChromaUtils::ColorEquals(color, _lastColor))
+    Sombrero::FastColor color = getColor();
+    if (color == _lastColor)
     {
         return;
     }
@@ -100,7 +100,7 @@ void SaberColorizer::Refresh() {
         Array<GlobalNamespace::SetSaberFakeGlowColor*>* _setSaberFakeGlowColors = _saberModelController->setSaberFakeGlowColors;
 
         auto saberTrail = _saberTrail;
-        saberTrail->color = ChromaUtils::ColorLinear(ChromaUtils::ColorMultiply(color, _trailTintColor));
+        saberTrail->color = (color * _trailTintColor).Linear();
 
         if (_setSaberGlowColors) {
             for (int i = 0; i < _setSaberGlowColors->Length(); i++) {
@@ -122,8 +122,7 @@ void SaberColorizer::Refresh() {
                     propertyTintColorPairs->copy_to(propertyTintColorPairsVec);
                     for (auto &propertyTintColorPair : propertyTintColorPairsVec) {
                         if (propertyTintColorPair)
-                            SetColor(materialPropertyBlock, propertyTintColorPair->property,
-                                                            ChromaUtils::ColorMultiply(color, propertyTintColorPair->tintColor));
+                            SetColor(materialPropertyBlock, propertyTintColorPair->property, color * Sombrero::FastColor(propertyTintColorPair->tintColor));
                     }
                 }
 
@@ -138,7 +137,7 @@ void SaberColorizer::Refresh() {
                 if (!setSaberFakeGlowColor) continue;
 
                 auto parametric3SliceSprite = setSaberFakeGlowColor->parametric3SliceSprite;
-                parametric3SliceSprite->color = ChromaUtils::ColorMultiply(color, setSaberFakeGlowColor->tintColor);
+                parametric3SliceSprite->color = color * Sombrero::FastColor(setSaberFakeGlowColor->tintColor);
                 Refresh(parametric3SliceSprite);
             }
         }
@@ -177,7 +176,7 @@ std::unordered_set<SaberColorizer*> SaberColorizer::GetColorizerList(GlobalNames
     return colorizers;
 }
 
-void SaberColorizer::ColorColorable(UnityEngine::Color color) {
+void SaberColorizer::ColorColorable(Sombrero::FastColor color) {
     // Nothing here I guess
 }
 

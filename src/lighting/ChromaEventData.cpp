@@ -61,9 +61,9 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
 
                     float duration = gValue.FindMember(Chroma::DURATION)->value.GetFloat(); // Trees.at(gradientObject, DURATION);
 
-                    UnityEngine::Color initcolor = ChromaUtils::ChromaUtilities::GetColorFromData(gValue,STARTCOLOR).value();
+                    Sombrero::FastColor initcolor = ChromaUtils::ChromaUtilities::GetColorFromData(gValue,STARTCOLOR).value();
 
-                    UnityEngine::Color endcolor = ChromaUtils::ChromaUtilities::GetColorFromData(gValue,ENDCOLOR).value();
+                    Sombrero::FastColor endcolor = ChromaUtils::ChromaUtilities::GetColorFromData(gValue,ENDCOLOR).value();
 
                     std::string easingString = std::string(gValue.FindMember(EASING)->value.GetString());
 

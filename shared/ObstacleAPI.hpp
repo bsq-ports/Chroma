@@ -18,7 +18,7 @@ namespace Chroma {
 
         /// TODO: Unsure of whether this returns nullopt if Chroma sets the color or not.
         /// Gets the obstacle color or null if either Chroma is not setting the color or method was not found
-        static std::optional<UnityEngine::Color> getObstacleControllerColorSafe(GlobalNamespace::ObstacleController *oc) noexcept {
+        static std::optional<Sombrero::FastColor> getObstacleControllerColorSafe(GlobalNamespace::ObstacleController *oc) noexcept {
             static auto function = CondDep::Find<OptColor, GlobalNamespace::ObstacleController*>(CHROMA_ID, "getObstacleControllerColorSafe");
 
             if (function) {
@@ -34,8 +34,8 @@ namespace Chroma {
         }
 
         /// Sets the obstacle color if the method was found.
-        static void setObstacleColorSafe(GlobalNamespace::ObstacleController* nc, UnityEngine::Color color0) noexcept {
-            static auto function = CondDep::Find<void, GlobalNamespace::ObstacleController*, UnityEngine::Color>(CHROMA_ID, "setObstacleColorSafe");
+        static void setObstacleColorSafe(GlobalNamespace::ObstacleController* nc, Sombrero::FastColor color0) noexcept {
+            static auto function = CondDep::Find<void, GlobalNamespace::ObstacleController*, Sombrero::FastColor>(CHROMA_ID, "setObstacleColorSafe");
 
             if (function) {
                 function.value()(nc, color0);
@@ -43,8 +43,8 @@ namespace Chroma {
         }
 
         /// Sets all the obstacle color if the method was found.
-        static void setAllObstacleColorSafe(UnityEngine::Color color0) noexcept {
-            static auto function = CondDep::Find<void, UnityEngine::Color>(CHROMA_ID, "setAllObstacleColorSafe");
+        static void setAllObstacleColorSafe(Sombrero::FastColor color0) noexcept {
+            static auto function = CondDep::Find<void, Sombrero::FastColor>(CHROMA_ID, "setAllObstacleColorSafe");
 
             if (function) {
                 function.value()(color0);

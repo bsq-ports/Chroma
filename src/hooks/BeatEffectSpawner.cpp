@@ -41,7 +41,7 @@ MAKE_HOOK_MATCH(BeatEffectSpawner_HandleNoteDidStartJump, &BeatEffectSpawner::Ha
 
 
     if (noteController->noteData->colorType == ColorType::None) {
-        self->bombColorEffect = ChromaUtils::ColorAlpha(BombColorizer::GetBombColorizer(noteController)->getColor(), 0.5f);
+        self->bombColorEffect = BombColorizer::GetBombColorizer(noteController)->getColor().Alpha(0.5f);
     } else {
         ColorManagerColorForType::EnableColorOverride(noteController);
     }

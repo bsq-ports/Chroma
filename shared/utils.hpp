@@ -1,6 +1,7 @@
 #pragma once
 
 #include "UnityEngine/Color.hpp"
+#include "sombrero/shared/ColorUtils.hpp"
 
 #define CHROMA_ID "chroma"
 
@@ -27,16 +28,16 @@ namespace Chroma {
             return (((a & 0x0ff) << 24) | ((r & 0x0ff) << 16) | ((g & 0x0ff) << 8) | (b & 0x0ff));
         }
 
-        inline static int ColourToInt(UnityEngine::Color color) {
+        inline static int ColourToInt(Sombrero::FastColor color) {
             return ColourToInt(color.r, color.g, color.b, color.a);
         }
 
-        inline static UnityEngine::Color ColourFromInt(int rgb) {
+        inline static Sombrero::FastColor ColourFromInt(int rgb) {
             int alpha = (rgb >> 24) & 0x0ff;
             int red = (rgb >> 16) & 0x0ff;
             int green = (rgb >> 8) & 0x0ff;
             int blue = (rgb) & 0x0ff;
-            return UnityEngine::Color((float) red / 255.0f, (float) green / 255.0f, (float) blue / 255.0f,
+            return Sombrero::FastColor((float) red / 255.0f, (float) green / 255.0f, (float) blue / 255.0f,
                                       (float) alpha / 255.0f);
         }
     };
@@ -54,12 +55,12 @@ namespace Chroma {
         float a;
         bool isSet;
 
-        [[nodiscard]] UnityEngine::Color getColor() const {
-            return UnityEngine::Color(r, g, b, a);
+        [[nodiscard]] Sombrero::FastColor getColor() const {
+            return Sombrero::FastColor(r, g, b, a);
         }
     };
 
-    inline OptColor OptColorFromColor(UnityEngine::Color const &color) {
+    inline OptColor OptColorFromColor(Sombrero::FastColor const &color) {
         return {
                 color.r,
                 color.g,
@@ -79,7 +80,7 @@ namespace Chroma {
     };
 
 
-    inline OptColor OptColorFromColor(std::optional<UnityEngine::Color> const &color) {
+    inline OptColor OptColorFromColor(std::optional<Sombrero::FastColor> const &color) {
         return color ? OptColorFromColor(*color) : OptColorNull;
     }
 }

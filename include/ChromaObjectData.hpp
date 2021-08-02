@@ -9,6 +9,8 @@
 #include "GlobalNamespace/BeatmapEventData.hpp"
 #include "GlobalNamespace/IReadonlyBeatmapData.hpp"
 
+#include "sombrero/shared/ColorUtils.hpp"
+
 namespace Chroma {
 
     enum class ObjectDataType {
@@ -20,7 +22,7 @@ namespace Chroma {
     class ChromaObjectData {
     public:
         const ObjectDataType dataType;
-        std::optional<UnityEngine::Color> Color;
+        std::optional<Sombrero::FastColor> Color;
 
         ChromaObjectData() : dataType(ObjectDataType::Object){};
 

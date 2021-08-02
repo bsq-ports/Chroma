@@ -10,6 +10,8 @@
 #include "GlobalNamespace/BeatmapEventData.hpp"
 #include "GlobalNamespace/IReadonlyBeatmapData.hpp"
 
+#include "sombrero/shared/ColorUtils.hpp"
+
 using namespace ChromaUtils;
 
 namespace Chroma {
@@ -19,14 +21,14 @@ namespace Chroma {
 
         std::optional<std::reference_wrapper<rapidjson::Value>> PropID;
 
-        std::optional<UnityEngine::Color> ColorData;
+        std::optional<Sombrero::FastColor> ColorData;
 
         struct GradientObjectData {
             float Duration;
 
-            UnityEngine::Color StartColor;
+            Sombrero::FastColor StartColor;
 
-            UnityEngine::Color EndColor;
+            Sombrero::FastColor EndColor;
 
             Functions Easing;
         };

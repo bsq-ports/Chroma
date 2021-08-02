@@ -10,6 +10,7 @@ DEFINE_TYPE(Chroma, ChromaClashEffectController);
 using namespace Chroma;
 using namespace GlobalNamespace;
 using namespace UnityEngine;
+using namespace Sombrero;
 
 
 void ChromaClashEffectController::Init(UnityEngine::ParticleSystem *sparkleParticleSystem,
@@ -22,17 +23,17 @@ void ChromaClashEffectController::Init(UnityEngine::ParticleSystem *sparkleParti
     SaberColorizer::SaberColorChanged += {&ChromaClashEffectController::OnSaberColorChanged, this};
 }
 
-void ChromaClashEffectController::OnSaberColorChanged(int saberType, GlobalNamespace::SaberModelController* saberModelController, UnityEngine::Color color) {
+void ChromaClashEffectController::OnSaberColorChanged(int saberType, GlobalNamespace::SaberModelController* saberModelController, Sombrero::FastColor color) {
     float h;
     float s;
     float _;
 
-    ChromaUtils::ColorRGBToHSV(color, h, s, _);
-    Color effectColor = ChromaUtils::ColorHSVToRGB(h, s, 1);
+    Sombrero::FastColor::RGBToHSV(color, h, s, _);
+    Sombrero::FastColor effectColor = Sombrero::FastColor::HSVToRGB(h, s, 1);
 
     _colors[(int)saberType] = effectColor;
 
-    Color average = ChromaUtils::ColorLerp(_colors[0], _colors[1], 0.5f);
+    Sombrero::FastColor average = Sombrero::FastColor::Lerp(_colors[0], _colors[1], 0.5f);
     auto sparkleMain = _sparkleParticleSystem->get_main();
     sparkleMain.set_startColor(ParticleSystem::MinMaxGradient(average));
     auto glowMain = _glowParticleSystem->get_main();

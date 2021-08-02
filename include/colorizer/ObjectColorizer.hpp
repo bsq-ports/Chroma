@@ -4,25 +4,26 @@
 #include <optional>
 #include <functional>
 
-#include <UnityEngine/Color.hpp>
+#include "UnityEngine/Color.hpp"
+#include "sombrero/shared/ColorUtils.hpp"
 
 namespace Chroma {
     class ObjectColorizer {
     private:
-        std::optional<UnityEngine::Color> _color;
+        std::optional<Sombrero::FastColor> _color;
     protected:
-        UnityEngine::Color OriginalColor;
-        virtual std::optional<UnityEngine::Color> GlobalColorGetter() = 0;
-        virtual std::optional<UnityEngine::Color> OriginalColorGetter();
+        Sombrero::FastColor OriginalColor;
+        virtual std::optional<Sombrero::FastColor> GlobalColorGetter() = 0;
+        virtual std::optional<Sombrero::FastColor> OriginalColorGetter();
 
         virtual void Refresh() = 0;
 
     public:
-        std::optional<UnityEngine::Color> getSelfColor();
+        std::optional<Sombrero::FastColor> getSelfColor();
 
-        virtual UnityEngine::Color getColor();
+        virtual Sombrero::FastColor getColor();
 
-        void Colorize(std::optional<UnityEngine::Color> color);
+        void Colorize(std::optional<Sombrero::FastColor> color);
     };
 
 }

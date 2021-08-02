@@ -78,7 +78,7 @@ Chroma::EnvironmentEnhancementManager::LookupId(const std::string& id, Chroma::L
     return ret;
 }
 
-std::optional<UnityEngine::Vector3>
+std::optional<Sombrero::FastVector3>
 EnvironmentEnhancementManager::GetVectorData(std::reference_wrapper<rapidjson::Value> dynDataW, const std::string& name) {
     rapidjson::Value& dynData = dynDataW.get();
 
@@ -87,7 +87,7 @@ EnvironmentEnhancementManager::GetVectorData(std::reference_wrapper<rapidjson::V
     if (!objectsVal.IsArray() || objectsVal.Empty())
         return std::nullopt;
 
-    return UnityEngine::Vector3 {objectsVal[0].GetFloat(), objectsVal[1].GetFloat(), objectsVal[2].GetFloat()};
+    return Sombrero::FastVector3 {objectsVal[0].GetFloat(), objectsVal[1].GetFloat(), objectsVal[2].GetFloat()};
 }
 
 void EnvironmentEnhancementManager::GetAllGameObjects() {

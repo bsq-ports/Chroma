@@ -19,7 +19,7 @@ namespace Chroma {
     public:
 
         /// Gets the saber color or null if either Chroma is not setting the color or method was not found
-        static std::optional<UnityEngine::Color> getGlobalSaberColorSafe(int saberType) noexcept {
+        static std::optional<Sombrero::FastColor> getGlobalSaberColorSafe(int saberType) noexcept {
             static auto function = CondDep::Find<OptColor, int>(CHROMA_ID, "getGlobalSaberColorSafe");
 
             if (function) {
@@ -35,8 +35,8 @@ namespace Chroma {
         }
 
         /// Sets the saber color if the method was found.
-        static void setGlobalSaberColorSafe(int saberType, std::optional<UnityEngine::Color> color) noexcept {
-            static auto function = CondDep::Find<void, int, std::optional<UnityEngine::Color>>(CHROMA_ID, "setGlobalSaberColorSafe");
+        static void setGlobalSaberColorSafe(int saberType, std::optional<Sombrero::FastColor> color) noexcept {
+            static auto function = CondDep::Find<void, int, std::optional<Sombrero::FastColor>>(CHROMA_ID, "setGlobalSaberColorSafe");
 
             if (function) {
                 function.value()(saberType, color);
@@ -44,7 +44,7 @@ namespace Chroma {
         }
 
         /// Gets the saber color or null if either Chroma is not setting the color or method was not found
-        static std::optional<UnityEngine::Color> getSaberColorSafe(GlobalNamespace::SaberModelController* saberModelController) noexcept {
+        static std::optional<Sombrero::FastColor> getSaberColorSafe(GlobalNamespace::SaberModelController* saberModelController) noexcept {
             static auto function = CondDep::Find<OptColor, GlobalNamespace::SaberModelController*>(CHROMA_ID, "getSaberColorSafe");
 
             if (function) {
@@ -60,15 +60,15 @@ namespace Chroma {
         }
 
         /// Sets the saber color if the method was found.
-        static void setSaberColorSafe(GlobalNamespace::SaberModelController* saberModelController, std::optional<UnityEngine::Color> color) noexcept {
-            static auto function = CondDep::Find<void, GlobalNamespace::SaberModelController*, std::optional<UnityEngine::Color>>(CHROMA_ID, "setSaberColorSafe");
+        static void setSaberColorSafe(GlobalNamespace::SaberModelController* saberModelController, std::optional<Sombrero::FastColor> color) noexcept {
+            static auto function = CondDep::Find<void, GlobalNamespace::SaberModelController*, std::optional<Sombrero::FastColor>>(CHROMA_ID, "setSaberColorSafe");
 
             if (function) {
                 function.value()(saberModelController, color);
             }
         }
 
-        using ColorPair = std::pair<std::optional<UnityEngine::Color>, std::optional<UnityEngine::Color>>;
+        using ColorPair = std::pair<std::optional<Sombrero::FastColor>, std::optional<Sombrero::FastColor>>;
         using ColorOptPair = ExternPair<OptColor, OptColor>;
         /// Gets the saber color or null if either Chroma is not setting the color or method was not found
         static ColorPair getGlobalSabersColorSafe() noexcept {
@@ -112,12 +112,12 @@ namespace Chroma {
 
         /// This retrieves the callback used for Saber Color changed.
         ///
-        static std::optional<std::reference_wrapper<UnorderedEventCallback<int, GlobalNamespace::SaberModelController*, UnityEngine::Color>>> getSaberChangedColorCallbackSafe() {
-            static auto function = CondDep::Find<UnorderedEventCallback<int, GlobalNamespace::SaberModelController*, UnityEngine::Color>*>(CHROMA_ID, "getSaberChangedColorCallbackSafe");
+        static std::optional<std::reference_wrapper<UnorderedEventCallback<int, GlobalNamespace::SaberModelController*, Sombrero::FastColor>>> getSaberChangedColorCallbackSafe() {
+            static auto function = CondDep::Find<UnorderedEventCallback<int, GlobalNamespace::SaberModelController*, Sombrero::FastColor>*>(CHROMA_ID, "getSaberChangedColorCallbackSafe");
 
             /// Oh boi what have I done
             if (function) {
-                UnorderedEventCallback<int, GlobalNamespace::SaberModelController*, UnityEngine::Color>& callback = *function.value()();
+                UnorderedEventCallback<int, GlobalNamespace::SaberModelController*, Sombrero::FastColor>& callback = *function.value()();
                 return std::make_optional(std::ref(callback));
             }
 
@@ -126,8 +126,8 @@ namespace Chroma {
 
         /// This registers a callback that is called whenever the saber color changes
         /// Do note however that every time a scene changes the callback is erased.
-        static void registerSaberCallback(const ThinVirtualLayer<void (void*, int, GlobalNamespace::SaberModelController*, UnityEngine::Color)>& callback) {
-            static auto function = CondDep::Find<void, const ThinVirtualLayer<void (void*, int, GlobalNamespace::SaberModelController*, UnityEngine::Color)>&>(CHROMA_ID, "registerSaberCallbackSafe");
+        static void registerSaberCallback(const ThinVirtualLayer<void (void*, int, GlobalNamespace::SaberModelController*, Sombrero::FastColor)>& callback) {
+            static auto function = CondDep::Find<void, const ThinVirtualLayer<void (void*, int, GlobalNamespace::SaberModelController*, Sombrero::FastColor)>&>(CHROMA_ID, "registerSaberCallbackSafe");
 
             if (function) {
                 function.value()(callback);

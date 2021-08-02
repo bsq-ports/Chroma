@@ -20,7 +20,7 @@
 using namespace CustomJSONData;
 using namespace GlobalNamespace;
 using namespace UnityEngine;
-
+using namespace Sombrero;
 using namespace Chroma;
 
 NoteColorizer::NoteColorizer(GlobalNamespace::NoteControllerBase *noteController)
@@ -41,7 +41,7 @@ std::shared_ptr<NoteColorizer> NoteColorizer::New(GlobalNamespace::NoteControlle
     return noteColorizer;
 }
 
-std::vector<UnityEngine::Color> NoteColorizer::getOriginalColors() {
+std::vector<Sombrero::FastColor> NoteColorizer::getOriginalColors() {
     if (!_originalColors) {
         ColorManager *colorManager = _colorNoteVisuals->colorManager;
         if (colorManager) {
@@ -79,15 +79,15 @@ GlobalNamespace::ColorType NoteColorizer::getColorType() {
     return ColorType::ColorA;
 }
 
-std::optional<UnityEngine::Color> NoteColorizer::GlobalColorGetter() {
+std::optional<Sombrero::FastColor> NoteColorizer::GlobalColorGetter() {
     return GlobalColor[(int) getColorType()];
 }
 
-std::optional<UnityEngine::Color> NoteColorizer::OriginalColorGetter() {
+std::optional<Sombrero::FastColor> NoteColorizer::OriginalColorGetter() {
     return getOriginalColors()[(int) getColorType()];
 }
 
-void NoteColorizer::GlobalColorize(std::optional<UnityEngine::Color> color, GlobalNamespace::ColorType colorType) {
+void NoteColorizer::GlobalColorize(std::optional<Sombrero::FastColor> color, GlobalNamespace::ColorType colorType) {
     GlobalColor[(int)colorType] = color;
     for (auto& valuePair : Colorizers)
     {
@@ -117,8 +117,8 @@ void NoteColorizer::ColorizeSaber(GlobalNamespace::NoteController *noteControlle
 void NoteColorizer::Refresh() {
     if (NoteColorable) return;
 
-    Color color = getColor();
-    if (ChromaUtils::ColorEquals(color, _colorNoteVisuals->noteColor))
+    Sombrero::FastColor color = getColor();
+    if (color == _colorNoteVisuals->noteColor)
     {
         return;
     }

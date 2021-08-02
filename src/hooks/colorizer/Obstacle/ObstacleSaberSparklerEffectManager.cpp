@@ -26,8 +26,8 @@ using namespace UnityEngine;
 void SetObstacleSaberSparkleColor(ObstacleSaberSparkleEffect* obstacleSaberSparkleEffect, GlobalNamespace::ObstacleController* obstacleController)
 {
     float h, s, _;
-    ChromaUtils::ColorRGBToHSV(ObstacleColorizer::GetObstacleColorizer(obstacleController)->getColor(), h, s, _);
-    obstacleSaberSparkleEffect->set_color(ChromaUtils::ColorHSVToRGB(h, s, 1));
+    Sombrero::FastColor::RGBToHSV(ObstacleColorizer::GetObstacleColorizer(obstacleController)->getColor(), h, s, _);
+    obstacleSaberSparkleEffect->set_color(Sombrero::FastColor::HSVToRGB(h, s, 1));
 }
 
 MAKE_HOOK_MATCH(ObstacleSaberSparkleEffectManager_Update,

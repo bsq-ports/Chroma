@@ -9,6 +9,8 @@
 #include "GlobalNamespace/ColorManager.hpp"
 #include "GlobalNamespace/SaberType.hpp"
 
+#include "sombrero/shared/ColorUtils.hpp"
+
 #include <vector>
 #include <string>
 #include <optional>
@@ -21,9 +23,9 @@ DECLARE_CLASS_CODEGEN(Chroma, ChromaClashEffectController, UnityEngine::MonoBeha
   private:
           DECLARE_INSTANCE_FIELD(UnityEngine::ParticleSystem*, _sparkleParticleSystem);
           DECLARE_INSTANCE_FIELD(UnityEngine::ParticleSystem*, _glowParticleSystem);
-          std::vector<UnityEngine::Color> _colors;
+          std::vector<Sombrero::FastColor> _colors;
 
-          DECLARE_INSTANCE_METHOD(void, OnSaberColorChanged, int saberType, GlobalNamespace::SaberModelController* saberModelController, UnityEngine::Color color);
+          DECLARE_INSTANCE_METHOD(void, OnSaberColorChanged, int saberType, GlobalNamespace::SaberModelController* saberModelController, Sombrero::FastColor color);
           public:
           DECLARE_INSTANCE_METHOD(void, Init, UnityEngine::ParticleSystem* sparkleParticleSystem, UnityEngine::ParticleSystem* glowParticleSystem, GlobalNamespace::ColorManager* colorManager);
           DECLARE_INSTANCE_METHOD(void, OnDestroy);

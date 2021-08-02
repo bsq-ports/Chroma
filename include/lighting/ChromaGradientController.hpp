@@ -27,17 +27,17 @@ typedef std::unordered_map<int, Chroma::ChromaGradientEvent> gradientMap;
 
 namespace Chroma {
     struct ChromaGradientEvent {
-        UnityEngine::Color _initcolor;
-        UnityEngine::Color _endcolor;
+        Sombrero::FastColor _initcolor;
+        Sombrero::FastColor _endcolor;
         float _start;
         float _duration;
         GlobalNamespace::BeatmapEventType _event;
         ChromaUtils::Functions _easing;
         std::optional<std::vector<int>> _lightIds;
 
-        ChromaGradientEvent(UnityEngine::Color initcolor, UnityEngine::Color endcolor, float start, float duration, GlobalNamespace::BeatmapEventType eventType, std::optional<std::vector<int>> lightIds, ChromaUtils::Functions easing = ChromaUtils::Functions::easeLinear);
+        ChromaGradientEvent(Sombrero::FastColor initcolor, Sombrero::FastColor endcolor, float start, float duration, GlobalNamespace::BeatmapEventType eventType, std::optional<std::vector<int>> lightIds, ChromaUtils::Functions easing = ChromaUtils::Functions::easeLinear);
 
-        [[nodiscard]] UnityEngine::Color Interpolate(bool &modified, const float& songTime) const;
+        [[nodiscard]] Sombrero::FastColor Interpolate(bool &modified, const float& songTime) const;
     };
 
 
@@ -52,7 +52,7 @@ DECLARE_CLASS_CODEGEN(Chroma, ChromaGradientController, UnityEngine::MonoBehavio
         // internal
         gradientMap Gradients;
 
-        static UnityEngine::Color AddGradient(ChromaEventData::GradientObjectData gradientObject, GlobalNamespace::BeatmapEventType id, float time, std::optional<std::vector<int>> lightIds);
+        static Sombrero::FastColor AddGradient(ChromaEventData::GradientObjectData gradientObject, GlobalNamespace::BeatmapEventType id, float time, std::optional<std::vector<int>> lightIds);
         DECLARE_STATIC_METHOD(Chroma::ChromaGradientController*, getInstance);
         DECLARE_STATIC_METHOD(void, clearInstance);
 

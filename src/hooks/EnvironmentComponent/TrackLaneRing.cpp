@@ -32,9 +32,9 @@ MAKE_HOOK_MATCH(TrackLaneRing_FixedUpdateRing, &TrackLaneRing::FixedUpdateRing, 
     }
 
     self->prevRotZ = self->rotZ;
-    self->rotZ = Lerp(self->rotZ, self->destRotZ, fixedDeltaTime * self->rotationSpeed);
+    self->rotZ = Sombrero::Lerp(self->rotZ, self->destRotZ, fixedDeltaTime * self->rotationSpeed);
     self->prevPosZ = self->posZ;
-    self->posZ = Lerp(self->posZ, self->destPosZ, fixedDeltaTime * self->moveSpeed);
+    self->posZ = Sombrero::Lerp(self->posZ, self->destPosZ, fixedDeltaTime * self->moveSpeed);
 }
 
 MAKE_HOOK_MATCH(TrackLaneRing_LateUpdateRing, &TrackLaneRing::LateUpdateRing, void, GlobalNamespace::TrackLaneRing* self, float interpolationFactor) {
@@ -44,7 +44,7 @@ MAKE_HOOK_MATCH(TrackLaneRing_LateUpdateRing, &TrackLaneRing::LateUpdateRing, vo
         return;
     }
 
-    static UnityEngine::Quaternion identity = UnityEngine::Quaternion::get_identity();
+    static Sombrero::FastQuaternion identity = Sombrero::FastQuaternion::get_identity();
 
     auto& rotation = identity;
 
@@ -55,18 +55,18 @@ MAKE_HOOK_MATCH(TrackLaneRing_LateUpdateRing, &TrackLaneRing::LateUpdateRing, vo
     }
 
 
-    static UnityEngine::Vector3 vectorForward = UnityEngine::Vector3::get_forward();
+    static Sombrero::FastVector3 vectorForward = Sombrero::FastVector3::forward();
 
     float interpolatedZPos = self->prevPosZ + ((self->posZ - self->prevPosZ) * interpolationFactor);
-    UnityEngine::Vector3 positionZOffset = vectorMultiply(quaternionMultiply(rotation, vectorForward), interpolatedZPos);
-    UnityEngine::Vector3 pos = vectorAdd(self->positionOffset, positionZOffset);
+    Sombrero::FastVector3 positionZOffset = ((rotation * vectorForward) * interpolatedZPos);
+    Sombrero::FastVector3 pos = self->positionOffset + positionZOffset;
 
     float interpolatedZRot = self->prevRotZ + ((self->rotZ - self->prevRotZ) * interpolationFactor);
 
-    static auto AngleAxis = FPtrWrapper<&UnityEngine::Quaternion::AngleAxis>::get();
+    static auto AngleAxis = FPtrWrapper<&Sombrero::FastQuaternion::AngleAxis>::get();
 
-    auto rotationZOffset = AngleAxis(interpolatedZRot, vectorForward);
-    UnityEngine::Quaternion rot = quaternionMultiply(rotation, rotationZOffset);
+    Sombrero::FastQuaternion rotationZOffset = AngleAxis(interpolatedZRot, vectorForward);
+    Sombrero::FastQuaternion rot = rotation * rotationZOffset;
 
     self->transform->set_localRotation(rot);
     self->transform->set_localPosition(pos);

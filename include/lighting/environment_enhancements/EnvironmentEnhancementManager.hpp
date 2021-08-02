@@ -12,6 +12,9 @@
 
 #include "lighting/environment_enhancements/GameObjectInfo.hpp"
 
+#include "sombrero/shared/Vector3Utils.hpp"
+#include "sombrero/shared/QuaternionUtils.hpp"
+
 namespace Chroma {
     enum class LookupMethod
     {
@@ -26,16 +29,16 @@ namespace Chroma {
 
         static std::vector<GameObjectInfo> LookupId(const std::string& id, LookupMethod lookupMethod);
 
-        static std::optional<UnityEngine::Vector3> GetVectorData(std::reference_wrapper<rapidjson::Value> dynData, const std::string& name);
+        static std::optional<Sombrero::FastVector3> GetVectorData(std::reference_wrapper<rapidjson::Value> dynData, const std::string& name);
 
         static void GetAllGameObjects();
 
         static void GetChildRecursive(UnityEngine::Transform* gameObject, std::vector<UnityEngine::Transform*>& children);
 
     public:
-        inline static std::unordered_map<GlobalNamespace::TrackLaneRing*, UnityEngine::Quaternion> RingRotationOffsets;
-        inline static std::unordered_map<GlobalNamespace::BeatmapObjectsAvoidance*, UnityEngine::Vector3> AvoidancePosition;
-        inline static std::unordered_map<GlobalNamespace::BeatmapObjectsAvoidance*, UnityEngine::Quaternion> AvoidanceRotation;
+        inline static std::unordered_map<GlobalNamespace::TrackLaneRing*, Sombrero::FastQuaternion> RingRotationOffsets;
+        inline static std::unordered_map<GlobalNamespace::BeatmapObjectsAvoidance*, Sombrero::FastVector3> AvoidancePosition;
+        inline static std::unordered_map<GlobalNamespace::BeatmapObjectsAvoidance*, Sombrero::FastQuaternion> AvoidanceRotation;
 
         static void Init(CustomJSONData::CustomBeatmapData* customBeatmapData, float noteLinesDistance);
 

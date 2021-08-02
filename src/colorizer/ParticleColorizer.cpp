@@ -5,6 +5,7 @@
 using namespace Chroma;
 using namespace GlobalNamespace;
 using namespace UnityEngine;
+using namespace Sombrero;
 
 Chroma::ParticleColorizer::ParticleColorizer(GlobalNamespace::ParticleSystemEventEffect *particleSystemEventEffect,
                                              GlobalNamespace::BeatmapEventType beatmapEventType) :
@@ -49,7 +50,7 @@ ParticleColorizer::GetOrCreateColorizerList(GlobalNamespace::BeatmapEventType ev
 }
 
 void ParticleColorizer::OnLightColorChanged(GlobalNamespace::BeatmapEventType eventType,
-                                            std::vector<UnityEngine::Color> colors) {
+                                            std::vector<Sombrero::FastColor> colors) {
     if (eventType == _eventType)
     {
         for (int i = 0; i < COLOR_FIELDS; i++)
@@ -71,8 +72,8 @@ void ParticleColorizer::OnLightColorChanged(GlobalNamespace::BeatmapEventType ev
        static auto RefreshParticles = FPtrWrapper<&GlobalNamespace::ParticleSystemEventEffect::RefreshParticles>::get();
 
         auto particleSystemEventEffect = _particleSystemEventEffect;
-        Color color;
-        Color afterHighlightColor;
+        Sombrero::FastColor color;
+        Sombrero::FastColor afterHighlightColor;
         switch (PreviousValue)
         {
             case 0:
@@ -84,7 +85,7 @@ void ParticleColorizer::OnLightColorChanged(GlobalNamespace::BeatmapEventType ev
             case 5:
                 color = (PreviousValue == 1) ? _multipliedColorSOs[0]->get_color() : _multipliedColorSOs[1]->get_color();
                 particleSystemEventEffect->particleColor = color;
-                particleSystemEventEffect->offColor = ChromaUtils::ColorAlpha(color, 0);
+                particleSystemEventEffect->offColor = color.Alpha(0);
                 RefreshParticles(particleSystemEventEffect);
                 break;
 
@@ -92,11 +93,11 @@ void ParticleColorizer::OnLightColorChanged(GlobalNamespace::BeatmapEventType ev
             case 6:
                 color = (PreviousValue == 2) ? _multipliedHighlightColorSOs[0]->get_color() : _multipliedHighlightColorSOs[1]->get_color();
                 particleSystemEventEffect->highlightColor = color;
-                particleSystemEventEffect->offColor = ChromaUtils::ColorAlpha(color, 0);
+                particleSystemEventEffect->offColor = color.Alpha(0);
                 afterHighlightColor = (PreviousValue == 2) ? _multipliedColorSOs[0]->get_color() : _multipliedColorSOs[1]->get_color();
                 particleSystemEventEffect->afterHighlightColor = afterHighlightColor;
 
-                particleSystemEventEffect->particleColor = ChromaUtils::ColorLerp(afterHighlightColor, color, particleSystemEventEffect->highlightValue);
+                particleSystemEventEffect->particleColor = Sombrero::FastColor::Lerp(afterHighlightColor, color, particleSystemEventEffect->highlightValue);
                 RefreshParticles(particleSystemEventEffect);
                 break;
 
@@ -105,12 +106,12 @@ void ParticleColorizer::OnLightColorChanged(GlobalNamespace::BeatmapEventType ev
             case -1:
                 color = (PreviousValue == 3) ? _multipliedHighlightColorSOs[0]->get_color() : _multipliedHighlightColorSOs[1]->get_color();
                 particleSystemEventEffect->highlightColor = color;
-                particleSystemEventEffect->offColor = ChromaUtils::ColorAlpha(color, 0);
+                particleSystemEventEffect->offColor = color.Alpha(0);
                 particleSystemEventEffect->particleColor = color;
                 afterHighlightColor = particleSystemEventEffect->offColor;
                 particleSystemEventEffect->afterHighlightColor = afterHighlightColor;
 
-                particleSystemEventEffect->particleColor = ChromaUtils::ColorLerp(afterHighlightColor, color, particleSystemEventEffect->highlightValue);
+                particleSystemEventEffect->particleColor = Sombrero::FastColor::Lerp(afterHighlightColor, color, particleSystemEventEffect->highlightValue);
                 RefreshParticles(particleSystemEventEffect);
                 break;
         }
@@ -122,7 +123,7 @@ void ParticleColorizer::InitializeSO(const std::string& id, int index, bool high
     auto colorSOAcessor = il2cpp_utils::FindField(klass, (std::string_view) id);
     auto lightMultSO = il2cpp_utils::cast<MultipliedColorSO>(CRASH_UNLESS(il2cpp_utils::GetFieldValue<GlobalNamespace::ColorSO*>(_particleSystemEventEffect, colorSOAcessor)));
 
-    Color multiplierColor = lightMultSO->multiplierColor;
+    Sombrero::FastColor multiplierColor = lightMultSO->multiplierColor;
     auto lightSO = lightMultSO->baseColor;
 
     SafePtr<MultipliedColorSO> mColorSO(ScriptableObject::CreateInstance<MultipliedColorSO*>());

@@ -25,7 +25,7 @@
 using namespace CustomJSONData;
 using namespace GlobalNamespace;
 using namespace UnityEngine;
-
+using namespace Sombrero;
 using namespace Chroma;
 
 LightColorizer::LightColorizer(GlobalNamespace::LightSwitchEventEffect *lightSwitchEventEffect,
@@ -146,8 +146,8 @@ std::shared_ptr<LightColorizer> LightColorizer::New(GlobalNamespace::LightSwitch
     return lightColorizer;
 }
 
-std::vector<UnityEngine::Color> LightColorizer::getColor() {
-    std::vector<UnityEngine::Color> colors(COLOR_FIELDS);
+std::vector<Sombrero::FastColor> LightColorizer::getColor() {
+    std::vector<Sombrero::FastColor> colors(COLOR_FIELDS);
     for (int i = 0; i < COLOR_FIELDS; i++)
     {
         auto color = _colors[i];
@@ -165,7 +165,7 @@ std::vector<UnityEngine::Color> LightColorizer::getColor() {
     return colors;
 }
 
-void LightColorizer::GlobalColorize(bool refresh, std::vector<std::optional<UnityEngine::Color>> colors) {
+void LightColorizer::GlobalColorize(bool refresh, std::vector<std::optional<Sombrero::FastColor>> colors) {
     for (int i = 0; i < colors.size(); i++)
     {
         GlobalColor[i] = colors[i];
@@ -215,7 +215,7 @@ void LightColorizer::RegisterLight(UnityEngine::MonoBehaviour *lightWithId, std:
     }
 }
 
-void LightColorizer::Colorize(bool refresh, std::vector<std::optional<UnityEngine::Color>>& colors) {
+void LightColorizer::Colorize(bool refresh, std::vector<std::optional<Sombrero::FastColor>>& colors) {
     for (int i = 0; i < colors.size(); i++)
     {
         _colors[i] = colors[i];
@@ -242,7 +242,7 @@ void LightColorizer::Reset() {
     LightColorChanged.clear();
 }
 
-void LightColorizer::SetSOs(std::vector<UnityEngine::Color> colors) {
+void LightColorizer::SetSOs(std::vector<Sombrero::FastColor> colors) {
     static auto SetColor = FPtrWrapper<&GlobalNamespace::SimpleColorSO::SetColor>::get();
 
     for (int i = 0; i < colors.size(); i++)
@@ -265,7 +265,7 @@ void LightColorizer::InitializeSO(const std::string &id, int index) {
     auto colorSOAcessor = il2cpp_utils::FindField(classof(LightSwitchEventEffect*), (std::string_view) id);
     auto lightMultSO = il2cpp_utils::cast<MultipliedColorSO>(CRASH_UNLESS(il2cpp_utils::GetFieldValue<GlobalNamespace::ColorSO*>(_lightSwitchEventEffect, colorSOAcessor)));
 
-    Color multiplierColor = lightMultSO->multiplierColor;
+    Sombrero::FastColor multiplierColor = lightMultSO->multiplierColor;
     auto lightSO = lightMultSO->baseColor;
     _originalColors[index] = lightSO->color;
 

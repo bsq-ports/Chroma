@@ -23,7 +23,7 @@ void Chroma::LightColorManager::ColorLightSwitch(BeatmapEventData* beatmapEventD
 
 
     // Aero thinks legacy was a mistake. I think a Quest port was a bigger mistake.
-    std::optional<UnityEngine::Color> color;
+    std::optional<Sombrero::FastColor> color;
 
     if (chromaIt == ChromaEventDataManager::ChromaEventDatas.end()) {
         color = LegacyLightHelper::GetLegacyColor(beatmapEventData);
@@ -128,7 +128,7 @@ void Chroma::LightColorManager::ColorLightSwitch(BeatmapEventData* beatmapEventD
         }
 
 
-        std::optional<UnityEngine::Color> colorData = chromaData->ColorData;
+        std::optional<Sombrero::FastColor> colorData = chromaData->ColorData;
         if (colorData) {
             color = colorData;
             ChromaGradientController::CancelGradient(beatmapEventData->type);

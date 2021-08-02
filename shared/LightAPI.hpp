@@ -24,10 +24,10 @@ namespace Chroma {
         /// If a value is std::nullopt, it likely is to be ignored or used as a reset switch.
         /// In other words, if you make it nullopt, it will consider that as a reset method.
         struct LSEData {
-            std::optional<UnityEngine::Color> _lightColor0;
-            std::optional<UnityEngine::Color> _lightColor1;
-            std::optional<UnityEngine::Color> _lightColor0Boost = std::nullopt;
-            std::optional<UnityEngine::Color> _lightColor1Boost = std::nullopt;
+            std::optional<Sombrero::FastColor> _lightColor0;
+            std::optional<Sombrero::FastColor> _lightColor1;
+            std::optional<Sombrero::FastColor> _lightColor0Boost = std::nullopt;
+            std::optional<Sombrero::FastColor> _lightColor1Boost = std::nullopt;
         };
 
         /// Gets the lights
