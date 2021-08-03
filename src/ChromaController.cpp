@@ -114,12 +114,12 @@ bool ChromaController::ChromaRequired() {
 }
 
 bool ChromaController::DoColorizerSabers() {
-    return getChromaConfig().customColorEventsEnabled.GetValue() && ChromaRequired();
+    return ChromaRequired();
 }
 
 void ChromaController::SetChromaLegacy(bool v) {
     getLogger().debug("Set chroma legacy to %s", v ? "true" : "false");
-    ChromaLegacy = v;
+    ChromaLegacy = v && getChromaConfig().customColorEventsEnabled.GetValue();
 }
 
 bool ChromaController::GetChromaLegacy() {
@@ -132,6 +132,6 @@ bool ChromaController::DoChromaHooks() {
 }
 
 void ChromaController::setChromaRequired(bool chromaMap) {
-    getLogger().debug("Set chroma required/suggested to %s", chromaMap ? "true" : "false");
-    ChromaMap = chromaMap;
+    ChromaMap = chromaMap && getChromaConfig().customColorEventsEnabled.GetValue();
+    getLogger().debug("Set chroma required/suggested to %s", ChromaMap ? "true" : "false");
 }

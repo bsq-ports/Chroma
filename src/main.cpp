@@ -22,6 +22,8 @@
 #include <cstdlib>
 #include "lighting/LightIDTableManager.hpp"
 
+#include "pinkcore/shared/RequirementAPI.hpp"
+
 using namespace Chroma;
 using namespace QuestUI;
 
@@ -39,6 +41,13 @@ Logger& getLogger() {
 
 void setChromaEnv() {
     setenv("DisableChromaReq", getChromaConfig().customColorEventsEnabled.GetValue() ? "0" : "1", true);
+    if (getChromaConfig().customColorEventsEnabled.GetValue()) {
+        PinkCore::RequirementAPI::RegisterInstalled("Chroma");
+    } else {
+        PinkCore::RequirementAPI::RemoveInstalled("Chroma");
+    }
+
+    PinkCore::RequirementAPI::RegisterInstalled("Chroma Lighting Events");
 }
 
 void DidActivate(HMUI::ViewController* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling){
