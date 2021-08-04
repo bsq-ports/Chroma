@@ -63,18 +63,22 @@ EXPOSE_API(getGlobalSabersColorSafe, SaberAPI::ColorOptPair) {
     return SaberAPI::ColorOptPair {OptColorFromColor(colorA), OptColorFromColor(colorB)};
 }
 
-extern "C" UnorderedEventCallback<int, GlobalNamespace::SaberModelController*, Sombrero::FastColor>* __getSaberChangedColorCallbackSafe() {
+
+
+EXPOSE_API(getSaberChangedColorCallbackSafe, SaberAPI::SaberCallback*) {
     return &SaberColorizer::SaberColorChanged;
 }
 
-extern "C" void __registerSaberCallbackSafe(const ThinVirtualLayer<void (void*, int, GlobalNamespace::SaberModelController*, Sombrero::FastColor)>& callback) {
+
+
+EXPOSE_API(registerSaberCallbackSafe, void, const SaberAPI:: SaberCallbackFunc& callback) {
     SaberColorizer::SaberColorChanged += callback;
 }
 
-extern "C" void __setSaberColorable(GlobalNamespace::SaberModelController* saberModelController, bool colorable) {
+EXPOSE_API(setSaberColorable, void, GlobalNamespace::SaberModelController* saberModelController, bool colorable) {
     SaberColorizer::SetColorable(saberModelController, colorable);
 }
 
-extern "C" bool __isSaberColorable(GlobalNamespace::SaberModelController* saberModelController) {
+EXPOSE_API(isSaberColorable, bool, GlobalNamespace::SaberModelController* saberModelController) {
     return SaberColorizer::IsColorable(saberModelController);
 }

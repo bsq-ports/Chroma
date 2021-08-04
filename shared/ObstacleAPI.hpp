@@ -19,7 +19,7 @@ namespace Chroma {
         /// TODO: Unsure of whether this returns nullopt if Chroma sets the color or not.
         /// Gets the obstacle color or null if either Chroma is not setting the color or method was not found
         static std::optional<Sombrero::FastColor> getObstacleControllerColorSafe(GlobalNamespace::ObstacleController *oc) noexcept {
-            static auto function = CondDep::Find<OptColor, GlobalNamespace::ObstacleController*>(CHROMA_ID, "getObstacleControllerColorSafe");
+            static auto function = CondDeps::Find<OptColor, GlobalNamespace::ObstacleController*>(CHROMA_ID, "getObstacleControllerColorSafe");
 
             if (function) {
                 // Returns the color struct
@@ -35,7 +35,7 @@ namespace Chroma {
 
         /// Sets the obstacle color if the method was found.
         static void setObstacleColorSafe(GlobalNamespace::ObstacleController* nc, Sombrero::FastColor color0) noexcept {
-            static auto function = CondDep::Find<void, GlobalNamespace::ObstacleController*, Sombrero::FastColor>(CHROMA_ID, "setObstacleColorSafe");
+            static auto function = CondDeps::Find<void, GlobalNamespace::ObstacleController*, Sombrero::FastColor>(CHROMA_ID, "setObstacleColorSafe");
 
             if (function) {
                 function.value()(nc, color0);
@@ -44,7 +44,7 @@ namespace Chroma {
 
         /// Sets all the obstacle color if the method was found.
         static void setAllObstacleColorSafe(Sombrero::FastColor color0) noexcept {
-            static auto function = CondDep::Find<void, Sombrero::FastColor>(CHROMA_ID, "setAllObstacleColorSafe");
+            static auto function = CondDeps::Find<void, Sombrero::FastColor>(CHROMA_ID, "setAllObstacleColorSafe");
 
             if (function) {
                 function.value()(color0);
@@ -54,7 +54,7 @@ namespace Chroma {
         /// Sets if the obstacle is colorable. If this is set to true, Chroma will NOT color the obstacle and
         /// instead the work should be done by the mod handling coloring obstacles usually a custom obstacles mod
         static void setObstacleColorable(bool colorable) {
-            static auto function = CondDep::Find<void, bool>(CHROMA_ID, "setSaberColorable");
+            static auto function = CondDeps::Find<void, bool>(CHROMA_ID, "setSaberColorable");
 
             if (function) {
                 function.value()(colorable);
@@ -64,7 +64,7 @@ namespace Chroma {
         /// Checks if the obstacle is colorable. If this is set to true, Chroma will NOT color the obstacle and
         /// instead the work should be done by the mod handling coloring obstacles usually a custom obstacle mod
         static std::optional<bool> isObstacleColorable() {
-            static auto function = CondDep::Find<bool>(CHROMA_ID, "isSaberColorable");
+            static auto function = CondDeps::Find<bool>(CHROMA_ID, "isSaberColorable");
 
             if (function) {
                 return function.value()();

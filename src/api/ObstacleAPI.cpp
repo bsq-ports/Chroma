@@ -32,10 +32,10 @@ EXPOSE_API(setAllObstacleColorSafe, void, Sombrero::FastColor color1) {
     ObstacleColorizer::GlobalColorize(color1);
 }
 
-extern "C" void __setObstacleColorable(bool colorable) {
+EXPOSE_API(setObstacleColorable, void, bool colorable) {
     ObstacleColorizer::ObstacleColorable = colorable;
 }
 
-extern "C" bool __isObstacleColorable() {
+EXPOSE_API(isObstacleColorable, bool) {
     return ObstacleColorizer::ObstacleColorable;
 }

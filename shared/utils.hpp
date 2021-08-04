@@ -38,7 +38,7 @@ namespace Chroma {
             int green = (rgb >> 8) & 0x0ff;
             int blue = (rgb) & 0x0ff;
             return Sombrero::FastColor((float) red / 255.0f, (float) green / 255.0f, (float) blue / 255.0f,
-                                      (float) alpha / 255.0f);
+                                       (float) alpha / 255.0f);
         }
     };
 
@@ -47,7 +47,7 @@ namespace Chroma {
         T first;
         V second;
     };
-
+    extern "C" {
     struct OptColor {
         float r;
         float g;
@@ -59,6 +59,7 @@ namespace Chroma {
             return Sombrero::FastColor(r, g, b, a);
         }
     };
+    }
 
     inline OptColor OptColorFromColor(Sombrero::FastColor const &color) {
         return {

@@ -39,7 +39,7 @@ namespace Chroma {
         /// Avoid using this in a loop or frequent method,
         /// you can cache this during a song perhaps?
         static std::optional<std::unordered_map<int, GlobalNamespace::ILightWithId*>> getLightsSafe(GlobalNamespace::LightSwitchEventEffect *lse) {
-            static auto function = CondDep::Find<std::unordered_map<int, GlobalNamespace::ILightWithId*>*, GlobalNamespace::LightSwitchEventEffect*>(CHROMA_ID, "getLightsSafe");
+            static auto function = CondDeps::Find<std::unordered_map<int, GlobalNamespace::ILightWithId*>*, GlobalNamespace::LightSwitchEventEffect*>(CHROMA_ID, "getLightsSafe");
 
             if (function) {
                 auto val = function.value()(lse);
@@ -64,7 +64,7 @@ namespace Chroma {
         /// you can cache this during a song perhaps?
         static std::optional<std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId *>>>
         getLightsPropagationGroupedSafe(GlobalNamespace::LightSwitchEventEffect *lse) {
-            static auto function = CondDep::Find<std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId *>>*, GlobalNamespace::LightSwitchEventEffect*>(CHROMA_ID, "getLightsPropagationGroupedSafe");
+            static auto function = CondDeps::Find<std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId *>>*, GlobalNamespace::LightSwitchEventEffect*>(CHROMA_ID, "getLightsPropagationGroupedSafe");
 
             if (function) {
                 auto val = function.value()(lse);
@@ -88,7 +88,7 @@ namespace Chroma {
         ///
         /// This is a bit slower than usual since it creates a heap struct, then copies to a value struct and finally deletes.
         static std::optional<LSEData> getLightColorSafe(GlobalNamespace::BeatmapEventType mb) noexcept {
-            static auto function = CondDep::Find<LSEData*, GlobalNamespace::BeatmapEventType>(CHROMA_ID, "getLightColorSafe");
+            static auto function = CondDeps::Find<LSEData*, GlobalNamespace::BeatmapEventType>(CHROMA_ID, "getLightColorSafe");
 
             if (function) {
 
@@ -110,7 +110,7 @@ namespace Chroma {
         /// Sets the light color if the method was found.
         /// If nullopt, it resets the colors
         static void setLightColorSafe(GlobalNamespace::BeatmapEventType mb, bool refresh, std::optional<LSEData> color) noexcept {
-            static auto function = CondDep::Find<void, GlobalNamespace::BeatmapEventType, bool, std::optional<LSEData>>(CHROMA_ID, "setLightColorSafe");
+            static auto function = CondDeps::Find<void, GlobalNamespace::BeatmapEventType, bool, std::optional<LSEData>>(CHROMA_ID, "setLightColorSafe");
 
             if (function) {
                 function.value()(mb, refresh, color);
@@ -120,7 +120,7 @@ namespace Chroma {
         /// Sets all the light colors
         /// If nullopt, it resets all the light colors
         static void SetAllLightingColorsSafe(std::optional<LSEData> lseData) {
-            static auto function = CondDep::Find<void, std::optional<LSEData>>(CHROMA_ID, "setAllLightingColorsSafe");
+            static auto function = CondDeps::Find<void, std::optional<LSEData>>(CHROMA_ID, "setAllLightingColorsSafe");
 
             if (function) {
                 function.value()(lseData);

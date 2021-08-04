@@ -59,10 +59,10 @@ EXPOSE_API(setNoteColorSafe, void, NoteControllerBase* nc, std::optional<Sombrer
     NoteColorizer::ColorizeNote(nc, color0);
 }
 
-extern "C" void __setNoteColorable(bool colorable) {
+EXPOSE_API(setNoteColorable, void, bool colorable) {
     NoteColorizer::NoteColorable = colorable;
 }
 
-extern "C" bool __isNoteColorable() {
+EXPOSE_API(isNoteColorable, bool) {
     return NoteColorizer::NoteColorable;
 }
