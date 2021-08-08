@@ -24,7 +24,7 @@ using namespace ChromaUtils;
 
 Sombrero::FastVector3& GetTransformScale(Sombrero::FastVector3& defaultV, ParametricBoxControllerParameters& parameters) {
 
-    if (parameters.Position) {
+    if (parameters.Scale) {
         return parameters.Scale.value();
     }
 
