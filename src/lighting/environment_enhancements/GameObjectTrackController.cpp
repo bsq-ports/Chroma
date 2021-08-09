@@ -174,17 +174,38 @@ void Chroma::GameObjectTrackController::Init(Track *track, float noteLinesDistan
     _beatmapObjectsAvoidance = beatmapObjectsAvoidance;
 }
 
+static const std::string TRACK = "_track";
+static std::optional<Track*> getTrack(rapidjson::Value& gameObjectData, CustomJSONData::CustomBeatmapData* beatmapData, std::string name = TRACK) {
+    auto tracks = TracksAD::getBeatmapAD(beatmapData->customData).tracks;
+
+    auto trackName = gameObjectData.FindMember(name);
+
+    if (trackName == gameObjectData.MemberEnd() || !trackName->value.IsString())
+        return std::nullopt;
+
+    auto trackFound = tracks.find(trackName->value.GetString());
+
+    if (trackFound == tracks.end())
+        return std::nullopt;
+
+    Track& track = trackFound->second;
+
+    return &track;
+}
+
 void Chroma::GameObjectTrackController::HandleTrackData(UnityEngine::GameObject *gameObject,
-                                                        CustomJSONData::JSONWrapper* gameObjectData,
+                                                        rapidjson::Value& gameObjectData,
                                                         CustomJSONData::CustomBeatmapData * beatmapData,
                                                         float noteLinesDistance,
                                                         std::optional<GlobalNamespace::TrackLaneRing *> trackLaneRing,
                                                         std::optional<GlobalNamespace::ParametricBoxController *> parametricBoxController,
                                                         std::optional<GlobalNamespace::BeatmapObjectsAvoidance *> beatmapObjectsAvoidance) {
-    auto track = TracksAD::getAD(gameObjectData).track;
+    auto track = getTrack(gameObjectData, beatmapData);
+
     if (track)
     {
+        getLogger().info("Making track for object %s yay!", to_utf8(csstrtostr(gameObject->get_name())).c_str());
         GameObjectTrackController* trackController = gameObject->AddComponent<GameObjectTrackController*>();
-        trackController->Init(track, noteLinesDistance, trackLaneRing, parametricBoxController, beatmapObjectsAvoidance);
+        trackController->Init(track.value(), noteLinesDistance, trackLaneRing, parametricBoxController, beatmapObjectsAvoidance);
     }
 }

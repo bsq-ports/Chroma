@@ -306,9 +306,9 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                         if (rotation || localRotation) {
                             AvoidanceRotation[beatmapObjectsAvoidance] = transform->get_localRotation();
                         }
+                     }
+                    GameObjectTrackController::HandleTrackData(gameObject, gameObjectDataVal, customBeatmapData, noteLinesDistance, trackLaneRing, parametricBoxController, beatmapObjectsAvoidance);
 
-                        GameObjectTrackController::HandleTrackData(gameObject, customBeatmapData->customData, customBeatmapData, noteLinesDistance, trackLaneRing, parametricBoxController, beatmapObjectsAvoidance);
-                    }
 
                     if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {
                         getLogger().info("ID [\"%s\"] using method [%s] found:", id.c_str(), lookupString.c_str());

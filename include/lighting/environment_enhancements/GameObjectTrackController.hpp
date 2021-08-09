@@ -34,7 +34,7 @@ private:
     std::optional<GlobalNamespace::BeatmapObjectsAvoidance*> _beatmapObjectsAvoidance;
 
     static void HandleTrackData(UnityEngine::GameObject* gameObject,
-                          CustomJSONData::JSONWrapper* gameObjectData,
+                          rapidjson::Value& gameObjectData,
                           CustomJSONData::CustomBeatmapData* beatmapData,
                           float noteLinesDistance,
                           std::optional<GlobalNamespace::TrackLaneRing*> trackLaneRing,
