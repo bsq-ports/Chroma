@@ -22,7 +22,7 @@ void Chroma::ChromaObjectDataManager::deserialize(GlobalNamespace::IReadonlyBeat
 
     debugSpamLog(contextLogger, "Array klass: %s", il2cpp_utils::ClassStandardName(beatmapLines->klass).c_str());
 
-    auto trackAD = TracksAD::getBeatmapAD(beatmapDataCast->customData);
+    TracksAD::BeatmapAssociatedData& trackAD = TracksAD::getBeatmapAD(beatmapDataCast->customData);
 
     for (int i = 0; i < beatmapLines->Length(); i++) {
         auto beatmapLineData = il2cpp_utils::cast<GlobalNamespace::BeatmapLineData>(beatmapLines->get(i));
