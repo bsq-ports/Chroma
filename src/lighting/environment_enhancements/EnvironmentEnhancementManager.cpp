@@ -10,6 +10,7 @@
 #include "lighting/environment_enhancements/LegacyEnvironmentRemoval.hpp"
 #include "lighting/environment_enhancements/ComponentInitializer.hpp"
 #include "lighting/environment_enhancements/ParametricBoxControllerParameters.hpp"
+#include "lighting/environment_enhancements/GameObjectTrackController.hpp"
 
 #include <concepts>
 #include <regex>
@@ -305,6 +306,8 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                         if (rotation || localRotation) {
                             AvoidanceRotation[beatmapObjectsAvoidance] = transform->get_localRotation();
                         }
+
+                        GameObjectTrackController::HandleTrackData(gameObject, customBeatmapData->customData, customBeatmapData, noteLinesDistance, trackLaneRing, parametricBoxController, beatmapObjectsAvoidance);
                     }
 
                     if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {

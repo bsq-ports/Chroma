@@ -2,7 +2,7 @@
 
 #include "beatsaber-hook/shared/config/rapidjson-utils.hpp"
 
-#include "utils/Easing.hpp"
+#include "tracks/shared/Animation/Easings.h"
 
 #include <unordered_map>
 
@@ -11,8 +11,6 @@
 #include "GlobalNamespace/IReadonlyBeatmapData.hpp"
 
 #include "sombrero/shared/ColorUtils.hpp"
-
-using namespace ChromaUtils;
 
 namespace Chroma {
     class ChromaEventData {

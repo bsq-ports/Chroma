@@ -54,6 +54,11 @@
       "id": "sombrero",
       "versionRange": "^0.1.14",
       "additionalData": {}
+    },
+    {
+      "id": "tracks",
+      "versionRange": "*",
+      "additionalData": {}
     }
   ],
   "additionalData": {}

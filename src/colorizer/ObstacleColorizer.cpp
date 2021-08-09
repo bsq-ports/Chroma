@@ -29,12 +29,13 @@ ObstacleColorizer::ObstacleColorizer(GlobalNamespace::ObstacleControllerBase *ob
     _obstacleFakeGlow = stretchableObstacle->obstacleFakeGlow;
     _addColorMultiplier = stretchableObstacle->addColorMultiplier;
     _obstacleCoreLerpToWhiteFactor = stretchableObstacle->obstacleCoreLerpToWhiteFactor;
-    stretchableObstacle->materialPropertyBlockControllers->copy_to(_materialPropertyBlockControllers);
+    _materialPropertyBlockControllers = stretchableObstacle->materialPropertyBlockControllers->ref_to();
 
     auto trueObstacleControllerCast = il2cpp_utils::try_cast<ObstacleController>(obstacleController);
     if (trueObstacleControllerCast)
     {
-        OriginalColor = (*trueObstacleControllerCast)->colorManager->get_obstaclesColor();
+        static auto get_obstaclesColor = FPtrWrapper<&ColorManager::get_obstaclesColor>::get();
+        OriginalColor = get_obstaclesColor((*trueObstacleControllerCast)->colorManager);
     }
     else
     {
@@ -73,11 +74,12 @@ void ObstacleColorizer::Refresh() {
     }
 
     _obstacleFrame->color = color;
+    static auto Refresh = FPtrWrapper<&ParametricBoxFakeGlowController::Refresh>::get();
     _obstacleFrame->Refresh();
     if (_obstacleFakeGlow)
     {
         _obstacleFakeGlow->color = color;
-        _obstacleFakeGlow->Refresh();
+        Refresh(_obstacleFakeGlow);
     }
 
     Sombrero::FastColor value = color * _addColorMultiplier;
@@ -87,7 +89,7 @@ void ObstacleColorizer::Refresh() {
 
     for (auto& materialPropertyBlockController : _materialPropertyBlockControllers)
     {
-        static Sombrero::FastColor white = Sombrero::FastColor::get_white();
+        static Sombrero::FastColor white = Sombrero::FastColor::white();
         SetColor(materialPropertyBlockController->materialPropertyBlock, _addColorID(), value);
         SetColor(materialPropertyBlockController->materialPropertyBlock, _tintColorID(), Sombrero::FastColor::Lerp(color, white, _obstacleCoreLerpToWhiteFactor));
         ApplyChanges(materialPropertyBlockController);

@@ -37,7 +37,7 @@ LOCAL_MODULE := modloader
 LOCAL_EXPORT_C_INCLUDES := extern/modloader
 LOCAL_SRC_FILES := extern/libmodloader.so
 include $(PREBUILT_SHARED_LIBRARY)
-# Creating prebuilt for dependency: custom-json-data - version: 0.11.2
+# Creating prebuilt for dependency: custom-json-data - version: 0.11.4
 include $(CLEAR_VARS)
 LOCAL_MODULE := custom-json-data
 LOCAL_EXPORT_C_INCLUDES := extern/custom-json-data
@@ -55,12 +55,17 @@ LOCAL_MODULE := questui
 LOCAL_EXPORT_C_INCLUDES := extern/questui
 LOCAL_SRC_FILES := extern/libquestui.so
 include $(PREBUILT_SHARED_LIBRARY)
-# Creating prebuilt for dependency: pinkcore - version: 0.1.1
 include $(CLEAR_VARS)
-LOCAL_MODULE := pinkcore
-LOCAL_EXPORT_C_INCLUDES := extern/pinkcore
-LOCAL_SRC_FILES := extern/libpinkcore.so
+LOCAL_MODULE := tracks
+LOCAL_EXPORT_C_INCLUDES := extern/tracks
+LOCAL_SRC_FILES := extern/libtracks.so
 include $(PREBUILT_SHARED_LIBRARY)
+# Creating prebuilt for dependency: pinkcore - version: 0.1.1
+#include $(CLEAR_VARS)
+#LOCAL_MODULE := pinkcore
+#LOCAL_EXPORT_C_INCLUDES := extern/pinkcore
+#LOCAL_SRC_FILES := extern/libpinkcore.so
+#include $(PREBUILT_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := chroma
@@ -73,10 +78,11 @@ LOCAL_SHARED_LIBRARIES += codegen_0_12_5
 LOCAL_SHARED_LIBRARIES += custom-json-data
 LOCAL_SHARED_LIBRARIES += custom-types
 LOCAL_SHARED_LIBRARIES += questui
-LOCAL_SHARED_LIBRARIES += pinkcore
+LOCAL_SHARED_LIBRARIES += tracks
 LOCAL_LDLIBS += -llog
 LOCAL_CFLAGS += -I'extern/libil2cpp/il2cpp/libil2cpp' -DDEBUGB='1' -DID='"chroma"' -DVERSION='"2.4.10q1"' -I'./shared' -I'./extern' -isystem'extern/codegen/include' -O2
 LOCAL_CPPFLAGS += -std=c++2a -O2
 LOCAL_C_INCLUDES += ./include ./src
+#LOCAL_SHARED_LIBRARIES += pinkcore
 LOCAL_EXPORT_C_FLAGS :=
 include $(BUILD_SHARED_LIBRARY)

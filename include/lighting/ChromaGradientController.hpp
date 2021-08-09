@@ -12,7 +12,7 @@
 
 #include "GlobalNamespace/BeatmapEventType.hpp"
 
-#include "utils/Easing.hpp"
+#include "tracks/shared/Animation/Easings.h"
 #include "main.hpp"
 
 #include "beatsaber-hook/shared/config/rapidjson-utils.hpp"
@@ -32,10 +32,10 @@ namespace Chroma {
         float _start;
         float _duration;
         GlobalNamespace::BeatmapEventType _event;
-        ChromaUtils::Functions _easing;
+        Functions _easing;
         std::optional<std::vector<int>> _lightIds;
 
-        ChromaGradientEvent(Sombrero::FastColor initcolor, Sombrero::FastColor endcolor, float start, float duration, GlobalNamespace::BeatmapEventType eventType, std::optional<std::vector<int>> lightIds, ChromaUtils::Functions easing = ChromaUtils::Functions::easeLinear);
+        ChromaGradientEvent(Sombrero::FastColor initcolor, Sombrero::FastColor endcolor, float start, float duration, GlobalNamespace::BeatmapEventType eventType, std::optional<std::vector<int>> lightIds, Functions easing = Functions::easeLinear);
 
         [[nodiscard]] Sombrero::FastColor Interpolate(bool &modified, const float& songTime) const;
     };

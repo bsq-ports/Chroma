@@ -9,6 +9,9 @@
 #include "GlobalNamespace/BeatmapEventData.hpp"
 #include "GlobalNamespace/IReadonlyBeatmapData.hpp"
 
+#include "tracks/shared/Animation/Track.h"
+#include "tracks/shared/Animation/PointDefinition.h"
+
 #include "sombrero/shared/ColorUtils.hpp"
 
 namespace Chroma {
@@ -23,6 +26,8 @@ namespace Chroma {
     public:
         const ObjectDataType dataType;
         std::optional<Sombrero::FastColor> Color;
+        std::optional<Track*> Track;
+        std::optional<PointDefinition*> LocalPathColor;
 
         ChromaObjectData() : dataType(ObjectDataType::Object){};
 

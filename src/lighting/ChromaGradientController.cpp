@@ -5,12 +5,13 @@
 
 #include "ChromaController.hpp"
 #include "UnityEngine/Color.hpp"
-#include "utils/Easing.hpp"
 #include "utils/ChromaUtils.hpp"
 #include "Chroma.hpp"
 
 #include "colorizer/LightColorizer.hpp"
 #include "UnityEngine/GameObject.hpp"
+
+#include "utils/ChromaAudioTimeSourceHelper.hpp"
 
 DEFINE_TYPE(Chroma, ChromaGradientController);
 
@@ -74,7 +75,8 @@ Sombrero::FastColor ChromaGradientController::AddGradient(ChromaEventData::Gradi
     bool erased = false;
 
 
-    auto r = newGradientEvent.Interpolate(erased, ChromaController::IAudioTimeSource->get_songTime());
+    auto r = newGradientEvent.Interpolate(erased,
+                                          ChromaTimeSourceHelper::getSongTimeChroma(ChromaController::IAudioTimeSource));
 
     if (erased)
         getInstance()->Gradients.erase(it.first);
@@ -87,7 +89,7 @@ void Chroma::ChromaGradientController::Update() {
         // Create a map iterator and point to beginning of map
         auto it = Gradients.begin();
 
-        auto songTime = ChromaController::IAudioTimeSource->get_songTime();
+        auto songTime = ChromaTimeSourceHelper::getSongTimeChroma(ChromaController::IAudioTimeSource);
         // Iterate over the map using Iterator till end.
         while (it != Gradients.end()) {
 
@@ -117,7 +119,7 @@ void Chroma::ChromaGradientController::Update() {
 
 Chroma::ChromaGradientEvent::ChromaGradientEvent(Sombrero::FastColor initcolor, Sombrero::FastColor endcolor, float start,
                                                  float duration, GlobalNamespace::BeatmapEventType eventType,
-                                                 std::optional<std::vector<int>> lights, ChromaUtils::Functions easing) {
+                                                 std::optional<std::vector<int>> lights, Functions easing) {
     _initcolor = initcolor;
     _endcolor = endcolor;
     _start = start;
@@ -140,7 +142,7 @@ Sombrero::FastColor Chroma::ChromaGradientEvent::Interpolate(bool &modified, con
     }
     else if (normalTime <= _duration)
     {
-        return lerpUnclamped(_initcolor, _endcolor, ChromaUtils::Easings::Interpolate(normalTime / _duration, _easing));
+        return lerpUnclamped(_initcolor, _endcolor, Easings::Interpolate(normalTime / _duration, _easing));
     }
     else
     {

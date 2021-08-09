@@ -67,13 +67,12 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
 
                     std::string easingString = std::string(gValue.FindMember(EASING)->value.GetString());
 
-                    ChromaUtils::Functions easing;
+                    Functions easing;
 
                     if (easingString.empty()) {
-                        easing = ChromaUtils::Functions::easeLinear;
+                        easing = Functions::easeLinear;
                     } else {
-                        auto s = ChromaUtils::FUNCTION_NAMES;
-                        easing = (ChromaUtils::Functions) s[easingString];
+                        easing = FunctionFromStr(easingString);
                     }
 
                     gradientObject = std::make_optional(ChromaEventData::GradientObjectData{

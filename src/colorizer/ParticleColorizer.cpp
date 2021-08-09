@@ -57,7 +57,7 @@ void ParticleColorizer::OnLightColorChanged(GlobalNamespace::BeatmapEventType ev
         {
             if (i >= colors.size()) {
                 // is this normal?
-                continue;
+                break;
             }
 
             auto color = colors[i];
