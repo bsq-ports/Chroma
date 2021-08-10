@@ -6,8 +6,6 @@
 #include "GlobalNamespace/BombNoteController.hpp"
 #include "GlobalNamespace/MirroredBombNoteController.hpp"
 #include "GlobalNamespace/MultiplayerConnectedPlayerBombNoteController.hpp"
-#include "GlobalNamespace/MultiplayerConnectedPlayerNoteController.hpp"
-#include "GlobalNamespace/TutorialNoteController.hpp"
 #include "GlobalNamespace/MirroredCubeNoteController.hpp"
 #include "GlobalNamespace/GameNoteController.hpp"
 

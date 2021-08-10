@@ -53,6 +53,7 @@ void ParticleColorizer::OnLightColorChanged(GlobalNamespace::BeatmapEventType ev
                                             std::vector<Sombrero::FastColor> colors) {
     if (eventType == _eventType)
     {
+#pragma unroll
         for (int i = 0; i < COLOR_FIELDS; i++)
         {
             if (i >= colors.size()) {

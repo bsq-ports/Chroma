@@ -3,7 +3,6 @@
 
 #include "colorizer/BombColorizer.hpp"
 #include "custom-json-data/shared/CustomBeatmapData.h"
-#include "GlobalNamespace/BombNoteController.hpp"
 #include "utils/ChromaUtils.hpp"
 
 #include "ChromaObjectData.hpp"

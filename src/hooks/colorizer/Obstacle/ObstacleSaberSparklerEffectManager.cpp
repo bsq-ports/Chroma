@@ -81,6 +81,7 @@ MAKE_HOOK_MATCH(ObstacleSaberSparkleEffectManager_Update,
             }
         }
     }
+#pragma unroll
     for (int j = 0; j < 2; j++) {
         if (!self->isSystemActive->get(j) && self->wasSystemActive->get(j)) {
             self->effects->get(j)->StopEmission();

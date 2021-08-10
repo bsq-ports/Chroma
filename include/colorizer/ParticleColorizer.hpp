@@ -30,7 +30,7 @@ namespace Chroma {
     class ParticleColorizer {
     private:
         // ParticleSystemEventEffect still doesn't support boost colors!
-        const int COLOR_FIELDS = 2;
+        static const int COLOR_FIELDS = 2;
 
         GlobalNamespace::ParticleSystemEventEffect *_particleSystemEventEffect;
         GlobalNamespace::BeatmapEventType _eventType;

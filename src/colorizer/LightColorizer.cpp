@@ -32,11 +32,13 @@ LightColorizer::LightColorizer(GlobalNamespace::LightSwitchEventEffect *lightSwi
                                GlobalNamespace::BeatmapEventType beatmapEventType)
                                : _simpleColorSOs(COLOR_FIELDS),
                                _colors(COLOR_FIELDS),
-                               _originalColors(COLOR_FIELDS) {
+                               _originalColors(COLOR_FIELDS),
+                               _lightSwitchEventEffect(lightSwitchEventEffect),
+                               _eventType(beatmapEventType){
     static auto contextLogger = getLogger().WithContext(ChromaLogger::LightColorizer);
 
-    _lightSwitchEventEffect = lightSwitchEventEffect;
-    _eventType = beatmapEventType;
+
+
     InitializeSO("_lightColor0", 0);
     InitializeSO("_highlightColor0", 0);
     InitializeSO("_lightColor1", 1);
@@ -126,6 +128,7 @@ LightColorizer::LightColorizer(GlobalNamespace::LightSwitchEventEffect *lightSwi
 
     int i = 0;
 
+#pragma unroll
     while (i <= index) {
         debugSpamLog(contextLogger, "Doing the final grouping, prop id %d", i);
         int z = insertionOrder[i];
@@ -233,6 +236,7 @@ void LightColorizer::Colorize(bool refresh, std::vector<std::optional<Sombrero::
 }
 
 void LightColorizer::Reset() {
+#pragma unroll
     for (int i = 0; i < COLOR_FIELDS; i++)
     {
         GlobalColor[i] = std::nullopt;

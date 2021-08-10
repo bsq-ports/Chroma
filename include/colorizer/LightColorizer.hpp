@@ -16,10 +16,7 @@
 #include "main.hpp"
 #include "sombrero/shared/ColorUtils.hpp"
 
-// TODO: Document properly
 namespace Chroma {
-    class LSEColorManager;
-
     class LightColorizer {
     private:
         static const int COLOR_FIELDS = 4;
