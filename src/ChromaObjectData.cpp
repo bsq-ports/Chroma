@@ -102,8 +102,6 @@ void Chroma::ChromaObjectDataManager::deserialize(GlobalNamespace::IReadonlyBeat
                                 Animation::TryGetPointData(trackAD, localColor, pointDefinitions->value, Chroma::COLOR);
 
                                 chromaObjectData->LocalPathColor = localColor ? std::make_optional(localColor) : std::nullopt;
-                            } else {
-                                getLogger().error("Could not retrieve point definitions.");
                             }
                         }
 

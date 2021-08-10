@@ -1,15 +1,17 @@
 #include "lighting/environment_enhancements/GameObjectTrackController.hpp"
 #include "Chroma.hpp"
+#include "utils/ChromaUtils.hpp"
 
 #include "lighting/environment_enhancements/EnvironmentEnhancementManager.hpp"
 #include "lighting/environment_enhancements/ParametricBoxControllerParameters.hpp"
 
 #include "tracks/shared/Animation/Animation.h"
 
+DEFINE_TYPE(Chroma, GameObjectTrackControllerData)
 DEFINE_TYPE(Chroma, GameObjectTrackController)
 
 template<typename T>
-static std::optional<T> getPropertyNullable(std::optional<PropertyValue> prop) {
+static std::optional<T> getPropertyNullable(const std::optional<PropertyValue>& prop) {
     if (!prop) return std::nullopt;
 
     // TODO: Left handed
@@ -39,7 +41,45 @@ static NEVector::Quaternion QuatInverse(const NEVector::Quaternion &a) {
                            conj.w / norm2};
 }
 
+
+
+void Chroma::GameObjectTrackController::ClearData() {
+    _dataMap.clear();
+    _dataMap = {};
+    nextId = 0;
+}
+
+void Chroma::GameObjectTrackController::ctor() {
+    getLogger().info("Created %lld this %i", data, nextId);
+}
+
 void Chroma::GameObjectTrackController::Update() {
+    if (!data) {
+        auto it = _dataMap.find(id);
+
+        if (it != _dataMap.end()) {
+            data = it->second;
+        }
+    }
+
+    if (!data){
+        getLogger().error("Data is null! Should remove component or just early return? %p %s", this, to_utf8(csstrtostr(get_gameObject()->get_name())).c_str());
+        Destroy(this);
+        return;
+    }
+    auto& _noteLinesDistance = data->_noteLinesDistance;
+    auto& _track = data->_track;
+    // nullable
+    auto& _trackLaneRing = data->_trackLaneRing;
+    auto& _parametricBoxController = data->_parametricBoxController;
+    auto& _beatmapObjectsAvoidance = data->_beatmapObjectsAvoidance;
+
+
+    if (!_track){
+        getLogger().error("Track is null! Should remove component or just early return? %p %s", this, to_utf8(csstrtostr(get_gameObject()->get_name())).c_str());
+        Destroy(this);
+        return;
+    }
     const auto& properties = _track->properties;
     auto rotation = getPropertyNullable<NEVector::Quaternion>(properties.rotation.value);
     auto localRotation = getPropertyNullable<NEVector::Quaternion>(properties.localRotation.value);
@@ -167,15 +207,22 @@ void Chroma::GameObjectTrackController::Init(Track *track, float noteLinesDistan
                                              std::optional<GlobalNamespace::TrackLaneRing *> trackLaneRing,
                                              std::optional<GlobalNamespace::ParametricBoxController *> parametricBoxController,
                                              std::optional<GlobalNamespace::BeatmapObjectsAvoidance *> beatmapObjectsAvoidance) {
-    _track = track;
-    _noteLinesDistance = noteLinesDistance;
-    _trackLaneRing = trackLaneRing;
-    _parametricBoxController = parametricBoxController;
-    _beatmapObjectsAvoidance = beatmapObjectsAvoidance;
+    CRASH_UNLESS(track);
+    auto objectData = CRASH_UNLESS(il2cpp_utils::New<GameObjectTrackControllerData*>());
+    objectData->_track = track;
+    objectData->_noteLinesDistance = noteLinesDistance;
+    objectData->_trackLaneRing = trackLaneRing;
+    objectData->_parametricBoxController = parametricBoxController;
+    objectData->_beatmapObjectsAvoidance = beatmapObjectsAvoidance;
+    this->data = objectData;
+    this->nextId = nextId;
+    _dataMap[nextId] = data;
+//    getLogger().info("Set (this: %p) track %p for %s", this, track, to_utf8(csstrtostr(get_gameObject()->get_name())).c_str());
+    nextId++;
 }
 
-static const std::string TRACK = "_track";
-static std::optional<Track*> getTrack(rapidjson::Value& gameObjectData, CustomJSONData::CustomBeatmapData* beatmapData, std::string name = TRACK) {
+
+static std::optional<Track*> getTrack(rapidjson::Value& gameObjectData, CustomJSONData::CustomBeatmapData* beatmapData, std::string name = Chroma::TRACK) {
     auto tracks = TracksAD::getBeatmapAD(beatmapData->customData).tracks;
 
     auto trackName = gameObjectData.FindMember(name);
@@ -190,7 +237,9 @@ static std::optional<Track*> getTrack(rapidjson::Value& gameObjectData, CustomJS
 
     Track& track = trackFound->second;
 
-    return &track;
+//    getLogger().info("Track ptr %p", &track);
+
+    return ChromaUtils::ptrToOpt(&track);
 }
 
 void Chroma::GameObjectTrackController::HandleTrackData(UnityEngine::GameObject *gameObject,
@@ -204,8 +253,9 @@ void Chroma::GameObjectTrackController::HandleTrackData(UnityEngine::GameObject 
 
     if (track)
     {
-        getLogger().info("Making track for object %s yay!", to_utf8(csstrtostr(gameObject->get_name())).c_str());
+//        getLogger().info("Making track for object %s yay! %p", to_utf8(csstrtostr(gameObject->get_name())).c_str(), track.value());
         GameObjectTrackController* trackController = gameObject->AddComponent<GameObjectTrackController*>();
         trackController->Init(track.value(), noteLinesDistance, trackLaneRing, parametricBoxController, beatmapObjectsAvoidance);
+//        getLogger().debug("Did init for %p", trackController);
     }
 }

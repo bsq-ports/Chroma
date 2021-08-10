@@ -15,6 +15,9 @@
 #include <concepts>
 #include <regex>
 
+#include "tracks/shared/Animation/PointDefinition.h"
+#include "tracks/shared/AssociatedData.h"
+
 using namespace Chroma;
 using namespace ChromaUtils;
 using namespace UnityEngine::SceneManagement;
@@ -145,6 +148,8 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
     getLogger().debug("Custom beat map %p", customBeatmapData);
     getLogger().debug("Custom beat map custom data %p", customBeatmapData->customData);
     auto customDynWrapper = customBeatmapData->customData->value;
+    TracksAD::BeatmapAssociatedData& trackBeatmapAD = TracksAD::getBeatmapAD(customBeatmapData->customData);
+    GameObjectTrackController::ClearData();
     if (customDynWrapper) {
 
         rapidjson::Value &dynData = *customDynWrapper;
@@ -163,6 +168,18 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
             auto environmentDataObject = environmentData->value.GetArray();
 
             for (auto &gameObjectDataVal : environmentDataObject) {
+                auto trackNameIt = gameObjectDataVal.FindMember(Chroma::TRACK);
+
+                std::optional<std::string> trackName;
+
+                if (trackNameIt != gameObjectDataVal.MemberEnd()) {
+                    trackName = trackNameIt->value.GetString();
+                    trackBeatmapAD.tracks.emplace(trackName.value(), Track());
+                }
+
+
+
+
                 auto idMember = gameObjectDataVal.FindMember(IDVAR);
 
                 std::string id = idMember == gameObjectDataVal.MemberEnd() ? "" : idMember->value.GetString();
@@ -307,7 +324,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                             AvoidanceRotation[beatmapObjectsAvoidance] = transform->get_localRotation();
                         }
                      }
-                    GameObjectTrackController::HandleTrackData(gameObject, gameObjectDataVal, customBeatmapData, noteLinesDistance, trackLaneRing, parametricBoxController, beatmapObjectsAvoidance);
+                    GameObjectTrackController::HandleTrackData(gameObject, gameObjectDataVal, customBeatmapData, noteLinesDistance, ptrToOpt(trackLaneRing), ptrToOpt(parametricBoxController), ptrToOpt(beatmapObjectsAvoidance));
 
 
                     if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {

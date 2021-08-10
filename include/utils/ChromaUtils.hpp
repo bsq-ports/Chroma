@@ -76,7 +76,10 @@ namespace ChromaUtils {
         return it->value.Get<T>();
     }
 
-
+    template<typename T>
+    inline static std::optional<T*> ptrToOpt(T* t) {
+        return t ? std::make_optional<T*>(t) : std::nullopt;
+    }
 
 //    static bool ColorEquals(Sombrero::FastColor c1, Sombrero::FastColor& c2) {
 //        return c1.r == c2.r && c1.g == c2.g && c1.b == c2.b;

@@ -54,6 +54,7 @@ namespace Chroma {
 
 
     inline const std::string ANIMATION = "_animation";
+    inline const std::string TRACK = "_track";
     inline const std::string DIRECTION = "_direction";
     inline const std::string ENVIRONMENTREMOVAL = "_environmentRemoval";
     inline const std::string COLOR = "_color";
