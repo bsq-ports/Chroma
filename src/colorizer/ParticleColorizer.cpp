@@ -11,10 +11,10 @@ Chroma::ParticleColorizer::ParticleColorizer(GlobalNamespace::ParticleSystemEven
                                              GlobalNamespace::BeatmapEventType beatmapEventType) :
                                              _simpleColorSOs(COLOR_FIELDS),
                                              _multipliedColorSOs(COLOR_FIELDS),
-                                             _multipliedHighlightColorSOs(COLOR_FIELDS)
+                                             _multipliedHighlightColorSOs(COLOR_FIELDS),
+                                             _particleSystemEventEffect(particleSystemEventEffect),
+                                             _eventType(beatmapEventType)
                                              {
-    _particleSystemEventEffect = particleSystemEventEffect;
-    _eventType = beatmapEventType;
     InitializeSO("_lightColor0", 0);
     InitializeSO("_highlightColor0", 0, true);
     InitializeSO("_lightColor1", 1);
