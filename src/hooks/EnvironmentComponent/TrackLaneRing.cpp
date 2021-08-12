@@ -44,9 +44,9 @@ MAKE_HOOK_MATCH(TrackLaneRing_LateUpdateRing, &TrackLaneRing::LateUpdateRing, vo
         return;
     }
 
-    static Sombrero::FastQuaternion identity = Sombrero::FastQuaternion::get_identity();
+    const static Sombrero::FastQuaternion identity = Sombrero::FastQuaternion::identity();
 
-    auto& rotation = identity;
+    Sombrero::FastQuaternion rotation = identity;
 
     auto it2 = EnvironmentEnhancementManager::RingRotationOffsets.find(self);
 
@@ -55,7 +55,7 @@ MAKE_HOOK_MATCH(TrackLaneRing_LateUpdateRing, &TrackLaneRing::LateUpdateRing, vo
     }
 
 
-    static Sombrero::FastVector3 vectorForward = Sombrero::FastVector3::forward();
+    const static Sombrero::FastVector3 vectorForward = Sombrero::FastVector3::forward();
 
     float interpolatedZPos = self->prevPosZ + ((self->posZ - self->prevPosZ) * interpolationFactor);
     Sombrero::FastVector3 positionZOffset = ((rotation * vectorForward) * interpolatedZPos);

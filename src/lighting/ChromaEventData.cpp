@@ -109,7 +109,7 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
             std::optional<bool> counterSpin = getIfExists<bool>(optionalDynData, COUNTERSPIN);
 
 
-            std::optional<bool> direction = getIfExists<bool>(optionalDynData, DIRECTION);
+            std::optional<int> direction = getIfExists<int>(optionalDynData, DIRECTION);
             std::optional<float> step = getIfExistsFloatOpt(optionalDynData, STEP);
             std::optional<float> prop = getIfExistsFloatOpt(optionalDynData, PROP);
             std::optional<float> speed = getIfExistsFloatOpt(optionalDynData, SPEED);

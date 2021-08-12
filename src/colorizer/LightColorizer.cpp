@@ -128,7 +128,7 @@ LightColorizer::LightColorizer(GlobalNamespace::LightSwitchEventEffect *lightSwi
 
     int i = 0;
 
-#pragma unroll
+
     while (i <= index) {
         debugSpamLog(contextLogger, "Doing the final grouping, prop id %d", i);
         int z = insertionOrder[i];
@@ -151,6 +151,7 @@ std::shared_ptr<LightColorizer> LightColorizer::New(GlobalNamespace::LightSwitch
 
 std::vector<Sombrero::FastColor> LightColorizer::getColor() {
     std::vector<Sombrero::FastColor> colors(COLOR_FIELDS);
+#pragma unroll
     for (int i = 0; i < COLOR_FIELDS; i++)
     {
         auto color = _colors[i];
