@@ -5,15 +5,11 @@
 #include "tracks/shared/Animation/Track.h"
 #include "tracks/shared/Animation/Animation.h"
 
-std::optional<PointDefinitionInterpolation> GetPathInterpolation(Track *track, std::string_view name, PropertyType type) {
-    return track ? track->pathProperties.FindProperty(name)->value : std::nullopt;
-}
-
-std::optional<NEVector::Vector4> TryGetVector4PathProperty(Track *track, std::string_view name, float time) {
-    std::optional<PointDefinitionInterpolation> pointDataInterpolation = GetPathInterpolation(track, name, PropertyType::vector4);
-    if (pointDataInterpolation) {
-        return pointDataInterpolation->InterpolateVector4(time);
+std::optional<NEVector::Vector4> TryGetVector4PathProperty(PathProperty& pathProp, float time) {
+    if (pathProp.value) {
+        return pathProp.value.value().InterpolateVector4(time);
     }
+
     return std::nullopt;
 }
 
@@ -22,25 +18,49 @@ static NEVector::Vector4 Vector4Mult(NEVector::Vector4 const& a,NEVector::Vector
     return {a.x * b.x, a.y * b.y, a.z * b.z, a.w * b.w};
 }
 
+static std::optional<NEVector::Vector4> MultVector4Nullables(std::optional<NEVector::Vector4> vectorOne, std::optional<NEVector::Vector4> vectorTwo)
+{
+    if (vectorOne)
+    {
+        if (vectorTwo)
+        {
+            return Vector4Mult(vectorOne.value(), vectorTwo.value());
+        }
+        else
+        {
+            return vectorOne;
+        }
+    }
+    else if (vectorTwo)
+    {
+        return vectorTwo;
+    }
+
+    return std::nullopt;
+}
+
 void Chroma::AnimationHelper::GetColorOffset(std::optional<PointDefinition *> localColor, std::optional<Track *> track,
                                              float time, std::optional<Sombrero::FastColor> &color) {
     std::optional<NEVector::Vector4> pathColor;
+    std::optional<NEVector::Vector4> trackColor;
 
     if (track) {
         if (localColor) {
             pathColor = localColor.value()->InterpolateVector4(time);
         } else {
-            pathColor = TryGetVector4PathProperty(track.value(), Chroma::COLOR, time);
+            auto colorPathProp = track.value()->pathProperties.color;
+
+            pathColor = TryGetVector4PathProperty(colorPathProp, time);
+        }
+
+        auto colorProp = track.value()->properties.color;
+
+        if (colorProp.value) {
+            trackColor = colorProp.value.value().vector4;
         }
     }
 
-    std::optional<NEVector::Vector4> colorVector;
-    if (track && pathColor) {
-        auto colorProp = track.value()->properties.color;
-        if (colorProp.value) {
-            colorVector = Vector4Mult(colorProp.value.value().vector4, pathColor.value());
-        }
-    }
+    std::optional<NEVector::Vector4> colorVector = MultVector4Nullables(trackColor, pathColor);
 
     if (colorVector)
     {
