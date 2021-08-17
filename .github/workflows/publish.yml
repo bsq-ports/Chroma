@@ -33,9 +33,9 @@ jobs:
       - name: Setup NDK
 #         if: steps.cache-ndk.outputs.cache-hit != 'true'
         id: setup-ndk
-        uses: nttld/setup-ndk@v1.0.3
+        uses: nttld/setup-ndk@v1
         with:
-          ndk-version: r22
+          ndk-version: r23
 
       - name: Create ndkpath.txt
         run: echo ${{ steps.setup-ndk.outputs.ndk-path }} > ${GITHUB_WORKSPACE}/ndkpath.txt
