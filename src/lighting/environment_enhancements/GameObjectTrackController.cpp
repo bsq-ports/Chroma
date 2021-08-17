@@ -228,15 +228,31 @@ void Chroma::GameObjectTrackController::Init(Track *track, float noteLinesDistan
 static std::optional<Track*> getTrack(rapidjson::Value& gameObjectData, CustomJSONData::CustomBeatmapData* beatmapData, std::string name = Chroma::TRACK) {
     auto& tracks = TracksAD::getBeatmapAD(beatmapData->customData).tracks;
 
+    static auto contextLogger = getLogger().WithContext(Chroma::ChromaLogger::TrackController);
+
+    for (auto& track : tracks) {
+        debugSpamLog(contextLogger, "Track: %s", track.first.c_str());
+    }
+
+    debugSpamLog(contextLogger, "Track list end");
+
     auto trackName = gameObjectData.FindMember(name);
 
-    if (trackName == gameObjectData.MemberEnd() || !trackName->value.IsString())
+    if (trackName == gameObjectData.MemberEnd() || !trackName->value.IsString()) {
+        debugSpamLog(contextLogger, "Did not find track json");
         return std::nullopt;
+    }
 
     auto trackFound = tracks.find(trackName->value.GetString());
 
-    if (trackFound == tracks.end())
+    std::string trackNameStr = trackName->value.GetString();
+
+    if (trackFound == tracks.end()) {
+        debugSpamLog(contextLogger, "Did not find in group %s", trackNameStr.c_str());
         return std::nullopt;
+    } else {
+        debugSpamLog(contextLogger, "Found in group %s", trackNameStr.c_str());
+    }
 
     Track& track = trackFound->second;
 

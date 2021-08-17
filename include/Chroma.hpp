@@ -48,6 +48,7 @@ namespace Chroma {
         inline const char* TrackLaneRings = "TrackLaneRings";
         inline const char* LegacyLightColor = "LegacyLightColor";
         inline const char* ObjectDataDeserialize = "ObjectDataDeserialize";
+        inline const char* TrackController = "GameObjectTrackController";
     }
 
     inline const std::string REQUIREMENTNAME = "Chroma";

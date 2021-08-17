@@ -118,9 +118,7 @@ void SaberColorizer::Refresh() {
                 auto propertyTintColorPairs = setSaberGlowColor->propertyTintColorPairs;
 
                 if (propertyTintColorPairs && propertyTintColorPairs->Length() > 0) {
-                    std::vector<SetSaberGlowColor::PropertyTintColorPair *> propertyTintColorPairsVec;
-                    propertyTintColorPairs->copy_to(propertyTintColorPairsVec);
-                    for (auto &propertyTintColorPair : propertyTintColorPairsVec) {
+                    for (auto &propertyTintColorPair : propertyTintColorPairs->ref_to()) {
                         if (propertyTintColorPair)
                             SetColor(materialPropertyBlock, propertyTintColorPair->property, color * Sombrero::FastColor(propertyTintColorPair->tintColor));
                     }
@@ -137,7 +135,7 @@ void SaberColorizer::Refresh() {
                 if (!setSaberFakeGlowColor) continue;
 
                 auto parametric3SliceSprite = setSaberFakeGlowColor->parametric3SliceSprite;
-                parametric3SliceSprite->color = color * Sombrero::FastColor(setSaberFakeGlowColor->tintColor);
+                parametric3SliceSprite->color = color * setSaberFakeGlowColor->tintColor;
                 Refresh(parametric3SliceSprite);
             }
         }
