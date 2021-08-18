@@ -35,7 +35,7 @@
 
          static std::optional<Sombrero::FastColor> getGlobalColor();
 
-         static void GlobalColorize(std::optional<Sombrero::FastColor> color);
+         static void GlobalColorize(std::optional<Sombrero::FastColor> const& color);
 
          static void Reset();
 
@@ -48,7 +48,7 @@
              return it->second;
          }
 
-         inline static void ColorizeBomb(GlobalNamespace::NoteControllerBase* noteController, std::optional<Sombrero::FastColor> color) {
+         inline static void ColorizeBomb(GlobalNamespace::NoteControllerBase* noteController, std::optional<Sombrero::FastColor> const& color) {
              GetBombColorizer(noteController)->Colorize(color);
          }
      };

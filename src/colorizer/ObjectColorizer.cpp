@@ -14,7 +14,7 @@ Sombrero::FastColor Chroma::ObjectColorizer::getColor() {
     return *OriginalColorGetter();
 }
 
-void Chroma::ObjectColorizer::Colorize(std::optional<Sombrero::FastColor> color) {
+void Chroma::ObjectColorizer::Colorize(std::optional<Sombrero::FastColor> const& color) {
     _color = color;
     Refresh();
 }

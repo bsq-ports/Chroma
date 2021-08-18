@@ -67,7 +67,7 @@ void ObstacleColorizer::Refresh() {
     // We do not handle coloring in obstacle colorable
     if (ObstacleColorable) return;
 
-    Sombrero::FastColor color = getColor();
+    Sombrero::FastColor const& color = getColor();
     if (color == _obstacleFrame->color)
     {
         return;
@@ -89,14 +89,14 @@ void ObstacleColorizer::Refresh() {
 
     for (auto& materialPropertyBlockController : _materialPropertyBlockControllers)
     {
-        static Sombrero::FastColor white = Sombrero::FastColor::white();
+        Sombrero::FastColor white = Sombrero::FastColor::white();
         SetColor(materialPropertyBlockController->materialPropertyBlock, _addColorID(), value);
         SetColor(materialPropertyBlockController->materialPropertyBlock, _tintColorID(), Sombrero::FastColor::Lerp(color, white, _obstacleCoreLerpToWhiteFactor));
         ApplyChanges(materialPropertyBlockController);
     }
 }
 
-void ObstacleColorizer::GlobalColorize(std::optional<Sombrero::FastColor> color) {
+void ObstacleColorizer::GlobalColorize(std::optional<Sombrero::FastColor> const& color) {
     GlobalColor = color;
     for (auto& valuePair : Colorizers)
     {

@@ -59,7 +59,7 @@ namespace Chroma {
 
         static std::shared_ptr<NoteColorizer> New(GlobalNamespace::NoteControllerBase* noteControllerBase);
 
-        static void GlobalColorize(std::optional<Sombrero::FastColor> color, GlobalNamespace::ColorType colorType);;
+        static void GlobalColorize(std::optional<Sombrero::FastColor> const& color, GlobalNamespace::ColorType const& colorType);
 
         static void Reset();
 
@@ -74,7 +74,7 @@ namespace Chroma {
             return it->second;
         }
 
-        inline static void ColorizeNote(GlobalNamespace::NoteControllerBase* noteController, std::optional<Sombrero::FastColor> color) {
+        inline static void ColorizeNote(GlobalNamespace::NoteControllerBase* noteController, std::optional<Sombrero::FastColor> const& color) {
             GetNoteColorizer(noteController)->Colorize(color);
         }
     };

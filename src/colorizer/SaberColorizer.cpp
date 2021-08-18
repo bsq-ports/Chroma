@@ -64,7 +64,7 @@ std::optional<Sombrero::FastColor> SaberColorizer::GlobalColorGetter() {
     return GlobalColor[(int) _saberType];
 }
 
-void SaberColorizer::GlobalColorize(GlobalNamespace::SaberType saberType, std::optional<Sombrero::FastColor> color) {
+void SaberColorizer::GlobalColorize(GlobalNamespace::SaberType saberType, std::optional<Sombrero::FastColor> const& color) {
     GlobalColor[(int) saberType] = color;
     for (auto &c : GetColorizerList(saberType)) {
         c->Refresh();
@@ -82,7 +82,7 @@ void SaberColorizer::Reset() {
 }
 
 void SaberColorizer::Refresh() {
-    Sombrero::FastColor color = getColor();
+    Sombrero::FastColor const& color = getColor();
     if (color == _lastColor)
     {
         return;

@@ -23,7 +23,7 @@ BombColorizer::ColorizerMap BombColorizer::Colorizers = BombColorizer::Colorizer
 
 void BombColorizer::Refresh() {
     UnityEngine::Material* bombMaterial = _bombRenderer->get_material();
-    Sombrero::FastColor color = getColor();
+    Sombrero::FastColor const& color = getColor();
 
     static auto colorName = il2cpp_utils::newcsstr<il2cpp_utils::CreationType::Manual>("_SimpleColor");
 
@@ -46,7 +46,7 @@ std::optional<Sombrero::FastColor> BombColorizer::getGlobalColor() {
     return GlobalColor;
 }
 
-void BombColorizer::GlobalColorize(std::optional<Sombrero::FastColor> color) {
+void BombColorizer::GlobalColorize(std::optional<Sombrero::FastColor> const& color) {
     GlobalColor = color;
     for (auto& valuePair : Colorizers)
     {

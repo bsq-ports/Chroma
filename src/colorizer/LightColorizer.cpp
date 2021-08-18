@@ -154,7 +154,7 @@ std::vector<Sombrero::FastColor> LightColorizer::getColor() {
 #pragma unroll
     for (int i = 0; i < COLOR_FIELDS; i++)
     {
-        auto color = _colors[i];
+        auto& color = _colors[i];
 
         if (!color)
             color = GlobalColor[i];
@@ -169,7 +169,7 @@ std::vector<Sombrero::FastColor> LightColorizer::getColor() {
     return colors;
 }
 
-void LightColorizer::GlobalColorize(bool refresh, std::vector<std::optional<Sombrero::FastColor>> colors) {
+void LightColorizer::GlobalColorize(bool refresh, std::vector<std::optional<Sombrero::FastColor>> const& colors) {
     for (int i = 0; i < colors.size(); i++)
     {
         GlobalColor[i] = colors[i];
@@ -219,7 +219,7 @@ void LightColorizer::RegisterLight(UnityEngine::MonoBehaviour *lightWithId, std:
     }
 }
 
-void LightColorizer::Colorize(bool refresh, std::vector<std::optional<Sombrero::FastColor>>& colors) {
+void LightColorizer::Colorize(bool refresh, std::vector<std::optional<Sombrero::FastColor>>const& colors) {
     for (int i = 0; i < colors.size(); i++)
     {
         _colors[i] = colors[i];
@@ -247,7 +247,7 @@ void LightColorizer::Reset() {
     LightColorChanged.clear();
 }
 
-void LightColorizer::SetSOs(std::vector<Sombrero::FastColor> colors) {
+void LightColorizer::SetSOs(std::vector<Sombrero::FastColor> const& colors) {
     static auto SetColor = FPtrWrapper<&GlobalNamespace::SimpleColorSO::SetColor>::get();
 
     for (int i = 0; i < colors.size(); i++)
@@ -259,7 +259,7 @@ void LightColorizer::SetSOs(std::vector<Sombrero::FastColor> colors) {
 }
 
 void LightColorizer::Refresh() {
-    auto colors = getColor();
+    auto const& colors = getColor();
     SetSOs(colors);
 
     static auto ProcessLightSwitchEvent = FPtrWrapper<&LightSwitchEventEffect::ProcessLightSwitchEvent>::get();

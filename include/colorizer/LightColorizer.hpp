@@ -47,11 +47,11 @@ namespace Chroma {
 
         std::vector<Sombrero::FastColor> getColor();
 
-        static void GlobalColorize(bool refresh, std::vector<std::optional<Sombrero::FastColor>> colors);
+        static void GlobalColorize(bool refresh, std::vector<std::optional<Sombrero::FastColor>> const& colors);
 
         static void RegisterLight(UnityEngine::MonoBehaviour *lightWithId, std::optional<int> lightId);
 
-        void Colorize(bool refresh, std::vector<std::optional<Sombrero::FastColor>>& colors);
+        void Colorize(bool refresh, std::vector<std::optional<Sombrero::FastColor>> const& colors);
 
         static void Reset();
 
@@ -65,12 +65,12 @@ namespace Chroma {
             return it->second;
         }
 
-        inline static void ColorizeLight(GlobalNamespace::BeatmapEventType beatmapEventType, bool refresh, std::vector<std::optional<Sombrero::FastColor>> colors) {
+        inline static void ColorizeLight(GlobalNamespace::BeatmapEventType beatmapEventType, bool refresh, std::vector<std::optional<Sombrero::FastColor>> const& colors) {
             CRASH_UNLESS(GetLightColorizer(beatmapEventType))->Colorize(refresh, colors);
         }
 
     private:
-        void SetSOs(std::vector<Sombrero::FastColor> colors);
+        void SetSOs(std::vector<Sombrero::FastColor> const& colors);
 
         void Refresh();
 

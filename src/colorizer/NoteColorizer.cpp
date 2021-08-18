@@ -54,8 +54,8 @@ std::vector<Sombrero::FastColor> NoteColorizer::getOriginalColors() {
             getLogger().warning("_colorManager was null, defaulting to red/blue");
             _originalColors =
                     {
-                            Color(0.784f, 0.078f, 0.078f),
-                            Color(0, 0.463f, 0.823f),
+                            Sombrero::FastColor(0.784f, 0.078f, 0.078f),
+                            Sombrero::FastColor(0, 0.463f, 0.823f),
                     };
         }
     }
@@ -87,7 +87,7 @@ std::optional<Sombrero::FastColor> NoteColorizer::OriginalColorGetter() {
     return getOriginalColors()[(int) getColorType()];
 }
 
-void NoteColorizer::GlobalColorize(std::optional<Sombrero::FastColor> color, GlobalNamespace::ColorType colorType) {
+void NoteColorizer::GlobalColorize(std::optional<Sombrero::FastColor> const& color, GlobalNamespace::ColorType const& colorType) {
     GlobalColor[(int)colorType] = color;
     for (auto& valuePair : Colorizers)
     {
@@ -117,7 +117,7 @@ void NoteColorizer::ColorizeSaber(GlobalNamespace::NoteController *noteControlle
 void NoteColorizer::Refresh() {
     if (NoteColorable) return;
 
-    Sombrero::FastColor color = getColor();
+    Sombrero::FastColor const& color = getColor();
     if (color == _colorNoteVisuals->noteColor)
     {
         return;

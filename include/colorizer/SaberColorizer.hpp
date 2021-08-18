@@ -60,7 +60,7 @@ namespace Chroma {
         static bool IsColorable(GlobalNamespace::SaberModelController* saberModelController);
         static void SetColorable(GlobalNamespace::SaberModelController* saberModelController, bool colorable);
 
-        static void GlobalColorize(GlobalNamespace::SaberType saberType, std::optional<Sombrero::FastColor> color);
+        static void GlobalColorize(GlobalNamespace::SaberType saberType, std::optional<Sombrero::FastColor> const& color);
         static void Reset();
 
         // extensions
@@ -69,7 +69,7 @@ namespace Chroma {
         static void RemoveColorizer(GlobalNamespace::SaberModelController* saberModelController);
         static std::shared_ptr<SaberColorizer>& GetColorizer(GlobalNamespace::SaberModelController* saberModelController);
 
-        inline static void ColorizeSaber(GlobalNamespace::SaberModelController* saberModelController, std::optional<Sombrero::FastColor> color) {
+        inline static void ColorizeSaber(GlobalNamespace::SaberModelController* saberModelController, std::optional<Sombrero::FastColor> const& color) {
             GetColorizer(saberModelController)->Colorize(color);
         }
     };
