@@ -12,7 +12,7 @@
 using namespace Chroma;
 using namespace GlobalNamespace;
 
-static float GetPrecisionStep(float defaultF, GlobalNamespace::BeatmapEventData* beatmapEventData)
+static float GetPrecisionStep(float const& defaultF, GlobalNamespace::BeatmapEventData* beatmapEventData)
 {
     auto map = ChromaEventDataManager::ChromaEventDatas;
     auto it = map.find(beatmapEventData);

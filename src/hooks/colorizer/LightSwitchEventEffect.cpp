@@ -76,8 +76,8 @@ MAKE_HOOK_MATCH(LightSwitchEventEffect_SetColor,
 
 
     if (LightSwitchEventEffectHolder::LightIDOverride) {
-        auto lightOverride = LightSwitchEventEffectHolder::LightIDOverride.value();
-        auto lights = LightColorizer::GetLightColorizer(self->event)->Lights;
+        auto const& lightOverride = LightSwitchEventEffectHolder::LightIDOverride.value();
+        auto& lights = LightColorizer::GetLightColorizer(self->event)->Lights;
 
         int type = self->event;
         std::vector<int> newIds;
@@ -113,7 +113,7 @@ MAKE_HOOK_MATCH(LightSwitchEventEffect_SetColor,
     }
 
     if (LightSwitchEventEffectHolder::LegacyLightOverride) {
-        auto lights = LightSwitchEventEffectHolder::LegacyLightOverride.value();
+        auto const&  lights = LightSwitchEventEffectHolder::LegacyLightOverride.value();
 
         for (auto &light : lights) {
             if (!light) continue;
