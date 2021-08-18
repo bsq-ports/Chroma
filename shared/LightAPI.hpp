@@ -119,7 +119,7 @@ namespace Chroma {
 
         /// Sets all the light colors
         /// If nullopt, it resets all the light colors
-        static void SetAllLightingColorsSafe(std::optional<LSEData> lseData) {
+        static void setAllLightingColorsSafe(std::optional<LSEData> lseData) {
             static auto function = CondDeps::Find<void, std::optional<LSEData>>(CHROMA_ID, "setAllLightingColorsSafe");
 
             if (function) {

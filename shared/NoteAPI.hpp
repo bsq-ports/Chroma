@@ -91,7 +91,7 @@ namespace Chroma {
         /// Sets if the note is colorable. If this is set to true, Chroma will NOT color the note and
         /// instead the work should be done by the mod handling coloring notes usually a custom note mod
         static void setNoteColorable(bool colorable) {
-            static auto function = CondDeps::Find<void, bool>(CHROMA_ID, "setSaberColorable");
+            static auto function = CondDeps::Find<void, bool>(CHROMA_ID, "setNoteColorable");
 
             if (function) {
                 function.value()(colorable);
@@ -101,7 +101,7 @@ namespace Chroma {
         /// Checks if the note is colorable. If this is set to true, Chroma will NOT color the note and
         /// instead the work should be done by the mod handling coloring notes usually a custom note mod
         static std::optional<bool> isNoteColorable() {
-            static auto function = CondDeps::Find<bool>(CHROMA_ID, "isSaberColorable");
+            static auto function = CondDeps::Find<bool>(CHROMA_ID, "isNoteColorable");
 
             if (function) {
                 return function.value()();

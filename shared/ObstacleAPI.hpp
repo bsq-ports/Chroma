@@ -54,7 +54,7 @@ namespace Chroma {
         /// Sets if the obstacle is colorable. If this is set to true, Chroma will NOT color the obstacle and
         /// instead the work should be done by the mod handling coloring obstacles usually a custom obstacles mod
         static void setObstacleColorable(bool colorable) {
-            static auto function = CondDeps::Find<void, bool>(CHROMA_ID, "setSaberColorable");
+            static auto function = CondDeps::Find<void, bool>(CHROMA_ID, "setObstacleColorable");
 
             if (function) {
                 function.value()(colorable);
@@ -64,7 +64,7 @@ namespace Chroma {
         /// Checks if the obstacle is colorable. If this is set to true, Chroma will NOT color the obstacle and
         /// instead the work should be done by the mod handling coloring obstacles usually a custom obstacle mod
         static std::optional<bool> isObstacleColorable() {
-            static auto function = CondDeps::Find<bool>(CHROMA_ID, "isSaberColorable");
+            static auto function = CondDeps::Find<bool>(CHROMA_ID, "isObstacleColorable");
 
             if (function) {
                 return function.value()();
