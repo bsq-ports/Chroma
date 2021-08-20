@@ -10,10 +10,11 @@
   "description": "Colors! No track or Noodle support.",
   "modFiles": [
     "libchroma.so",
-    "libcustom-json-data.so"
+    "libcustom-json-data.so",
+    "libtracks.so"
   ],
   "libraryFiles": [
-    "libbeatsaber-hook_2_2_4.so",
+    "libbeatsaber-hook_2_2_5.so",
     "libquestui.so",
     "libcustom-types.so"
   ],
