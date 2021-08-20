@@ -59,6 +59,11 @@
       "id": "tracks",
       "versionRange": "*",
       "additionalData": {}
+    },
+    {
+      "id": "pinkcore",
+      "versionRange": "*",
+      "additionalData": {}
     }
   ],
   "additionalData": {}
