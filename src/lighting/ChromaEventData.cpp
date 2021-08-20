@@ -56,7 +56,7 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
                 rapidjson::Value &unwrappedData = *optionalDynData;
 
                 auto gradientJSON = unwrappedData.FindMember(LIGHTGRADIENT);
-                if (gradientJSON != unwrappedData.MemberEnd()) {
+                if (gradientJSON != unwrappedData.MemberEnd() && !gradientJSON->value.IsNull() && gradientJSON->value.IsObject()) {
                     auto &gValue = gradientJSON->value;
 
                     float duration = gValue.FindMember(Chroma::DURATION)->value.GetFloat(); // Trees.at(gradientObject, DURATION);
