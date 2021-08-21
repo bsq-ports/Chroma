@@ -161,7 +161,7 @@ jobs:
         run: |
           ./QPM/QPM package edit-extra "branchName" "version-${{ steps.get_tag_version.outputs.TAG }}"
           ./QPM/QPM package edit-extra "soLink" "${{ steps.upload_release_asset.outputs.browser_download_url }}"
-          ./QPM/QPM package edit-extra "debugSoLink" "${{ steps.upload_debug_asset.outputs.browser_download_url }}"
+#          ./QPM/QPM package edit-extra "debugSoLink" "${{ steps.upload_debug_asset.outputs.browser_download_url }}"
       - name: Commit Changed package info
         run: |
           git add qpm.json
