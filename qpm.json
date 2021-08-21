@@ -7,7 +7,9 @@
     "version": "2.4.12",
     "url": "https://github.com/bsq-ports/Chroma",
     "additionalData": {
-      "headersOnly": true
+      "headersOnly": true,
+      "branchName": "version-v2.4.12",
+      "soLink": "https://github.com/bsq-ports/Chroma/releases/download/v2.4.12/libchroma_2_4_12.so"
     }
   },
   "dependencies": [
