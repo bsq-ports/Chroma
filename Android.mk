@@ -73,7 +73,7 @@ LOCAL_MODULE := cryptopp
 LOCAL_EXPORT_C_INCLUDES := extern/libcryptopp
 LOCAL_SRC_FILES := extern/libcryptopp.a
 include $(PREBUILT_STATIC_LIBRARY)
-# Creating prebuilt for dependency: pinkcore - version: 1.5.3
+# Creating prebuilt for dependency: pinkcore - version: 1.5.4
 include $(CLEAR_VARS)
 LOCAL_MODULE := pinkcore
 LOCAL_EXPORT_C_INCLUDES := extern/pinkcore
@@ -87,7 +87,7 @@ LOCAL_SRC_FILES := extern/libcurl.a
 include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
-LOCAL_MODULE := chroma
+LOCAL_MODULE := chroma_2_4_12
 LOCAL_SRC_FILES += $(call rwildcard,src/,*.cpp)
 LOCAL_SRC_FILES += $(call rwildcard,extern/beatsaber-hook/src/inline-hook,*.cpp)
 LOCAL_SRC_FILES += $(call rwildcard,extern/beatsaber-hook/src/inline-hook,*.c)
@@ -100,11 +100,13 @@ LOCAL_SHARED_LIBRARIES += questui
 LOCAL_SHARED_LIBRARIES += tracks
 LOCAL_SHARED_LIBRARIES += songloader
 LOCAL_SHARED_LIBRARIES += pinkcore
-#LOCAL_STATIC_LIBRARIES += cryptopp
-#LOCAL_STATIC_LIBRARIES += curl
+LOCAL_STATIC_LIBRARIES += cryptopp
+LOCAL_STATIC_LIBRARIES += curl
 LOCAL_LDLIBS += -llog
-LOCAL_CFLAGS += -I'extern/libil2cpp/il2cpp/libil2cpp' -DDEBUGB='1' -DID='"chroma"' -DVERSION='"2.4.10q2"' -I'./shared' -I'./extern' -isystem'extern/codegen/include' -O2
+LOCAL_CFLAGS += -I'extern/libil2cpp/il2cpp/libil2cpp' -DDEBUGB='1' -DID='"chroma"' -DVERSION='"2.4.12"' -I'./shared' -I'./extern' -isystem'extern/codegen/include' -O2
 LOCAL_CPPFLAGS += -std=c++2a -O2
 LOCAL_C_INCLUDES += ./include ./src
+#LOCAL_STATIC_LIBRARIES += cryptopp
+#LOCAL_STATIC_LIBRARIES += curl
 LOCAL_EXPORT_C_FLAGS :=
 include $(BUILD_SHARED_LIBRARY)
