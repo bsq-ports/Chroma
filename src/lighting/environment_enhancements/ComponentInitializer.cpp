@@ -198,7 +198,7 @@ Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root,
         rootComponent->mirrorMaterial = UnityEngine::Object::Instantiate(originalComponent->mirrorMaterial);
     });
 
-    GameObjectInfo gameObjectInfo = GameObjectInfo(root->get_gameObject());
+    GameObjectInfo gameObjectInfo(root->get_gameObject());
     gameObjectInfos.push_back(gameObjectInfo);
 
     for (int i = 0; i < root->get_childCount(); i++)

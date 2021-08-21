@@ -97,20 +97,22 @@ EnvironmentEnhancementManager::GetVectorData(std::reference_wrapper<rapidjson::V
 void EnvironmentEnhancementManager::GetAllGameObjects() {
     _gameObjectInfos.clear();
 
-    auto gameObjects = UnityEngine::Resources::FindObjectsOfTypeAll<UnityEngine::GameObject*>();
+    auto gameObjectsAll = UnityEngine::Resources::FindObjectsOfTypeAll<UnityEngine::GameObject*>();
     std::vector<UnityEngine::GameObject*> gameObjectsVec;
-    gameObjectsVec.reserve(gameObjects->Length());
+    gameObjectsVec.reserve(gameObjectsAll->Length());
 
 
-    for (int i = 0; i < gameObjects->Length(); i++) {
-        auto gameObject = gameObjects->get(i);
+    for (int i = 0; i < gameObjectsAll->Length(); i++) {
+        auto gameObject = gameObjectsAll->get(i);
+        if (!gameObject) continue;
 
-        if (gameObject) {
-            auto sceneName = gameObject->get_scene().get_name();
+        auto sceneNameIl2cpp = gameObject->get_scene().get_name();
+        if (!sceneNameIl2cpp) continue;
 
-            if (sceneName && (sceneName->Contains(il2cpp_utils::newcsstr("Environment")) && !sceneName->Contains(il2cpp_utils::newcsstr("Menu")) || gameObject->GetComponent<GlobalNamespace::TrackLaneRing*>())) {
-                gameObjectsVec.push_back(gameObject);
-            }
+        std::string sceneName = to_utf8(csstrtostr(sceneNameIl2cpp));
+
+        if ((sceneName.find("Environment") != std::string::npos && sceneName.find("Menu") == std::string::npos) || gameObject->GetComponent<GlobalNamespace::TrackLaneRing*>()) {
+            gameObjectsVec.push_back(gameObject);
         }
     }
 
@@ -120,8 +122,9 @@ void EnvironmentEnhancementManager::GetAllGameObjects() {
         GetChildRecursive(gameObject->get_transform(), allChildren);
 
         for (auto &transform : allChildren) {
-            if (!gameObjects->Contains(transform->get_gameObject())) {
-                gameObjectsVec2.push_back(transform->get_gameObject());
+            auto childGameObject = transform->get_gameObject();
+            if (std::find(gameObjectsVec.begin(), gameObjectsVec.end(), childGameObject) == gameObjectsVec.end()) {
+                gameObjectsVec2.push_back(childGameObject);
             }
         }
     }
@@ -211,9 +214,9 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                 auto foundObjects = LookupId(id, lookupMethod);
 
                 std::vector<GameObjectInfo> gameObjectInfos;
-                _gameObjectInfos.reserve(_gameObjectInfos.size());
-
                 if (dupeAmount) {
+                    gameObjectInfos.reserve(_gameObjectInfos.size());
+
                     for (const auto &gameObjectInfo : foundObjects) {
                         if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {
                             getLogger().info("Duplicating [%s]:", gameObjectInfo.FullID.c_str());
@@ -236,11 +239,12 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                             newGameObject->get_transform()->SetParent(parent, true);
 
                             ComponentInitializer::InitializeComponents(newGameObject->get_transform(),
-                                                                       gameObject->get_transform(), gameObjectInfos,
+                                                                       gameObject->get_transform(), _gameObjectInfos,
                                                                        componentDatas, lightID);
                             for (auto &o : _gameObjectInfos) {
-                                if (o.GameObject == newGameObject)
+                                if (o.GameObject->Equals(newGameObject)) {
                                     gameObjectInfos.push_back(o);
+                                }
                             }
 
 
