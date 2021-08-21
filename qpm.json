@@ -23,7 +23,9 @@
     {
       "id": "custom-types",
       "versionRange": "^0.12.0",
-      "additionalData": {}
+      "additionalData": {
+        "private": true
+      }
     },
     {
       "id": "codegen",
@@ -38,12 +40,16 @@
     {
       "id": "config-utils",
       "versionRange": "^0.5.0",
-      "additionalData": {}
+      "additionalData": {
+        "private": true
+      }
     },
     {
       "id": "questui",
       "versionRange": "^0.10.0",
-      "additionalData": {}
+      "additionalData": {
+        "private": true
+      }
     },
     {
       "id": "conditional-dependencies",
@@ -58,12 +64,16 @@
     {
       "id": "tracks",
       "versionRange": "*",
-      "additionalData": {}
+      "additionalData": {
+        "private": true
+      }
     },
     {
       "id": "pinkcore",
       "versionRange": "*",
-      "additionalData": {}
+      "additionalData": {
+        "private": true
+      }
     }
   ],
   "additionalData": {}
