@@ -7,7 +7,7 @@
   "version": "2.4.10",
   "packageId": "com.beatgames.beatsaber",
   "packageVersion": "1.16.4",
-  "description": "Colors! No track or Noodle support.",
+  "description": "Colors!",
   "modFiles": [
     "libchroma.so",
     "libcustom-json-data.so",
