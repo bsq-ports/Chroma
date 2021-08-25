@@ -3,6 +3,8 @@
 #include "Chroma.hpp"
 #include "utils/ChromaUtils.hpp"
 
+#include "ChromaController.hpp"
+
 using namespace Chroma;
 using namespace GlobalNamespace;
 using namespace UnityEngine;
@@ -41,6 +43,9 @@ void LegacyLightHelper::Activate(const std::vector<GlobalNamespace::BeatmapEvent
 }
 
 std::optional<Sombrero::FastColor> LegacyLightHelper::GetLegacyColor(GlobalNamespace::BeatmapEventData *beatmapEventData) {
+    if (!ChromaController::GetChromaLegacy())
+        return std::nullopt;
+
     auto it = LegacyColorEvents.find(beatmapEventData->type);
     if (it != LegacyColorEvents.end()) {
         auto dictionaryID = it->second;
@@ -66,5 +71,5 @@ Sombrero::FastColor LegacyLightHelper::ColorFromInt(int rgb) {
     auto red = (float) ((rgb >> 16) & 0x0ff);
     auto green = (float) ((rgb >> 8) & 0x0ff);
     auto blue = (float ) (rgb & 0x0ff);
-    return Sombrero::FastColor(red / 255.0f, green / 255.0f, blue / 255.0f, 1);
+    return {red / 255.0f, green / 255.0f, blue / 255.0f, 1};
 }

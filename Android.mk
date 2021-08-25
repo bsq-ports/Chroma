@@ -73,7 +73,7 @@ LOCAL_MODULE := cryptopp
 LOCAL_EXPORT_C_INCLUDES := extern/libcryptopp
 LOCAL_SRC_FILES := extern/libcryptopp.a
 include $(PREBUILT_STATIC_LIBRARY)
-# Creating prebuilt for dependency: pinkcore - version: 1.5.3
+# Creating prebuilt for dependency: pinkcore - version: 1.5.4
 include $(CLEAR_VARS)
 LOCAL_MODULE := pinkcore
 LOCAL_EXPORT_C_INCLUDES := extern/pinkcore
@@ -100,11 +100,11 @@ LOCAL_SHARED_LIBRARIES += questui
 LOCAL_SHARED_LIBRARIES += tracks
 LOCAL_SHARED_LIBRARIES += songloader
 LOCAL_SHARED_LIBRARIES += pinkcore
-#LOCAL_STATIC_LIBRARIES += cryptopp
-#LOCAL_STATIC_LIBRARIES += curl
 LOCAL_LDLIBS += -llog
 LOCAL_CFLAGS += -I'extern/libil2cpp/il2cpp/libil2cpp' -DDEBUGB='1' -DID='"chroma"' -DVERSION='"2.4.10q3"' -I'./shared' -I'./extern' -isystem'extern/codegen/include' -O2
 LOCAL_CPPFLAGS += -std=c++2a -O2
 LOCAL_C_INCLUDES += ./include ./src
+#LOCAL_STATIC_LIBRARIES += cryptopp
+#LOCAL_STATIC_LIBRARIES += curl
 LOCAL_EXPORT_C_FLAGS :=
 include $(BUILD_SHARED_LIBRARY)
