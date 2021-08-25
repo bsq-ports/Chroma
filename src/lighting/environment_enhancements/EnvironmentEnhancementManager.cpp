@@ -177,7 +177,9 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
 
                 if (trackNameIt != gameObjectDataVal.MemberEnd()) {
                     trackName = trackNameIt->value.GetString();
-                    trackBeatmapAD.tracks.emplace(trackName.value(), Track());
+                    std::string val = *trackName;
+                    if (trackBeatmapAD.tracks.find(val) == trackBeatmapAD.tracks.end())
+                        trackBeatmapAD.tracks.emplace(val, Track());
                 }
 
 
