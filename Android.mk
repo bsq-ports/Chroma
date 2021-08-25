@@ -101,7 +101,7 @@ LOCAL_SHARED_LIBRARIES += tracks
 LOCAL_SHARED_LIBRARIES += songloader
 LOCAL_SHARED_LIBRARIES += pinkcore
 LOCAL_LDLIBS += -llog
-LOCAL_CFLAGS += -I'extern/libil2cpp/il2cpp/libil2cpp' -DDEBUGB='1' -DID='"chroma"' -DVERSION='"2.4.10q3"' -I'./shared' -I'./extern' -isystem'extern/codegen/include' -O2
+LOCAL_CFLAGS += -I'extern/libil2cpp/il2cpp/libil2cpp' -DDEBUGB='1' -DID='"chroma"' -DVERSION='"2.4.10q4"' -I'./shared' -I'./extern' -isystem'extern/codegen/include' -O2
 LOCAL_CPPFLAGS += -std=c++2a -O2
 LOCAL_C_INCLUDES += ./include ./src
 #LOCAL_STATIC_LIBRARIES += cryptopp
