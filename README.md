@@ -12,7 +12,7 @@ Colors!
 - [x] ~~Chroma ring lights do not seem to work due to CJD not providing the customData or something else~~ Ring lights work though they are still unstable. Solution is ugly
 - [x] ~~Light positions in maps such as `Madeon - The Prince` are not correct (assuming the [video from Tempex](https://www.youtube.com/watch?v=I0G34tNpbPU) is the reference)~~ Fixed in commit [2500809](https://github.com/nyamimi/Chroma/commit/2500809f1082134ee148b46c0744b303da583bf9)
 - [x] Random crash due to retrieving [custom JSON data nullptr](https://github.com/nyamimi/Chroma/blob/c36d5fd48254008786a07c3a2419eac590fc2961/src/hooks/LightSwitchEventEffect.cpp#L57) weirdly
-- [ ] Track support (Requires Stack Track code)
+- [x] Track support (Requires Stack Track code)
 - [x] ~~Bomb and obstacle coloring~~ Implemented in [1f41a9ca](https://github.com/nyamimi/Chroma/commit/1f41a9ca80a5f44d15e4aa08e17f8dbcd9ef07a1)
 - [x] Add multiplayer scene hooks
 - [x] Add `info.dat` environment removal support
@@ -33,8 +33,8 @@ Colors!
 
 * Sc2ad - Thank you so much for helping us fix annoying bugs and with your beautiful work in bs-hooks and custom-types. C++ 20 coroutines and safe pointers are amazing, and your advice went to finishing this in a properly good way.
 * rui2015, Future, Caeden117, Auros, AeroLuna, Top_Cat - Thank you for clarifying, documenting and correcting us with how Chroma on PC works. Your help went a long way by taking us to the right direction.
-* StackDoubleFlow - Collaborated with us by fixing CustomJSONData and correcting our mistakes.
-* Pink - Gave us `info.dat` data and map suggestions/requirements
+* StackDoubleFlow - Collaborated with us by fixing CustomJSONData and correcting our mistakes. Thanks for Tracks and info.dat :D
+* Pink - Gave us map suggestions/requirements
 * RedBrumbler - Suggestions for adding compatibility with mods such as TrickSaber and Qosmetics
 * Everyone who helped test the mod, support us and contribute. Your help pushed us to seeing this finally become a reality.
 
