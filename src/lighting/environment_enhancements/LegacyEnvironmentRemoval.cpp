@@ -17,7 +17,7 @@ void Chroma::LegacyEnvironmentRemoval::Init(CustomJSONData::CustomBeatmapData* c
     getLogger().debug("Environment data: %p", dynDataWrapper ? "true" : "false");
 
     if (dynDataWrapper) {
-        rapidjson::Document& dynData = *dynDataWrapper;
+        DocumentUTF16& dynData = *dynDataWrapper;
         auto objectsToKillIt = dynData.FindMember(ENVIRONMENTREMOVAL.c_str());
 
         if (objectsToKillIt != dynData.MemberEnd()) {
@@ -29,8 +29,8 @@ void Chroma::LegacyEnvironmentRemoval::Init(CustomJSONData::CustomBeatmapData* c
             auto gameObjects = UnityEngine::Resources::FindObjectsOfTypeAll<UnityEngine::GameObject*>();
 
             for (auto& oValue : objectsToKill) {
-                std::string s = oValue.GetString();
-                if (s == "TrackLaneRing" || s == "BigTrackLaneRing") {
+                std::u16string s = oValue.GetString();
+                if (s == u"TrackLaneRing" || s == u"BigTrackLaneRing") {
 
                     for (int i = 0; i < gameObjects->Length(); i++) {
                         UnityEngine::GameObject *n = gameObjects->get(i);
@@ -38,12 +38,12 @@ void Chroma::LegacyEnvironmentRemoval::Init(CustomJSONData::CustomBeatmapData* c
                         if (!n)
                             continue;
 
-                        auto nName = to_utf8(csstrtostr(n->get_name()));
+                        auto nName = csstrtostr(n->get_name());
                         if (nName.find(s) != std::string::npos) {
-                            if (s == "TrackLaneRing" && nName.find("Big") != std::string::npos)
+                            if (s == u"TrackLaneRing" && nName.find(u"Big") != std::string::npos)
                                 continue;
 
-                            debugSpamLog(contextLogger, "Setting %s to disabled", nName.c_str());
+                            debugSpamLog(contextLogger, "Setting %s to disabled", nName);
                             n->SetActive(false);
                         }
                     }
@@ -56,7 +56,7 @@ void Chroma::LegacyEnvironmentRemoval::Init(CustomJSONData::CustomBeatmapData* c
                             continue;
 
                         auto gStrIl2 = n->get_name();
-                        std::string gStr = gStrIl2 ? to_utf8(csstrtostr(gStrIl2)) : "";
+                        std::u16string gStr = gStrIl2 ? std::u16string(csstrtostr(gStrIl2)) : u"";
 
 
                         auto scene = n->get_scene();

@@ -17,5 +17,6 @@
 #include "lighting/environments/OriginsEnvironment.hpp"
 #include "lighting/environments/PanicEnvironment.hpp"
 #include "lighting/environments/RocketEnvironment.hpp"
+#include "lighting/environments/SkrillexEnvironment.hpp"
 #include "lighting/environments/TimbalandEnvironment.hpp"
 #include "lighting/environments/TriangleEnvironment.hpp"

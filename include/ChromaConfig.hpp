@@ -8,9 +8,9 @@
 
 DECLARE_CONFIG(ChromaConfig,
 
-        CONFIG_VALUE(PrintEnvironmentEnhancementDebug, bool, "", false);
-        CONFIG_VALUE(customColorEventsEnabled, bool, "Custom Color Events", true);
-        CONFIG_VALUE(environmentEnhancementsEnabled, bool, "Environment Enhancements", true);
+        CONFIG_VALUE(PrintEnvironmentEnhancementDebug, bool, "PrintEnvironmentEnhancementDebug", false);
+        CONFIG_VALUE(customColorEventsEnabled, bool, "Custom Color Events", true, "Disables custom colors for Chroma maps. In other words, disables Chroma");
+        CONFIG_VALUE(environmentEnhancementsEnabled, bool, "Environment Enhancements", true, "Toggles whether Chroma should modify the environment as specified by a map.");
 
 
         CONFIG_INIT_FUNCTION(

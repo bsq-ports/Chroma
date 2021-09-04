@@ -51,13 +51,12 @@ namespace Chroma {
         inline const char* TrackController = "GameObjectTrackController";
     }
 
-    inline const std::string REQUIREMENTNAME = "Chroma";
+    inline const std::u16string REQUIREMENTNAME = u"Chroma";
 
 
     inline const std::string ANIMATION = "_animation";
     inline const std::string TRACK = "_track";
     inline const std::string DIRECTION = "_direction";
-    inline const std::string ENVIRONMENTREMOVAL = "_environmentRemoval";
     inline const std::string COLOR = "_color";
     inline const std::string COUNTERSPIN = "_counterSpin";
     inline const std::string DURATION = "_duration";
@@ -80,7 +79,8 @@ namespace Chroma {
     inline const std::string ROTATION = "_rotation";
     inline const std::string LIGHTGRADIENT = "_lightGradient";
 
-    inline const std::string ENVIRONMENT = "_environment";
+    inline const std::u16string ENVIRONMENTREMOVAL = u"_environmentRemoval";
+    inline const std::u16string ENVIRONMENT = u"_environment";
     inline const std::string IDVAR = "_id";
     inline const std::string LOOKUPMETHOD = "_lookupMethod";
     inline const std::string DUPLICATIONAMOUNT = "_duplicate";

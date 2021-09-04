@@ -27,7 +27,7 @@ using namespace ChromaUtils;
 
 MAKE_HOOK_MATCH(
         NoteController_Update,
-        &NoteController::Update,
+        &NoteController::ManualUpdate,
         void,
         NoteController* self
         ) {

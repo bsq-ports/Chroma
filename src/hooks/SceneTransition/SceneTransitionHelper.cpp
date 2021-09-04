@@ -53,7 +53,7 @@ void SceneTransitionHelper::Patch(GlobalNamespace::IDifficultyBeatmap* customBea
     }
 }
 
-bool CheckIfInArray(rapidjson::Value& val, const std::string& stringToCheck) {
+bool CheckIfInArray(ValueUTF16& val, const std::u16string& stringToCheck) {
     if (val.IsArray()) {
         for (auto &element : val.GetArray()) {
             if (element.IsString() && element.GetString() == stringToCheck)
@@ -84,22 +84,24 @@ bool SceneTransitionHelper::BasicPatch(GlobalNamespace::IDifficultyBeatmap* cust
     if (customBeatmapDataCustom->levelCustomData) {
         auto dynData = customBeatmapDataCustom->levelCustomData->value;
 
+        getLogger().debug("Level custom data value: %s", dynData ? "true" : "false");
+
         if (dynData) {
-            rapidjson::Value &rapidjsonData = *dynData;
+            ValueUTF16 &rapidjsonData = *dynData;
 
             // Copy this since it gets freed later on.
-            rapidjson::Document doc;
+            DocumentUTF16 doc;
             doc.CopyFrom(rapidjsonData, doc.GetAllocator());
 
             ChromaController::infoDatCopy = std::make_optional(std::move(doc));
 
-            auto requirements = rapidjsonData.FindMember("_requirements");
+            auto requirements = rapidjsonData.FindMember(u"_requirements");
 
             if (requirements != rapidjsonData.MemberEnd()) {
                 chromaRequirement |= CheckIfInArray(requirements->value, REQUIREMENTNAME);
             }
 
-            auto suggestions = rapidjsonData.FindMember("_suggestions");
+            auto suggestions = rapidjsonData.FindMember(u"_suggestions");
 
             if (suggestions != rapidjsonData.MemberEnd()) {
                 chromaRequirement |= CheckIfInArray(suggestions->value, REQUIREMENTNAME);

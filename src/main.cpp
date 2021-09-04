@@ -24,8 +24,13 @@
 
 #include "pinkcore/shared/RequirementAPI.hpp"
 
+#include "questui_components/shared/components/ViewComponent.hpp"
+#include "questui_components/shared/components/ScrollableContainer.hpp"
+#include "ui/ModifierViewController.hpp"
+
 using namespace Chroma;
 using namespace QuestUI;
+using namespace QuestUI_Components;
 
 
 Configuration& getConfig() {
@@ -38,6 +43,7 @@ Logger& getLogger() {
     static auto* logger = new Logger(modInfo, LoggerOptions(false, true));
     return *logger;
 }
+
 
 void setChromaEnv() {
     setenv("DisableChromaReq", getChromaConfig().customColorEventsEnabled.GetValue() ? "0" : "1", true);
@@ -54,33 +60,22 @@ void DidActivate(HMUI::ViewController* self, bool firstActivation, bool addedToH
     getLogger().info("DidActivate: %p, %d, %d, %d", self, firstActivation, addedToHierarchy, screenSystemEnabling);
 
     if(firstActivation) {
-        self->get_gameObject()->AddComponent<HMUI::Touchable*>();
-        UnityEngine::GameObject* container = BeatSaberUI::CreateScrollableSettingsContainer(self->get_transform());
+        self->get_gameObject()->AddComponent<HMUI::Touchable *>();
 
+        static ViewComponent *view;
 
+        if (view) {
+            delete view;
+            view = nullptr;
+        }
 
-        auto* textGrid = container;
-//        textGrid->set_spacing(1);
+        view = new ViewComponent(self->get_transform(), {
+            new ScrollableContainer({
+                Chroma::UIUtils::buildMainUI<true>()
+            })
+        });
 
-        BeatSaberUI::CreateText(textGrid->get_transform(), "Chroma settings.");
-
-        BeatSaberUI::CreateText(textGrid->get_transform(), "Settings are saved when changed.");
-
-        BeatSaberUI::CreateText(textGrid->get_transform(), "Not all settings have been tested or implemented.");
-        BeatSaberUI::CreateText(textGrid->get_transform(), "Please use with caution.");
-
-//        buttonsGrid->set_spacing(1);
-
-        auto* boolGrid = container;
-
-//        BeatSaberUI::CreateText(boolGrid->get_transform(), "Preferences.", false);
-        BeatSaberUI::AddHoverHint(AddConfigValueToggle(boolGrid->get_transform(), getChromaConfig().environmentEnhancementsEnabled)->get_gameObject(),"Toggles whether Chroma should modify the environment as specified by a map.");
-        BeatSaberUI::AddHoverHint(
-        BeatSaberUI::CreateToggle(boolGrid->get_transform(), getChromaConfig().customColorEventsEnabled.GetName(), getChromaConfig().customColorEventsEnabled.GetValue(),
-        [](bool toggle) {
-            getChromaConfig().customColorEventsEnabled.SetValue(toggle);
-            setChromaEnv();
-        })->get_gameObject(), "Disables custom colors for Chroma maps. In other words, disables Chroma");
+        view->render();
     }
 }
 
@@ -100,6 +95,7 @@ extern "C" void load() {
     il2cpp_functions::Init();
     QuestUI::Init();
     QuestUI::Register::RegisterModSettingsViewController(modInfo, DidActivate);
+    QuestUI::Register::RegisterGameplaySetupMenu<ModifierViewController*>(modInfo, Register::Solo | Register::Online);
 
 #if DEBUGB == 1
     #warning "Removing debug messages"

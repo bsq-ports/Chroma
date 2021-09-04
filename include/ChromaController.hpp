@@ -15,6 +15,8 @@
 #include "main.hpp"
 
 namespace Chroma {
+    typedef rapidjson::GenericDocument<rapidjson::UTF16<char16_t>> DocumentUTF16;
+
     class ChromaController {
     private:
         static bool ChromaLegacy;
@@ -49,6 +51,6 @@ namespace Chroma {
         static custom_types::Helpers::Coroutine DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnController *beatmapObjectSpawnController);
 
         // Since level data is freed on scene load, we copy it before we load.
-        inline static std::optional<rapidjson::Document> infoDatCopy = std::nullopt;
+        inline static std::optional<DocumentUTF16> infoDatCopy = std::nullopt;
     };
 }

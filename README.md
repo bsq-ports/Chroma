@@ -1,6 +1,6 @@
 # Chroma
 
-Is based on Chroma PC v2.4.9 as of this time
+Is based on Chroma PC v2.5.0 as of this time
 
 Colors!
 
@@ -22,7 +22,8 @@ Colors!
   - [x] Do [LightID rework](https://github.com/Aeroluna/Chroma/commit/a8fc978b282af145c6ed263bfcce3485a31bb039) with rapidjson and somehow get json files in game
   - [x] Add noodle support
   - [x] Port over [these commits dear lord](https://github.com/BinaryElement/Chroma/compare/24452837a71867688a739a9f1297cd4b5efcaa77...Aeroluna:master) 
-    
+- [ ] Multiple tracks on one object    
+
 - [ ] Optimize wherever possible
 
 ## Credits and Thank You

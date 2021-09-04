@@ -12,6 +12,7 @@
 
 Configuration& getConfig();
 Logger& getLogger();
+void setChromaEnv();
 
 #if DEBUGB == 0
     #define debugSpamLog(context, ...) \
