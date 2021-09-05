@@ -59,10 +59,12 @@ void setChromaEnv() {
 void DidActivate(HMUI::ViewController* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling){
     getLogger().info("DidActivate: %p, %d, %d, %d", self, firstActivation, addedToHierarchy, screenSystemEnabling);
 
+    static ViewComponent *view;
+
     if(firstActivation) {
         self->get_gameObject()->AddComponent<HMUI::Touchable *>();
 
-        static ViewComponent *view;
+
 
         if (view) {
             delete view;
@@ -74,9 +76,10 @@ void DidActivate(HMUI::ViewController* self, bool firstActivation, bool addedToH
                 Chroma::UIUtils::buildMainUI<true>()
             })
         });
-
-        view->render();
     }
+
+    view->render();
+
 }
 
 extern "C" void setup(ModInfo& info) {
