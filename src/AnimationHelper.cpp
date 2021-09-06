@@ -48,23 +48,18 @@ void Chroma::AnimationHelper::GetColorOffset(std::optional<PointDefinition *> co
         pathColor = localColor.value()->InterpolateVector4(time);
     } else if (!track) {
         // Early return because no color will be given
-        color = std::nullopt;
         return;
     }
 
-    // todo: multiple tracks
-
-    std::optional<NEVector::Vector4> colorVector;
     std::optional<NEVector::Vector4> trackColor;
 
     if (track) {
         Track *trackVal = *track;
+        if (!localColor) {
+            auto &colorPathProp = trackVal->pathProperties.color;
 
-        auto &colorPathProp = trackVal->pathProperties.color;
-
-        if (!pathColor)
             pathColor = TryGetVector4PathProperty(colorPathProp, time);
-
+        }
 
         auto &colorProp = trackVal->properties.color;
 
@@ -72,10 +67,6 @@ void Chroma::AnimationHelper::GetColorOffset(std::optional<PointDefinition *> co
             trackColor = colorProp.value.value().vector4;
 //            getLogger().debug("track %s", VectorStr(colorProp.value.value().vector4).c_str());
         }
-
-        colorVector = MultVector4Nullables(trackColor, pathColor);
-    } else {
-        colorVector = pathColor;
     }
 
     auto trackColorColor = trackColor ? Sombrero::FastColor(trackColor.value().x, trackColor.value().y,
@@ -85,6 +76,7 @@ void Chroma::AnimationHelper::GetColorOffset(std::optional<PointDefinition *> co
                                                           pathColor.value().w) : Sombrero::FastColor();
 
 //    getLogger().debug("track %s", VectorStr(trackColor ? *trackColor : NEVector::Vector4()).c_str());
+    std::optional<NEVector::Vector4> colorVector = MultVector4Nullables(trackColor, pathColor);
 
     if (colorVector) {
         NEVector::Vector4 vectorValue = colorVector.value();
