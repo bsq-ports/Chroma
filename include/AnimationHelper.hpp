@@ -8,7 +8,7 @@ namespace Chroma {
 
     class AnimationHelper {
     public:
-        static void GetColorOffset(std::optional<PointDefinition*> localColor, std::optional<Track*> track, float time, std::optional<Sombrero::FastColor>& color);
+        static void GetColorOffset(std::optional<PointDefinition*> const& localColor, std::optional<Track*> const& track, float const& time, std::optional<Sombrero::FastColor>& color);
 
     };
 
