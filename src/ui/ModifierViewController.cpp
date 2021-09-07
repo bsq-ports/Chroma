@@ -21,6 +21,7 @@ using namespace UnityEngine;
 
 DEFINE_TYPE(Chroma, ModifierViewController)
 
+// TODO: Replace with QuestUI method
 UnityEngine::UI::VerticalLayoutGroup *CreateModifierContainer(UnityEngine::Transform *parent) {
     UnityEngine::UI::VerticalLayoutGroup* group = CreateVerticalLayoutGroup(parent);
 
@@ -28,7 +29,6 @@ UnityEngine::UI::VerticalLayoutGroup *CreateModifierContainer(UnityEngine::Trans
     group->set_childControlHeight(false);
     group->set_childForceExpandHeight(false);
 
-    group->get_gameObject()->GetComponent<ContentSizeFitter*>()->set_horizontalFit(ContentSizeFitter::FitMode::Unconstrained);
     group->get_gameObject()->GetComponent<ContentSizeFitter*>()->set_verticalFit(ContentSizeFitter::FitMode::PreferredSize);
 
     RectTransform* rectTransform = group->get_rectTransform(); //group->get_transform()->get_parent()->get_gameObject()->GetComponent<RectTransform*>();
@@ -36,8 +36,6 @@ UnityEngine::UI::VerticalLayoutGroup *CreateModifierContainer(UnityEngine::Trans
     rectTransform->set_anchorMin(UnityEngine::Vector2(0.5f, 0.5f));
     rectTransform->set_anchorMax(UnityEngine::Vector2(0.5f, 0.5f));
     rectTransform->set_sizeDelta(UnityEngine::Vector2(54.0f, 0.0f));
-
-    group->get_gameObject()->GetComponent<LayoutElement*>()->set_preferredWidth(65);
 
 
     return group;
@@ -67,21 +65,24 @@ namespace QuestUI_Components {
 
 void Chroma::ModifierViewController::DidActivate(bool first) {
     if (first) {
-        get_gameObject()->AddComponent<HMUI::Touchable*>();
-
-//        layout->get_gameObject()->GetComponent<LayoutElement*>()->set_preferredWidth(65);
+        ModifierContainer* modifierContainer;
 
         view = ViewComponent(get_transform(), {
             new BackgroundableContainer("round-rect-panel", {
                 new Backgroundable("round-rect-panel", {
-                   new ModifierContainer({
-                       new Text("QuestUI layouts are painful, why can't I\n center this"),
+                   modifierContainer = new ModifierContainer({
                        UIUtils::buildMainUI<false>()
                    })
                 })
             })
         });
+
+        view.render();
+
+        modifierContainer->getTransform()->get_gameObject()->GetComponent<LayoutElement*>()->set_preferredWidth(65);
+    } else {
+        view.render();
     }
 
-    view.render();
+
 }
