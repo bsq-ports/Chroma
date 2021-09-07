@@ -6,6 +6,8 @@
 #include "UnityEngine/RectTransform.hpp"
 #include "UnityEngine/UI/ContentSizeFitter.hpp"
 
+#include "questui/shared/CustomTypes/Components/Backgroundable.hpp"
+
 #include "questui_components/shared/components/Backgroundable.hpp"
 #include "questui_components/shared/components/layouts/GridLayoutGroup.hpp"
 
@@ -70,13 +72,15 @@ void Chroma::ModifierViewController::DidActivate(bool first) {
 //        layout->get_gameObject()->GetComponent<LayoutElement*>()->set_preferredWidth(65);
 
         view = ViewComponent(get_transform(), {
-            new Backgroundable("round-rect-panel", {
-               new ModifierContainer({
+            new BackgroundableContainer("round-rect-panel", {
+                new Backgroundable("round-rect-panel", {
+                   new ModifierContainer({
                        new Text("QuestUI layouts are painful, why can't I\n center this"),
                        UIUtils::buildMainUI<false>()
-                 })
-               })
-            });
+                   })
+                })
+            })
+        });
     }
 
     view.render();
