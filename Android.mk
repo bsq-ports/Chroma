@@ -55,7 +55,7 @@ LOCAL_MODULE := questui
 LOCAL_EXPORT_C_INCLUDES := extern/questui
 LOCAL_SRC_FILES := extern/libquestui.so
 include $(PREBUILT_SHARED_LIBRARY)
-# Creating prebuilt for dependency: tracks - version: 0.1.5
+# Creating prebuilt for dependency: tracks - version: 0.2.0
 include $(CLEAR_VARS)
 LOCAL_MODULE := tracks
 LOCAL_EXPORT_C_INCLUDES := extern/tracks
@@ -67,18 +67,12 @@ LOCAL_MODULE := pinkcore
 LOCAL_EXPORT_C_INCLUDES := extern/pinkcore
 LOCAL_SRC_FILES := extern/libpinkcore.so
 include $(PREBUILT_SHARED_LIBRARY)
-# Creating prebuilt for dependency: questui_components - version: 0.1.5
+# Creating prebuilt for dependency: questui_components - version: 0.1.12
 include $(CLEAR_VARS)
 LOCAL_MODULE := questui_components
 LOCAL_EXPORT_C_INCLUDES := extern/questui_components
 LOCAL_SRC_FILES := extern/libquestui_components.so
 include $(PREBUILT_SHARED_LIBRARY)
-# Creating prebuilt for dependency: libcurl - version: 7.78.0
-include $(CLEAR_VARS)
-LOCAL_MODULE := curl
-LOCAL_EXPORT_C_INCLUDES := extern/libcurl
-LOCAL_SRC_FILES := extern/libcurl.a
-include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := chroma
@@ -94,7 +88,6 @@ LOCAL_SHARED_LIBRARIES += questui
 LOCAL_SHARED_LIBRARIES += tracks
 LOCAL_SHARED_LIBRARIES += pinkcore
 LOCAL_SHARED_LIBRARIES += questui_components
-LOCAL_STATIC_LIBRARIES += curl
 LOCAL_LDLIBS += -llog
 LOCAL_CFLAGS += -I'extern/libil2cpp/il2cpp/libil2cpp' -DDEBUGB='1' -DID='"chroma"' -DVERSION='"2.4.10q4"' -I'./shared' -I'./extern' -isystem'extern/codegen/include' -O2
 LOCAL_CPPFLAGS += -std=c++2a -O2 -frtti

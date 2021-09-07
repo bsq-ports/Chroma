@@ -41,7 +41,7 @@
     },
     {
       "id": "config-utils",
-      "versionRange": "^0.5.0",
+      "versionRange": "^0.6.0",
       "additionalData": {
         "private": true
       }

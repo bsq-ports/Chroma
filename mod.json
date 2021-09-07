@@ -6,7 +6,7 @@
   "porter": "FernTheDev, nyamimi~",
   "version": "2.4.10-q4",
   "packageId": "com.beatgames.beatsaber",
-  "packageVersion": "1.16.4",
+  "packageVersion": "1.17.0",
   "description": "Colors!",
   "modFiles": [
     "libchroma.so",
@@ -14,15 +14,16 @@
     "libtracks.so"
   ],
   "libraryFiles": [
-    "libbeatsaber-hook_2_2_5.so",
+    "libbeatsaber-hook_2_3_0.so",
     "libquestui.so",
+    "libquestui_components.so",
     "libcustom-types.so"
   ],
   "dependencies": [
     {
       "id": "codegen",
-      "version": "=0.12.5",
-      "downloadIfMissing": "https://github.com/sc2ad/BeatSaber-Quest-Codegen/releases/download/v0.12.5/codegen_0_12_5.qmod"
+      "version": "=0.13.0",
+      "downloadIfMissing": "https://cdn.discordapp.com/attachments/769457887415894036/882737974037594122/codegen_0_13_0.qmod"
     }
   ]
 }
