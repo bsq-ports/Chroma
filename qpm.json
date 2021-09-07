@@ -4,7 +4,7 @@
   "info": {
     "name": "Chroma",
     "id": "chroma",
-    "version": "0.1.0",
+    "version": "2.4.14",
     "url": "https://github.com/bsq-ports/Chroma",
     "additionalData": {
       "headersOnly": true
