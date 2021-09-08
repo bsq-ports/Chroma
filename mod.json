@@ -16,14 +16,13 @@
   "libraryFiles": [
     "libbeatsaber-hook_2_3_0.so",
     "libquestui.so",
-    "libquestui_components.so",
     "libcustom-types.so"
   ],
   "dependencies": [
     {
       "id": "codegen",
-      "version": "=0.13.0",
-      "downloadIfMissing": "https://cdn.discordapp.com/attachments/769457887415894036/882737974037594122/codegen_0_13_0.qmod"
+      "version": "=0.13.1",
+      "downloadIfMissing": "https://cdn.discordapp.com/attachments/769457887415894036/885246354585169960/codegen_0_13_1.qmod"
     }
   ]
 }

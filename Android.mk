@@ -25,11 +25,11 @@ LOCAL_EXPORT_C_INCLUDES := extern/beatsaber-hook
 LOCAL_SRC_FILES := extern/libbeatsaber-hook_2_3_0.so
 LOCAL_CPP_FEATURES += exceptions rtti
 include $(PREBUILT_SHARED_LIBRARY)
-# Creating prebuilt for dependency: codegen - version: 0.13.0
+# Creating prebuilt for dependency: codegen - version: 0.13.1
 include $(CLEAR_VARS)
-LOCAL_MODULE := codegen_0_13_0
+LOCAL_MODULE := codegen_0_13_1
 LOCAL_EXPORT_C_INCLUDES := extern/codegen
-LOCAL_SRC_FILES := extern/libcodegen_0_13_0.so
+LOCAL_SRC_FILES := extern/libcodegen_0_13_1.so
 include $(PREBUILT_SHARED_LIBRARY)
 # Creating prebuilt for dependency: modloader - version: 1.2.3
 include $(CLEAR_VARS)
@@ -67,12 +67,13 @@ LOCAL_MODULE := pinkcore
 LOCAL_EXPORT_C_INCLUDES := extern/pinkcore
 LOCAL_SRC_FILES := extern/libpinkcore.so
 include $(PREBUILT_SHARED_LIBRARY)
-# Creating prebuilt for dependency: questui_components - version: 0.1.12
+# Creating prebuilt for dependency: questui_components - version: 0.1.14
 include $(CLEAR_VARS)
 LOCAL_MODULE := questui_components
 LOCAL_EXPORT_C_INCLUDES := extern/questui_components
-LOCAL_SRC_FILES := extern/libquestui_components.so
-include $(PREBUILT_SHARED_LIBRARY)
+LOCAL_SRC_FILES := extern/libquestui_components.a
+LOCAL_CPP_FEATURES += rtti
+include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := chroma
@@ -81,17 +82,18 @@ LOCAL_SRC_FILES += $(call rwildcard,extern/beatsaber-hook/src/inline-hook,*.cpp)
 LOCAL_SRC_FILES += $(call rwildcard,extern/beatsaber-hook/src/inline-hook,*.c)
 LOCAL_SHARED_LIBRARIES += modloader
 LOCAL_SHARED_LIBRARIES += beatsaber-hook_2_3_0
-LOCAL_SHARED_LIBRARIES += codegen_0_13_0
+LOCAL_SHARED_LIBRARIES += codegen_0_13_1
 LOCAL_SHARED_LIBRARIES += custom-json-data
 LOCAL_SHARED_LIBRARIES += custom-types
 LOCAL_SHARED_LIBRARIES += questui
 LOCAL_SHARED_LIBRARIES += tracks
 LOCAL_SHARED_LIBRARIES += pinkcore
-LOCAL_SHARED_LIBRARIES += questui_components
+LOCAL_STATIC_LIBRARIES += questui_components
 LOCAL_LDLIBS += -llog
 LOCAL_CFLAGS += -I'extern/libil2cpp/il2cpp/libil2cpp' -DDEBUGB='1' -DID='"chroma"' -DVERSION='"2.4.10q4"' -I'./shared' -I'./extern' -isystem'extern/codegen/include' -O2
 LOCAL_CPPFLAGS += -std=c++2a -O2 -frtti
 LOCAL_C_INCLUDES += ./include ./src
+LOCAL_CPP_FEATURES += rtti
 #LOCAL_STATIC_LIBRARIES += cryptopp
 #LOCAL_STATIC_LIBRARIES += curl
 LOCAL_EXPORT_C_FLAGS :=
