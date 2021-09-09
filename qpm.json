@@ -80,7 +80,9 @@
     {
       "id": "questui_components",
       "versionRange": "*",
-      "additionalData": {}
+      "additionalData": {
+        "private": true
+      }
     }
   ],
   "additionalData": {}
