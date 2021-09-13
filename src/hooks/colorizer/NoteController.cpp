@@ -29,14 +29,16 @@ MAKE_HOOK_MATCH(
         NoteController_Update,
         &NoteController::ManualUpdate,
         void,
-        NoteController* self
-        ) {
-    static auto MultiplayerConnectedPlayerObstacleControllerKlass = classof(MultiplayerConnectedPlayerObstacleController*);
+        NoteController * self
+) {
+    static auto MultiplayerConnectedPlayerObstacleControllerKlass = classof(
+            MultiplayerConnectedPlayerObstacleController*);
 
     NoteController_Update(self);
 
     // Do nothing if Chroma shouldn't run
-    if (!ChromaController::DoChromaHooks() || ASSIGNMENT_CHECK(MultiplayerConnectedPlayerObstacleControllerKlass, self->klass)) {
+    if (!ChromaController::DoChromaHooks() ||
+        ASSIGNMENT_CHECK(MultiplayerConnectedPlayerObstacleControllerKlass, self->klass)) {
         return;
     }
 
@@ -67,7 +69,7 @@ MAKE_HOOK_MATCH(
     }
 }
 
-void NoteControllerHook(Logger& logger) {
+void NoteControllerHook(Logger &logger) {
     INSTALL_HOOK(getLogger(), NoteController_Update);
 }
 
