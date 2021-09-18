@@ -32,15 +32,6 @@ public:
         std::vector<ChromaRotationEffect*> _activeRingRotationEffects;
         std::vector<ChromaRotationEffect*> _ringRotationEffectsPool;
 
-
-        DECLARE_INSTANCE_FIELD(GlobalNamespace::TrackLaneRingsManager*, _trackLaneRingsManager);
-        DECLARE_INSTANCE_FIELD_DEFAULT(float, _startupRotationAngle, 10.0f);
-
-        DECLARE_INSTANCE_FIELD(float, _startupRotationStep);
-
-        DECLARE_INSTANCE_FIELD_DEFAULT(int, _startupRotationPropagationSpeed, 1);
-        DECLARE_INSTANCE_FIELD_DEFAULT(float, _startupRotationFlexySpeed, 0.5f);
-
         DECLARE_DEFAULT_CTOR();
         DECLARE_SIMPLE_DTOR();
         DECLARE_INSTANCE_METHOD(void, CopyValues, GlobalNamespace::TrackLaneRingsRotationEffect* trackLaneRingsRotationEffect);

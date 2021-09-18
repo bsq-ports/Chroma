@@ -13,12 +13,13 @@ namespace Chroma {
         virtual ComponentType getComponentType() = 0;
     };
 
+    // TODO: Maybe custom-type?
     class TrackLaneRingsManagerComponentData : public IComponentData
     {
     public:
-        GlobalNamespace::TrackLaneRingsManager* OldTrackLaneRingsManager = nullptr;
+        SafePtr<GlobalNamespace::TrackLaneRingsManager> OldTrackLaneRingsManager;
 
-        GlobalNamespace::TrackLaneRingsManager* NewTrackLaneRingsManager = nullptr;
+        SafePtr<GlobalNamespace::TrackLaneRingsManager> NewTrackLaneRingsManager;
 
         ComponentType getComponentType() override;
     };

@@ -25,16 +25,16 @@ void ChromaRingsRotationEffect::AddRingRotationEffectF(float angle, float step, 
 }
 
 void ChromaRingsRotationEffect::SetNewRingManager(GlobalNamespace::TrackLaneRingsManager *trackLaneRingsManager) {
-    _trackLaneRingsManager = trackLaneRingsManager;
+    this->trackLaneRingsManager = trackLaneRingsManager;
 }
 
 void ChromaRingsRotationEffect::CopyValues(
         GlobalNamespace::TrackLaneRingsRotationEffect *trackLaneRingsRotationEffect) {
-    _trackLaneRingsManager = trackLaneRingsRotationEffect->trackLaneRingsManager;
-    _startupRotationAngle = trackLaneRingsRotationEffect->startupRotationAngle;
-    _startupRotationStep = trackLaneRingsRotationEffect->startupRotationStep;
-    _startupRotationPropagationSpeed = trackLaneRingsRotationEffect->startupRotationPropagationSpeed;
-    _startupRotationFlexySpeed = trackLaneRingsRotationEffect->startupRotationFlexySpeed;
+    this->trackLaneRingsManager = trackLaneRingsRotationEffect->trackLaneRingsManager;
+    this->startupRotationAngle = trackLaneRingsRotationEffect->startupRotationAngle;
+    this->startupRotationStep = trackLaneRingsRotationEffect->startupRotationStep;
+    this->startupRotationPropagationSpeed = trackLaneRingsRotationEffect->startupRotationPropagationSpeed;
+    this->startupRotationFlexySpeed = trackLaneRingsRotationEffect->startupRotationFlexySpeed;
 }
 
 void ChromaRingsRotationEffect::Awake() {
@@ -43,6 +43,7 @@ void ChromaRingsRotationEffect::Awake() {
     _activeRingRotationEffects.reserve(poolCount);
     _ringRotationEffectsPool = std::vector<ChromaRotationEffect*>();
     _ringRotationEffectsPool.reserve(poolCount);
+#pragma unroll 20
     for (int i = 0; i < poolCount; i++)
     {
         _ringRotationEffectsPool.push_back(CRASH_UNLESS(il2cpp_utils::New<ChromaRotationEffect*>()));
@@ -50,12 +51,18 @@ void ChromaRingsRotationEffect::Awake() {
 }
 
 void ChromaRingsRotationEffect::Start() {
-    AddRingRotationEffectF(_startupRotationAngle, _startupRotationStep, (float) _startupRotationPropagationSpeed, _startupRotationFlexySpeed);
+    AddRingRotationEffectF(startupRotationAngle, startupRotationStep, (float) startupRotationPropagationSpeed, startupRotationFlexySpeed);
 }
 
 void ChromaRingsRotationEffect::FixedUpdate() {
     if (!_activeRingRotationEffects.empty()) {
-        auto rings = _trackLaneRingsManager->rings;
+        auto rings = trackLaneRingsManager->rings;
+
+        if (!rings) {
+             // TODO: How to fix?
+            getLogger().warning("Rings is null why! %p ", trackLaneRingsManager);
+            rings = trackLaneRingsManager->rings = Array<GlobalNamespace::TrackLaneRing *>::New();
+        }
 
         static auto SetDestRotation = FPtrWrapper<&GlobalNamespace::TrackLaneRing::SetDestRotation>::get();
 
@@ -105,20 +112,42 @@ void ChromaRingsRotationEffect::RecycleRingRotationEffect(ChromaRotationEffect* 
 
 float ChromaRingsRotationEffect::GetFirstRingRotationAngle() {
     static auto GetRotation = FPtrWrapper<&GlobalNamespace::TrackLaneRing::GetRotation>::get();
-    return GetRotation(_trackLaneRingsManager->rings->get(0));
+    if (!trackLaneRingsManager->rings) {
+        getLogger().warning("Rings is null why! %p ", trackLaneRingsManager);
+        trackLaneRingsManager->rings = Array<GlobalNamespace::TrackLaneRing *>::New();
+    }
+
+    return GetRotation(trackLaneRingsManager->rings->get(0));
 }
 
 float ChromaRingsRotationEffect::GetFirstRingRotationAngleCpp() {
     static auto GetRotation = FPtrWrapper<&GlobalNamespace::TrackLaneRing::GetRotation>::get();
-    return GetRotation(_trackLaneRingsManager->rings->get(0));
+    if (!trackLaneRingsManager->rings) {
+        getLogger().warning("Rings is null why! %p ", trackLaneRingsManager);
+        trackLaneRingsManager->rings = Array<GlobalNamespace::TrackLaneRing *>::New();
+    }
+
+    return GetRotation(trackLaneRingsManager->rings->get(0));
 }
 
 float ChromaRingsRotationEffect::GetFirstRingDestinationRotationAngle() {
     static auto GetDestinationRotation = FPtrWrapper<&GlobalNamespace::TrackLaneRing::GetDestinationRotation>::get();
-    return GetDestinationRotation(_trackLaneRingsManager->rings->get(0));
+
+    if (!trackLaneRingsManager->rings) {
+        getLogger().warning("Rings is null why! %p ", trackLaneRingsManager);
+        trackLaneRingsManager->rings = Array<GlobalNamespace::TrackLaneRing *>::New();
+    }
+
+    return GetDestinationRotation(trackLaneRingsManager->rings->get(0));
 }
 
 float ChromaRingsRotationEffect::GetFirstRingDestinationRotationAngleCpp() {
     static auto GetDestinationRotation = FPtrWrapper<&GlobalNamespace::TrackLaneRing::GetDestinationRotation>::get();
-    return GetDestinationRotation(_trackLaneRingsManager->rings->get(0));
+
+    if (!trackLaneRingsManager->rings) {
+        getLogger().warning("Rings is null why! %p ", trackLaneRingsManager);
+        trackLaneRingsManager->rings = Array<GlobalNamespace::TrackLaneRing *>::New();
+    }
+
+    return GetDestinationRotation(trackLaneRingsManager->rings->get(0));
 }
