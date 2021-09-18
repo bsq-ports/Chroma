@@ -25,7 +25,7 @@ namespace Chroma {
 
     class EnvironmentEnhancementManager {
     private:
-        inline static std::vector<GameObjectInfo> _gameObjectInfos;
+        inline static std::vector<GameObjectInfo> _globalGameObjectInfos;
 
         static std::vector<GameObjectInfo> LookupId(const std::string& id, LookupMethod lookupMethod);
 

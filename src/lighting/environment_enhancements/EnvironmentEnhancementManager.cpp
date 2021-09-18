@@ -64,9 +64,9 @@ Chroma::EnvironmentEnhancementManager::LookupId(const std::string& id, Chroma::L
     }
 
     std::vector<GameObjectInfo> ret;
-    ret.reserve(_gameObjectInfos.size());
+    ret.reserve(_globalGameObjectInfos.size());
 
-    for (const auto &o : _gameObjectInfos) {
+    for (const auto &o : _globalGameObjectInfos) {
         // We have a try/catch here so the loop doesn't die
         try {
             if (predicate(o))
@@ -95,7 +95,7 @@ EnvironmentEnhancementManager::GetVectorData(std::reference_wrapper<rapidjson::V
 }
 
 void EnvironmentEnhancementManager::GetAllGameObjects() {
-    _gameObjectInfos.clear();
+    _globalGameObjectInfos.clear();
 
     auto gameObjectsAll = UnityEngine::Resources::FindObjectsOfTypeAll<UnityEngine::GameObject*>();
     std::vector<UnityEngine::GameObject*> gameObjectsVec;
@@ -132,7 +132,7 @@ void EnvironmentEnhancementManager::GetAllGameObjects() {
     for (auto& gameObject : gameObjectsVec2) {
         if (!gameObject) continue;
 
-        _gameObjectInfos.emplace_back(gameObject);
+        _globalGameObjectInfos.emplace_back(gameObject);
 
         // seriously what the fuck beat games
         // GradientBackground permanently yeeted because it looks awful and can ruin multi-colored chroma maps
@@ -143,7 +143,7 @@ void EnvironmentEnhancementManager::GetAllGameObjects() {
     }
 
     // Shrink if necessary
-    _gameObjectInfos.shrink_to_fit();
+    _globalGameObjectInfos.shrink_to_fit();
 }
 
 void
@@ -217,7 +217,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
 
                 std::vector<GameObjectInfo> gameObjectInfos;
                 if (dupeAmount) {
-                    gameObjectInfos.reserve(_gameObjectInfos.size());
+                    gameObjectInfos.reserve(_globalGameObjectInfos.size());
 
                     for (const auto &gameObjectInfo : foundObjects) {
                         if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {
@@ -241,9 +241,9 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                             newGameObject->get_transform()->SetParent(parent, true);
 
                             ComponentInitializer::InitializeComponents(newGameObject->get_transform(),
-                                                                       gameObject->get_transform(), _gameObjectInfos,
+                                                                       gameObject->get_transform(), _globalGameObjectInfos,
                                                                        componentDatas, lightID);
-                            for (auto &o : _gameObjectInfos) {
+                            for (auto &o : _globalGameObjectInfos) {
                                 if (o.GameObject->Equals(newGameObject)) {
                                     gameObjectInfos.push_back(o);
                                 }

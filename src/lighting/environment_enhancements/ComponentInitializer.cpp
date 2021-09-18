@@ -78,13 +78,13 @@ Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root,
         TrackLaneRingsManager* managerToAdd;
         for (auto const& manager : Chroma::TrackLaneRingsManagerHolder::RingManagers) {
 
-            std::optional<std::shared_ptr<TrackLaneRingsManagerComponentData>> componentData;
+            std::optional<TrackLaneRingsManagerComponentData*> componentData;
             for (auto const& componentDataC : componentDatas) {
                 if (componentDataC->getComponentType() == ComponentType::TrackLaneRingsManager) {
                     auto trackLaneData = std::static_pointer_cast<TrackLaneRingsManagerComponentData>(componentDataC);
 
                     if ((GlobalNamespace::TrackLaneRingsManager*) trackLaneData->OldTrackLaneRingsManager == manager) {
-                        componentData = std::make_optional(trackLaneData);
+                        componentData = trackLaneData.get();
                         goto afterFindComponent;
                     }
                 }
@@ -119,13 +119,13 @@ Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root,
 
     GetComponentAndOriginal<TrackLaneRingsPositionStepEffectSpawner>(root, original, [=](TrackLaneRingsPositionStepEffectSpawner* rootComponent, TrackLaneRingsPositionStepEffectSpawner* originalComponent) {
         for (auto& manager : TrackLaneRingsManagerHolder::RingManagers) {
-            std::optional<std::shared_ptr<TrackLaneRingsManagerComponentData>> componentData;
+            std::optional<TrackLaneRingsManagerComponentData*> componentData;
             for (auto const& componentDataC : componentDatas) {
                 if (componentDataC->getComponentType() == ComponentType::TrackLaneRingsManager) {
                     auto trackLaneData = std::static_pointer_cast<TrackLaneRingsManagerComponentData>(componentDataC);
 
                     if ((GlobalNamespace::TrackLaneRingsManager*) trackLaneData->OldTrackLaneRingsManager == manager) {
-                        componentData = std::make_optional(trackLaneData);
+                        componentData = trackLaneData.get();
                         break;
                     }
                 }
@@ -141,13 +141,13 @@ Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root,
 
     GetComponentAndOriginal<ChromaRingsRotationEffect>(root, original, [=](ChromaRingsRotationEffect* rootComponent, ChromaRingsRotationEffect* originalComponent) {
         for (auto const& manager : TrackLaneRingsManagerHolder::RingManagers) {
-            std::optional<std::shared_ptr<TrackLaneRingsManagerComponentData>> componentData;
-            for (auto& componentDataC : componentDatas) {
+            std::optional<TrackLaneRingsManagerComponentData*> componentData;
+            for (auto const& componentDataC : componentDatas) {
                 if (componentDataC->getComponentType() == ComponentType::TrackLaneRingsManager) {
                     auto trackLaneData = std::static_pointer_cast<TrackLaneRingsManagerComponentData>(componentDataC);
 
                     if ((GlobalNamespace::TrackLaneRingsManager*) trackLaneData->OldTrackLaneRingsManager == manager) {
-                        componentData = std::make_optional(trackLaneData);
+                        componentData = trackLaneData.get();
                         goto doSet;
                     }
                 }
@@ -242,7 +242,7 @@ ComponentInitializer::PostfillComponentsData(UnityEngine::Transform *root, Unity
     {
         auto originalManager = original->GetComponent<TrackLaneRingsManager*>();
 
-        for (auto& componentData : componentDatas) {
+        for (auto const& componentData : componentDatas) {
             if (componentData->getComponentType() == ComponentType::TrackLaneRingsManager) {
                 auto trackLaneData = std::static_pointer_cast<TrackLaneRingsManagerComponentData>(componentData);
 

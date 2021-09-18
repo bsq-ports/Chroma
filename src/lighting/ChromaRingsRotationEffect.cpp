@@ -59,7 +59,6 @@ void ChromaRingsRotationEffect::FixedUpdate() {
         auto rings = trackLaneRingsManager->rings;
 
         if (!rings) {
-             // TODO: How to fix?
             getLogger().warning("Rings is null why! %p ", trackLaneRingsManager);
             rings = trackLaneRingsManager->rings = Array<GlobalNamespace::TrackLaneRing *>::New();
         }
