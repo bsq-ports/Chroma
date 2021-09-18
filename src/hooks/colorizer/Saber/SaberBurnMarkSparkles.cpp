@@ -42,11 +42,12 @@ MAKE_HOOK_MATCH(SaberBurnMarkSparkles_Start, &SaberBurnMarkSparkles::Start, void
     SaberBurnMarkSparkles_Start(self);
 
     // Do nothing if Chroma shouldn't run
-    if (!ChromaController::DoChromaHooks()) {
+    if (!ChromaController::DoChromaHooks() || !self) {
         return;
     }
+    if (self->burnMarksPS)
+        self->burnMarksPS->copy_to(_burnMarksPS);
 
-    self->burnMarksPS->copy_to(_burnMarksPS);
     if (subCount == 0) {
         SaberColorizer::SaberColorChanged += &OnSaberColorChanged;
     }

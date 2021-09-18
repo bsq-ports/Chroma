@@ -43,11 +43,12 @@ MAKE_HOOK_MATCH(SaberBurnMarkArea_Start,
     SaberBurnMarkArea_Start(self);
 
     // Do nothing if Chroma shouldn't run
-    if (!ChromaController::DoChromaHooks()) {
+    if (!ChromaController::DoChromaHooks() || !self) {
         return;
     }
 
-    self->lineRenderers->copy_to(_lineRenderers);
+    if (self->lineRenderers)
+        self->lineRenderers->copy_to(_lineRenderers);
 
     if (saberBurnMarkCount == 0) {
         SaberColorizer::SaberColorChanged += &OnSaberColorChanged_SaberBurnMarkArea;
