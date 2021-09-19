@@ -11,6 +11,7 @@ void Chroma::LightIDTableManager::InitTable() {
         getLogger().info("Initializing environment data for %s", data.first.c_str());
         lightIdTable.emplace(data);
     }
+    installed = true;
 }
 
 void LightIDTableManager::SetEnvironment(const std::string& environmentName) {
