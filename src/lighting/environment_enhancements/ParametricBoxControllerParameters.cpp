@@ -21,8 +21,6 @@ Chroma::ParametricBoxControllerParameters& Chroma::ParametricBoxControllerParame
     if (it != TransformParameters.end()) {
         return it->second;
     } else {
-        auto it2 = TransformParameters.emplace(parametricBoxController, ParametricBoxControllerParameters());
-
-        return TransformParameters[parametricBoxController];
+        return TransformParameters.emplace(parametricBoxController, ParametricBoxControllerParameters()).first->second;
     }
 }
