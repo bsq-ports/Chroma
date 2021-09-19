@@ -5,21 +5,28 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Put path to NDK such as PATH//TO//NDK
-file (STRINGS "ndkpath.txt" CMAKE_ANDROID_NDK)
+if (NOT DEFINED CMAKE_ANDROID_NDK)
+    if(DEFINED ENV{ANDROID_NDK_ROOT})
+        set(ANDROID_NDK_ROOT ENV{ANDROID_NDK_ROOT})
+    else()
+        file (STRINGS "ndkpath.txt" CMAKE_ANDROID_NDK)
+    endif()
+endif()
 
 # TODO: Uncomment when CLion supports CMake 3.20.x+
-#set(CMAKE_SYSTEM_NAME Android)
-#set(ANDROID_NATIVE_API_LEVEL 25)
-#set(ANDROID_ABI arm64-v8a)
-#set(ANDROID_TARGET_ARCH arm64-v8a)
-#set(CMAKE_ANDROID_STL_TYPE c++_static)
+set(CMAKE_SYSTEM_NAME Android)
+set(ANDROID_NATIVE_API_LEVEL 25)
+set(ANDROID_ABI arm64-v8a)
+set(CMAKE_ANDROID_ARCH_ABI arm64-v8a)
+set(ANDROID_TARGET_ARCH arm64-v8a)
+set(CMAKE_ANDROID_STL_TYPE c++_static)
 
 
-#set(CMAKE_C_COMPILER_TARGET aarch64-none-linux-android24)
+set(CMAKE_C_COMPILER_TARGET aarch64-none-linux-android24)
 #set(CMAKE_C_COMPILER ${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/windows-x86_64/bin/clang.exe)
-#set(CMAKE_CXX_COMPILER_TARGET aarch64-none-linux-android24)
+set(CMAKE_CXX_COMPILER_TARGET aarch64-none-linux-android24)
 #set(CMAKE_CXX_COMPILER ${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/windows-x86_64/bin/clang++.exe)
-#set(CMAKE_TOOLCHAIN_FILE ${CMAKE_ANDROID_NDK}/build/cmake/android.toolchain.cmake)
+set(CMAKE_TOOLCHAIN_FILE ${CMAKE_ANDROID_NDK}/build/cmake/android.toolchain.cmake)
 
 
 # set the project name
@@ -41,8 +48,6 @@ include_directories(extern/custom-types/shared)
 include_directories(extern/questui_components)
 include_directories(${CMAKE_ANDROID_NDK})
 include_directories(.)
-
-set(CMAKE_CXX_STANDARD 20)
 
 add_compile_definitions("VERSION=\"0.1.0\"") #Modify this if you use it
 add_compile_definitions("__GNUC__")
