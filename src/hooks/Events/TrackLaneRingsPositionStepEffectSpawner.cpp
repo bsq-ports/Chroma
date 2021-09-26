@@ -28,6 +28,22 @@ static float GetPrecisionStep(float const& defaultF, GlobalNamespace::BeatmapEve
     return defaultF;
 }
 
+static float GetPrecisionSpeed(float const& defaultF, GlobalNamespace::BeatmapEventData* beatmapEventData)
+{
+    auto map = ChromaEventDataManager::ChromaEventDatas;
+    auto it = map.find(beatmapEventData);
+
+    if (it != map.end()) {
+        auto chromaData = it->second;
+
+        if (chromaData->Speed) {
+            return chromaData->Speed.value();
+        }
+    }
+
+    return defaultF;
+}
+
 // Aero why do you have to use transpilers for everything damn it? Just rewrite the method
 MAKE_HOOK_MATCH(TrackLaneRingsPositionStepEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger,
                 &TrackLaneRingsPositionStepEffectSpawner::HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger,
@@ -55,6 +71,7 @@ MAKE_HOOK_MATCH(TrackLaneRingsPositionStepEffectSpawner_HandleBeatmapObjectCallb
         float destPosZ = (float)i * num;
         static auto SetPosition = FPtrWrapper<&GlobalNamespace::TrackLaneRing::SetPosition>::get();
 
+        float moveSpeed = GetPrecisionSpeed(self->moveSpeed, beatmapEventData);
         SetPosition(rings->get(i), destPosZ, self->moveSpeed);
     }
 
