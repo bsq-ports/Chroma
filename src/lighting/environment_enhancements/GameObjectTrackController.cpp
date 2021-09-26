@@ -268,6 +268,12 @@ void Chroma::GameObjectTrackController::HandleTrackData(UnityEngine::GameObject 
                                                         std::optional<GlobalNamespace::TrackLaneRing *> trackLaneRing,
                                                         std::optional<GlobalNamespace::ParametricBoxController *> parametricBoxController,
                                                         std::optional<GlobalNamespace::BeatmapObjectsAvoidance *> beatmapObjectsAvoidance) {
+    GameObjectTrackController* existingTrackController = gameObject->GetComponent<GameObjectTrackController*>();
+    if (existingTrackController)
+    {
+        Object::Destroy(existingTrackController);
+    }
+
     auto track = getTrack(gameObjectData, beatmapData);
 
     if (track)
