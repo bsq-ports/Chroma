@@ -4,46 +4,51 @@
 #include "UnityEngine/SceneManagement/Scene.hpp"
 #include "beatsaber-hook/shared/utils/il2cpp-utils.hpp"
 
+#include <string>
+#include <sstream>
+
 Chroma::GameObjectInfo::GameObjectInfo(UnityEngine::GameObject *gameObject) {
     std::vector<std::string> nameList;
 
     UnityEngine::Transform* transform = gameObject->get_transform();
     while (true)
     {
+        UnityEngine::GameObject* transformGameObject = transform->get_gameObject();
+        UnityEngine::Transform* transformParent = transform->get_parent();
         int index;
-        if (transform->get_parent() != nullptr)
+        if (transformParent != nullptr)
         {
             index = transform->GetSiblingIndex();
         }
         else
         {
             // Why doesnt GetSiblingIndex work on root objects?
-            auto rootGameObjects = transform->get_gameObject()->get_scene().GetRootGameObjects();
-            index = rootGameObjects->IndexOf(transform->get_gameObject());
+            auto rootGameObjects = transformGameObject->get_scene().GetRootGameObjects();
+            index = rootGameObjects->IndexOf(transformGameObject);
         }
 
         nameList.push_back("[" + std::to_string(index) + "]" + to_utf8(csstrtostr(transform->get_name())));
 
-        if (transform->get_parent() == nullptr)
+        if (transformParent == nullptr)
         {
             break;
         }
 
-        transform = transform->get_parent();
+        transform = transformParent;
     }
 
     nameList.push_back(to_utf8(csstrtostr(gameObject->get_scene().get_name())));
     std::reverse(nameList.begin(), nameList.end());
 
-    std::string id;
+    std::stringstream id;
 
     for (int i = 0; i < nameList.size() - 1; i++) {
-        id += nameList[i] + ".";
+        id << nameList[i] + ".";
     }
 
-    id += nameList.back();
+    id << nameList.back();
 
-    FullID = std::string(id);
+    FullID = id.str();
 
     this->GameObject = gameObject;
 }

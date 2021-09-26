@@ -53,19 +53,19 @@ void GetComponentAndOriginal(UnityEngine::Transform*& root, UnityEngine::Transfo
     }
 }
 
-void
+GameObjectInfo const&
 Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root, UnityEngine::Transform *original, std::vector<GameObjectInfo>& gameObjectInfos, std::vector<std::shared_ptr<IComponentData>>& componentDatas, std::optional<int>& lightId) {
-    GetComponentAndOriginal<LightWithIdMonoBehaviour>(root, original, [=](LightWithIdMonoBehaviour* rootComponent, LightWithIdMonoBehaviour* originalComponent) {
+    GetComponentAndOriginal<LightWithIdMonoBehaviour>(root, original, [&](LightWithIdMonoBehaviour* rootComponent, LightWithIdMonoBehaviour* originalComponent) {
         rootComponent->lightManager = originalComponent->lightManager;
         LightColorizer::RegisterLight(rootComponent, lightId);
     });
 
-    GetComponentAndOriginal<LightWithIds>(root, original, [=](LightWithIds* rootComponent, LightWithIds* originalComponent) {
+    GetComponentAndOriginal<LightWithIds>(root, original, [&](LightWithIds* rootComponent, LightWithIds* originalComponent) {
         rootComponent->lightManager = originalComponent->lightManager;
         LightColorizer::RegisterLight(rootComponent, lightId);
     });
 
-    GetComponentAndOriginal<TrackLaneRing>(root, original, [=](TrackLaneRing* rootComponent, TrackLaneRing* originalComponent) {
+    GetComponentAndOriginal<TrackLaneRing>(root, original, [&](TrackLaneRing* rootComponent, TrackLaneRing* originalComponent) {
         auto ringIt = EnvironmentEnhancementManager::RingRotationOffsets.find(originalComponent);
 
         if (ringIt != EnvironmentEnhancementManager::RingRotationOffsets.end())
@@ -117,7 +117,7 @@ Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root,
         }
     });
 
-    GetComponentAndOriginal<TrackLaneRingsPositionStepEffectSpawner>(root, original, [=](TrackLaneRingsPositionStepEffectSpawner* rootComponent, TrackLaneRingsPositionStepEffectSpawner* originalComponent) {
+    GetComponentAndOriginal<TrackLaneRingsPositionStepEffectSpawner>(root, original, [&](TrackLaneRingsPositionStepEffectSpawner* rootComponent, TrackLaneRingsPositionStepEffectSpawner* originalComponent) {
         for (auto& manager : TrackLaneRingsManagerHolder::RingManagers) {
             std::optional<TrackLaneRingsManagerComponentData*> componentData;
             for (auto const& componentDataC : componentDatas) {
@@ -139,7 +139,7 @@ Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root,
         }
     });
 
-    GetComponentAndOriginal<ChromaRingsRotationEffect>(root, original, [=](ChromaRingsRotationEffect* rootComponent, ChromaRingsRotationEffect* originalComponent) {
+    GetComponentAndOriginal<ChromaRingsRotationEffect>(root, original, [&](ChromaRingsRotationEffect* rootComponent, ChromaRingsRotationEffect* originalComponent) {
         for (auto const& manager : TrackLaneRingsManagerHolder::RingManagers) {
             std::optional<TrackLaneRingsManagerComponentData*> componentData;
             for (auto const& componentDataC : componentDatas) {
@@ -163,20 +163,20 @@ Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root,
     });
 
 
-    GetComponentAndOriginal<TrackLaneRingsRotationEffectSpawner>(root, original, [=](TrackLaneRingsRotationEffectSpawner* rootComponent, TrackLaneRingsRotationEffectSpawner* originalComponent) {
+    GetComponentAndOriginal<TrackLaneRingsRotationEffectSpawner>(root, original, [&](TrackLaneRingsRotationEffectSpawner* rootComponent, TrackLaneRingsRotationEffectSpawner* originalComponent) {
         rootComponent->beatmapObjectCallbackController = originalComponent->beatmapObjectCallbackController;
         rootComponent->trackLaneRingsRotationEffect = rootComponent->GetComponent<ChromaRingsRotationEffect*>();
     });
 
-    GetComponentAndOriginal<Spectrogram>(root, original, [=](Spectrogram* rootComponent, Spectrogram* originalComponent) {
+    GetComponentAndOriginal<Spectrogram>(root, original, [&](Spectrogram* rootComponent, Spectrogram* originalComponent) {
         rootComponent->spectrogramData = originalComponent->spectrogramData;
     });
 
-    GetComponentAndOriginal<LightRotationEventEffect>(root, original, [=](LightRotationEventEffect* rootComponent, LightRotationEventEffect* originalComponent) {
+    GetComponentAndOriginal<LightRotationEventEffect>(root, original, [&](LightRotationEventEffect* rootComponent, LightRotationEventEffect* originalComponent) {
         rootComponent->beatmapObjectCallbackController = originalComponent->beatmapObjectCallbackController;
     });
 
-    GetComponentAndOriginal<LightPairRotationEventEffect>(root, original, [=](LightPairRotationEventEffect* rootComponent, LightPairRotationEventEffect* originalComponent) {
+    GetComponentAndOriginal<LightPairRotationEventEffect>(root, original, [&](LightPairRotationEventEffect* rootComponent, LightPairRotationEventEffect* originalComponent) {
         rootComponent->beatmapObjectCallbackController = originalComponent->beatmapObjectCallbackController;
 
         auto transformL = originalComponent->transformL;
@@ -191,20 +191,20 @@ Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root,
     });
 
 
-    GetComponentAndOriginal<ParticleSystemEventEffect>(root, original, [=](ParticleSystemEventEffect* rootComponent, ParticleSystemEventEffect* originalComponent) {
+    GetComponentAndOriginal<ParticleSystemEventEffect>(root, original, [&](ParticleSystemEventEffect* rootComponent, ParticleSystemEventEffect* originalComponent) {
         rootComponent->beatmapObjectCallbackController = originalComponent->beatmapObjectCallbackController;
         rootComponent->particleSystem = root->GetComponent<UnityEngine::ParticleSystem*>();
 
         rootComponent->set_enabled(true);
     });
 
-    GetComponentAndOriginal<Mirror>(root, original, [=](Mirror* rootComponent, Mirror* originalComponent) {
+    GetComponentAndOriginal<Mirror>(root, original, [&](Mirror* rootComponent, Mirror* originalComponent) {
         rootComponent->mirrorRenderer = UnityEngine::Object::Instantiate(originalComponent->mirrorRenderer);
         rootComponent->mirrorMaterial = UnityEngine::Object::Instantiate(originalComponent->mirrorMaterial);
     });
 
     GameObjectInfo gameObjectInfo(root->get_gameObject());
-    gameObjectInfos.push_back(gameObjectInfo);
+    auto const& newGameObject = gameObjectInfos.emplace_back(gameObjectInfo);
 
     for (int i = 0; i < root->get_childCount(); i++)
     {
@@ -213,6 +213,8 @@ Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root,
         int index = transform->GetSiblingIndex();
         InitializeComponents(transform, original->GetChild(index), gameObjectInfos, componentDatas, lightId);
     }
+
+    return newGameObject;
 }
 
 void

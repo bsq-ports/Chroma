@@ -22,19 +22,22 @@ using namespace Chroma;
 using namespace ChromaUtils;
 using namespace UnityEngine::SceneManagement;
 
-std::vector<GameObjectInfo>
+// We can return a reference here since _globalGameObjectInfos is keeping the reference alive
+std::vector<ByRef<const GameObjectInfo>>
 Chroma::EnvironmentEnhancementManager::LookupId(const std::string& id, Chroma::LookupMethod lookupMethod) {
-    std::function < bool(GameObjectInfo) > predicate;
+    std::function < bool(GameObjectInfo const&) > predicate;
 
-    std::string lookupMethodStr = "";
-//    Func<GameObjectInfo, bool> predicate;
+    std::string lookupMethodStr;
+
+    // only set when needed
+    std::regex regex;
 
     try {
         switch (lookupMethod) {
             case LookupMethod::Regex: {
                 lookupMethodStr = "Regex";
-                std::regex regex(id, std::regex_constants::ECMAScript | std::regex_constants::optimize);
-                predicate = [=](const GameObjectInfo &n) {
+                regex = std::regex(id, std::regex_constants::ECMAScript | std::regex_constants::optimize);
+                predicate = [&regex](const GameObjectInfo &n) {
                     return std::regex_search(n.FullID, regex);
                 };
                 break;
@@ -42,13 +45,13 @@ Chroma::EnvironmentEnhancementManager::LookupId(const std::string& id, Chroma::L
 
             case LookupMethod::Exact: {
                 lookupMethodStr = "Exact";
-                predicate = [=](const GameObjectInfo &n) { return n.FullID == id; };
+                predicate = [&id](const GameObjectInfo &n) { return n.FullID == id; };
                 break;
             }
 
             case LookupMethod::Contains: {
                 lookupMethodStr = "Contains";
-                predicate = [=](const GameObjectInfo &n) {
+                predicate = [&id](const GameObjectInfo &n) {
                     return n.FullID.find(id) != std::string::npos;
                 };
                 break;
@@ -63,14 +66,14 @@ Chroma::EnvironmentEnhancementManager::LookupId(const std::string& id, Chroma::L
         getLogger().error("Error: %s", e.what());
     }
 
-    std::vector<GameObjectInfo> ret;
+    std::vector<ByRef<const GameObjectInfo>> ret;
     ret.reserve(_globalGameObjectInfos.size());
 
-    for (const auto &o : _globalGameObjectInfos) {
+    for (auto const &o : _globalGameObjectInfos) {
         // We have a try/catch here so the loop doesn't die
         try {
             if (predicate(o))
-                ret.push_back(o);
+                ret.emplace_back(o);
         } catch (std::exception &e) {
             getLogger().error("Failed to match (%s) for lookup (%s) with id (%s)", o.FullID.c_str(), lookupMethodStr.c_str(), id.c_str());
             getLogger().error("Error: %s", e.what());
@@ -112,7 +115,7 @@ void EnvironmentEnhancementManager::GetAllGameObjects() {
         std::string sceneName = to_utf8(csstrtostr(sceneNameIl2cpp));
 
         if ((sceneName.find("Environment") != std::string::npos && sceneName.find("Menu") == std::string::npos) || gameObject->GetComponent<GlobalNamespace::TrackLaneRing*>()) {
-            gameObjectsVec.push_back(gameObject);
+            gameObjectsVec.emplace_back(gameObject);
         }
     }
 
@@ -129,7 +132,7 @@ void EnvironmentEnhancementManager::GetAllGameObjects() {
         }
     }
 
-    for (auto& gameObject : gameObjectsVec2) {
+    for (auto const& gameObject : gameObjectsVec2) {
         if (!gameObject) continue;
 
         _globalGameObjectInfos.emplace_back(gameObject);
@@ -179,7 +182,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                 if (trackNameIt != gameObjectDataVal.MemberEnd()) {
                     trackName = trackNameIt->value.GetString();
                     std::string val = *trackName;
-                    track = &(trackBeatmapAD.tracks.try_emplace(val, Track()).first->second);
+                    track = &(trackBeatmapAD.tracks.try_emplace(val).first->second);
                 }
 
 
@@ -213,13 +216,14 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
 
                 auto lightID = getIfExists<int>(gameObjectDataVal, LIGHTID);
 
-                auto foundObjects = LookupId(id, lookupMethod);
+                std::vector<ByRef<const GameObjectInfo>> const foundObjects(LookupId(id, lookupMethod));
 
-                std::vector<GameObjectInfo> gameObjectInfos;
+                std::vector<ByRef<const GameObjectInfo>> gameObjectInfos;
                 if (dupeAmount) {
-                    gameObjectInfos.reserve(_globalGameObjectInfos.size());
+                    gameObjectInfos.reserve(foundObjects.size() * dupeAmount.value());
 
-                    for (const auto &gameObjectInfo : foundObjects) {
+                    for (const auto &gameObjectInfoRef : foundObjects) {
+                        const auto &gameObjectInfo = gameObjectInfoRef.heldRef;
                         if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {
                             getLogger().info("Duplicating [%s]:", gameObjectInfo.FullID.c_str());
                         }
@@ -240,14 +244,17 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                             SceneManager::MoveGameObjectToScene(newGameObject, scene);
                             newGameObject->get_transform()->SetParent(parent, true);
 
-                            ComponentInitializer::InitializeComponents(newGameObject->get_transform(),
+                            auto const& newGameObjectInfo = ComponentInitializer::InitializeComponents(newGameObject->get_transform(),
                                                                        gameObject->get_transform(), _globalGameObjectInfos,
                                                                        componentDatas, lightID);
-                            for (auto &o : _globalGameObjectInfos) {
-                                if (o.GameObject->Equals(newGameObject)) {
-                                    gameObjectInfos.push_back(o);
-                                }
-                            }
+                            gameObjectInfos.emplace_back(newGameObjectInfo);
+                            // This is not needed as long as InitializeComponents adds to gameObjectInfos
+
+//                            for (auto const& o : _globalGameObjectInfos) {
+//                                if (o.GameObject->Equals(newGameObject)) {
+//                                    gameObjectInfos.emplace_back(o);
+//                                }
+//                            }
 
 
                         }
@@ -258,10 +265,14 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                         getLogger().error("LightID requested but no duplicated object to apply to.");
                     }
 
-                    gameObjectInfos = foundObjects;
+                    // Better way of doing this?
+                    // For some reason, copy constructor is deleted?
+                    gameObjectInfos = std::vector(foundObjects);
                 }
 
-                for (auto &gameObjectInfo : gameObjectInfos) {
+                for (auto const& gameObjectInfoRef : gameObjectInfos) {
+                    const auto &gameObjectInfo = gameObjectInfoRef.heldRef;
+
                     auto gameObject = gameObjectInfo.GameObject;
 
                     if (active) {
@@ -337,7 +348,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                         getLogger().info("ID [\"%s\"] using method [%s] found:", id.c_str(), lookupString.c_str());
 
                         for (const auto &o : foundObjects) {
-                            getLogger().info("%s", o.FullID.c_str());
+                            getLogger().info("%s", o.heldRef.FullID.c_str());
                         }
 
                         getLogger().info("=====================================");

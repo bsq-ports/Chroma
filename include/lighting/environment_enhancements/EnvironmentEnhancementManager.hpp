@@ -27,7 +27,7 @@ namespace Chroma {
     private:
         inline static std::vector<GameObjectInfo> _globalGameObjectInfos;
 
-        static std::vector<GameObjectInfo> LookupId(const std::string& id, LookupMethod lookupMethod);
+        static std::vector<ByRef<const GameObjectInfo>> LookupId(const std::string& id, LookupMethod lookupMethod);
 
         static std::optional<Sombrero::FastVector3> GetVectorData(std::reference_wrapper<rapidjson::Value> dynData, const std::string& name);
 
