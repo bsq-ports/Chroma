@@ -34,14 +34,14 @@ namespace ChromaUtils {
     // C++ stuff
 
     // Should replace with an actual standard solution
-    inline static int charDiff(char c1, char c2)
+    inline static int constexpr charDiff(char c1, char c2)
     {
         if ( tolower(c1) < tolower(c2) ) return -1;
         if ( tolower(c1) == tolower(c2) ) return 0;
         return 1;
     }
 
-    inline static int stringCompare(const std::string& str1, const std::string& str2)
+    inline static int constexpr stringCompare(const std::string& str1, const std::string& str2)
     {
         int diff = 0;
         int size = std::min(str1.size(), str2.size());
@@ -77,7 +77,7 @@ namespace ChromaUtils {
     }
 
     template<typename T>
-    inline static std::optional<T*> ptrToOpt(T* t) {
+    inline static constexpr std::optional<T*> ptrToOpt(T* t) {
         return t ? std::make_optional<T*>(t) : std::nullopt;
     }
 

@@ -56,8 +56,7 @@ public:
                             std::optional<GlobalNamespace::BeatmapObjectsAvoidance*> beatmapObjectsAvoidance);
 
     static void HandleTrackData(UnityEngine::GameObject* gameObject,
-                                rapidjson::Value& gameObjectData,
-                                CustomJSONData::CustomBeatmapData* beatmapData,
+                                std::optional<Track*> track,
                                 float noteLinesDistance,
                                 std::optional<GlobalNamespace::TrackLaneRing*> trackLaneRing,
                                 std::optional<GlobalNamespace::ParametricBoxController*> parametricBoxController,

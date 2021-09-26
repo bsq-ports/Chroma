@@ -174,12 +174,12 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                 auto trackNameIt = gameObjectDataVal.FindMember(Chroma::TRACK);
 
                 std::optional<std::string> trackName;
+                std::optional<Track*> track;
 
                 if (trackNameIt != gameObjectDataVal.MemberEnd()) {
                     trackName = trackNameIt->value.GetString();
                     std::string val = *trackName;
-                    if (trackBeatmapAD.tracks.find(val) == trackBeatmapAD.tracks.end())
-                        trackBeatmapAD.tracks.emplace(val, Track());
+                    track = &(trackBeatmapAD.tracks.try_emplace(val, Track()).first->second);
                 }
 
 
@@ -192,7 +192,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
 
                 // Convert string to lower case
                 std::transform(lookupString.begin(), lookupString.end(), lookupString.begin(), ::tolower);
-                LookupMethod lookupMethod;
+                LookupMethod lookupMethod = LookupMethod::Exact;
 
                 if (lookupString == "regex") {
                     lookupMethod = LookupMethod::Regex;
@@ -330,7 +330,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                             AvoidanceRotation[beatmapObjectsAvoidance] = transform->get_localRotation();
                         }
                      }
-                    GameObjectTrackController::HandleTrackData(gameObject, gameObjectDataVal, customBeatmapData, noteLinesDistance, ptrToOpt(trackLaneRing), ptrToOpt(parametricBoxController), ptrToOpt(beatmapObjectsAvoidance));
+                    GameObjectTrackController::HandleTrackData(gameObject, track, noteLinesDistance, ptrToOpt(trackLaneRing), ptrToOpt(parametricBoxController), ptrToOpt(beatmapObjectsAvoidance));
 
 
                     if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {

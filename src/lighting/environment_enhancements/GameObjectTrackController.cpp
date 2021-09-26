@@ -224,15 +224,11 @@ void Chroma::GameObjectTrackController::Init(Track *track, float noteLinesDistan
     nextId++;
 }
 
-
-static std::optional<Track*> getTrack(rapidjson::Value& gameObjectData, CustomJSONData::CustomBeatmapData* beatmapData, std::string name = Chroma::TRACK) {
+// TODO: Remove?
+static std::optional<Track*> getTrack(rapidjson::Value& gameObjectData, CustomJSONData::CustomBeatmapData* beatmapData, const std::string& name = Chroma::TRACK) {
     auto& tracks = TracksAD::getBeatmapAD(beatmapData->customData).tracks;
 
     static auto contextLogger = getLogger().WithContext(Chroma::ChromaLogger::TrackController);
-
-    for (auto& track : tracks) {
-        debugSpamLog(contextLogger, "Track: %s", track.first.c_str());
-    }
 
     debugSpamLog(contextLogger, "Track list end");
 
@@ -262,8 +258,7 @@ static std::optional<Track*> getTrack(rapidjson::Value& gameObjectData, CustomJS
 }
 
 void Chroma::GameObjectTrackController::HandleTrackData(UnityEngine::GameObject *gameObject,
-                                                        rapidjson::Value& gameObjectData,
-                                                        CustomJSONData::CustomBeatmapData * beatmapData,
+                                                        std::optional<Track*> track,
                                                         float noteLinesDistance,
                                                         std::optional<GlobalNamespace::TrackLaneRing *> trackLaneRing,
                                                         std::optional<GlobalNamespace::ParametricBoxController *> parametricBoxController,
@@ -273,8 +268,6 @@ void Chroma::GameObjectTrackController::HandleTrackData(UnityEngine::GameObject 
     {
         Object::Destroy(existingTrackController);
     }
-
-    auto track = getTrack(gameObjectData, beatmapData);
 
     if (track)
     {
