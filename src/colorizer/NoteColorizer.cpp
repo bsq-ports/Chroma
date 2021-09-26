@@ -132,8 +132,12 @@ void NoteColorizer::Refresh() {
         if (!materialPropertyBlockController)
             continue;
 
-        if (materialPropertyBlockController->materialPropertyBlock)
-            SetColor(materialPropertyBlockController->materialPropertyBlock, _colorID(), color);
+
+        if (materialPropertyBlockController->materialPropertyBlock) {
+            auto propertyBlock = materialPropertyBlockController->materialPropertyBlock;
+            auto const& originalColor = propertyBlock->GetColor(_colorID());
+            SetColor(propertyBlock, _colorID(), color.Alpha(originalColor.a));
+        }
 
         ApplyChanges(materialPropertyBlockController);
     }
