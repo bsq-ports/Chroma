@@ -27,33 +27,7 @@ void SceneTransitionHelper::Patch(GlobalNamespace::IDifficultyBeatmap* customBea
     }
 }
 
-void SceneTransitionHelper::Patch(GlobalNamespace::IDifficultyBeatmap* customBeatmapData, OverrideEnvironmentSettings*& overrideEnvironmentSettings) {
-    if (!customBeatmapData)
-        return;
-
-    std::optional<CustomBeatmapData *> customBeatmapDataCustomOpt = il2cpp_utils::try_cast<CustomJSONData::CustomBeatmapData>(customBeatmapData->get_beatmapData());
-    if (customBeatmapDataCustomOpt) {
-        auto customBeatmapDataCustom = *customBeatmapDataCustomOpt;
-        bool chromaRequirement = SceneTransitionHelper::BasicPatch(customBeatmapData, customBeatmapDataCustom);
-        if (chromaRequirement && getChromaConfig().environmentEnhancementsEnabled.GetValue()) {
-
-            if (customBeatmapDataCustom->levelCustomData) {
-                auto dynData = customBeatmapDataCustom->levelCustomData->value;
-
-                if (dynData) {
-                    auto it = dynData.value().get().FindMember(ENVIRONMENT);
-                    auto it2 = dynData.value().get().FindMember(ENVIRONMENTREMOVAL);
-
-                    if (it != dynData.value().get().MemberEnd() || it2 != dynData.value().get().MemberEnd()) {
-                        overrideEnvironmentSettings = nullptr;
-                    }
-                }
-            }
-        }
-    }
-}
-
-bool CheckIfInArray(ValueUTF16& val, const std::u16string& stringToCheck) {
+static bool CheckIfInArray(ValueUTF16& val, const std::u16string_view stringToCheck) {
     if (val.IsArray()) {
         for (auto &element : val.GetArray()) {
             if (element.IsString() && element.GetString() == stringToCheck)
@@ -70,6 +44,31 @@ bool CheckIfInArray(ValueUTF16& val, const std::u16string& stringToCheck) {
 
     return false;
 }
+
+void SceneTransitionHelper::Patch(GlobalNamespace::IDifficultyBeatmap* customBeatmapData, OverrideEnvironmentSettings*& overrideEnvironmentSettings) {
+    if (!customBeatmapData)
+        return;
+
+    std::optional<CustomBeatmapData *> customBeatmapDataCustomOpt = il2cpp_utils::try_cast<CustomJSONData::CustomBeatmapData>(customBeatmapData->get_beatmapData());
+    if (customBeatmapDataCustomOpt) {
+        auto customBeatmapDataCustom = *customBeatmapDataCustomOpt;
+        bool chromaRequirement = SceneTransitionHelper::BasicPatch(customBeatmapData, customBeatmapDataCustom);
+        if (chromaRequirement && getChromaConfig().environmentEnhancementsEnabled.GetValue()) {
+
+            if (customBeatmapDataCustom->levelCustomData) {
+                auto dynData = customBeatmapDataCustom->levelCustomData->value;
+
+                if (dynData) {
+                    if (CheckIfInArray(dynData->get(), ENVIRONMENT) || CheckIfInArray(dynData->get(), ENVIRONMENTREMOVAL)) {
+                        overrideEnvironmentSettings = nullptr;
+                    }
+                }
+            }
+        }
+    }
+}
+
+
 
 bool SceneTransitionHelper::BasicPatch(GlobalNamespace::IDifficultyBeatmap* customBeatmapData, CustomJSONData::CustomBeatmapData* customBeatmapDataCustom) {
     ChromaController::TutorialMode = false;

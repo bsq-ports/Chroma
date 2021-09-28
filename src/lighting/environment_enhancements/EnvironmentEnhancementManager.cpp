@@ -173,7 +173,13 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
 
             auto environmentDataObject = environmentData->value.GetArray();
 
+            // Record start time
+            auto startAll = std::chrono::high_resolution_clock::now();
+
             for (auto &gameObjectDataVal : environmentDataObject) {
+                // Record start time
+                auto start = std::chrono::high_resolution_clock::now();
+
                 auto trackNameIt = gameObjectDataVal.FindMember(Chroma::TRACK);
 
                 std::optional<std::string> trackName;
@@ -216,13 +222,23 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
 
                 auto lightID = getIfExists<int>(gameObjectDataVal, LIGHTID);
 
+                // Record JSON parse time
+                auto finish = std::chrono::high_resolution_clock::now();
+                auto millisElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start).count();
+                getLogger().info("Parsing JSON took %lldms for id: %s lookup %s", millisElapsed, id.c_str(), lookupString.c_str());
+
                 std::vector<ByRef<const GameObjectInfo>> const foundObjects(LookupId(id, lookupMethod));
+
+                // Record find object time
+                finish = std::chrono::high_resolution_clock::now();
+                millisElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start).count();
+                getLogger().info("Finding objects took %lldms for id: %s lookup %s", millisElapsed, id.c_str(), lookupString.c_str());
 
                 std::vector<ByRef<const GameObjectInfo>> gameObjectInfos;
                 if (dupeAmount) {
                     gameObjectInfos.reserve(foundObjects.size() * dupeAmount.value());
 
-                    for (const auto &gameObjectInfoRef : foundObjects) {
+                    for (const auto &gameObjectInfoRef: foundObjects) {
                         const auto &gameObjectInfo = gameObjectInfoRef.heldRef;
                         if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {
                             getLogger().info("Duplicating [%s]:", gameObjectInfo.FullID.c_str());
@@ -244,9 +260,10 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                             SceneManager::MoveGameObjectToScene(newGameObject, scene);
                             newGameObject->get_transform()->SetParent(parent, true);
 
-                            auto const& newGameObjectInfo = ComponentInitializer::InitializeComponents(newGameObject->get_transform(),
-                                                                       gameObject->get_transform(), _globalGameObjectInfos,
-                                                                       componentDatas, lightID);
+                            auto const &newGameObjectInfo = ComponentInitializer::InitializeComponents(
+                                    newGameObject->get_transform(),
+                                    gameObject->get_transform(), _globalGameObjectInfos,
+                                    componentDatas, lightID);
                             gameObjectInfos.emplace_back(newGameObjectInfo);
                             // This is not needed as long as InitializeComponents adds to gameObjectInfos
 
@@ -260,8 +277,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                         }
                     }
                 } else {
-                    if (lightID)
-                    {
+                    if (lightID) {
                         getLogger().error("LightID requested but no duplicated object to apply to.");
                     }
 
@@ -269,6 +285,11 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                     // For some reason, copy constructor is deleted?
                     gameObjectInfos = std::vector(foundObjects);
                 }
+
+                // Record end time
+                finish = std::chrono::high_resolution_clock::now();
+                millisElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start).count();
+                getLogger().info("Duping took %lldms for id: %s lookup %s", millisElapsed, id.c_str(), lookupString.c_str());
 
                 for (auto const& gameObjectInfoRef : gameObjectInfos) {
                     const auto &gameObjectInfo = gameObjectInfoRef.heldRef;
@@ -354,7 +375,17 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                         getLogger().info("=====================================");
                     }
                 }
+
+                // Record end time
+                finish = std::chrono::high_resolution_clock::now();
+                millisElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start).count();
+                getLogger().info("Finished! Took %lldms for id: %s lookup %s\n", millisElapsed ,id.c_str(), lookupString.c_str());
             }
+
+            // Record all end time
+            auto finish = std::chrono::high_resolution_clock::now();
+            auto millisElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(finish - startAll).count();
+            getLogger().info("Finished environment enhancements took %lldms", millisElapsed);
         }
     }
     LegacyEnvironmentRemoval::Init(customBeatmapData);
