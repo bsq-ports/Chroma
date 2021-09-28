@@ -139,6 +139,7 @@ MAKE_HOOK_MATCH(LightSwitchEventEffect_HandleBeatmapObjectCallbackControllerBeat
     }
 
     if (beatmapEventData->type == self->event) {
+        LightColorizer::GetLightColorizer(self->event)->PreviousEvent = beatmapEventData;
         LightColorManager::ColorLightSwitch(beatmapEventData);
     }
 

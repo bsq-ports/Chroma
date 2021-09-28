@@ -43,7 +43,7 @@ namespace Chroma {
 
         std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId *>> LightsPropagationGrouped{};
 
-
+        GlobalNamespace::BeatmapEventData* PreviousEvent = nullptr;
 
         std::vector<Sombrero::FastColor> getColor();
 

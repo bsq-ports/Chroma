@@ -85,18 +85,24 @@ Sombrero::FastColor ChromaGradientController::AddGradient(ChromaEventData::Gradi
 }
 
 void Chroma::ChromaGradientController::Update() {
+    getLogger().debug("A");
+    return;
     if (!Gradients.empty()) {
+        getLogger().debug("B");
         // Create a map iterator and point to beginning of map
         auto it = Gradients.begin();
+        getLogger().debug("C");
 
         auto songTime = ChromaTimeSourceHelper::getSongTimeChroma(ChromaController::IAudioTimeSource);
+        getLogger().debug("D");
         // Iterate over the map using Iterator till end.
         while (it != Gradients.end()) {
-
+            getLogger().debug("E");
             bool modified = false;
             // Accessing KEY from element pointed by it.
             BeatmapEventType eventType = it->first;
             auto lightIds = it->second._lightIds;
+            getLogger().debug("F");
 
             // Accessing VALUE from element pointed by it.
             Sombrero::FastColor color = it->second.Interpolate(modified, songTime);
@@ -106,13 +112,16 @@ void Chroma::ChromaGradientController::Update() {
                     LightSwitchEventEffectHolder::LightIDOverride->push_back(light);
                 }
             }
+            getLogger().debug("G");
 
             LightColorizer::ColorizeLight(eventType, true, {color, color, color, color});
-
+            getLogger().debug("H");
             if (!modified)
                 it++;
             else
                 it = Gradients.erase(it);
+            
+            getLogger().debug("I");
         }
     }
 }

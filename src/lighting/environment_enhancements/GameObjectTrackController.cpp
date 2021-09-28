@@ -139,7 +139,7 @@ void Chroma::GameObjectTrackController::Update() {
 
     auto posCalc = position ? position.value() * _noteLinesDistance : 0;
 
-    if (position && Sombrero::FastVector3(transform->get_position()) != (posCalc))
+    if (position && Sombrero::FastVector3(transform->get_position()) != ((UnityEngine::Vector3)posCalc))
     {
         NEVector::Vector3 positionValue = posCalc;
         NEVector::Vector3 finalOffset;

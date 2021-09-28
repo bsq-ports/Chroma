@@ -13,12 +13,15 @@
 #include "UnityEngine/Mathf.hpp"
 
 #include "GlobalNamespace/LightWithIdMonoBehaviour.hpp"
+#include "GlobalNamespace/LightSwitchEventEffect.hpp"
 #include "GlobalNamespace/LightWithIds.hpp"
 #include "GlobalNamespace/LightWithIds_LightData.hpp"
 #include "GlobalNamespace/TrackLaneRingsManager.hpp"
 #include "GlobalNamespace/TrackLaneRing.hpp"
 #include "GlobalNamespace/ParticleSystemEventEffect.hpp"
 #include "GlobalNamespace/ColorSO.hpp"
+#include "GlobalNamespace/ColorExtensions.hpp"
+#include "Tweening/ColorTween.hpp"
 
 
 
@@ -225,14 +228,12 @@ void LightColorizer::Colorize(bool refresh, std::vector<std::optional<Sombrero::
         _colors[i] = colors[i];
     }
 
+    SetSOs(getColor());
+    
     // Allow light colorizer to not force color
     if (refresh)
     {
         Refresh();
-    }
-    else
-    {
-        SetSOs(getColor());
     }
 }
 
@@ -261,9 +262,110 @@ void LightColorizer::SetSOs(std::vector<Sombrero::FastColor> const& colors) {
 void LightColorizer::Refresh() {
     auto const& colors = getColor();
     SetSOs(colors);
+    
+    bool boost = _lightSwitchEventEffect->usingBoostColors;
+    BeatmapEventData* beatmapEventData = PreviousEvent;
+    int previousValue = beatmapEventData->value;
+    float previousFloatValue = beatmapEventData->floatValue;
+    getLogger().debug("event %d float %f", (int)beatmapEventData->type, previousFloatValue);
 
-    static auto ProcessLightSwitchEvent = FPtrWrapper<&LightSwitchEventEffect::ProcessLightSwitchEvent>::get();
-    ProcessLightSwitchEvent(_lightSwitchEventEffect, _lightSwitchEventEffect->prevLightSwitchBeatmapEventDataValue, true);
+    // I was very happy when beat games had their own method to do this, but then they removed it.....
+    // seriously the way they do boost colors now is so janky
+    // LOOK AT THIS SHIT
+    std::function CheckNextEventForFade = [this, boost, beatmapEventData, previousValue, previousFloatValue]()
+    {
+        BeatmapEventData* nextSameTypeEvent = beatmapEventData->nextSameTypeEvent;
+        if (nextSameTypeEvent != nullptr && (nextSameTypeEvent->value == 4 || nextSameTypeEvent->value == 8))
+        {
+            float nextFloatValue = nextSameTypeEvent->floatValue;
+            int nextValue = nextSameTypeEvent->value;
+            
+            Color nextColor = _lightSwitchEventEffect->GetNormalColor(nextValue, boost);
+            nextColor = ColorExtensions::ColorWithAlpha(nextColor, nextColor.a * nextFloatValue);
+            Color nextAltColor = _lightSwitchEventEffect->GetNormalColor(nextValue, !boost);
+            nextAltColor = ColorExtensions::ColorWithAlpha(nextAltColor, nextAltColor.a * nextFloatValue);
+
+            Color prevColor = _lightSwitchEventEffect->colorTween->toValue;
+            Color prevAltColor = _lightSwitchEventEffect->alternativeToColor;
+            if (previousValue == 0)
+            {
+                prevColor = ColorExtensions::ColorWithAlpha(nextColor, 0);
+                prevAltColor = ColorExtensions::ColorWithAlpha(nextAltColor, 0);
+            }
+            else if (!_lightSwitchEventEffect->IsFixedDurationLightSwitch(previousValue))
+            {
+                prevColor = _lightSwitchEventEffect->GetNormalColor(previousValue, boost);
+                prevColor = ColorExtensions::ColorWithAlpha(prevColor, prevColor.a * previousFloatValue);
+                prevAltColor = _lightSwitchEventEffect->GetNormalColor(previousValue, !boost);
+                prevAltColor = ColorExtensions::ColorWithAlpha(prevAltColor, prevAltColor.a * previousFloatValue);
+
+            }
+
+            _lightSwitchEventEffect->SetupTweenAndSaveOtherColors(prevColor, nextColor, prevAltColor, nextAltColor);
+        }
+    };
+
+    switch (previousValue)
+    {
+        case 0:
+            {
+                // unfortunately, we cant get whether its color 0 or color 1, so we just always default color0 (unless i wanna get super pepega and implement that)
+                float offAlpha = _lightSwitchEventEffect->offColorIntensity * previousFloatValue;
+                Color color = ColorExtensions::ColorWithAlpha(_lightSwitchEventEffect->GetNormalColor(0, boost), offAlpha);
+                Color altColor = ColorExtensions::ColorWithAlpha(_lightSwitchEventEffect->GetNormalColor(0, !boost), offAlpha);
+                _lightSwitchEventEffect->SetupTweenAndSaveOtherColors(color, color, altColor, altColor);
+                CheckNextEventForFade();
+            }
+
+            break;
+
+        case 1:
+        case 5:
+        case 4:
+        case 8:
+            {
+                Color color = _lightSwitchEventEffect->GetNormalColor(previousValue, boost);
+                color = ColorExtensions::ColorWithAlpha(color, color.a * previousFloatValue);
+                Color altColor = _lightSwitchEventEffect->GetNormalColor(previousValue, !boost);
+                altColor = ColorExtensions::ColorWithAlpha(altColor, altColor.a * previousFloatValue);
+                _lightSwitchEventEffect->SetupTweenAndSaveOtherColors(color, color, altColor, altColor);
+                CheckNextEventForFade();
+            }
+
+            break;
+
+        case 2:
+        case 6:
+            {
+                Color colorFrom = _lightSwitchEventEffect->GetHighlightColor(previousValue, boost);
+                colorFrom = ColorExtensions::ColorWithAlpha(colorFrom, colorFrom.a * previousFloatValue);
+                Color colorTo = _lightSwitchEventEffect->GetNormalColor(previousValue, boost);
+                colorTo = ColorExtensions::ColorWithAlpha(colorTo, colorTo.a * previousFloatValue);
+                Color altColorFrom = _lightSwitchEventEffect->GetHighlightColor(previousValue, !boost);
+                altColorFrom = ColorExtensions::ColorWithAlpha(altColorFrom, altColorFrom.a * previousFloatValue);
+                Color altColorTo = _lightSwitchEventEffect->GetNormalColor(previousValue, !boost);
+                altColorTo = ColorExtensions::ColorWithAlpha(altColorTo, altColorTo.a * previousFloatValue);
+                _lightSwitchEventEffect->SetupTweenAndSaveOtherColors(colorFrom, colorTo, altColorFrom, altColorTo);
+            }
+
+            break;
+
+        case 3:
+        case 7:
+        case -1:
+            {
+                float offAlpha = _lightSwitchEventEffect->offColorIntensity * previousFloatValue;
+                Color colorFrom = _lightSwitchEventEffect->GetHighlightColor(previousValue, boost);
+                colorFrom = ColorExtensions::ColorWithAlpha(colorFrom, colorFrom.a * previousFloatValue);
+                Color colorTo = ColorExtensions::ColorWithAlpha(_lightSwitchEventEffect->GetNormalColor(previousValue, boost), offAlpha);
+                Color altColorFrom = _lightSwitchEventEffect->GetHighlightColor(previousValue, !boost);
+                altColorFrom = ColorExtensions::ColorWithAlpha(altColorFrom, altColorFrom.a * previousFloatValue);
+                Color altColorTo = ColorExtensions::ColorWithAlpha(_lightSwitchEventEffect->GetNormalColor(previousValue, !boost), offAlpha);
+                _lightSwitchEventEffect->SetupTweenAndSaveOtherColors(colorFrom, colorTo, altColorFrom, altColorTo);
+            }
+
+            break;
+    }
 }
 
 void LightColorizer::InitializeSO(const std::string &id, int index) {
