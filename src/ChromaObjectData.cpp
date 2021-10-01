@@ -105,8 +105,8 @@ void Chroma::ChromaObjectDataManager::deserialize(GlobalNamespace::IReadonlyBeat
                             }
                         }
 
-                        auto track = TracksAD::getAD(eventDynData).track;
-                        chromaObjectData->Track = track ? std::make_optional(track) : std::nullopt;
+                        auto& tracks = TracksAD::getAD(eventDynData).tracks;
+                        chromaObjectData->Tracks = tracks;
                     }
                     debugSpamLog(contextLogger,"Adding to list");
                     ChromaObjectDatas[beatmapObjectData] = chromaObjectData;

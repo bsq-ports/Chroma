@@ -165,7 +165,7 @@ void SaberColorizer::RemoveColorizer(GlobalNamespace::SaberModelController *sabe
 std::unordered_set<SaberColorizer*> SaberColorizer::GetColorizerList(GlobalNamespace::SaberType saberType) {
     std::unordered_set<SaberColorizer*> colorizers;
 
-    for (auto& saber : Colorizers) {
+    for (auto const& saber : Colorizers) {
         if (saber.second->_saberType.value == saberType.value) {
             colorizers.emplace(saber.second.get());
         }
@@ -186,10 +186,5 @@ void SaberColorizer::SetColorable(GlobalNamespace::SaberModelController *saberMo
 }
 
 bool SaberColorizer::IsColorable(GlobalNamespace::SaberModelController *saberModelController) {
-    return ColorableModels.find(saberModelController) != ColorableModels.end();
+    return ColorableModels.contains(saberModelController);
 }
-
-
-
-
-

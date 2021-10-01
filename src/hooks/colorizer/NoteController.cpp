@@ -45,9 +45,9 @@ MAKE_HOOK_MATCH(
 
     auto chromaData = ChromaObjectDataManager::ChromaObjectDatas.find(self->noteData);
     if (chromaData != ChromaObjectDataManager::ChromaObjectDatas.end()) {
-        auto track = chromaData->second->Track;
+        auto tracks = chromaData->second->Tracks;
         auto pathPointDefinition = chromaData->second->LocalPathColor;
-        if (track || pathPointDefinition)
+        if (!tracks.empty() || pathPointDefinition)
         {
             NoteJump* noteJump = self->noteMovement->jump;
             float jumpDuration = noteJump->jumpDuration;
@@ -55,7 +55,7 @@ MAKE_HOOK_MATCH(
             float normalTime = elapsedTime / jumpDuration;
 
             std::optional<Sombrero::FastColor> colorOffset;
-            AnimationHelper::GetColorOffset(pathPointDefinition, track, normalTime, colorOffset);
+            AnimationHelper::GetColorOffset(pathPointDefinition, tracks, normalTime, colorOffset);
 
             if (colorOffset)
             {

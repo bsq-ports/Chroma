@@ -74,16 +74,16 @@ MAKE_HOOK_MATCH(
 
     auto chromaData = ChromaObjectDataManager::ChromaObjectDatas.find(self->obstacleData);
     if (chromaData != ChromaObjectDataManager::ChromaObjectDatas.end()) {
-        auto const &track = chromaData->second->Track;
+        auto const &tracks = chromaData->second->Tracks;
         auto const &pathPointDefinition = chromaData->second->LocalPathColor;
-        if (track || pathPointDefinition) {
+        if (!tracks.empty() || pathPointDefinition) {
             float jumpDuration = self->move2Duration;
             float elapsedTime =
                     ChromaTimeSourceHelper::getSongTimeChroma(self->audioTimeSyncController) - self->startTimeOffset;
             float normalTime = (elapsedTime - self->move1Duration) / (jumpDuration + self->obstacleDuration);
 
             std::optional<Sombrero::FastColor> colorOffset;
-            AnimationHelper::GetColorOffset(pathPointDefinition, track, normalTime, colorOffset);
+            AnimationHelper::GetColorOffset(pathPointDefinition, tracks, normalTime, colorOffset);
 
             if (colorOffset) {
                 ObstacleColorizer::ColorizeObstacle(self, colorOffset.value());
