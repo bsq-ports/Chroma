@@ -38,7 +38,7 @@ using namespace GlobalNamespace;
 using namespace Chroma;
 
 template <typename T>
-void GetComponentAndOriginal(UnityEngine::Transform*& root, UnityEngine::Transform*& original, std::function < void(T*, T*)> const& initializeDelegate) {
+static void constexpr GetComponentAndOriginal(UnityEngine::Transform* root, UnityEngine::Transform* original, std::function < void(T*, T*)> const& initializeDelegate) {
     Array<T*>* rootComponents = root->GetComponents<T*>();
     Array<T*>* originalComponents = original->GetComponents<T*>();
 
@@ -75,7 +75,7 @@ Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root,
         rootComponent->positionOffset = originalComponent->positionOffset;
         rootComponent->posZ = originalComponent->posZ;
 
-        TrackLaneRingsManager* managerToAdd;
+        TrackLaneRingsManager* managerToAdd = nullptr;
         for (auto const& manager : Chroma::TrackLaneRingsManagerHolder::RingManagers) {
 
             std::optional<TrackLaneRingsManagerComponentData*> componentData;

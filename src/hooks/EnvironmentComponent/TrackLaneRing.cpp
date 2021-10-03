@@ -59,7 +59,7 @@ MAKE_HOOK_MATCH(TrackLaneRing_LateUpdateRing, &TrackLaneRing::LateUpdateRing, vo
 
     float interpolatedZPos = self->prevPosZ + ((self->posZ - self->prevPosZ) * interpolationFactor);
     Sombrero::FastVector3 positionZOffset = ((rotation * vectorForward) * interpolatedZPos);
-    Sombrero::FastVector3 pos = self->positionOffset + positionZOffset;
+    Sombrero::FastVector3 pos = Sombrero::vector3add(self->positionOffset, positionZOffset);
 
     float interpolatedZRot = self->prevRotZ + ((self->rotZ - self->prevRotZ) * interpolationFactor);
 

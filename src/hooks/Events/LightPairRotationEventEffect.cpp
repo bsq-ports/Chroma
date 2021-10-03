@@ -99,9 +99,7 @@ MAKE_HOOK_MATCH(
         }
     }
 
-    static auto* euler = &::il2cpp_utils::GetClassFromName("UnityEngine", "Vector3")->byval_arg;
-    static const MethodInfo *QuaternionEuler = il2cpp_utils::FindMethod(classof(Sombrero::FastQuaternion), "Euler", std::vector<Il2CppClass*>(), ::std::vector<const Il2CppType*>{euler});
-    static auto QuaternionEulerMPtr = reinterpret_cast<Sombrero::FastQuaternion(*)(Sombrero::FastVector3)>(QuaternionEuler->methodPointer);
+    static auto QuaternionEulerMPtr = FPtrWrapper<static_cast<UnityEngine::Quaternion (*)(UnityEngine::Vector3)>(&UnityEngine::Quaternion::Euler)>::get();
 
     //getLogger().debug("The time is: %d", beatmapEventData->time);
     if (beatmapEventData->value == 0) {
@@ -109,7 +107,12 @@ MAKE_HOOK_MATCH(
         if (!lockPosition) {
             customRotationData->rotationAngle = customRotationData->startRotationAngle;
             customRotationData->transform->set_localRotation(
-                    customRotationData->startRotation * QuaternionEulerMPtr(self->rotationVector * customRotationData->startRotationAngle));
+                    Sombrero::QuaternionMultiply(customRotationData->startRotation,
+                                                 QuaternionEulerMPtr(
+                                                         Sombrero::vector3multiply(self->rotationVector, customRotationData->startRotationAngle)
+                                                         )
+                                                 )
+                                         );
         }
     } else if (beatmapEventData->value > 0) {
         customRotationData->enabled = true;
@@ -118,7 +121,13 @@ MAKE_HOOK_MATCH(
         if (!lockPosition) {
             float rotationAngle = startRotationOffset + customRotationData->startRotationAngle;
             customRotationData->rotationAngle = rotationAngle;
-            customRotationData->transform->set_localRotation(customRotationData->startRotation * QuaternionEulerMPtr(self->rotationVector * rotationAngle));
+            customRotationData->transform->set_localRotation(
+                    Sombrero::QuaternionMultiply(customRotationData->startRotation,
+                                                 QuaternionEulerMPtr(
+                                                         Sombrero::vector3multiply(self->rotationVector, rotationAngle)
+                                                 )
+                    )
+            );
         }
     }
 }

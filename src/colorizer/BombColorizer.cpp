@@ -27,7 +27,7 @@ void BombColorizer::Refresh() {
 
     static auto colorName = il2cpp_utils::newcsstr<il2cpp_utils::CreationType::Manual>("_SimpleColor");
 
-    if (color == bombMaterial->GetColor(colorName)) {
+    if (color == Sombrero::FastColor(bombMaterial->GetColor(colorName))) {
         return;
     }
 

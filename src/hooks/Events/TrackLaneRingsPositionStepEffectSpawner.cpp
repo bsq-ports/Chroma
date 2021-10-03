@@ -12,9 +12,9 @@
 using namespace Chroma;
 using namespace GlobalNamespace;
 
-static float GetPrecisionStep(float const& defaultF, GlobalNamespace::BeatmapEventData* beatmapEventData)
+static float GetPrecisionStep(float const defaultF, GlobalNamespace::BeatmapEventData* beatmapEventData)
 {
-    auto map = ChromaEventDataManager::ChromaEventDatas;
+    auto const& map = ChromaEventDataManager::ChromaEventDatas;
     auto it = map.find(beatmapEventData);
 
     if (it != map.end()) {
@@ -28,9 +28,9 @@ static float GetPrecisionStep(float const& defaultF, GlobalNamespace::BeatmapEve
     return defaultF;
 }
 
-static float GetPrecisionSpeed(float const& defaultF, GlobalNamespace::BeatmapEventData* beatmapEventData)
+static float GetPrecisionSpeed(float const defaultF, GlobalNamespace::BeatmapEventData* beatmapEventData)
 {
-    auto map = ChromaEventDataManager::ChromaEventDatas;
+    auto const& map = ChromaEventDataManager::ChromaEventDatas;
     auto it = map.find(beatmapEventData);
 
     if (it != map.end()) {
@@ -72,7 +72,7 @@ MAKE_HOOK_MATCH(TrackLaneRingsPositionStepEffectSpawner_HandleBeatmapObjectCallb
         static auto SetPosition = FPtrWrapper<&GlobalNamespace::TrackLaneRing::SetPosition>::get();
 
         float moveSpeed = GetPrecisionSpeed(self->moveSpeed, beatmapEventData);
-        SetPosition(rings->get(i), destPosZ, self->moveSpeed);
+        SetPosition(rings->get(i), destPosZ, moveSpeed);
     }
 
 }

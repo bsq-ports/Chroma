@@ -118,7 +118,7 @@ void NoteColorizer::Refresh() {
     if (NoteColorable) return;
 
     Sombrero::FastColor const& color = getColor();
-    if (color == _colorNoteVisuals->noteColor)
+    if (color == Sombrero::FastColor(_colorNoteVisuals->noteColor))
     {
         return;
     }

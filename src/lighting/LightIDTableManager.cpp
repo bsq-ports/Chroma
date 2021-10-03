@@ -32,8 +32,14 @@ std::optional<int> LightIDTableManager::GetActiveTableValue(int type, int id) {
     {
         auto& table = activeTable.value();
 
-        const auto& typeTable = table[type];
+        auto typeTableIt = table.find(type);
 
+        if (typeTableIt == table.end()) {
+            getLogger().warning("Unable to find value for type %d", type);
+            return std::nullopt;
+        }
+
+        const auto& typeTable = typeTableIt->second;
         auto it = typeTable.find(id);
 
         if (it != typeTable.end()) {

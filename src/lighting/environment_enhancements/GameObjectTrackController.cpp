@@ -137,7 +137,7 @@ void Chroma::GameObjectTrackController::Update() {
         }
     }
 
-    auto posCalc = position ? Sombrero::FastVector3(position.value()) * _noteLinesDistance : 0;
+    Sombrero::FastVector3 posCalc = position ? Sombrero::FastVector3(position.value()) * _noteLinesDistance : 0;
 
     if (position && Sombrero::FastVector3(transform->get_position()) != posCalc)
     {
@@ -187,7 +187,7 @@ void Chroma::GameObjectTrackController::Update() {
 
     auto localScaleTrans = NEVector::Vector3(transform->get_localScale());
 
-    if (scale && localScaleTrans != scale.value())
+    if (scale && Sombrero::FastVector3(localScaleTrans) != Sombrero::FastVector3(scale.value()))
     {
         transform->set_localScale(scale.value());
     }

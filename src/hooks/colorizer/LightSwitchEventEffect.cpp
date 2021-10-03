@@ -77,7 +77,7 @@ MAKE_HOOK_MATCH(LightSwitchEventEffect_SetColor,
 
     if (LightSwitchEventEffectHolder::LightIDOverride) {
         auto const& lightOverride = LightSwitchEventEffectHolder::LightIDOverride.value();
-        auto& lights = LightColorizer::GetLightColorizer(self->event)->Lights;
+        auto const& lights = LightColorizer::GetLightColorizer(self->event)->Lights;
 
         int type = self->event;
         std::vector<int> newIds;
@@ -86,11 +86,7 @@ MAKE_HOOK_MATCH(LightSwitchEventEffect_SetColor,
         for (auto id : lightOverride) {
             auto newId = LightIDTableManager::GetActiveTableValue(type, id);
 
-            if (newId) {
-                newIds.push_back(newId.value());
-            } else {
-                newIds.push_back(id);
-            }
+            newIds.push_back(newId.value_or(id));
         }
 
 
@@ -98,7 +94,7 @@ MAKE_HOOK_MATCH(LightSwitchEventEffect_SetColor,
             if (id < 0 || id > lights.size()) {
                 getLogger().warning("Type %d does not contain id %d", type, id);
             } else {
-                auto l = lights[id];
+                auto l = lights.at(id);
                 if (l) {
                     if (l->get_isRegistered()) {
                         l->ColorWasSet(color);

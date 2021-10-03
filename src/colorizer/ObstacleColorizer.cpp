@@ -68,7 +68,7 @@ void ObstacleColorizer::Refresh() {
     if (ObstacleColorable) return;
 
     Sombrero::FastColor const& color = getColor();
-    if (color == _obstacleFrame->color)
+    if (color == Sombrero::FastColor(_obstacleFrame->color))
     {
         return;
     }
