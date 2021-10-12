@@ -24,18 +24,12 @@ namespace Chroma {
 
     public:
         static bool TutorialMode;
-
-    public:
         // Return true if Chroma should color the sabers
         // Practically the same as DoChromaHooks, so yeet?
-        static constexpr bool DoColorizerSabers() {
-            return ChromaRequired();
-        }
+        static bool DoColorizerSabers();
 
         // Return true if Chroma is required/suggested in a map
-        static constexpr bool ChromaRequired() {
-            return !TutorialMode && ChromaMap;
-        }
+        static bool ChromaRequired();
         static void setChromaRequired(bool chromaMap);
 
         // Return true if Chroma hooks should run
@@ -44,9 +38,7 @@ namespace Chroma {
 
         // Quest internal stuff
         static void SetChromaLegacy(bool v);
-        static constexpr bool GetChromaLegacy() {
-            return ChromaLegacy;
-        }
+        static bool GetChromaLegacy();
 
         inline static GlobalNamespace::BeatmapObjectSpawnController* BeatmapObjectSpawnController = nullptr;
         inline static GlobalNamespace::IAudioTimeSource* IAudioTimeSource = nullptr;
