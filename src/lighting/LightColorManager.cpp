@@ -123,8 +123,7 @@ void Chroma::LightColorManager::ColorLightSwitch(BeatmapEventData* beatmapEventD
         auto gradient = chromaData->GradientObject;
         if (gradient) {
             color = ChromaGradientController::AddGradient(gradient.value(), beatmapEventData->type,
-                                                          beatmapEventData->time,
-                                                          LightSwitchEventEffectHolder::LightIDOverride);
+                                                          beatmapEventData->time);
         }
 
 

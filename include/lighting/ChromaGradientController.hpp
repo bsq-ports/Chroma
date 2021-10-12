@@ -12,12 +12,13 @@
 
 #include "GlobalNamespace/BeatmapEventType.hpp"
 
-#include "tracks/shared/Animation/Easings.h"
-#include "main.hpp"
-
 #include "beatsaber-hook/shared/config/rapidjson-utils.hpp"
 
 #include "ChromaEventData.hpp"
+#include "ChromaController.hpp"
+
+#include "tracks/shared/Animation/Easings.h"
+#include "main.hpp"
 
 namespace Chroma {
     struct ChromaGradientEvent;
@@ -33,11 +34,18 @@ namespace Chroma {
         float _duration;
         GlobalNamespace::BeatmapEventType _event;
         Functions _easing;
-        std::optional<std::vector<int>> _lightIds;
 
-        ChromaGradientEvent(Sombrero::FastColor initcolor, Sombrero::FastColor endcolor, float start, float duration, GlobalNamespace::BeatmapEventType eventType, std::optional<std::vector<int>> lightIds, Functions easing = Functions::easeLinear);
+        ChromaGradientEvent(Sombrero::FastColor const& initcolor, Sombrero::FastColor const& endcolor, float start,
+                                      float duration, GlobalNamespace::BeatmapEventType eventType,
+                                      Functions easing = Functions::easeLinear)
+                                      :
+                                      _initcolor(initcolor), _endcolor(endcolor),
+                                      _start(start),
+                                      _duration(60.0f * duration / ChromaController::BeatmapObjectSpawnController->get_currentBpm()),
+                                      _event(eventType),
+                                      _easing(easing) {}
 
-        [[nodiscard]] Sombrero::FastColor Interpolate(bool &modified, const float& songTime) const;
+        [[nodiscard]] constexpr Sombrero::FastColor Interpolate(bool& modified, float songTime) const;
     };
 
 
@@ -52,7 +60,7 @@ DECLARE_CLASS_CODEGEN(Chroma, ChromaGradientController, UnityEngine::MonoBehavio
         // internal
         gradientMap Gradients;
 
-        static Sombrero::FastColor AddGradient(ChromaEventData::GradientObjectData gradientObject, GlobalNamespace::BeatmapEventType id, float time, std::optional<std::vector<int>> lightIds);
+        static Sombrero::FastColor AddGradient(ChromaEventData::GradientObjectData const& gradientObject, GlobalNamespace::BeatmapEventType id, float time);
         DECLARE_STATIC_METHOD(Chroma::ChromaGradientController*, getInstance);
         DECLARE_STATIC_METHOD(void, clearInstance);
 

@@ -51,27 +51,26 @@ void ChromaGradientController::OnDestroy() {
 
 
 bool Chroma::ChromaGradientController::IsGradientActive(GlobalNamespace::BeatmapEventType eventType) {
-    return getInstance()->Gradients.find(eventType) != getInstance()->Gradients.end();
+    return getInstance()->Gradients.contains(eventType);
 }
 
 void ChromaGradientController::CancelGradient(GlobalNamespace::BeatmapEventType eventType) {
     getInstance()->Gradients.erase(eventType);
 }
 
-Sombrero::FastColor ChromaGradientController::AddGradient(ChromaEventData::GradientObjectData gradientObject,
-                                                         GlobalNamespace::BeatmapEventType id, float time, std::optional<std::vector<int>> lightIds) {
+Sombrero::FastColor ChromaGradientController::AddGradient(ChromaEventData::GradientObjectData const& gradientObject,
+                                                         GlobalNamespace::BeatmapEventType id, float time) {
     CancelGradient(id);
 
     float duration = gradientObject.Duration;
-    Sombrero::FastColor initcolor = gradientObject.StartColor;
-    Sombrero::FastColor endcolor = gradientObject.EndColor;
+    Sombrero::FastColor const& initcolor = gradientObject.StartColor;
+    Sombrero::FastColor const& endcolor = gradientObject.EndColor;
     Functions easing = gradientObject.Easing;
 
-    const auto gradientEvent = ChromaGradientEvent(initcolor, endcolor, time, duration, id, lightIds, easing);
-    auto it = getInstance()->Gradients.emplace(id.value, gradientEvent);
+    auto it = getInstance()->Gradients.emplace(id.value, ChromaGradientEvent(initcolor, endcolor, time, duration, id, easing));
     // Grab by reference since assignment copies to the map
     // This way calling interpolate actually modifies the struct itself.
-    auto& newGradientEvent = getInstance()->Gradients.find(id.value)->second;
+    auto& newGradientEvent = it.first->second;
     bool erased = false;
 
 
@@ -96,16 +95,9 @@ void Chroma::ChromaGradientController::Update() {
             bool modified = false;
             // Accessing KEY from element pointed by it.
             BeatmapEventType eventType = it->first;
-            auto lightIds = it->second._lightIds;
 
             // Accessing VALUE from element pointed by it.
             Sombrero::FastColor color = it->second.Interpolate(modified, songTime);
-
-            if (lightIds) {
-                for (auto& light : *lightIds) {
-                    LightSwitchEventEffectHolder::LightIDOverride->push_back(light);
-                }
-            }
 
             LightColorizer::ColorizeLight(eventType, true, {color, color, color, color});
 
@@ -117,23 +109,11 @@ void Chroma::ChromaGradientController::Update() {
     }
 }
 
-Chroma::ChromaGradientEvent::ChromaGradientEvent(Sombrero::FastColor initcolor, Sombrero::FastColor endcolor, float start,
-                                                 float duration, GlobalNamespace::BeatmapEventType eventType,
-                                                 std::optional<std::vector<int>> lights, Functions easing) {
-    _initcolor = initcolor;
-    _endcolor = endcolor;
-    _start = start;
-    _duration = 60.0f * duration / ChromaController::BeatmapObjectSpawnController->get_currentBpm();
-    _event = eventType;
-    _easing = easing;
-    _lightIds = lights;
+static constexpr Sombrero::FastColor lerpUnclamped(Sombrero::FastColor const& a, Sombrero::FastColor const& b, float t) {
+    return {a.r + (b.r - a.r) * t, a.g + (b.g - a.g) * t, a.b + (b.b - a.b) * t, a.a + (b.a - a.a) * t};
 }
 
-Sombrero::FastColor lerpUnclamped(Sombrero::FastColor a, Sombrero::FastColor b, float t) {
-    return Sombrero::FastColor(a.r + (b.r - a.r) * t, a.g + (b.g - a.g) * t, a.b + (b.b - a.b) * t, a.a + (b.a - a.a) * t);
-}
-
-Sombrero::FastColor Chroma::ChromaGradientEvent::Interpolate(bool &modified, const float& songTime) const {
+constexpr Sombrero::FastColor Chroma::ChromaGradientEvent::Interpolate(bool& modified, const float songTime) const {
     modified = false;
     float normalTime = songTime - _start;
     if (normalTime < 0)
