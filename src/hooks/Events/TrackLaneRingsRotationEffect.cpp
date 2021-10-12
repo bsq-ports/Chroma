@@ -50,10 +50,9 @@ MAKE_HOOK_MATCH(TrackLaneRingsRotationEffect_FixedUpdate, &TrackLaneRingsRotatio
 }
 
 void TrackLaneRingsRotationEffectHook(Logger& logger) {
-    // TODO: Remove?
     INSTALL_HOOK_ORIG(getLogger(), TrackLaneRingsRotationEffect_AddRingRotationEffect);
     INSTALL_HOOK_ORIG(getLogger(), ChromaRingsRotationEffect_AddRingRotationEffect);
-    //    INSTALL_HOOK_OFFSETLESS(getLogger(), TrackLaneRingsRotationEffect_FixedUpdate, il2cpp_utils::FindMethodUnsafe("", "TrackLaneRingsRotationEffect", "FixedUpdate", 0));
+    INSTALL_HOOK_ORIG(getLogger(), TrackLaneRingsRotationEffect_FixedUpdate);
 }
 
 ChromaInstallHooks(TrackLaneRingsRotationEffectHook)

@@ -266,7 +266,7 @@ void LightColorizer::Refresh() {
     ProcessLightSwitchEvent(_lightSwitchEventEffect, _lightSwitchEventEffect->prevLightSwitchBeatmapEventDataValue, true);
 }
 
-void LightColorizer::InitializeSO(const std::string &id, int index) {
+void LightColorizer::InitializeSO(std::string_view id, int index) {
     auto colorSOAcessor = il2cpp_utils::FindField(classof(LightSwitchEventEffect*), (std::string_view) id);
     auto lightMultSO = il2cpp_utils::cast<MultipliedColorSO>(CRASH_UNLESS(il2cpp_utils::GetFieldValue<GlobalNamespace::ColorSO*>(_lightSwitchEventEffect, colorSOAcessor)));
 

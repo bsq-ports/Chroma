@@ -15,12 +15,5 @@ void Chroma::ParametricBoxControllerParameters::SetTransformPosition(
 
 Chroma::ParametricBoxControllerParameters& Chroma::ParametricBoxControllerParameters::GetParameters(
         GlobalNamespace::ParametricBoxController *parametricBoxController) {
-
-    auto it = TransformParameters.find(parametricBoxController);
-
-    if (it != TransformParameters.end()) {
-        return it->second;
-    } else {
-        return TransformParameters.emplace(parametricBoxController, ParametricBoxControllerParameters()).first->second;
-    }
+    return TransformParameters[parametricBoxController];
 }

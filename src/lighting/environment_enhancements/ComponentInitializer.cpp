@@ -118,7 +118,7 @@ Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root,
     });
 
     GetComponentAndOriginal<TrackLaneRingsPositionStepEffectSpawner>(root, original, [&](TrackLaneRingsPositionStepEffectSpawner* rootComponent, TrackLaneRingsPositionStepEffectSpawner* originalComponent) {
-        for (auto& manager : TrackLaneRingsManagerHolder::RingManagers) {
+        for (auto const& manager : TrackLaneRingsManagerHolder::RingManagers) {
             std::optional<TrackLaneRingsManagerComponentData*> componentData;
             for (auto const& componentDataC : componentDatas) {
                 if (componentDataC->getComponentType() == ComponentType::TrackLaneRingsManager) {

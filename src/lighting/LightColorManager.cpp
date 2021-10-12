@@ -109,7 +109,7 @@ void Chroma::LightColorManager::ColorLightSwitch(BeatmapEventData* beatmapEventD
                 for (auto &lightId : propIDobjects) {
                     int propId = lightId.value.GetInt();
                     if (lightCount > propId) {
-                        for (auto l : lights[propId]) {
+                        for (auto& l : lights[propId]) {
                             overrideLights.push_back(l);
                         }
                     }

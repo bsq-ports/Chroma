@@ -74,7 +74,7 @@ namespace Chroma {
 
         void Refresh();
 
-        void InitializeSO(const std::string &id, int index);
+        void InitializeSO(std::string_view id, int index);
     };
 }
 
