@@ -14,7 +14,7 @@ DEFINE_TYPE(Chroma, GameObjectTrackControllerData)
 DEFINE_TYPE(Chroma, GameObjectTrackController)
 
 template<typename T>
-static std::optional<T> getPropertyNullable(const std::optional<PropertyValue>& prop) {
+static constexpr std::optional<T> getPropertyNullable(const std::optional<PropertyValue>& prop) {
     if (!prop) return std::nullopt;
 
     // TODO: Left handed
@@ -24,13 +24,13 @@ static std::optional<T> getPropertyNullable(const std::optional<PropertyValue>& 
     //    NEVector::Vector4 vector4;
     //    NEVector::Quaternion quaternion;
 
-    if constexpr(std::is_same<T, float>::value) {
+    if constexpr(std::is_same_v<T, float>) {
         return prop.value().linear;
-    } else if constexpr(std::is_same<T, NEVector::Vector3>::value) {
+    } else if constexpr(std::is_same_v<T, NEVector::Vector3>) {
         return prop.value().vector3;
-    } else if constexpr(std::is_same<T, NEVector::Vector4>::value) {
+    } else if constexpr(std::is_same_v<T, NEVector::Vector4>) {
         return prop.value().vector4;
-    } else if constexpr(std::is_same<T, NEVector::Quaternion>::value) {
+    } else if constexpr(std::is_same_v<T, NEVector::Quaternion>) {
         return prop.value().quaternion;
     }
 
@@ -219,7 +219,6 @@ void Chroma::GameObjectTrackController::Init(Track *track, float noteLinesDistan
     objectData->_parametricBoxController = parametricBoxController;
     objectData->_beatmapObjectsAvoidance = beatmapObjectsAvoidance;
     this->data = objectData;
-    GameObjectTrackController::nextId = nextId;
     _dataMap[nextId] = data;
     nextId++;
 }
@@ -273,5 +272,7 @@ void Chroma::GameObjectTrackController::HandleTrackData(UnityEngine::GameObject 
     {
         GameObjectTrackController* trackController = gameObject->AddComponent<GameObjectTrackController*>();
         trackController->Init(track.value(), noteLinesDistance, trackLaneRing, parametricBoxController, beatmapObjectsAvoidance);
+
+        track.value()->AddGameObject(gameObject);
     }
 }
