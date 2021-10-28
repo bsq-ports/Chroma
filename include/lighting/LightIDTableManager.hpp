@@ -11,7 +11,7 @@ namespace Chroma {
 
     class EnvironmentData {
         public:
-            virtual EnvironmentLightDataT getEnvironmentLights() = 0;
+            virtual constexpr EnvironmentLightDataT getEnvironmentLights() = 0;
     };
 
     using InstallEnvironmentFunc = std::pair<std::string, const EnvironmentLightDataT&>;

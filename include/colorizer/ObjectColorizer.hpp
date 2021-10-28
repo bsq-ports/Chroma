@@ -24,6 +24,8 @@ namespace Chroma {
         virtual Sombrero::FastColor getColor();
 
         void Colorize(std::optional<Sombrero::FastColor> const& color);
+
+        virtual ~ObjectColorizer() = default;
     };
 
 }

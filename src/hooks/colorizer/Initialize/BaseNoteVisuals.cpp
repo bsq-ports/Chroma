@@ -24,7 +24,7 @@ bool IsBombType(NoteControllerBase* noteController)
             classof(MirroredBombNoteController*),
     };
 
-    return bombTypes.find(noteController->klass) != bombTypes.end();
+    return bombTypes.contains(noteController->klass);
 }
 
 MAKE_HOOK_MATCH(BaseNoteVisuals_Awake,
