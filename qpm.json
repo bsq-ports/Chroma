@@ -87,7 +87,9 @@
     {
       "id": "boost-regex",
       "versionRange": "*",
-      "additionalData": {}
+      "additionalData": {
+        "private": true
+      }
     }
   ],
   "additionalData": {}
