@@ -13,7 +13,7 @@
 #include "lighting/environment_enhancements/GameObjectTrackController.hpp"
 
 #include <concepts>
-#include <regex>
+#include "boost-regex/regex/include/boost/regex.hpp"
 
 #include "tracks/shared/Animation/PointDefinition.h"
 #include "tracks/shared/AssociatedData.h"
@@ -21,6 +21,8 @@
 using namespace Chroma;
 using namespace ChromaUtils;
 using namespace UnityEngine::SceneManagement;
+
+using ChromaRegex = boost::regex;
 
 // We can return a reference here since _globalGameObjectInfos is keeping the reference alive
 std::vector<ByRef<const GameObjectInfo>>
@@ -30,15 +32,15 @@ Chroma::EnvironmentEnhancementManager::LookupId(const std::string& id, Chroma::L
     std::string lookupMethodStr;
 
     // only set when needed
-    std::regex regex;
+    ChromaRegex regex;
 
     try {
         switch (lookupMethod) {
             case LookupMethod::Regex: {
                 lookupMethodStr = "Regex";
-                regex = std::regex(id, std::regex_constants::ECMAScript | std::regex_constants::optimize);
+                regex = ChromaRegex(id, boost::regex_constants::ECMAScript | boost::regex_constants::optimize);
                 predicate = [&regex](const GameObjectInfo &n) {
-                    return std::regex_search(n.FullID, regex);
+                    return boost::regex_search(n.FullID, regex);
                 };
                 break;
             }

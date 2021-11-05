@@ -90,7 +90,7 @@ LOCAL_SHARED_LIBRARIES += pinkcore
 LOCAL_SHARED_LIBRARIES += codegen
 LOCAL_STATIC_LIBRARIES += questui_components
 LOCAL_LDLIBS += -llog
-LOCAL_CFLAGS += -I'extern/libil2cpp/il2cpp/libil2cpp' -DDEBUGB='1' -DID='"chroma"' -DVERSION='"2.4.10q4"' -I'./shared' -I'./extern' -isystem'extern/codegen/include' -O3
+LOCAL_CFLAGS += -I'extern/libil2cpp/il2cpp/libil2cpp' -DDEBUGB='1' -DID='"chroma"' -DVERSION='"2.4.10q4"' -I'./shared' -I'./extern' -isystem'extern/codegen/include' -isystem'extern/boost-regex/regex/include/' -O3
 LOCAL_CPPFLAGS += -std=c++2a -O3 -frtti
 LOCAL_C_INCLUDES += ./include ./src
 LOCAL_CPP_FEATURES += rtti

@@ -83,6 +83,11 @@
       "additionalData": {
         "private": true
       }
+    },
+    {
+      "id": "boost-regex",
+      "versionRange": "*",
+      "additionalData": {}
     }
   ],
   "additionalData": {}
