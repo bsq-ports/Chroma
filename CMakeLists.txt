@@ -46,6 +46,7 @@ include_directories(extern/modloader/shared)
 include_directories(extern/custom-json-data/shared)
 include_directories(extern/custom-types/shared)
 include_directories(extern/questui_components)
+include_directories(extern/boost-regex/regex/include/)
 include_directories(${CMAKE_ANDROID_NDK})
 include_directories(.)
 
