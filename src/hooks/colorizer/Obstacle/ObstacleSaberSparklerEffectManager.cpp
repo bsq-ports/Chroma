@@ -19,6 +19,8 @@
 #include "colorizer/ObstacleColorizer.hpp"
 #include "utils/ChromaUtils.hpp"
 
+#include "custom-json-data/shared/VList.h"
+
 using namespace GlobalNamespace;
 using namespace Chroma;
 using namespace UnityEngine;
@@ -47,16 +49,12 @@ MAKE_HOOK_MATCH(ObstacleSaberSparkleEffectManager_Update,
 
     auto obstacleControllers = self->beatmapObjectManager->get_activeObstacleControllers();
 
-    std::vector<GlobalNamespace::ObstacleController*> activeObstacleControllersVec(obstacleControllers->items->Length());
-
-    obstacleControllers->items->copy_to(activeObstacleControllersVec);
-
-    for (auto& obstacleController : activeObstacleControllersVec)
+    for (auto const& obstacleController : VList<GlobalNamespace::ObstacleController*>(obstacleControllers))
     {
         if (!obstacleController)
             continue;
 
-        auto bounds = obstacleController->bounds;
+        auto const& bounds = obstacleController->bounds;
         for (int i = 0; i < 2; i++) {
             Vector3 vector;
             if (self->sabers->get(i)->get_isActiveAndEnabled() &&
