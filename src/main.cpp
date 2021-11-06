@@ -2,6 +2,7 @@
 #include "questui/shared/QuestUI.hpp"
 #include "questui/shared/BeatSaberUI.hpp"
 #include "questui/shared/CustomTypes/Components/ExternalComponents.hpp"
+#include "UnityEngine/GameObject.hpp"
 #include "HMUI/Touchable.hpp"
 #include "main.hpp"
 
