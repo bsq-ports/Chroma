@@ -63,7 +63,7 @@ void DidActivate(HMUI::ViewController* self, bool firstActivation, bool addedToH
     static ViewComponent *view;
 
     if(firstActivation) {
-        self->get_gameObject()->AddComponent<HMUI::Touchable *>();
+//        self->get_gameObject()->AddComponent<HMUI::Touchable *>();
 
 
 
