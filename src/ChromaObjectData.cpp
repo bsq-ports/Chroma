@@ -22,7 +22,19 @@ void Chroma::ChromaObjectDataManager::deserialize(GlobalNamespace::IReadonlyBeat
 
     debugSpamLog(contextLogger, "Array klass: %s", il2cpp_utils::ClassStandardName(beatmapLines->klass).c_str());
 
-    TracksAD::BeatmapAssociatedData& trackAD = TracksAD::getBeatmapAD(beatmapDataCast->customData);
+    TracksAD::BeatmapAssociatedData& beatmapAD = TracksAD::getBeatmapAD(beatmapDataCast->customData);
+
+
+    // too lazy to optional and reference wrap
+    rapidjson::Value* pointDefinitionIt = nullptr;
+
+    if (beatmapDataCast->customData && beatmapDataCast->customData->value) {
+        rapidjson::Value& beatmapCustomData = *beatmapDataCast->customData->value;
+        auto pointDefinitions = beatmapCustomData.FindMember("pointDefinitions");
+        if (pointDefinitions != beatmapCustomData.MemberEnd()) {
+            pointDefinitionIt = &pointDefinitions->value;
+        }
+    }
 
     for (int i = 0; i < beatmapLines->Length(); i++) {
         auto beatmapLineData = il2cpp_utils::cast<GlobalNamespace::BeatmapLineData>(beatmapLines->get(i));
@@ -87,22 +99,20 @@ void Chroma::ChromaObjectDataManager::deserialize(GlobalNamespace::IReadonlyBeat
                     } else continue;
 
                     if (chromaObjectData && beatmapDataCast->customData && eventDynData->value) {
-                        rapidjson::Value& beatmapCustomData = *beatmapDataCast->customData->value;
+
                         rapidjson::Value& customData = *eventDynData->value;
                         auto animationObjectDyn = customData.FindMember(Chroma::ANIMATION);
-                        if (animationObjectDyn != customData.MemberEnd())
-                        {
-                            auto pointDefinitions = beatmapCustomData.FindMember("pointDefinitions");
+                        if (animationObjectDyn != customData.MemberEnd()) {
+                            PointDefinition *anonPointDef = nullptr;
+                            PointDefinition *localColor = Animation::TryGetPointData(beatmapAD, anonPointDef,
+                                                                                     animationObjectDyn->value, Chroma::COLOR);
 
-                            if (pointDefinitions != beatmapCustomData.MemberEnd()) {
-                                PointDefinition* localColor = nullptr;
-
-
-
-                                Animation::TryGetPointData(trackAD, localColor, pointDefinitions->value, Chroma::COLOR);
-
-                                chromaObjectData->LocalPathColor = localColor ? std::make_optional(localColor) : std::nullopt;
+                            if (anonPointDef) {
+                                beatmapAD.anonPointDefinitions.push_back(anonPointDef);
                             }
+
+                            chromaObjectData->LocalPathColor = localColor ? std::make_optional(localColor)
+                                                                          : std::nullopt;
                         }
 
                         auto& tracks = TracksAD::getAD(eventDynData).tracks;
