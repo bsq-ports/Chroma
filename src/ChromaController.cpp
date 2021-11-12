@@ -57,18 +57,27 @@ custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(Global
 
         IReadonlyBeatmapData *beatmapData = coreSetup->beatmapData;
 
-
-        if (DoChromaHooks() && getChromaConfig().environmentEnhancementsEnabled.GetValue()) {
-            auto customBeatmap = il2cpp_utils::cast<CustomJSONData::CustomBeatmapData>(beatmapData);
-            EnvironmentEnhancementManager::Init(customBeatmap, beatmapObjectSpawnController->get_noteLinesDistance());
+        if (!beatmapData) {
+            getLogger().debug("Beatmap is null, oh no what will we do now?");
+            co_return;
+//            CRASH_UNLESS(beatmapData);
         }
 
-        auto list = il2cpp_utils::cast<Generic::List_1<BeatmapEventData *>>(beatmapData->get_beatmapEventsData());
-        std::vector<GlobalNamespace::BeatmapEventData *> eventData;
-        list->items->copy_to(eventData);
+        if (DoChromaHooks() && getChromaConfig().environmentEnhancementsEnabled.GetValue()) {
+            if (auto customBeatmap = il2cpp_utils::try_cast<CustomJSONData::CustomBeatmapData>(beatmapData)) {
+                EnvironmentEnhancementManager::Init(*customBeatmap,
+                                                    beatmapObjectSpawnController->get_noteLinesDistance());
+            } else {
+                getLogger().debug("Beatmap class %s", il2cpp_utils::ClassStandardName(reinterpret_cast<Il2CppObject*>(beatmapData)->klass).c_str());
+            }
+        }
 
         if (GetChromaLegacy()) {
             try {
+                auto list = il2cpp_utils::cast<Generic::List_1<BeatmapEventData *>>(beatmapData->get_beatmapEventsData());
+                std::vector<GlobalNamespace::BeatmapEventData *> eventData;
+                list->items->copy_to(eventData);
+
                 // please let me kill legacy
                 LegacyLightHelper::Activate(eventData);
             } catch (const Il2CppException &e) {

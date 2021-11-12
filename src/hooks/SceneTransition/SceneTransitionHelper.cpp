@@ -70,9 +70,9 @@ void SceneTransitionHelper::Patch(GlobalNamespace::IDifficultyBeatmap* customBea
 
 
 
-bool SceneTransitionHelper::BasicPatch(GlobalNamespace::IDifficultyBeatmap* customBeatmapData, CustomJSONData::CustomBeatmapData* customBeatmapDataCustom) {
+bool SceneTransitionHelper::BasicPatch(GlobalNamespace::IDifficultyBeatmap* customBeatmapDifficultyData, CustomJSONData::CustomBeatmapData* customBeatmapDataCustom) {
     ChromaController::TutorialMode = false;
-    auto environmentInfo = BeatmapEnvironmentHelper::GetEnvironmentInfo(customBeatmapData);
+    auto environmentInfo = BeatmapEnvironmentHelper::GetEnvironmentInfo(customBeatmapDifficultyData);
 
     LightIDTableManager::SetEnvironment(to_utf8(csstrtostr(environmentInfo->serializedName)));
 
@@ -113,7 +113,7 @@ bool SceneTransitionHelper::BasicPatch(GlobalNamespace::IDifficultyBeatmap* cust
     bool legacyOverride = false;
 
 
-    auto beatmapEvents = customBeatmapData->get_beatmapData()->beatmapEventsData->items;
+    auto beatmapEvents = customBeatmapDifficultyData->get_beatmapData()->beatmapEventsData->items;
     auto length = beatmapEvents->Length();
     getLogger().debug("Checking at most %d for ChromaLite notes", (int) length);
     for (int i = 0; i < length; i++) {
