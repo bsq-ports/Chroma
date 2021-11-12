@@ -15,7 +15,7 @@ LegacyLightHelper::ColorMap LegacyLightHelper::LegacyColorEvents = LegacyLightHe
 void LegacyLightHelper::Activate(const std::vector<GlobalNamespace::BeatmapEventData*>& eventData) {
     static auto contextLogger = getLogger().WithContext(ChromaLogger::LegacyLightColor);
 
-    LegacyColorEvents = LegacyLightHelper::ColorMap();
+    LegacyColorEvents = LegacyLightHelper::ColorMap(eventData.size());
     debugSpamLog(contextLogger, "Got the events, checking for legacy %d", eventData.size());
     for (auto& d : eventData)
     {
@@ -33,11 +33,8 @@ void LegacyLightHelper::Activate(const std::vector<GlobalNamespace::BeatmapEvent
         debugSpamLog(contextLogger, "Checking d %d %s", d->value, d->value >= RGB_INT_OFFSET ? "true" : "false");
         if (d->value >= RGB_INT_OFFSET)
         {
-            auto it = LegacyColorEvents.find(d->type);
-            auto list = it != LegacyColorEvents.end() ? it->second : std::vector<pair<float, Sombrero::FastColor>>();
-
+            auto& list = LegacyColorEvents.try_emplace(d->type).first->second;
             list.emplace_back(d->time, ColorFromInt(d->value));
-            LegacyColorEvents[d->type] = list;
         }
     }
 }
@@ -66,7 +63,7 @@ std::optional<Sombrero::FastColor> LegacyLightHelper::GetLegacyColor(GlobalNames
     return std::nullopt;
 }
 
-Sombrero::FastColor LegacyLightHelper::ColorFromInt(int rgb) {
+constexpr Sombrero::FastColor LegacyLightHelper::ColorFromInt(int rgb) {
     rgb -= RGB_INT_OFFSET;
     auto red = (float) ((rgb >> 16) & 0x0ff);
     auto green = (float) ((rgb >> 8) & 0x0ff);

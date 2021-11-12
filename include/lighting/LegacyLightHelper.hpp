@@ -34,6 +34,6 @@ namespace Chroma {
         static std::optional<Sombrero::FastColor> GetLegacyColor(GlobalNamespace::BeatmapEventData* beatmapEventData);
 
     private:
-        static Sombrero::FastColor ColorFromInt(int rgb);
+        static constexpr Sombrero::FastColor ColorFromInt(int rgb);
     };
 }
