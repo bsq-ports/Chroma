@@ -42,6 +42,7 @@ Chroma::GameObjectInfo::GameObjectInfo(UnityEngine::GameObject *gameObject) {
 
     std::stringstream id;
 
+    // loop for each element until the second last; to avoid having "secondlast.last."
     for (int i = 0; i < nameList.size() - 1; i++) {
         id << nameList[i] + ".";
     }

@@ -4,12 +4,12 @@ using namespace GlobalNamespace;
 using namespace UnityEngine;
 
 void Chroma::ParametricBoxControllerParameters::SetTransformScale(ParametricBoxController* parametricBoxController,
-                                                                  Sombrero::FastVector3 scale) {
+                                                                  const Sombrero::FastVector3 &scale) {
     GetParameters(parametricBoxController).Scale = scale;
 }
 
 void Chroma::ParametricBoxControllerParameters::SetTransformPosition(
-        GlobalNamespace::ParametricBoxController *parametricBoxController, Sombrero::FastVector3 position) {
+        GlobalNamespace::ParametricBoxController *parametricBoxController, const Sombrero::FastVector3 &position) {
     GetParameters(parametricBoxController).Position = position;
 }
 

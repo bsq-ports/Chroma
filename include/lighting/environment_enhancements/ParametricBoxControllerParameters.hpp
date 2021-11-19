@@ -16,9 +16,9 @@ namespace Chroma {
         std::optional<Sombrero::FastVector3> Scale;
         std::optional<Sombrero::FastVector3> Position;
 
-        static void SetTransformScale(GlobalNamespace::ParametricBoxController* parametricBoxController, Sombrero::FastVector3 scale);
+        static void SetTransformScale(GlobalNamespace::ParametricBoxController* parametricBoxController, const Sombrero::FastVector3 &scale);
 
-        static void SetTransformPosition(GlobalNamespace::ParametricBoxController* parametricBoxController, Sombrero::FastVector3 position);
+        static void SetTransformPosition(GlobalNamespace::ParametricBoxController* parametricBoxController, const Sombrero::FastVector3 &position);
 
     private:
         static ParametricBoxControllerParameters& GetParameters(GlobalNamespace::ParametricBoxController* parametricBoxController);

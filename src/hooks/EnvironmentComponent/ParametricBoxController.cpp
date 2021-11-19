@@ -22,7 +22,7 @@ using namespace Chroma;
 using namespace ChromaUtils;
 
 
-Sombrero::FastVector3& GetTransformScale(Sombrero::FastVector3& defaultV, ParametricBoxControllerParameters& parameters) {
+Sombrero::FastVector3 const& GetTransformScale(Sombrero::FastVector3 const& defaultV, ParametricBoxControllerParameters const& parameters) {
 
     if (parameters.Scale) {
         return parameters.Scale.value();
@@ -31,7 +31,7 @@ Sombrero::FastVector3& GetTransformScale(Sombrero::FastVector3& defaultV, Parame
     return defaultV;
 }
 
-Sombrero::FastVector3& GetTransformPosition(Sombrero::FastVector3& defaultV, ParametricBoxControllerParameters& parameters) {
+Sombrero::FastVector3 const& GetTransformPosition(Sombrero::FastVector3 const& defaultV, ParametricBoxControllerParameters const& parameters) {
 
     if (parameters.Position) {
         return parameters.Position.value();

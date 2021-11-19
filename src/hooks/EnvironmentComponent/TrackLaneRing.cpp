@@ -44,9 +44,7 @@ MAKE_HOOK_MATCH(TrackLaneRing_LateUpdateRing, &TrackLaneRing::LateUpdateRing, vo
         return;
     }
 
-    const static Sombrero::FastQuaternion identity = Sombrero::FastQuaternion::identity();
-
-    Sombrero::FastQuaternion rotation = identity;
+    Sombrero::FastQuaternion rotation = Sombrero::FastQuaternion::identity();
 
     auto it2 = EnvironmentEnhancementManager::RingRotationOffsets.find(self);
 
@@ -54,18 +52,15 @@ MAKE_HOOK_MATCH(TrackLaneRing_LateUpdateRing, &TrackLaneRing::LateUpdateRing, vo
         rotation = it2->second;
     }
 
-
-    const static Sombrero::FastVector3 vectorForward = Sombrero::FastVector3::forward();
-
     float interpolatedZPos = self->prevPosZ + ((self->posZ - self->prevPosZ) * interpolationFactor);
-    Sombrero::FastVector3 positionZOffset = ((rotation * vectorForward) * interpolatedZPos);
-    Sombrero::FastVector3 pos = Sombrero::vector3add(self->positionOffset, positionZOffset);
+    Sombrero::FastVector3 positionZOffset = (rotation * Sombrero::FastVector3::forward()) * interpolatedZPos;
+    Sombrero::FastVector3 pos = Sombrero::FastVector3(self->positionOffset) + positionZOffset;
 
     float interpolatedZRot = self->prevRotZ + ((self->rotZ - self->prevRotZ) * interpolationFactor);
 
     static auto AngleAxis = FPtrWrapper<&Sombrero::FastQuaternion::AngleAxis>::get();
 
-    Sombrero::FastQuaternion rotationZOffset = AngleAxis(interpolatedZRot, vectorForward);
+    Sombrero::FastQuaternion rotationZOffset = AngleAxis(interpolatedZRot, Sombrero::FastVector3::forward());
     Sombrero::FastQuaternion rot = rotation * rotationZOffset;
 
     self->transform->set_localRotation(rot);
@@ -76,7 +71,6 @@ void TrackLaneRingHook(Logger& logger) {
     INSTALL_HOOK(logger, TrackLaneRing_Init);
     INSTALL_HOOK(logger, TrackLaneRing_FixedUpdateRing);
     INSTALL_HOOK(logger, TrackLaneRing_LateUpdateRing);
-    //    INSTALL_HOOK_OFFSETLESS(getLogger(), SaberManager_Finalize, il2cpp_utils::FindMethodUnsafe("System", "Object", "Finalize", 0));
 }
 
 ChromaInstallHooks(TrackLaneRingHook)

@@ -88,10 +88,13 @@ Chroma::EnvironmentEnhancementManager::LookupId(const std::string& id, Chroma::L
 }
 
 std::optional<Sombrero::FastVector3>
-EnvironmentEnhancementManager::GetVectorData(std::reference_wrapper<rapidjson::Value> dynDataW, const std::string& name) {
-    rapidjson::Value& dynData = dynDataW.get();
+EnvironmentEnhancementManager::GetVectorData(const rapidjson::Value &dynData, std::string const& name) {
+    auto objectsValIt = dynData.FindMember(name);
 
-    auto& objectsVal = dynData.FindMember(name.c_str())->value;
+    if (objectsValIt == dynData.MemberEnd())
+        return std::nullopt;
+
+    auto const& objectsVal = objectsValIt->value;
 
     if (!objectsVal.IsArray() || objectsVal.Empty())
         return std::nullopt;
@@ -160,6 +163,12 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
     auto customDynWrapper = customBeatmapData->customData->value;
     TracksAD::BeatmapAssociatedData& trackBeatmapAD = TracksAD::getBeatmapAD(customBeatmapData->customData);
     GameObjectTrackController::ClearData();
+
+    AvoidanceRotation.clear();
+    AvoidancePosition.clear();
+    RingRotationOffsets.clear();
+    ParametricBoxControllerParameters::TransformParameters.clear();
+
     if (customDynWrapper) {
 
         rapidjson::Value &dynData = *customDynWrapper;
@@ -170,17 +179,13 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
         if (environmentData != dynData.MemberEnd()) {
             GetAllGameObjects();
 
-            AvoidanceRotation.clear();
-            AvoidancePosition.clear();
-            RingRotationOffsets.clear();
-            ParametricBoxControllerParameters::TransformParameters.clear();
 
             auto environmentDataObject = environmentData->value.GetArray();
 
             // Record start time
             auto startAll = std::chrono::high_resolution_clock::now();
 
-            for (auto &gameObjectDataVal : environmentDataObject) {
+            for (auto const& gameObjectDataVal : environmentDataObject) {
                 // Record start time
                 auto start = std::chrono::high_resolution_clock::now();
 
@@ -301,7 +306,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                     auto gameObject = gameObjectInfo.GameObject;
 
                     if (active) {
-                        gameObjectInfo.GameObject->SetActive(active.value());
+                        gameObject->SetActive(active.value());
                     }
 
                     auto transform = gameObject->get_transform();
@@ -366,18 +371,17 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                             AvoidanceRotation[beatmapObjectsAvoidance] = transform->get_localRotation();
                         }
                      }
-                    GameObjectTrackController::HandleTrackData(gameObject, track, noteLinesDistance, ptrToOpt(trackLaneRing), ptrToOpt(parametricBoxController), ptrToOpt(beatmapObjectsAvoidance));
+                    GameObjectTrackController::HandleTrackData(gameObject, track, noteLinesDistance, trackLaneRing, parametricBoxController, beatmapObjectsAvoidance);
+                }
 
+                if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {
+                    getLogger().info("ID [\"%s\"] using method [%s] found:", id.c_str(), lookupString.c_str());
 
-                    if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {
-                        getLogger().info("ID [\"%s\"] using method [%s] found:", id.c_str(), lookupString.c_str());
-
-                        for (const auto &o : foundObjects) {
-                            getLogger().info("%s", o.heldRef.FullID.c_str());
-                        }
-
-                        getLogger().info("=====================================");
+                    for (const auto &o : foundObjects) {
+                        getLogger().info("%s", o.heldRef.FullID.c_str());
                     }
+
+                    getLogger().info("=====================================");
                 }
 
                 // Record end time

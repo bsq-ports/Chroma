@@ -10,7 +10,6 @@
 #include "sombrero/shared/Vector3Utils.hpp"
 #include "sombrero/shared/QuaternionUtils.hpp"
 
-DEFINE_TYPE(Chroma, GameObjectTrackControllerData)
 DEFINE_TYPE(Chroma, GameObjectTrackController)
 
 template<typename T>
@@ -52,15 +51,12 @@ void Chroma::GameObjectTrackController::ClearData() {
     nextId = 0;
 }
 
-void Chroma::GameObjectTrackController::ctor() {
-}
-
 void Chroma::GameObjectTrackController::Update() {
     if (!data) {
         auto it = _dataMap.find(id);
 
         if (it != _dataMap.end()) {
-            data = it->second;
+            data = &it->second;
         }
     }
 
@@ -69,12 +65,12 @@ void Chroma::GameObjectTrackController::Update() {
         Destroy(this);
         return;
     }
-    const auto& _noteLinesDistance = data->_noteLinesDistance;
-    const auto& _track = data->_track;
+    const auto _noteLinesDistance = data->_noteLinesDistance;
+    const auto _track = data->_track;
     // nullable
-    const auto& _trackLaneRing = data->_trackLaneRing;
-    const auto& _parametricBoxController = data->_parametricBoxController;
-    const auto& _beatmapObjectsAvoidance = data->_beatmapObjectsAvoidance;
+    const auto _trackLaneRing = data->_trackLaneRing;
+    const auto _parametricBoxController = data->_parametricBoxController;
+    const auto _beatmapObjectsAvoidance = data->_beatmapObjectsAvoidance;
 
 
     if (!_track){
@@ -93,12 +89,14 @@ void Chroma::GameObjectTrackController::Update() {
 
     auto transformParent = transform->get_parent();
 
-    if (rotation && Sombrero::FastQuaternion(transform->get_rotation()) != rotation.value())
+    bool updateParametricBox = false;
+
+    if (rotation)
     {
         // Delegate positioning the object to TrackLaneRing
         NEVector::Quaternion finalOffset;
 
-        if (transformParent != nullptr)
+        if (transformParent)
         {
             finalOffset = NEVector::Quaternion(UnityEngine::Quaternion::Inverse(transformParent->get_rotation())) * rotation.value();
         }
@@ -109,11 +107,11 @@ void Chroma::GameObjectTrackController::Update() {
 
         if (_trackLaneRing)
         {
-            EnvironmentEnhancementManager::RingRotationOffsets[_trackLaneRing.value()] = finalOffset;
+            EnvironmentEnhancementManager::RingRotationOffsets[_trackLaneRing] = finalOffset;
         }
         else if (_beatmapObjectsAvoidance)
         {
-            EnvironmentEnhancementManager::AvoidanceRotation[_beatmapObjectsAvoidance.value()] = finalOffset;
+            EnvironmentEnhancementManager::AvoidanceRotation[_beatmapObjectsAvoidance] = finalOffset;
         }
         else
         {
@@ -121,15 +119,15 @@ void Chroma::GameObjectTrackController::Update() {
         }
     }
 
-    if (localRotation && Sombrero::FastQuaternion(transform->get_localRotation()) != localRotation.value())
+    if (localRotation)
     {
         if (_trackLaneRing)
         {
-            EnvironmentEnhancementManager::RingRotationOffsets[_trackLaneRing.value()] = localRotation.value();
+            EnvironmentEnhancementManager::RingRotationOffsets[_trackLaneRing] = localRotation.value();
         }
         else if (_beatmapObjectsAvoidance)
         {
-            EnvironmentEnhancementManager::AvoidanceRotation[_beatmapObjectsAvoidance.value()] = localRotation.value();
+            EnvironmentEnhancementManager::AvoidanceRotation[_beatmapObjectsAvoidance] = localRotation.value();
         }
         else
         {
@@ -137,11 +135,10 @@ void Chroma::GameObjectTrackController::Update() {
         }
     }
 
-    Sombrero::FastVector3 posCalc = position ? Sombrero::FastVector3(position.value()) * _noteLinesDistance : 0;
 
-    if (position && Sombrero::FastVector3(transform->get_position()) != posCalc)
+    if (position)
     {
-        NEVector::Vector3 positionValue = posCalc;
+        Sombrero::FastVector3 positionValue = position.value() * _noteLinesDistance;
         NEVector::Vector3 finalOffset;
         if (transformParent)
         {
@@ -154,118 +151,70 @@ void Chroma::GameObjectTrackController::Update() {
 
         if (_trackLaneRing)
         {
-            _trackLaneRing.value()->positionOffset = finalOffset;
+            _trackLaneRing->positionOffset = finalOffset;
         }
         else if (_beatmapObjectsAvoidance)
         {
-            EnvironmentEnhancementManager::AvoidancePosition[_beatmapObjectsAvoidance.value()] = finalOffset;
+            EnvironmentEnhancementManager::AvoidancePosition[_beatmapObjectsAvoidance] = finalOffset;
         }
         else
         {
             transform->set_position(positionValue);
+            updateParametricBox = true;
         }
     }
 
-    auto localPositionTrans = Sombrero::FastVector3(transform->get_localPosition());
-
-    if (localPosition && localPositionTrans != localPosition.value())
+    if (localPosition)
     {
         NEVector::Vector3 localPositionValue = localPosition.value() * _noteLinesDistance;
         if (_trackLaneRing)
         {
-            _trackLaneRing.value()->positionOffset = localPositionValue;
+            _trackLaneRing->positionOffset = localPositionValue;
         }
         else if (_beatmapObjectsAvoidance)
         {
-            EnvironmentEnhancementManager::AvoidancePosition[_beatmapObjectsAvoidance.value()] = localPositionValue;
+            EnvironmentEnhancementManager::AvoidancePosition[_beatmapObjectsAvoidance] = localPositionValue;
         }
         else
         {
             transform->set_localPosition(localPositionValue);
+            updateParametricBox = true;
         }
     }
 
-    auto localScaleTrans = NEVector::Vector3(transform->get_localScale());
-
-    if (scale && Sombrero::FastVector3(localScaleTrans) != Sombrero::FastVector3(scale.value()))
+    if (scale)
     {
         transform->set_localScale(scale.value());
+        updateParametricBox = true;
     }
 
     // Handle ParametricBoxController
-    if (_parametricBoxController)
+    if (updateParametricBox && _parametricBoxController)
     {
-        if (position || localPosition)
-        {
-            ParametricBoxControllerParameters::SetTransformPosition(_parametricBoxController.value(), localPositionTrans);
-        }
-
-        if (scale)
-        {
-            ParametricBoxControllerParameters::SetTransformScale(_parametricBoxController.value(), localScaleTrans);
-        }
+        ParametricBoxControllerParameters::SetTransformPosition(_parametricBoxController, transform->get_localPosition());
+        ParametricBoxControllerParameters::SetTransformScale(_parametricBoxController, transform->get_localScale());
     }
 }
 
 void Chroma::GameObjectTrackController::Init(Track *track, float noteLinesDistance,
-                                             std::optional<GlobalNamespace::TrackLaneRing *> trackLaneRing,
-                                             std::optional<GlobalNamespace::ParametricBoxController *> parametricBoxController,
-                                             std::optional<GlobalNamespace::BeatmapObjectsAvoidance *> beatmapObjectsAvoidance) {
+                                             GlobalNamespace::TrackLaneRing * trackLaneRing,
+                                             GlobalNamespace::ParametricBoxController * parametricBoxController,
+                                             GlobalNamespace::BeatmapObjectsAvoidance * beatmapObjectsAvoidance) {
     CRASH_UNLESS(track);
-    auto objectData = CRASH_UNLESS(il2cpp_utils::New<GameObjectTrackControllerData*>());
-    objectData->_track = track;
-    objectData->_noteLinesDistance = noteLinesDistance;
-    objectData->_trackLaneRing = trackLaneRing;
-    objectData->_parametricBoxController = parametricBoxController;
-    objectData->_beatmapObjectsAvoidance = beatmapObjectsAvoidance;
-    this->data = objectData;
-    _dataMap[nextId] = data;
+    this->data = &_dataMap.try_emplace(nextId, track, trackLaneRing, parametricBoxController, beatmapObjectsAvoidance, noteLinesDistance).first->second;
     nextId++;
-}
-
-// TODO: Remove?
-static std::optional<Track*> getTrack(rapidjson::Value& gameObjectData, CustomJSONData::CustomBeatmapData* beatmapData, const std::string& name = Chroma::TRACK) {
-    auto& tracks = TracksAD::getBeatmapAD(beatmapData->customData).tracks;
-
-    static auto contextLogger = getLogger().WithContext(Chroma::ChromaLogger::TrackController);
-
-    debugSpamLog(contextLogger, "Track list end");
-
-    auto trackName = gameObjectData.FindMember(name);
-
-    if (trackName == gameObjectData.MemberEnd() || !trackName->value.IsString()) {
-        debugSpamLog(contextLogger, "Did not find track json");
-        return std::nullopt;
-    }
-
-    auto trackFound = tracks.find(trackName->value.GetString());
-
-    std::string trackNameStr = trackName->value.GetString();
-
-    if (trackFound == tracks.end()) {
-        debugSpamLog(contextLogger, "Did not find in group %s", trackNameStr.c_str());
-        return std::nullopt;
-    } else {
-        debugSpamLog(contextLogger, "Found in group %s", trackNameStr.c_str());
-    }
-
-    Track& track = trackFound->second;
-
-
-
-    return ChromaUtils::ptrToOpt(&track);
 }
 
 void Chroma::GameObjectTrackController::HandleTrackData(UnityEngine::GameObject *gameObject,
                                                         std::optional<Track*> track,
                                                         float noteLinesDistance,
-                                                        std::optional<GlobalNamespace::TrackLaneRing *> trackLaneRing,
-                                                        std::optional<GlobalNamespace::ParametricBoxController *> parametricBoxController,
-                                                        std::optional<GlobalNamespace::BeatmapObjectsAvoidance *> beatmapObjectsAvoidance) {
+                                                        GlobalNamespace::TrackLaneRing * trackLaneRing,
+                                                        GlobalNamespace::ParametricBoxController * parametricBoxController,
+                                                        GlobalNamespace::BeatmapObjectsAvoidance * beatmapObjectsAvoidance) {
     GameObjectTrackController* existingTrackController = gameObject->GetComponent<GameObjectTrackController*>();
     if (existingTrackController)
     {
-        Object::Destroy(existingTrackController);
+        Destroy(existingTrackController);
     }
 
     if (track)

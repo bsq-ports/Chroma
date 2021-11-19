@@ -57,23 +57,44 @@ namespace ChromaUtils {
     }
 
     template<typename T>
-    T getIfExists(std::optional<std::reference_wrapper<rapidjson::Value>> val, const std::string& member, T def) {
-        if (!val || !val->get().IsObject() || val->get().Empty()) return def;
+    static T getIfExists(rapidjson::Value const& val, const std::string& member, T const& def) {
+        if (!val.IsObject() || val.Empty() || val.IsNull()) return def;
 
-        auto it = val->get().FindMember(member);
-        if (it == val->get().MemberEnd()) return def;
+        auto it = val.FindMember(member);
+        if (it == val.MemberEnd()) return def;
+
+        if (it->value.IsNull())
+            return def;
+
+        return it->value.Get<T>();
+    }
+
+
+    template<typename T>
+    inline static T getIfExists(std::optional<std::reference_wrapper<rapidjson::Value>> val, const std::string& member, T const& def) {
+        if (!val) return def;
+
+        return getIfExists<T>(val->get(), member, def);
+    }
+
+    template<typename T>
+    std::optional<T> getIfExists(rapidjson::Value const& val, const std::string& member) {
+        if (!val.IsObject() || val.Empty() || val.IsNull()) return std::nullopt;
+
+        auto it = val.FindMember(member);
+        if (it == val.MemberEnd()) return std::nullopt;
+
+        if (it->value.IsNull())
+            return std::nullopt;
+
         return it->value.Get<T>();
     }
 
     template<typename T>
-    std::optional<T> getIfExists(std::optional<std::reference_wrapper<rapidjson::Value>> val, const std::string& member) {
-        if (!val || !val->get().IsObject() || val->get().Empty()) return std::nullopt;
+    std::optional<T> getIfExists(std::optional<std::reference_wrapper<rapidjson::Value>> const& val, const std::string& member) {
+        if (!val) return std::nullopt;
 
-        auto it = val->get().FindMember(member);
-        if (it == val->get().MemberEnd()) return std::nullopt;
-
-
-        return it->value.Get<T>();
+        return getIfExists<T>(val->get(), member);
     }
 
     template<typename T>
