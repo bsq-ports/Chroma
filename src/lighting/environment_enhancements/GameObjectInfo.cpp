@@ -50,6 +50,7 @@ Chroma::GameObjectInfo::GameObjectInfo(UnityEngine::GameObject *gameObject) {
     id << nameList.back();
 
     FullID = id.str();
+    FullIDHash = std::hash<std::string>()(FullID);
 
     this->GameObject = gameObject;
 }

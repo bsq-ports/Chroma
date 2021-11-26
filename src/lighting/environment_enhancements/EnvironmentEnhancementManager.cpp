@@ -47,7 +47,8 @@ Chroma::EnvironmentEnhancementManager::LookupId(const std::string& id, Chroma::L
 
             case LookupMethod::Exact: {
                 lookupMethodStr = "Exact";
-                predicate = [&id](const GameObjectInfo &n) { return n.FullID == id; };
+                size_t idHash = std::hash<std::string>()(id);
+                predicate = [idHash](const GameObjectInfo &n) { return n.FullIDHash == idHash; };
                 break;
             }
 
