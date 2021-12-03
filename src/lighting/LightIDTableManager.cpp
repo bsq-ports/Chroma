@@ -63,15 +63,14 @@ void LightIDTableManager::RegisterIndex(int type, int index, std::optional<int> 
 
     if (requestedKey) {
         key = *requestedKey;
-        while (table.find(key) != table.end())
+        while (dictioanry.contains(key))
             key++;
     } else {
-        // TODO: Will this work?
         key = std::max_element(dictioanry.begin(), dictioanry.end())->first + 1;
     }
 
 
-    dictioanry[key] = index;
+    dictioanry.emplace(key, index);
     if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue())
     {
         getLogger().info("Registered key [%d] to type [%d]", key, type);
@@ -81,8 +80,8 @@ void LightIDTableManager::RegisterIndex(int type, int index, std::optional<int> 
 void LightIDTableManager::AddEnvironment(InstallEnvironmentFunc environmentData) {
     if (installed) {
         getLogger().info("Initializing environment data for %s", environmentData.first.c_str());
-        lightIdTable.emplace(environmentData);
+        lightIdTable.try_emplace(environmentData.first, environmentData.second);
     } else {
-        environmentsToInstall.emplace(environmentData);
+        environmentsToInstall.try_emplace(environmentData.first, environmentData.second);
     }
 }

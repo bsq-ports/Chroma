@@ -57,11 +57,11 @@ EXPOSE_API(SetAllLightingColors, void, bool refresh, std::optional<LightAPI::LSE
 
 // While it does create a pointer on the heap,
 // the API side of this should move the elements back into a value type then delete this pointer.
-using LightMap = std::unordered_map<int, GlobalNamespace::ILightWithId *>;
+using LightMap = std::vector<GlobalNamespace::ILightWithId *>;
 
 EXPOSE_API(getLightsSafe, LightMap*, GlobalNamespace::LightSwitchEventEffect *lse) {
     auto vectorOrg = LightColorizer::GetLightColorizer(lse->event)->Lights;
-    auto vectorPtr = new std::unordered_map<int, GlobalNamespace::ILightWithId *>(std::move(vectorOrg));
+    auto vectorPtr = new LightMap(std::move(vectorOrg));
 
     return vectorPtr;
 }

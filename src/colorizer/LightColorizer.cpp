@@ -20,6 +20,7 @@
 #include "GlobalNamespace/ParticleSystemEventEffect.hpp"
 #include "GlobalNamespace/ColorSO.hpp"
 
+#include "System/Linq/Enumerable.hpp"
 
 
 using namespace CustomJSONData;
@@ -56,7 +57,8 @@ LightColorizer::LightColorizer(GlobalNamespace::LightSwitchEventEffect *lightSwi
     Array<ILightWithId *> *lightArray = lightList->items;
 
 
-    Lights = std::unordered_map<int, ILightWithId *>(lightArray->Length());
+    Lights = std::vector<ILightWithId *>();
+    Lights.reserve(lightArray->Length());
 
 
     // Keep track of order
@@ -72,7 +74,7 @@ LightColorizer::LightColorizer(GlobalNamespace::LightSwitchEventEffect *lightSwi
         if (light == nullptr) continue;
 
         debugSpamLog(contextLogger, "Adding light to list");
-        Lights[i] = light;
+        Lights.emplace_back(light);
 
         auto object = il2cpp_utils::cast<Il2CppObject>(light);
         debugSpamLog(contextLogger, "Doing light %s", object->klass->name);
@@ -190,15 +192,29 @@ void LightColorizer::GlobalColorize(bool refresh, std::vector<std::optional<Somb
 }
 
 void LightColorizer::RegisterLight(UnityEngine::MonoBehaviour *lightWithId, std::optional<int> lightId) {
-    std::shared_ptr<LightColorizer> lightColorizer;
 
-    auto monoBehaviourCast = il2cpp_utils::try_cast<LightWithIdMonoBehaviour>(lightWithId);;
+
+
+    auto const RegisterLightWithID = [&lightId](ILightWithId* lightToRegister) {
+        int type = lightToRegister->get_lightId() - 1;
+        std::shared_ptr<LightColorizer> lightColorizer = GetLightColorizer((BeatmapEventType) type);
+        auto index = lightColorizer->Lights.size();
+        LightIDTableManager::RegisterIndex(type, index, lightId);
+
+//        int lightIndex = (int) lightColorizer->Lights.size();
+//
+//        while (lightColorizer->Lights.contains(lightIndex))
+//            lightIndex++;
+//        lightColorizer->Lights.emplace(lightIndex, lightToRegister);
+
+
+        lightColorizer->Lights.emplace_back(lightToRegister);
+    };
+
+    auto monoBehaviourCast = il2cpp_utils::try_cast<LightWithIdMonoBehaviour>(lightWithId);
 
     if (monoBehaviourCast) {
-        auto monoBehaviour = *monoBehaviourCast;
-        lightColorizer = GetLightColorizer((monoBehaviour->get_lightId() - 1));
-        LightIDTableManager::RegisterIndex(monoBehaviour->get_lightId() - 1, lightColorizer->Lights.size(), lightId);
-        lightColorizer->Lights[(int) lightColorizer->Lights.size()] = reinterpret_cast<ILightWithId *>(monoBehaviour);
+        RegisterLightWithID(reinterpret_cast<ILightWithId *>(monoBehaviourCast.value()));
         return;
     }
 
@@ -206,15 +222,10 @@ void LightColorizer::RegisterLight(UnityEngine::MonoBehaviour *lightWithId, std:
 
     if (lightWithIdsCast) {
         auto lightWithIds = *lightWithIdsCast;
-        auto* lightsWithIdArray = il2cpp_utils::cast<Array<LightWithIds::LightData*>>(lightWithIds->get_lightIntensityData());
+        ArrayWrapper<GlobalNamespace::LightWithIds::LightData*> lightsWithIdArray = System::Linq::Enumerable::ToArray(lightWithIds->get_lightIntensityData());
 
-
-        for (int i = 0; i < lightsWithIdArray->Length(); i++) {
-            auto light = il2cpp_utils::cast<ILightWithId>(lightsWithIdArray->get(i));
-            lightColorizer = GetLightColorizer((light->get_lightId() - 1));
-
-            LightIDTableManager::RegisterIndex(light->get_lightId() - 1, (int) lightColorizer->Lights.size(), lightId);
-            lightColorizer->Lights[(int) lightColorizer->Lights.size()] = light;
+        for (auto const& lightIdData : lightsWithIdArray) {
+            RegisterLightWithID(reinterpret_cast<ILightWithId*>(lightIdData));
         }
     }
 }
@@ -278,7 +289,7 @@ void LightColorizer::InitializeSO(std::string_view id, int index) {
     mColorSO->multiplierColor = multiplierColor;
 
 
-    if (_simpleColorSOs.find(index) == _simpleColorSOs.end())
+    if (!_simpleColorSOs.contains(index))
     {
         SafePtr<SimpleColorSO> sColorSO(ScriptableObject::CreateInstance<SimpleColorSO*>());
         sColorSO->SetColor(lightSO->color);

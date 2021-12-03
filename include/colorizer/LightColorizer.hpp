@@ -39,7 +39,7 @@ namespace Chroma {
 
         inline static std::unordered_map<int, std::shared_ptr<LightColorizer>> Colorizers;
 
-        std::unordered_map<int, GlobalNamespace::ILightWithId *> Lights{};
+        std::vector<GlobalNamespace::ILightWithId *> Lights{};
 
         std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId *>> LightsPropagationGrouped{};
 
