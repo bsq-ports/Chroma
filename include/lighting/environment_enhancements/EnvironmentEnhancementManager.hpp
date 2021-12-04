@@ -21,6 +21,8 @@ namespace Chroma {
         Regex,
         Exact,
         Contains,
+        StartsWith,
+        EndsWith
     };
 
     class ProfileData {

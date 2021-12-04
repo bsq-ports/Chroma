@@ -12,6 +12,7 @@
 #include "lighting/environment_enhancements/ParametricBoxControllerParameters.hpp"
 #include "lighting/environment_enhancements/GameObjectTrackController.hpp"
 
+#include <sstream>
 #include <concepts>
 #include "boost-regex/regex/include/boost/regex.hpp"
 
@@ -56,6 +57,22 @@ Chroma::EnvironmentEnhancementManager::LookupId(const std::string& id, Chroma::L
                 lookupMethodStr = "Contains";
                 predicate = [&id](const GameObjectInfo &n) {
                     return n.FullID.find(id) != std::string::npos;
+                };
+                break;
+            }
+
+            case LookupMethod::StartsWith: {
+                lookupMethodStr = "StartsWith";
+                predicate = [&id](const GameObjectInfo &n) {
+                    return n.FullID.starts_with(id);
+                };
+                break;
+            }
+
+            case LookupMethod::EndsWith: {
+                lookupMethodStr = "EndsWith";
+                predicate = [&id](const GameObjectInfo &n) {
+                    return n.FullID.ends_with(id);
                 };
                 break;
             }
@@ -221,6 +238,10 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                     lookupMethod = LookupMethod::Exact;
                 } else if (lookupString == "contains") {
                     lookupMethod = LookupMethod::Contains;
+                }else if (lookupString == "startswith") {
+                    lookupMethod = LookupMethod::StartsWith;
+                }else if (lookupString == "endswith") {
+                    lookupMethod = LookupMethod::EndsWith;
                 }
 
                 std::optional<int> dupeAmount = getIfExists<int>(gameObjectDataVal, DUPLICATIONAMOUNT);
