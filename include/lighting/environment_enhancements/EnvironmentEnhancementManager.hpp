@@ -23,6 +23,55 @@ namespace Chroma {
         Contains,
     };
 
+    class ProfileData {
+    public:
+        void startTimer() {
+            start = std::chrono::high_resolution_clock::now();
+        }
+
+        void endTimer() {
+            end = std::chrono::high_resolution_clock::now();
+        }
+
+        void mark(std::string const& name) {
+            points.emplace_back(std::chrono::high_resolution_clock::now(), name);
+        }
+
+        void printMarks() const {
+            auto before = start;
+
+            for (auto const& [time, name] : points) {
+                auto difference = time - before;
+                auto millisElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(difference).count();
+                getLogger().debug("%s took %lldmss", name.c_str(), millisElapsed);
+                before = time;
+            }
+
+            auto endMark = end ? end.value() : std::chrono::high_resolution_clock::now();
+
+            auto finishTime = std::chrono::duration_cast<std::chrono::milliseconds>(endMark - start).count();
+
+            getLogger().debug("Finished! Took %lldms", finishTime);
+        }
+
+        [[nodiscard]] auto elapsedTimeSinceNow() const {
+            return std::chrono::high_resolution_clock::now() - start;
+        }
+
+        [[nodiscard]] auto elapsedTime() const {
+            return end.value() - start;
+        }
+
+
+
+    private:
+        std::chrono::high_resolution_clock::time_point start;
+        std::optional<std::chrono::high_resolution_clock::time_point> end;
+
+        // pair instead of map to keep order
+        std::vector<std::pair<std::chrono::high_resolution_clock::time_point, std::string>> points;
+    };
+
     class EnvironmentEnhancementManager {
     private:
         inline static std::vector<GameObjectInfo> _globalGameObjectInfos;

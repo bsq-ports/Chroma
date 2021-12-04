@@ -181,6 +181,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
             GetAllGameObjects();
 
 
+            std::vector<ProfileData> profileData;
             auto environmentDataObject = environmentData->value.GetArray();
 
             // Record start time
@@ -188,7 +189,8 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
 
             for (auto const& gameObjectDataVal : environmentDataObject) {
                 // Record start time
-                auto start = std::chrono::high_resolution_clock::now();
+                auto& profiler = profileData.emplace_back();
+                profiler.startTimer();
 
                 auto trackNameIt = gameObjectDataVal.FindMember(Chroma::TRACK);
 
@@ -233,16 +235,15 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                 auto lightID = getIfExists<int>(gameObjectDataVal, LIGHTID);
 
                 // Record JSON parse time
-                auto finish = std::chrono::high_resolution_clock::now();
-                auto millisElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start).count();
-                getLogger().info("Parsing JSON took %lldms for id: %s lookup %s", millisElapsed, id.c_str(), lookupString.c_str());
+                profiler.mark("Parsing JSON for id " + id);
 
                 std::vector<ByRef<const GameObjectInfo>> const foundObjects(LookupId(id, lookupMethod));
 
                 // Record find object time
-                finish = std::chrono::high_resolution_clock::now();
-                millisElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start).count();
-                getLogger().info("Finding objects took %lldms for id: %s lookup %s", millisElapsed, id.c_str(), lookupString.c_str());
+                std::stringstream foundObjectsLog("Finding objects for id (");
+                foundObjectsLog << foundObjects.size() << ") " << id;
+                foundObjectsLog << "using " << lookupString;
+                profiler.mark(foundObjectsLog.str());
 
                 std::vector<ByRef<const GameObjectInfo>> gameObjectInfos;
                 if (dupeAmount) {
@@ -297,9 +298,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                 }
 
                 // Record end time
-                finish = std::chrono::high_resolution_clock::now();
-                millisElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start).count();
-                getLogger().info("Duping took %lldms for id: %s lookup %s", millisElapsed, id.c_str(), lookupString.c_str());
+                profiler.mark("Duping for id " + lookupString);
 
                 for (auto const& gameObjectInfoRef : gameObjectInfos) {
                     const auto &gameObjectInfo = gameObjectInfoRef.heldRef;
@@ -386,15 +385,25 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                 }
 
                 // Record end time
-                finish = std::chrono::high_resolution_clock::now();
-                millisElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start).count();
-                getLogger().info("Finished! Took %lldms for id: %s lookup %s\n", millisElapsed ,id.c_str(), lookupString.c_str());
+                profiler.endTimer();
             }
 
             // Record all end time
             auto finish = std::chrono::high_resolution_clock::now();
             auto millisElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(finish - startAll).count();
-            getLogger().info("Finished environment enhancements took %lldms", millisElapsed);
+
+            std::thread([profileData = move(profileData), millisElapsed]{
+                // Log all objects
+                for (auto const& profile : profileData) {
+                    profile.printMarks();
+                    getLogger().info("=====================================\n");
+                }
+
+
+
+                getLogger().info("Finished environment enhancements took %lldms", millisElapsed);
+
+            }).detach();
         }
     }
     LegacyEnvironmentRemoval::Init(customBeatmapData);
