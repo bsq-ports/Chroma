@@ -53,47 +53,10 @@ std::shared_ptr<ObstacleColorizer> ObstacleColorizer::New(GlobalNamespace::Obsta
     return obstacleColorizer;
 }
 
-std::optional<Sombrero::FastColor> ObstacleColorizer::GlobalColorGetter() {
-    return GlobalColor;
-}
-
 void ObstacleColorizer::Reset() {
     GlobalColor = std::nullopt;
     Colorizers.clear();
     Colorizers = {};
-}
-
-void ObstacleColorizer::Refresh() {
-    // We do not handle coloring in obstacle colorable
-    if (ObstacleColorable) return;
-
-    Sombrero::FastColor const& color = getColor();
-    if (color == Sombrero::FastColor(_obstacleFrame->color))
-    {
-        return;
-    }
-
-    _obstacleFrame->color = color;
-    static auto Refresh = FPtrWrapper<&ParametricBoxFakeGlowController::Refresh>::get();
-    _obstacleFrame->Refresh();
-    if (_obstacleFakeGlow)
-    {
-        _obstacleFakeGlow->color = color;
-        Refresh(_obstacleFakeGlow);
-    }
-
-    Sombrero::FastColor value = color * _addColorMultiplier;
-    value.a = 0.0f;
-    static auto ApplyChanges = FPtrWrapper<&GlobalNamespace::MaterialPropertyBlockController::ApplyChanges>::get();
-    static auto SetColor = FPtrWrapper<static_cast<void (UnityEngine::MaterialPropertyBlock::*)(int, UnityEngine::Color)>(&UnityEngine::MaterialPropertyBlock::SetColor)>::get();
-
-    for (auto& materialPropertyBlockController : _materialPropertyBlockControllers)
-    {
-        Sombrero::FastColor white = Sombrero::FastColor::white();
-        SetColor(materialPropertyBlockController->materialPropertyBlock, _addColorID(), value);
-        SetColor(materialPropertyBlockController->materialPropertyBlock, _tintColorID(), Sombrero::FastColor::Lerp(color, white, _obstacleCoreLerpToWhiteFactor));
-        ApplyChanges(materialPropertyBlockController);
-    }
 }
 
 void ObstacleColorizer::GlobalColorize(std::optional<Sombrero::FastColor> const& color) {

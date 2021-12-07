@@ -110,43 +110,9 @@ void ChromaRingsRotationEffect::RecycleRingRotationEffect(ChromaRotationEffect* 
 }
 
 float ChromaRingsRotationEffect::GetFirstRingRotationAngle() {
-    static auto GetRotation = FPtrWrapper<&GlobalNamespace::TrackLaneRing::GetRotation>::get();
-    if (!trackLaneRingsManager->rings) {
-        getLogger().warning("Rings is null why! %p ", trackLaneRingsManager);
-        trackLaneRingsManager->rings = Array<GlobalNamespace::TrackLaneRing *>::New();
-    }
-
-    return GetRotation(trackLaneRingsManager->rings->get(0));
-}
-
-float ChromaRingsRotationEffect::GetFirstRingRotationAngleCpp() {
-    static auto GetRotation = FPtrWrapper<&GlobalNamespace::TrackLaneRing::GetRotation>::get();
-    if (!trackLaneRingsManager->rings) {
-        getLogger().warning("Rings is null why! %p ", trackLaneRingsManager);
-        trackLaneRingsManager->rings = Array<GlobalNamespace::TrackLaneRing *>::New();
-    }
-
-    return GetRotation(trackLaneRingsManager->rings->get(0));
+    return GetFirstRingRotationAngle();
 }
 
 float ChromaRingsRotationEffect::GetFirstRingDestinationRotationAngle() {
-    static auto GetDestinationRotation = FPtrWrapper<&GlobalNamespace::TrackLaneRing::GetDestinationRotation>::get();
-
-    if (!trackLaneRingsManager->rings) {
-        getLogger().warning("Rings is null why! %p ", trackLaneRingsManager);
-        trackLaneRingsManager->rings = Array<GlobalNamespace::TrackLaneRing *>::New();
-    }
-
-    return GetDestinationRotation(trackLaneRingsManager->rings->get(0));
-}
-
-float ChromaRingsRotationEffect::GetFirstRingDestinationRotationAngleCpp() {
-    static auto GetDestinationRotation = FPtrWrapper<&GlobalNamespace::TrackLaneRing::GetDestinationRotation>::get();
-
-    if (!trackLaneRingsManager->rings) {
-        getLogger().warning("Rings is null why! %p ", trackLaneRingsManager);
-        trackLaneRingsManager->rings = Array<GlobalNamespace::TrackLaneRing *>::New();
-    }
-
-    return GetDestinationRotation(trackLaneRingsManager->rings->get(0));
+    return GetFirstRingDestinationRotationAngleCpp();
 }

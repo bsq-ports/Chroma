@@ -7,6 +7,7 @@
 #include "GlobalNamespace/SimpleColorSO.hpp"
 #include "GlobalNamespace/MultipliedColorSO.hpp"
 #include "GlobalNamespace/TrackLaneRingsManager.hpp"
+#include "GlobalNamespace/TracklaneRing.hpp"
 #include <vector>
 #include <string>
 #include <optional>
@@ -40,8 +41,26 @@ public:
         DECLARE_INSTANCE_METHOD(float, GetFirstRingDestinationRotationAngle);
 
     public:
-        float GetFirstRingRotationAngleCpp();
-        float GetFirstRingDestinationRotationAngleCpp();
+        float GetFirstRingRotationAngleCpp() {
+            static auto GetRotation = FPtrWrapper<&GlobalNamespace::TrackLaneRing::GetRotation>::get();
+                if (!trackLaneRingsManager->rings) {
+                getLogger().warning("Rings is null why! %p ", trackLaneRingsManager);
+                trackLaneRingsManager->rings = Array<GlobalNamespace::TrackLaneRing *>::New();
+            }
+
+            return GetRotation(trackLaneRingsManager->rings->get(0));
+        }
+
+        float GetFirstRingDestinationRotationAngleCpp() {
+            static auto GetDestinationRotation = FPtrWrapper<&GlobalNamespace::TrackLaneRing::GetDestinationRotation>::get();
+
+            if (!trackLaneRingsManager->rings) {
+                getLogger().warning("Rings is null why! %p ", trackLaneRingsManager);
+                trackLaneRingsManager->rings = Array<GlobalNamespace::TrackLaneRing *>::New();
+            }
+
+            return GetDestinationRotation(trackLaneRingsManager->rings->get(0));
+        }
 
         DECLARE_INSTANCE_METHOD(void, AddRingRotationEffectF, float angle, float step, float propagationSpeed, float flexySpeed);
         DECLARE_INSTANCE_METHOD(void, AddRingRotationEffect, float angle, float step, int propagationSpeed, float flexySpeed);

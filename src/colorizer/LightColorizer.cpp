@@ -151,26 +151,6 @@ std::shared_ptr<LightColorizer> LightColorizer::New(GlobalNamespace::LightSwitch
     return lightColorizer;
 }
 
-std::vector<Sombrero::FastColor> LightColorizer::getColor() {
-    std::vector<Sombrero::FastColor> colors(COLOR_FIELDS);
-#pragma unroll
-    for (int i = 0; i < COLOR_FIELDS; i++)
-    {
-        auto& color = _colors[i];
-
-        if (!color)
-            color = GlobalColor[i];
-
-        if (!color)
-            color = _originalColors[i];
-
-
-        colors[i] = *color;
-    }
-
-    return colors;
-}
-
 void LightColorizer::GlobalColorize(bool refresh, std::vector<std::optional<Sombrero::FastColor>> const& colors) {
     for (int i = 0; i < colors.size(); i++)
     {
@@ -230,23 +210,6 @@ void LightColorizer::RegisterLight(UnityEngine::MonoBehaviour *lightWithId, std:
     }
 }
 
-void LightColorizer::Colorize(bool refresh, std::vector<std::optional<Sombrero::FastColor>>const& colors) {
-    for (int i = 0; i < colors.size(); i++)
-    {
-        _colors[i] = colors[i];
-    }
-
-    // Allow light colorizer to not force color
-    if (refresh)
-    {
-        Refresh();
-    }
-    else
-    {
-        SetSOs(getColor());
-    }
-}
-
 void LightColorizer::Reset() {
 #pragma unroll
     for (int i = 0; i < COLOR_FIELDS; i++)
@@ -256,25 +219,6 @@ void LightColorizer::Reset() {
     Colorizers.clear();
     Colorizers = {};
     LightColorChanged.clear();
-}
-
-void LightColorizer::SetSOs(std::vector<Sombrero::FastColor> const& colors) {
-    static auto SetColor = FPtrWrapper<&GlobalNamespace::SimpleColorSO::SetColor>::get();
-
-    for (int i = 0; i < colors.size(); i++)
-    {
-        SetColor((GlobalNamespace::SimpleColorSO*) _simpleColorSOs[i], colors[i]);
-    }
-
-    LightColorChanged.invoke(_eventType.value, colors);
-}
-
-void LightColorizer::Refresh() {
-    auto const& colors = getColor();
-    SetSOs(colors);
-
-    static auto ProcessLightSwitchEvent = FPtrWrapper<&LightSwitchEventEffect::ProcessLightSwitchEvent>::get();
-    ProcessLightSwitchEvent(_lightSwitchEventEffect, _lightSwitchEventEffect->prevLightSwitchBeatmapEventDataValue, true);
 }
 
 void LightColorizer::InitializeSO(std::string_view id, int index) {

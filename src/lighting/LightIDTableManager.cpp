@@ -27,32 +27,6 @@ void LightIDTableManager::SetEnvironment(const std::string& environmentName) {
     }
 }
 
-std::optional<int> LightIDTableManager::GetActiveTableValue(int type, int id) {
-    if (activeTable)
-    {
-        auto& table = activeTable.value();
-
-        auto typeTableIt = table.find(type);
-
-        if (typeTableIt == table.end()) {
-            getLogger().warning("Unable to find value for type %d", type);
-            return std::nullopt;
-        }
-
-        const auto& typeTable = typeTableIt->second;
-        auto it = typeTable.find(id);
-
-        if (it != typeTable.end()) {
-            return it->second;
-        } else {
-            getLogger().warning("Unable to find value for type %d and id %d.", type, id);
-        }
-    }
-
-    getLogger().warning("Return not found");
-    return std::nullopt;
-}
-
 void LightIDTableManager::RegisterIndex(int type, int index, std::optional<int> requestedKey) {
     auto& table = activeTable.value();
 

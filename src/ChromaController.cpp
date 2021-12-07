@@ -110,27 +110,11 @@ void ChromaController::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene 
     }
 }
 
-bool ChromaController::ChromaRequired() {
-     return !TutorialMode && ChromaMap;
-}
-
-bool ChromaController::DoColorizerSabers() {
-    return ChromaRequired();
-}
-
 void ChromaController::SetChromaLegacy(bool v) {
     getLogger().debug("Set chroma legacy to %s", v ? "true" : "false");
     ChromaLegacy = v && getChromaConfig().customColorEventsEnabled.GetValue();
 }
 
-bool ChromaController::GetChromaLegacy() {
-    return ChromaLegacy;
-}
-
-
-bool ChromaController::DoChromaHooks() {
-    return getChromaConfig().customColorEventsEnabled.GetValue() && (ChromaRequired());
-}
 
 void ChromaController::setChromaRequired(bool chromaMap) {
     ChromaMap = chromaMap && getChromaConfig().customColorEventsEnabled.GetValue();
