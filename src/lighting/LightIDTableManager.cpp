@@ -6,6 +6,12 @@
 
 using namespace Chroma;
 
+bool LightIDTableManager::installed = false;
+std::unordered_map<std::string_view, EnvironmentLightDataT> LightIDTableManager::environmentsToInstall;
+
+std::unordered_map<std::string_view, EnvironmentLightDataT> LightIDTableManager::lightIdTable;
+std::optional<EnvironmentLightDataT> LightIDTableManager::activeTable = std::nullopt;
+
 void Chroma::LightIDTableManager::InitTable() {
     for (auto& data : environmentsToInstall) {
         getLogger().info("Initializing environment data for %s", data.first.data());

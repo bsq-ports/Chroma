@@ -20,12 +20,12 @@ namespace Chroma {
 
     class LightIDTableManager {
     private:
-        inline static bool installed = false;
-        inline static std::unordered_map<std::string_view, EnvironmentLightDataT> environmentsToInstall;
+        static bool installed;
+        static std::unordered_map<std::string_view, EnvironmentLightDataT> environmentsToInstall;
 
-        inline static std::unordered_map<std::string_view, EnvironmentLightDataT> lightIdTable;
+        static std::unordered_map<std::string_view, EnvironmentLightDataT> lightIdTable;
 
-        inline static std::optional<EnvironmentLightDataT> activeTable = std::nullopt;
+        static std::optional<EnvironmentLightDataT> activeTable;
 
     public:
         LightIDTableManager() = delete;
@@ -67,7 +67,9 @@ namespace Chroma {
 
 #define ChromaInstallEnvironment(environment) \
 struct __ChromaRegisterEnvironment##environment { \
-    __ChromaRegisterEnvironment##environment() { \
+    __ChromaRegisterEnvironment##environment() {  \
+        __android_log_print(Logging::INFO, "QuestHook[Chroma]", "Creating environment " #environment);\
+                                              \
         Chroma::LightIDTableManager::AddEnvironment({#environment, environment().getEnvironmentLights()}); \
     } \
 }; \
