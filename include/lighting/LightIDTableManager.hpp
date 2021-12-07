@@ -16,14 +16,14 @@ namespace Chroma {
             virtual constexpr EnvironmentLightDataT getEnvironmentLights() = 0;
     };
 
-    using InstallEnvironmentFunc = std::pair<std::string, const EnvironmentLightDataT&>;
+    using InstallEnvironmentFunc = std::pair<std::string_view, const EnvironmentLightDataT&>;
 
     class LightIDTableManager {
     private:
         inline static bool installed = false;
-        inline static std::unordered_map<std::string, EnvironmentLightDataT> environmentsToInstall;
+        inline static std::unordered_map<std::string_view, EnvironmentLightDataT> environmentsToInstall;
 
-        inline static std::unordered_map<std::string, EnvironmentLightDataT> lightIdTable;
+        inline static std::unordered_map<std::string_view, EnvironmentLightDataT> lightIdTable;
 
         inline static std::optional<EnvironmentLightDataT> activeTable = std::nullopt;
 

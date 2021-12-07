@@ -8,7 +8,7 @@ using namespace Chroma;
 
 void Chroma::LightIDTableManager::InitTable() {
     for (auto& data : environmentsToInstall) {
-        getLogger().info("Initializing environment data for %s", data.first.c_str());
+        getLogger().info("Initializing environment data for %s", data.first.data());
         lightIdTable.emplace(data);
     }
     installed = true;
@@ -53,7 +53,7 @@ void LightIDTableManager::RegisterIndex(int type, int index, std::optional<int> 
 
 void LightIDTableManager::AddEnvironment(InstallEnvironmentFunc environmentData) {
     if (installed) {
-        getLogger().info("Initializing environment data for %s", environmentData.first.c_str());
+        getLogger().info("Initializing environment data for %s", environmentData.first.data());
         lightIdTable.try_emplace(environmentData.first, environmentData.second);
     } else {
         environmentsToInstall.try_emplace(environmentData.first, environmentData.second);
