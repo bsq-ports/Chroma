@@ -172,6 +172,27 @@ void EnvironmentEnhancementManager::GetAllGameObjects() {
 
     // Shrink if necessary
     _globalGameObjectInfos.shrink_to_fit();
+
+    if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {
+        // print objects
+        std::thread([] {
+            // copy
+            auto objectsToPrint = std::vector<GameObjectInfo>(_globalGameObjectInfos);
+
+            // Sort in order from shortest to longest string
+            std::sort(objectsToPrint.begin(), objectsToPrint.end(),
+                      [](GameObjectInfo const &a, GameObjectInfo const &b) {
+                          return a.FullID < b.FullID;
+                      });
+
+            std::stringstream ss;
+            for (auto const &o: objectsToPrint) {
+                ss << o.FullID << std::endl;
+            }
+
+            getLogger().info("Objects found in environment:\n%s", ss.str().c_str());
+        }).detach();
+    }
 }
 
 void
@@ -198,7 +219,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
             GetAllGameObjects();
 
 
-            std::vector<ProfileData> profileData;
+            std::vector<Profiler> profileData;
             auto environmentDataObject = environmentData->value.GetArray();
 
             // Record start time
@@ -261,10 +282,14 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                 std::vector<ByRef<const GameObjectInfo>> const foundObjects(LookupId(id, lookupMethod));
 
                 // Record find object time
-                std::stringstream foundObjectsLog("Finding objects for id (");
-                foundObjectsLog << foundObjects.size() << ") " << id;
-                foundObjectsLog << "using " << lookupString;
+                std::stringstream foundObjectsLog;
+                foundObjectsLog << "Finding objects for id (" << std::to_string(foundObjects.size()) << ") "<< id << " using " << lookupString;
+
                 profiler.mark(foundObjectsLog.str());
+
+                if (foundObjects.empty()) {
+                    profiler.mark("No objects found!", false);
+                }
 
                 std::vector<ByRef<const GameObjectInfo>> gameObjectInfos;
                 if (dupeAmount) {
@@ -273,7 +298,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                     for (const auto &gameObjectInfoRef: foundObjects) {
                         const auto &gameObjectInfo = gameObjectInfoRef.heldRef;
                         if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {
-                            getLogger().info("Duplicating [%s]:", gameObjectInfo.FullID.c_str());
+                            profiler.mark("Duplicating [" + gameObjectInfo.FullID + "]:", false);
                         }
 
                         auto gameObject = gameObjectInfo.GameObject;

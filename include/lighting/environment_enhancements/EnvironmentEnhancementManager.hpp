@@ -25,7 +25,19 @@ namespace Chroma {
         EndsWith
     };
 
-    class ProfileData {
+    struct ProfileData {
+        std::chrono::high_resolution_clock::time_point time;
+        std::string log;
+        bool showTime = true;
+
+        ProfileData(const std::chrono::high_resolution_clock::time_point &time, std::string_view log, bool showTime)
+                : time(time), log(log), showTime(showTime) {}
+
+        ProfileData(const std::chrono::high_resolution_clock::time_point &time, std::string_view log): time(time), log(log) {}
+
+    };
+
+    class Profiler {
     public:
         void startTimer() {
             start = std::chrono::high_resolution_clock::now();
@@ -35,18 +47,29 @@ namespace Chroma {
             end = std::chrono::high_resolution_clock::now();
         }
 
-        void mark(std::string const& name) {
-            points.emplace_back(std::chrono::high_resolution_clock::now(), name);
+        void mark(std::string_view name, bool log = true) {
+            points.emplace_back(std::chrono::high_resolution_clock::now(), name, log);
+        }
+
+        void mark(ProfileData const& profileData) {
+            points.emplace_back(profileData);
         }
 
         void printMarks() const {
             auto before = start;
 
-            for (auto const& [time, name] : points) {
-                auto difference = time - before;
-                auto millisElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(difference).count();
-                getLogger().debug("%s took %lldmss", name.c_str(), millisElapsed);
-                before = time;
+            for (auto const& point : points) {
+                auto time = point.time;
+                auto const& name = point.log;
+
+                if (point.showTime) {
+                    auto difference = time - before;
+                    auto millisElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(difference).count();
+                    getLogger().debug("%s took %lldms", name.c_str(), millisElapsed);
+                    before = time;
+                } else {
+                    getLogger().debug("%s", name.c_str());
+                }
             }
 
             auto endMark = end ? end.value() : std::chrono::high_resolution_clock::now();
@@ -71,7 +94,7 @@ namespace Chroma {
         std::optional<std::chrono::high_resolution_clock::time_point> end;
 
         // pair instead of map to keep order
-        std::vector<std::pair<std::chrono::high_resolution_clock::time_point, std::string>> points;
+        std::vector<ProfileData> points;
     };
 
     class EnvironmentEnhancementManager {

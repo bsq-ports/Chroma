@@ -74,4 +74,5 @@ public:
     static void ClearData();
 
     DECLARE_SIMPLE_DTOR();
+    DECLARE_DEFAULT_CTOR();
 )
