@@ -27,7 +27,7 @@ void SceneTransitionHelper::Patch(GlobalNamespace::IDifficultyBeatmap* customBea
     }
 }
 
-static bool CheckIfInArray(ValueUTF16& val, const std::u16string_view stringToCheck) {
+static bool CheckIfInArrayOrKey(ValueUTF16 const& val, const std::u16string_view stringToCheck) {
     if (val.IsArray()) {
         for (auto &element : val.GetArray()) {
             if (element.IsString() && element.GetString() == stringToCheck)
@@ -36,8 +36,8 @@ static bool CheckIfInArray(ValueUTF16& val, const std::u16string_view stringToCh
     }
 
     if (val.IsObject()) {
-        for (auto &element : val.GetObject()) {
-            if (element.value.IsString() && element.value.GetString() == stringToCheck)
+        for (auto const& element : val.GetObject()) {
+            if (element.name.IsString() && element.name.GetString() == stringToCheck)
                 return true;
         }
     }
@@ -59,7 +59,8 @@ void SceneTransitionHelper::Patch(GlobalNamespace::IDifficultyBeatmap* customBea
                 auto dynData = customBeatmapDataCustom->levelCustomData->value;
 
                 if (dynData) {
-                    if (CheckIfInArray(dynData->get(), ENVIRONMENT) || CheckIfInArray(dynData->get(), ENVIRONMENTREMOVAL)) {
+                    if (CheckIfInArrayOrKey(dynData->get(), ENVIRONMENT) ||
+                        CheckIfInArrayOrKey(dynData->get(), ENVIRONMENTREMOVAL)) {
                         overrideEnvironmentSettings = nullptr;
                     }
                 }
@@ -97,13 +98,13 @@ bool SceneTransitionHelper::BasicPatch(GlobalNamespace::IDifficultyBeatmap* cust
             auto requirements = rapidjsonData.FindMember(u"_requirements");
 
             if (requirements != rapidjsonData.MemberEnd()) {
-                chromaRequirement |= CheckIfInArray(requirements->value, REQUIREMENTNAME);
+                chromaRequirement |= CheckIfInArrayOrKey(requirements->value, REQUIREMENTNAME);
             }
 
             auto suggestions = rapidjsonData.FindMember(u"_suggestions");
 
             if (suggestions != rapidjsonData.MemberEnd()) {
-                chromaRequirement |= CheckIfInArray(suggestions->value, REQUIREMENTNAME);
+                chromaRequirement |= CheckIfInArrayOrKey(suggestions->value, REQUIREMENTNAME);
             }
 
         }
