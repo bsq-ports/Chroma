@@ -230,20 +230,6 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                 auto& profiler = profileData.emplace_back();
                 profiler.startTimer();
 
-                auto trackNameIt = gameObjectDataVal.FindMember(Chroma::TRACK);
-
-                std::optional<std::string> trackName;
-                std::optional<Track*> track;
-
-                if (trackNameIt != gameObjectDataVal.MemberEnd()) {
-                    trackName = trackNameIt->value.GetString();
-                    std::string val = *trackName;
-                    track = &(trackBeatmapAD.tracks.try_emplace(val).first->second);
-                }
-
-
-
-
                 auto idMember = gameObjectDataVal.FindMember(IDVAR);
 
                 std::string id = idMember == gameObjectDataVal.MemberEnd() ? "" : idMember->value.GetString();
@@ -289,7 +275,22 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
 
                 if (foundObjects.empty()) {
                     profiler.mark("No objects found!", false);
+                    profiler.endTimer();
+                    continue;
                 }
+
+                // Create track if objects are found
+                auto trackNameIt = gameObjectDataVal.FindMember(Chroma::TRACK);
+
+                std::optional<std::string> trackName;
+                std::optional<Track*> track;
+
+                if (trackNameIt != gameObjectDataVal.MemberEnd()) {
+                    trackName = trackNameIt->value.GetString();
+                    std::string val = *trackName;
+                    track = &(trackBeatmapAD.tracks.try_emplace(val).first->second);
+                }
+
 
                 std::vector<ByRef<const GameObjectInfo>> gameObjectInfos;
                 if (dupeAmount) {
@@ -333,6 +334,8 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
 
                         }
                     }
+                    // Record end time
+                    profiler.mark("Duping for id " + lookupString);
                 } else {
                     if (lightID) {
                         getLogger().error("LightID requested but no duplicated object to apply to.");
@@ -343,8 +346,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                     gameObjectInfos = std::vector(foundObjects);
                 }
 
-                // Record end time
-                profiler.mark("Duping for id " + lookupString);
+
 
                 for (auto const& gameObjectInfoRef : gameObjectInfos) {
                     const auto &gameObjectInfo = gameObjectInfoRef.heldRef;
