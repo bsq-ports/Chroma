@@ -12,6 +12,7 @@
 #include "GlobalNamespace/EnvironmentIntensityReductionOptions.hpp"
 
 #include "lighting/ChromaEventData.hpp"
+#include "ChromaEvents.hpp"
 #include "ChromaObjectData.hpp"
 
 #include "System/Diagnostics/StackTrace.hpp"
@@ -40,6 +41,7 @@ MAKE_HOOK_MATCH(BeatmapDataTransformHelper_CreateTransformedBeatmapData,&Beatmap
 //    if (!stackTrace->GetFrame(2)->GetMethod()->get_Name()->Contains(il2cpp_utils::newcsstr("MultiplayerConnectedPlayerInstaller"))) {
         ChromaObjectDataManager::deserialize(result);
         ChromaEventDataManager::deserialize(result);
+        ChromaEvents::deserialize(result);
 //    }
 
     return result;

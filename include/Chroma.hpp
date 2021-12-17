@@ -90,4 +90,6 @@ namespace Chroma {
     inline const std::string LOCALPOSITION = "_localPosition";
     inline const std::string OBJECTROTATION = "_rotation";
     inline const std::string LOCALROTATION = "_localRotation";
+
+    inline const std::string_view ASSIGNFOGTRACK = "AssignFogTrack";
 }

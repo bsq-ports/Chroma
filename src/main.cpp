@@ -1,22 +1,11 @@
-#include "custom-types/shared/coroutine.hpp"
 #include "questui/shared/QuestUI.hpp"
 #include "questui/shared/BeatSaberUI.hpp"
-#include "questui/shared/CustomTypes/Components/ExternalComponents.hpp"
-#include "UnityEngine/GameObject.hpp"
-#include "HMUI/Touchable.hpp"
 #include "main.hpp"
 
 #include "Chroma.hpp"
-#include "colorizer/LightColorizer.hpp"
-#include "colorizer/ObstacleColorizer.hpp"
-#include "colorizer/Monobehaviours/ChromaSaberController.hpp"
-#include "colorizer/Monobehaviours/ChromaParticleEventController.hpp"
-#include "colorizer/Monobehaviours/ChromaClashEffectController.hpp"
+#include "ChromaEvents.hpp"
 #include "custom-types/shared/register.hpp"
-
-#include "lighting/ChromaRingsRotationEffect.hpp"
 #include "ChromaController.hpp"
-#include "lighting/ChromaGradientController.hpp"
 
 #include "ChromaConfig.hpp"
 
@@ -127,6 +116,7 @@ extern "C" void load() {
 
     getLogger().info("Installing Chroma hooks...");
     Chroma::Hooks::InstallHooks(getLogger());
+    ChromaEvents::AddEventCallbacks(getLogger());
     getLogger().info("Installed Chroma hooks!");
 
     LightIDTableManager::InitTable();
