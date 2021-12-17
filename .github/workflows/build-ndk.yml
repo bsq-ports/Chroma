@@ -1,107 +1,119 @@
 name: NDK build
 
+env:
+  module_id: chroma
+  qmodName: chroma
+  cache-name: chroma_cache
+
 on:
   push:
+    branches: [ master ]
   pull_request:
+    branches: [ master ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    
     steps:
-      - uses: actions/checkout@v2
-        name: Checkout
-        with:
-          submodules: true
-          lfs: true
-      - name: Install Powershell
-        run: sudo apt-get install -y powershell
+    - uses: actions/checkout@v2
+      name: Checkout
+      with:
+        submodules: true
+        lfs: true
+
+    - uses: seanmiddleditch/gha-setup-ninja@v3
+
+    - name: Create ndkpath.txt
+      run: |
+        echo "$ANDROID_NDK_LATEST_HOME" > ${GITHUB_WORKSPACE}/ndkpath.txt
+        cat ${GITHUB_WORKSPACE}/ndkpath.txt
+
+    - name: Get QPM
+      if: steps.cache-qpm.outputs.cache-hit != 'true'
+      uses: dawidd6/action-download-artifact@v2
+      with:
+        github_token: ${{secrets.GITHUB_TOKEN}}
+        workflow: cargo-build.yml
+        name: linux-qpm-rust
+        path: QPM
+        repo: RedBrumbler/QuestPackageManager-Rust
         
-#       - name: Cache Android NDK
-#         id: cache-ndk
-#         uses: actions/cache@v2
-#         env:
-#           cache-name: cache-ndk
-#           ndkname: android-ndk-r22
-#         with:
-#           path: ndk
-#           key: ${{ runner.os }}-${{ env.cache-name }}-${{ env.ndkname }}
-#           restore-keys: |
-#             ${{ runner.os }}-${{ env.cache-name }}-${{ env.ndkname }}
+    - name: QPM Collapse
+      run: |
+        chmod +x ./QPM/qpm-rust
+        ./QPM/qpm-rust collapse
 
-      - name: Setup NDK
-        if: steps.cache-ndk.outputs.cache-hit != 'true'
-        id: setup-ndk
-        uses: nttld/setup-ndk@v1
-        with:
-          ndk-version: r23
+    - name: QPM Dependencies Cache
+      id: cache-qpm-deps
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-qpm-deps
+      with:
+        path: /home/runner/.local/share/QPM-Rust/cache
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('qpm.json') }}
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-build-
+          ${{ runner.os }}-
 
-      - name: Create ndkpath.txt
-        run: echo ${{ steps.setup-ndk.outputs.ndk-path }} > ${GITHUB_WORKSPACE}/ndkpath.txt
+    - name: QPM Restore
+      run: |
+        chmod +x ./QPM/qpm-rust
+        ./QPM/qpm-rust restore
 
-#       - name: Cache QPM
-#         id: cache-qpm
-#         uses: actions/cache@v2
-#         env:
-#           cache-name: cache-qpm
-#         with:
-#           path: QPM/QPM_Temp
-#           key: ${{ runner.os }}-qpm-${{ hashFiles('**/qpm.shared.json') }}
-#           restore-keys: |
-#             ${{ runner.os }}-qpm-
+    - name: QPM Legacy fix
+      run: |
+        chmod +x ./QPM/qpm-rust
+        ./QPM/qpm-rust cache legacy-fix
 
-      - name: Get QPM
-        if: steps.cache-qpm.outputs.cache-hit != 'true'
-        uses: dawidd6/action-download-artifact@v2
-        with:
-          github_token: ${{secrets.GITHUB_TOKEN}}
-          workflow: main.yml
-          name: QPM-ubuntu-x64
-          path: QPM
-          repo: sc2ad/QuestPackageManager
+    - name: List Post Restore
+      run: |
+        echo includes:
+        ls -la ${GITHUB_WORKSPACE}/extern/includes
+        echo libs:
+        ls -la ${GITHUB_WORKSPACE}/extern/libs
+        echo cache:
+        ls -la $HOME/.local/share/QPM-Rust/cache
 
-      - name: QPM Make shared file
-        run: |
-          chmod +x ./QPM/QPM
-          ./QPM/QPM collect
+    - name: Build
+      run: |
+        cd ${GITHUB_WORKSPACE}
+        pwsh -Command ./build.ps1
+# TODO: Generate QMOD
+#        ./QPM/qpm-rust qmod build
 
-      - name: QPM Dependencies Cache
-        id: cache-qpm-deps
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-qpm-deps
-        with:
-          path: QPM_Temp
-          key: cache-qpm-deps
-          restore-keys: cache-qpm-deps
 
-      - name: QPM Restore
-        run: |
-          chmod +x ./QPM/QPM
-          ./QPM/QPM restore
+    - name: Create Qmod
+      run: |
+        pwsh -Command ./createqmod.ps1 ${{env.qmodName}}
 
-      - name: Build
-        run: |
-          cd ${GITHUB_WORKSPACE}
-          pwsh -Command ./build.ps1
-      - name: Get Library Name
-        id: libname
-        run: |
-          cd ./libs/arm64-v8a/
-          pattern="libchroma*.so"
-          files=( $pattern )
-          echo ::set-output name=NAME::"${files[0]}"
-      - name: Upload non-debug artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: ${{ steps.libname.outputs.NAME }}
-          path: ./libs/arm64-v8a/${{ steps.libname.outputs.NAME }}
-          if-no-files-found: error
-          # TODO: Who needs debug builds anyways?
-#      - name: Upload debug artifact
-#        uses: actions/upload-artifact@v2
-#        with:
-#          name: debug_${{ steps.libname.outputs.NAME }}
-#          path: ./obj/local/arm64-v8a/${{ steps.libname.outputs.NAME }}
-#          if-no-files-found: error
+    - name: Get Library Name
+      id: libname
+      run: |
+        cd ./build/
+        pattern="lib${module_id}*.so"
+        files=( $pattern )
+        echo ::set-output name=NAME::"${files[0]}"
+    - name: Upload non-debug artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ steps.libname.outputs.NAME }}
+        path: ./build/${{ steps.libname.outputs.NAME }}
+        if-no-files-found: error
+
+    - name: Upload qmod artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{env.qmodName}}.qmod
+        path: ./${{ env.qmodName }}.qmod
+        if-no-files-found: error
+
+        # TODO: NEEDED?
+#    - name: Upload debug artifact
+#      uses: actions/upload-artifact@v2
+#      with:
+#        name: debug_${{ steps.libname.outputs.NAME }}
+#        path: ./obj/local/arm64-v8a/${{ steps.libname.outputs.NAME }}
+#        if-no-files-found: error
     # TODO: Add auto-populating releases, auto update versions, auto publish package on release

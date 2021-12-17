@@ -1,58 +1,65 @@
-cmake_minimum_required(VERSION 3.17.5)
+# include some defines automatically made by qpm
+include(qpm_defines.cmake)
 
-# specify the C++ standard
+cmake_minimum_required(VERSION 3.21)
+project(${COMPILE_ID})
+
+# c++ standard
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_CXX_STANDARD_REQUIRED 20)
 
-# Put path to NDK such as PATH//TO//NDK
-if (NOT DEFINED CMAKE_ANDROID_NDK)
-    if(DEFINED ENV{ANDROID_NDK_ROOT})
-        set(ANDROID_NDK_ROOT ENV{ANDROID_NDK_ROOT})
-    else()
-        file (STRINGS "ndkpath.txt" CMAKE_ANDROID_NDK)
-    endif()
-endif()
+# define that stores the actual source directory
+set(SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
+set(INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-# TODO: Uncomment when CLion supports CMake 3.20.x+
-set(CMAKE_SYSTEM_NAME Android)
-set(ANDROID_NATIVE_API_LEVEL 25)
-set(ANDROID_ABI arm64-v8a)
-set(CMAKE_ANDROID_ARCH_ABI arm64-v8a)
-set(ANDROID_TARGET_ARCH arm64-v8a)
-set(CMAKE_ANDROID_STL_TYPE c++_static)
+# compile options used
+add_compile_options(-frtti -fexceptions)
+add_compile_options(-O3)
+# compile definitions used
+add_compile_definitions(VERSION=\"${MOD_VERSION}\")
+add_compile_definitions(ID=\"${MOD_ID}\")
+add_compile_definitions(MOD_ID=\"${MOD_ID}\")
 
+# recursively get all src files
+RECURSE_FILES(cpp_file_list ${SOURCE_DIR}/*.cpp)
+RECURSE_FILES(c_file_list ${SOURCE_DIR}/*.c)
 
-set(CMAKE_C_COMPILER_TARGET aarch64-none-linux-android24)
-#set(CMAKE_C_COMPILER ${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/windows-x86_64/bin/clang.exe)
-set(CMAKE_CXX_COMPILER_TARGET aarch64-none-linux-android24)
-#set(CMAKE_CXX_COMPILER ${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/windows-x86_64/bin/clang++.exe)
-set(CMAKE_TOOLCHAIN_FILE ${CMAKE_ANDROID_NDK}/build/cmake/android.toolchain.cmake)
+# add all src files to compile
+add_library(
+        ${COMPILE_ID}
+        SHARED
+        ${cpp_file_list}
+        ${c_file_list}
+)
 
+target_include_directories(${COMPILE_ID} PRIVATE .)
 
-# set the project name
-project(Chroma) #Modify this to your project name
+target_include_directories(${COMPILE_ID} PRIVATE extern/includes/questui_components)
 
+# add src dir as include dir
+target_include_directories(${COMPILE_ID} PRIVATE ${SOURCE_DIR})
+# add include dir as include dir
+target_include_directories(${COMPILE_ID} PRIVATE ${INCLUDE_DIR})
+# add shared dir as include dir
+target_include_directories(${COMPILE_ID} PUBLIC ${SHARED_DIR})
+# codegen includes 
+target_include_directories(${COMPILE_ID} PRIVATE ${EXTERN_DIR}/includes/${CODEGEN_ID}/include)
 
+target_link_libraries(${COMPILE_ID} PRIVATE -llog)
+# add extern stuff like libs and other includes
+include(extern.cmake)
 
-message("Using NDK ${CMAKE_ANDROID_NDK}")
+add_custom_command(TARGET ${COMPILE_ID} POST_BUILD
+        COMMAND ${CMAKE_STRIP} -g -S -d --strip-debug
+        "lib${COMPILE_ID}.so" -o "stripped_lib${COMPILE_ID}.so"
+        COMMENT "Strip debug symbols done on final binary.")
 
-include_directories(include)
-include_directories(extern)
-include_directories(shared)
-include_directories(extern/libil2cpp/il2cpp/libil2cpp)
-include_directories(extern/codegen/include)
-include_directories(extern/beatsaber-hook/shared)
-include_directories(extern/modloader/shared)
-include_directories(extern/custom-json-data/shared)
-include_directories(extern/custom-types/shared)
-include_directories(extern/questui_components)
-include_directories(extern/boost-regex/regex/include/)
-include_directories(${CMAKE_ANDROID_NDK})
-include_directories(.)
+add_custom_command(TARGET ${COMPILE_ID} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E rename lib${COMPILE_ID}.so debug_lib${COMPILE_ID}.so
+        COMMENT "Rename the lib to debug_ since it has debug symbols"
+        )
 
-add_compile_definitions("VERSION=\"0.1.0\"") #Modify this if you use it
-add_compile_definitions("__GNUC__")
-add_compile_definitions("__aarch64__")
-
-file(GLOB_RECURSE SRC src/*.cpp src/**/*.cpp include/*.hpp include/*/*.hpp shared/*.hpp shared/*/*.hpp src/*/*/*.cpp)
-add_library(Chroma SHARED ${SRC}) # Is this necessary? Not sure, have it there anyways
+add_custom_command(TARGET ${COMPILE_ID} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E rename stripped_lib${COMPILE_ID}.so lib${COMPILE_ID}.so
+        COMMENT "Rename the stripped lib to regular"
+        )

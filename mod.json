@@ -1,28 +1,31 @@
 {
-  "_QPVersion": "0.1.1",
+  "_QPVersion": "0.1.2",
   "name": "Chroma",
   "id": "chroma",
   "author": "Aeroluna",
   "porter": "FernTheDev, nyamimi~",
-  "version": "2.4.10-q4",
+  "version": "2.5.7-q5",
   "packageId": "com.beatgames.beatsaber",
   "packageVersion": "1.17.1",
   "description": "Colors!",
-  "modFiles": [
-    "libchroma.so",
-    "libcustom-json-data.so",
-    "libtracks.so"
-  ],
-  "libraryFiles": [
-    "libbeatsaber-hook_2_3_0.so",
-    "libquestui.so",
-    "libcustom-types.so"
-  ],
   "dependencies": [
     {
-      "id": "codegen",
-      "version": "^0.14",
-      "downloadIfMissing": "https://github.com/sc2ad/BeatSaber-Quest-Codegen/releases/download/v0.14.0/codegen_0_14_0.qmod"
+      "versionRange": "^0.4.3",
+      "id": "tracks",
+      "modLink": "https://github.com/StackDoubleFlow/Tracks/releases/download/v0.4.3/tracks.qmod"
+    },
+    {
+      "versionRange": "^0.14.1",
+      "id": "custom-json-data",
+      "modLink": "https://github.com/StackDoubleFlow/CustomJSONData/releases/download/v0.14.1/custom-json-data.qmod"
     }
-  ]
+  ],
+  "modFiles": [
+    "libchroma.so"
+  ],
+  "libraryFiles": [
+    "libbeatsaber-hook_2_3_2.so"
+  ],
+  "fileCopies": [],
+  "copyExtensions": []
 }
