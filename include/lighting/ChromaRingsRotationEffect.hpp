@@ -7,7 +7,7 @@
 #include "GlobalNamespace/SimpleColorSO.hpp"
 #include "GlobalNamespace/MultipliedColorSO.hpp"
 #include "GlobalNamespace/TrackLaneRingsManager.hpp"
-#include "GlobalNamespace/TracklaneRing.hpp"
+#include "GlobalNamespace/TrackLaneRing.hpp"
 #include <vector>
 #include <string>
 #include <optional>
