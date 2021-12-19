@@ -45,6 +45,7 @@ bool ChromaController::ChromaMap = false;
 bool ChromaController::TutorialMode = false;
 
 
+std::unordered_set<std::string> ChromaController::ModsForcingDoHooks = std::unordered_set<std::string>();
 
 custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnController *beatmapObjectSpawnController) {
     co_yield reinterpret_cast<enumeratorT *>(CRASH_UNLESS(il2cpp_utils::New<UnityEngine::WaitForEndOfFrame *>()));
@@ -119,4 +120,13 @@ void ChromaController::SetChromaLegacy(bool v) {
 void ChromaController::setChromaRequired(bool chromaMap) {
     ChromaMap = chromaMap && getChromaConfig().customColorEventsEnabled.GetValue();
     getLogger().debug("Set chroma required/suggested to %s", ChromaMap ? "true" : "false");
+}
+
+void ChromaController::AddForceDoHooks(ModInfo& modInfo) {
+    getLogger().info("Adding force do hooks, ID: %s", modInfo.id.c_str());
+    ModsForcingDoHooks.insert(modInfo.id);
+}
+void ChromaController::RemoveForceDoHooks(ModInfo& modInfo) {
+    getLogger().info("Removing force do hooks, ID: %s", modInfo.id.c_str());
+    ModsForcingDoHooks.erase(modInfo.id);
 }

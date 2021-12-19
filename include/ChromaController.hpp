@@ -21,6 +21,7 @@ namespace Chroma {
     private:
         static bool ChromaLegacy;
         static bool ChromaMap;
+        static std::unordered_set<std::string> ModsForcingDoHooks;
 
     public:
         static bool TutorialMode;
@@ -32,7 +33,7 @@ namespace Chroma {
 
         // Return true if Chroma is required/suggested in a map
         static bool ChromaRequired() {
-            return !TutorialMode && ChromaMap;
+            return (!TutorialMode && ChromaMap) || ModsForcingDoHooks.size() > 0;
         }
 
         static void setChromaRequired(bool chromaMap);
@@ -42,6 +43,8 @@ namespace Chroma {
             return getChromaConfig().customColorEventsEnabled.GetValue() && (ChromaRequired());
         }
 
+        static void AddForceDoHooks(ModInfo& modInfo);
+        static void RemoveForceDoHooks(ModInfo& modInfo);
 
         // Quest internal stuff
         static void SetChromaLegacy(bool v);
