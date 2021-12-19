@@ -63,6 +63,11 @@ EXPOSE_API(setNoteColorable, void, bool colorable) {
     NoteColorizer::NoteColorable = colorable;
 }
 
+EXPOSE_API(setGlobalNoteColorSafe, void, std::optional<Sombrero::FastColor> color0, std::optional<Sombrero::FastColor> color1) {
+    NoteColorizer::GlobalColorize(color0, ColorType::ColorA);
+    NoteColorizer::GlobalColorize(color1, ColorType::ColorB);
+}
+
 EXPOSE_API(isNoteColorable, bool) {
     return NoteColorizer::NoteColorable;
 }
