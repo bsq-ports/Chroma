@@ -34,12 +34,12 @@ EXPOSE_API(getLightColorSafe, LightAPI::LSEData*, BeatmapEventType mb) {
     return lseData;
 }
 
-EXPOSE_API(setLightColorSafe, void, BeatmapEventType mb, bool refresh, std::optional<LightAPI::LSEData> lseData) {
+EXPOSE_API(setLightColorSafe, bool, BeatmapEventType mb, bool refresh, std::optional<LightAPI::LSEData> lseData) {
 
     if (lseData)
-        LightColorizer::ColorizeLight(mb, refresh, {lseData->_lightColor0, lseData->_lightColor1, lseData->_lightColor0Boost, lseData->_lightColor1Boost});
+        return LightColorizer::ColorizeLightIfExists(mb, refresh, {lseData->_lightColor0, lseData->_lightColor1, lseData->_lightColor0Boost, lseData->_lightColor1Boost});
     else
-        LightColorizer::ColorizeLight(mb, refresh, {std::nullopt, std::nullopt, std::nullopt, std::nullopt});
+        return LightColorizer::ColorizeLightIfExists(mb, refresh, {std::nullopt, std::nullopt, std::nullopt, std::nullopt});
 }
 
 
