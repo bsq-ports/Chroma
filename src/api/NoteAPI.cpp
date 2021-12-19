@@ -11,7 +11,7 @@ using namespace UnityEngine;
 using namespace Sombrero;
 
 // TODO: unsure of this
-EXPOSE_API(getNoteColorSafe, OptColor, int colorType) {
+EXPOSE_API(getGlobalNoteColorSafe, OptColor, int colorType) {
     CRASH_UNLESS(colorType >= ColorType::ColorA && colorType <= ColorType::ColorB);
     auto optional = NoteColorizer::GlobalColor[colorType];
 

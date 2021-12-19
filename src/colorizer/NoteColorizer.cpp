@@ -41,7 +41,7 @@ std::shared_ptr<NoteColorizer> NoteColorizer::New(GlobalNamespace::NoteControlle
     return noteColorizer;
 }
 
-std::vector<Sombrero::FastColor> NoteColorizer::getOriginalColors() {
+std::array<Sombrero::FastColor, 2> NoteColorizer::getOriginalColors() {
     if (!_originalColors) {
         ColorManager *colorManager = _colorNoteVisuals->colorManager;
         if (colorManager) {

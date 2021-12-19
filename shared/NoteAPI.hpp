@@ -18,8 +18,8 @@ namespace Chroma {
 
         /// TODO: unsure of this
         /// Gets the note type color or null if either Chroma is not setting the color or method was not found
-        static std::optional<Sombrero::FastColor> getNoteColorSafe(int colorType) noexcept {
-            static auto function = CondDeps::Find<OptColor, int>(CHROMA_ID, "getNoteColorSafe");
+        static std::optional<Sombrero::FastColor> getGlobalNoteColorSafe(int colorType) noexcept {
+            static auto function = CondDeps::Find<OptColor, int>(CHROMA_ID, "getGlobalNoteColorSafe");
 
             if (function) {
                 // Returns the color struct

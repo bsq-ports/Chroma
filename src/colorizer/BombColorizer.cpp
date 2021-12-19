@@ -22,6 +22,7 @@ BombColorizer::ColorizerMap BombColorizer::Colorizers = BombColorizer::Colorizer
 
 
 void BombColorizer::Refresh() {
+    if (BombColorable) return;
     UnityEngine::Material* bombMaterial = _bombRenderer->get_material();
     Sombrero::FastColor const& color = getColor();
 

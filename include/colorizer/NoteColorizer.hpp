@@ -37,7 +37,7 @@ namespace Chroma {
 
         GlobalNamespace::ColorNoteVisuals* _colorNoteVisuals;
         std::vector<GlobalNamespace::MaterialPropertyBlockController*> _materialPropertyBlockControllers;
-        std::optional<std::vector<Sombrero::FastColor>> _originalColors;
+        std::optional<std::array<Sombrero::FastColor, 2>> _originalColors;
 
         NoteColorizer(GlobalNamespace::NoteControllerBase* noteController);
 
@@ -53,8 +53,8 @@ namespace Chroma {
     public:
         inline static bool NoteColorable = false;
         inline static std::unordered_map<GlobalNamespace::NoteControllerBase*, std::shared_ptr<NoteColorizer>> Colorizers;
-        inline static std::vector<std::optional<Sombrero::FastColor>> GlobalColor = {std::nullopt, std::nullopt};
-        std::vector<Sombrero::FastColor> getOriginalColors();
+        inline static std::array<std::optional<Sombrero::FastColor>, 2> GlobalColor = {std::nullopt, std::nullopt};
+        std::array<Sombrero::FastColor, 2> getOriginalColors();
         GlobalNamespace::ColorType getColorType();
 
         static std::shared_ptr<NoteColorizer> New(GlobalNamespace::NoteControllerBase* noteControllerBase);
