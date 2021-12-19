@@ -27,6 +27,7 @@
          std::optional<Sombrero::FastColor> GlobalColorGetter() override;
 
      public:
+         inline static bool BombColorable = false;
 
          static std::shared_ptr<BombColorizer> New(GlobalNamespace::NoteControllerBase* noteController);
 
