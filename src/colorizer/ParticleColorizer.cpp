@@ -50,7 +50,7 @@ ParticleColorizer::GetOrCreateColorizerList(GlobalNamespace::BeatmapEventType ev
 }
 
 void ParticleColorizer::OnLightColorChanged(GlobalNamespace::BeatmapEventType eventType,
-                                            std::vector<Sombrero::FastColor> colors) {
+                                            std::array<Sombrero::FastColor, 4> colors) {
     if (eventType == _eventType)
     {
 #pragma unroll

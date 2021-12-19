@@ -29,7 +29,7 @@ namespace Chroma {
         GlobalNamespace::BeatmapEventType _eventType;
         std::unordered_map<int, std::optional<Sombrero::FastColor>> _colors;
 
-        std::vector<Sombrero::FastColor> _originalColors;
+        std::array<Sombrero::FastColor, 4> _originalColors;
         std::unordered_map<int, SafePtr<GlobalNamespace::SimpleColorSO>> _simpleColorSOs;
 
         LightColorizer(GlobalNamespace::LightSwitchEventEffect *lightSwitchEventEffect,
@@ -39,10 +39,10 @@ namespace Chroma {
         static std::shared_ptr<LightColorizer> New(GlobalNamespace::LightSwitchEventEffect *lightSwitchEventEffect,
                                                    GlobalNamespace::BeatmapEventType beatmapEventType);
 
-        inline static std::vector<std::optional<Sombrero::FastColor>> GlobalColor{std::nullopt, std::nullopt,
+        inline static std::array<std::optional<Sombrero::FastColor>, 4> GlobalColor{std::nullopt, std::nullopt,
                                                                                   std::nullopt, std::nullopt};
 
-        inline static UnorderedEventCallback<GlobalNamespace::BeatmapEventType, std::vector<Sombrero::FastColor>> LightColorChanged;
+        inline static UnorderedEventCallback<GlobalNamespace::BeatmapEventType, std::array<Sombrero::FastColor, 4>> LightColorChanged;
 
         inline static std::unordered_map<int, std::shared_ptr<LightColorizer>> Colorizers;
 
@@ -51,8 +51,8 @@ namespace Chroma {
         std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId *>> LightsPropagationGrouped{};
 
 
-        std::vector<Sombrero::FastColor> getColor() {
-            std::vector<Sombrero::FastColor> colors(COLOR_FIELDS);
+        std::array<Sombrero::FastColor, 4> getColor() {
+            std::array<Sombrero::FastColor, 4> colors;
 #pragma unroll
             for (int i = 0; i < COLOR_FIELDS; i++) {
                 auto &color = _colors[i];
@@ -70,11 +70,11 @@ namespace Chroma {
             return colors;
         }
 
-        static void GlobalColorize(bool refresh, std::vector<std::optional<Sombrero::FastColor>> const &colors);
+        static void GlobalColorize(bool refresh, std::array<std::optional<Sombrero::FastColor>, 4> const &colors);
 
         static void RegisterLight(UnityEngine::MonoBehaviour *lightWithId, std::optional<int> lightId);
 
-        void Colorize(bool refresh, std::vector<std::optional<Sombrero::FastColor>> const &colors) {
+        void Colorize(bool refresh, std::array<std::optional<Sombrero::FastColor>, 4> const &colors) {
             for (int i = 0; i < colors.size(); i++) {
                 _colors[i] = colors[i];
             }
@@ -101,12 +101,12 @@ namespace Chroma {
         }
 
         inline static void ColorizeLight(GlobalNamespace::BeatmapEventType beatmapEventType, bool refresh,
-                                         std::vector<std::optional<Sombrero::FastColor>> const &colors) {
+                                         std::array<std::optional<Sombrero::FastColor>, 4> const &colors) {
             CRASH_UNLESS(GetLightColorizer(beatmapEventType))->Colorize(refresh, colors);
         }
 
     private:
-        void SetSOs(std::vector<Sombrero::FastColor> const &colors) {
+        void SetSOs(std::array<Sombrero::FastColor, 4> const &colors) {
             static auto SetColor = FPtrWrapper<&GlobalNamespace::SimpleColorSO::SetColor>::get();
 
             for (int i = 0; i < colors.size(); i++) {

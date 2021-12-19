@@ -33,7 +33,7 @@ LightColorizer::LightColorizer(GlobalNamespace::LightSwitchEventEffect *lightSwi
                                GlobalNamespace::BeatmapEventType beatmapEventType)
                                : _simpleColorSOs(COLOR_FIELDS),
                                _colors(COLOR_FIELDS),
-                               _originalColors(COLOR_FIELDS),
+                               _originalColors(),
                                _lightSwitchEventEffect(lightSwitchEventEffect),
                                _eventType(beatmapEventType){
     static auto contextLogger = getLogger().WithContext(ChromaLogger::LightColorizer);
@@ -151,7 +151,7 @@ std::shared_ptr<LightColorizer> LightColorizer::New(GlobalNamespace::LightSwitch
     return lightColorizer;
 }
 
-void LightColorizer::GlobalColorize(bool refresh, std::vector<std::optional<Sombrero::FastColor>> const& colors) {
+void LightColorizer::GlobalColorize(bool refresh, std::array<std::optional<Sombrero::FastColor>, 4> const& colors) {
     for (int i = 0; i < colors.size(); i++)
     {
         GlobalColor[i] = colors[i];

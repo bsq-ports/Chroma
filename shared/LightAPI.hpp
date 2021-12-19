@@ -109,7 +109,7 @@ namespace Chroma {
 
         /// Sets the light color if the method was found.
         /// If nullopt, it resets the colors
-        static void setLightColorSafe(GlobalNamespace::BeatmapEventType mb, bool refresh, std::optional<LSEData> color) noexcept {
+        static void setLightColorSafe(GlobalNamespace::BeatmapEventType mb, bool refresh, std::optional<LSEData> const& color) noexcept {
             static auto function = CondDeps::Find<void, GlobalNamespace::BeatmapEventType, bool, std::optional<LSEData>>(CHROMA_ID, "setLightColorSafe");
 
             if (function) {
@@ -119,7 +119,7 @@ namespace Chroma {
 
         /// Sets all the light colors
         /// If nullopt, it resets all the light colors
-        static void setAllLightingColorsSafe(std::optional<LSEData> lseData) {
+        static void setAllLightingColorsSafe(std::optional<LSEData> const& lseData) {
             static auto function = CondDeps::Find<void, std::optional<LSEData>>(CHROMA_ID, "setAllLightingColorsSafe");
 
             if (function) {
