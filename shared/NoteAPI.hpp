@@ -71,8 +71,8 @@ namespace Chroma {
         }
 
         /// Sets the note color if the method was found.
-        static void setNoteColorSafe(GlobalNamespace::NoteController* nc, std::optional<Sombrero::FastColor> color0) noexcept {
-            static auto function = CondDeps::Find<void, GlobalNamespace::NoteController*, std::optional<Sombrero::FastColor>>(CHROMA_ID, "setNoteColorSafe");
+        static void setNoteColorSafe(GlobalNamespace::NoteControllerBase* nc, std::optional<Sombrero::FastColor> color0) noexcept {
+            static auto function = CondDeps::Find<void, GlobalNamespace::NoteControllerBase*, std::optional<Sombrero::FastColor>>(CHROMA_ID, "setNoteColorSafe");
 
             if (function) {
                 function.value()(nc, color0);
