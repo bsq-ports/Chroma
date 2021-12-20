@@ -43,7 +43,7 @@ EXPOSE_API(setLightColorSafe, bool, BeatmapEventType mb, bool refresh, std::opti
 }
 
 
-EXPOSE_API(SetAllLightingColors, void, bool refresh, std::optional<LightAPI::LSEData> data) {
+EXPOSE_API(setAllLightingColorsSafe, void, bool refresh, std::optional<LightAPI::LSEData> data) {
     if (data) {
         LightColorizer::GlobalColorize(refresh, {data.value()._lightColor0, data.value()._lightColor1, data.value()._lightColor0Boost,
                                              data.value()._lightColor1Boost});
