@@ -36,7 +36,10 @@ namespace Chroma {
                     new ConfigUtilsToggleSetting(getChromaConfig().environmentEnhancementsEnabled),
                     new ConfigUtilsToggleSetting(getChromaConfig().customColorEventsEnabled, [](ToggleSetting*, bool, UnityEngine::Transform*){
                         setChromaEnv();
-                    })
+                    }),
+                   new ConfigUtilsToggleSetting(getChromaConfig().customNoteColors, [](ToggleSetting*, bool, UnityEngine::Transform*){
+                       setChromaEnv();
+                   })
             });
         }
     }

@@ -28,12 +28,12 @@ namespace Chroma {
         // Return true if Chroma should color the sabers
         // Practically the same as DoChromaHooks, so yeet?
         static bool DoColorizerSabers() {
-            return ChromaRequired();
+            return ChromaRequired() && getChromaConfig().customNoteColors.GetValue();
         }
 
         // Return true if Chroma is required/suggested in a map
         static bool ChromaRequired() {
-            return (!TutorialMode && ChromaMap) || ModsForcingDoHooks.size() > 0;
+            return (!TutorialMode && ChromaMap) || !ModsForcingDoHooks.empty();
         }
 
         static void setChromaRequired(bool chromaMap);
@@ -43,8 +43,8 @@ namespace Chroma {
             return getChromaConfig().customColorEventsEnabled.GetValue() && (ChromaRequired());
         }
 
-        static void AddForceDoHooks(ModInfo& modInfo);
-        static void RemoveForceDoHooks(ModInfo& modInfo);
+        static void AddForceDoHooks(ModInfo const& otherModInfo);
+        static void RemoveForceDoHooks(ModInfo const& otherModInfo);
 
         // Quest internal stuff
         static void SetChromaLegacy(bool v);

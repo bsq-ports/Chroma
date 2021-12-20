@@ -35,6 +35,9 @@ NoteColorizer::NoteColorizer(GlobalNamespace::NoteControllerBase *noteController
 }
 
 std::shared_ptr<NoteColorizer> NoteColorizer::New(GlobalNamespace::NoteControllerBase *noteControllerBase) {
+    if (!ChromaController::DoColorizerSabers())
+        return nullptr;
+
     std::shared_ptr<NoteColorizer> noteColorizer(new NoteColorizer(noteControllerBase));
 
     Colorizers[noteControllerBase] = noteColorizer;

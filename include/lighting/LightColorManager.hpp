@@ -50,9 +50,9 @@ namespace Chroma {
 
                     if (lightIdData.IsNumber()) {
                         auto lightIdLong = lightIdData.GetInt64();
-                        LightSwitchEventEffectHolder::LightIDOverride = std::make_optional(
-                                std::vector<int>{(int) lightIdLong});
-                    } else if (lightIdData.IsObject() || lightIdData.IsArray()) {
+                        LightSwitchEventEffectHolder::LightIDOverride = std::vector<int>{(int) lightIdLong};
+                    }
+                    else if (lightIdData.IsObject() || lightIdData.IsArray()) {
                         // It's a object
                         std::vector<int> lightIDArray;
 
@@ -63,7 +63,8 @@ namespace Chroma {
                             for (auto &lightId: lightIDobjects) {
                                 lightIDArray.push_back(lightId.value.GetInt());
                             }
-                        } else if (lightIdData.IsArray()) {
+                        }
+                        else if (lightIdData.IsArray()) {
                             // It's a list
                             auto const &lightIDobjects = lightIdData.GetArray();
 
@@ -74,7 +75,7 @@ namespace Chroma {
                             }
                         }
 
-                        LightSwitchEventEffectHolder::LightIDOverride = std::make_optional(lightIDArray);
+                        LightSwitchEventEffectHolder::LightIDOverride = lightIDArray;
                     }
                 }
 

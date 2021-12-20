@@ -55,7 +55,7 @@ namespace Chroma {
         inline static std::unordered_map<GlobalNamespace::SaberModelController*, std::shared_ptr<SaberColorizer>> Colorizers;
 
 
-        inline static std::vector<std::optional<Sombrero::FastColor>> GlobalColor = {std::nullopt, std::nullopt};
+        inline static std::array<std::optional<Sombrero::FastColor>, 2> GlobalColor = {std::nullopt, std::nullopt};
 
         static bool IsColorable(GlobalNamespace::SaberModelController* saberModelController);
         static void SetColorable(GlobalNamespace::SaberModelController* saberModelController, bool colorable);

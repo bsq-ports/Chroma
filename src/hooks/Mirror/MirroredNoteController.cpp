@@ -40,7 +40,9 @@ void UpdateMirror(NoteControllerBase* noteController, GlobalNamespace::NoteContr
     }
     else
     {
-        NoteColorizer::ColorizeNote(noteController, NoteColorizer::GetNoteColorizer(followedNote)->getColor());
+        if (ChromaController::DoColorizerSabers()) {
+            NoteColorizer::ColorizeNote(noteController, NoteColorizer::GetNoteColorizer(followedNote)->getColor());
+        }
     }
 }
 

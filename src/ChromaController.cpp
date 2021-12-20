@@ -122,11 +122,11 @@ void ChromaController::setChromaRequired(bool chromaMap) {
     getLogger().debug("Set chroma required/suggested to %s", ChromaMap ? "true" : "false");
 }
 
-void ChromaController::AddForceDoHooks(ModInfo& modInfo) {
-    getLogger().info("Adding force do hooks, ID: %s", modInfo.id.c_str());
-    ModsForcingDoHooks.insert(modInfo.id);
+void ChromaController::AddForceDoHooks(ModInfo const& otherModInfo) {
+    getLogger().info("Adding force do hooks, ID: %s", otherModInfo.id.c_str());
+    ModsForcingDoHooks.emplace(otherModInfo.id);
 }
-void ChromaController::RemoveForceDoHooks(ModInfo& modInfo) {
-    getLogger().info("Removing force do hooks, ID: %s", modInfo.id.c_str());
-    ModsForcingDoHooks.erase(modInfo.id);
+void ChromaController::RemoveForceDoHooks(ModInfo const& otherModInfo) {
+    getLogger().info("Removing force do hooks, ID: %s", otherModInfo.id.c_str());
+    ModsForcingDoHooks.erase(otherModInfo.id);
 }

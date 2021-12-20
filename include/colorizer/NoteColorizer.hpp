@@ -75,7 +75,9 @@ namespace Chroma {
         }
 
         inline static void ColorizeNote(GlobalNamespace::NoteControllerBase* noteController, std::optional<Sombrero::FastColor> const& color) {
-            GetNoteColorizer(noteController)->Colorize(color);
+            auto colorizer = GetNoteColorizer(noteController);
+            if (colorizer)
+                colorizer->Colorize(color);
         }
     };
 }
