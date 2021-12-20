@@ -34,16 +34,22 @@ EXPOSE_API(getLightColorSafe, LightAPI::LSEData*, BeatmapEventType mb) {
     return lseData;
 }
 
-EXPOSE_API(setLightColorSafe, void, BeatmapEventType mb, bool refresh, std::optional<LightAPI::LSEData> lseData) {
+EXPOSE_API(setLightColorSafe, bool, BeatmapEventType mb, bool refresh, std::optional<LightAPI::LSEData> lseData) {
+    std::array<std::optional<Sombrero::FastColor>, 4> colors = lseData ?
+        std::array<std::optional<Sombrero::FastColor>, 4> {lseData->_lightColor0, lseData->_lightColor1, lseData->_lightColor0Boost, lseData->_lightColor1Boost} : 
+        std::array<std::optional<Sombrero::FastColor>, 4> {std::nullopt, std::nullopt, std::nullopt, std::nullopt};
 
-    if (lseData)
-        LightColorizer::ColorizeLight(mb, refresh, {lseData->_lightColor0, lseData->_lightColor1, lseData->_lightColor0Boost, lseData->_lightColor1Boost});
-    else
-        LightColorizer::ColorizeLight(mb, refresh, {std::nullopt, std::nullopt, std::nullopt, std::nullopt});
+    std::shared_ptr<LightColorizer> colorizer = LightColorizer::GetLightColorizer(mb);
+    if(colorizer) {
+        colorizer->Colorize(refresh, colors);
+        return true;
+    }   else    {
+        return false;
+    }
 }
 
 
-EXPOSE_API(SetAllLightingColors, void, bool refresh, std::optional<LightAPI::LSEData> data) {
+EXPOSE_API(setAllLightingColorsSafe, void, bool refresh, std::optional<LightAPI::LSEData> data) {
     if (data) {
         LightColorizer::GlobalColorize(refresh, {data.value()._lightColor0, data.value()._lightColor1, data.value()._lightColor0Boost,
                                              data.value()._lightColor1Boost});

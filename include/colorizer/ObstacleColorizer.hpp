@@ -68,6 +68,10 @@ namespace Chroma {
                                                                                                         UnityEngine::Color)>(&UnityEngine::MaterialPropertyBlock::SetColor)>::get();
 
             for (auto &materialPropertyBlockController: _materialPropertyBlockControllers) {
+                if(!materialPropertyBlockController->materialPropertyBlock) {
+                    continue;
+                }
+                
                 Sombrero::FastColor white = Sombrero::FastColor::white();
                 SetColor(materialPropertyBlockController->materialPropertyBlock, _addColorID(), value);
                 SetColor(materialPropertyBlockController->materialPropertyBlock, _tintColorID(),
