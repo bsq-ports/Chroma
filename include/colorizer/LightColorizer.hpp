@@ -105,17 +105,6 @@ namespace Chroma {
             CRASH_UNLESS(GetLightColorizer(beatmapEventType))->Colorize(refresh, colors);
         }
 
-        inline static bool ColorizeLightIfExists(GlobalNamespace::BeatmapEventType beatmapEventType, bool refresh,
-                                         std::vector<std::optional<Sombrero::FastColor>> const &colors) {
-            std::shared_ptr<LightColorizer> colorizer = GetLightColorizer(beatmapEventType);
-            if(colorizer) {
-                colorizer->Colorize(refresh, colors);
-                return true;
-            }   else    {
-                return false;
-            }
-        }
-
     private:
         void SetSOs(std::array<Sombrero::FastColor, 4> const &colors) {
             static auto SetColor = FPtrWrapper<&GlobalNamespace::SimpleColorSO::SetColor>::get();

@@ -35,11 +35,17 @@ EXPOSE_API(getLightColorSafe, LightAPI::LSEData*, BeatmapEventType mb) {
 }
 
 EXPOSE_API(setLightColorSafe, bool, BeatmapEventType mb, bool refresh, std::optional<LightAPI::LSEData> lseData) {
+    std::array<std::optional<Sombrero::FastColor>, 4> colors = lseData ?
+        std::array<std::optional<Sombrero::FastColor>, 4> {lseData->_lightColor0, lseData->_lightColor1, lseData->_lightColor0Boost, lseData->_lightColor1Boost} : 
+        std::array<std::optional<Sombrero::FastColor>, 4> {std::nullopt, std::nullopt, std::nullopt, std::nullopt};
 
-    if (lseData)
-        return LightColorizer::ColorizeLightIfExists(mb, refresh, {lseData->_lightColor0, lseData->_lightColor1, lseData->_lightColor0Boost, lseData->_lightColor1Boost});
-    else
-        return LightColorizer::ColorizeLightIfExists(mb, refresh, {std::nullopt, std::nullopt, std::nullopt, std::nullopt});
+    std::shared_ptr<LightColorizer> colorizer = LightColorizer::GetLightColorizer(mb);
+    if(colorizer) {
+        colorizer->Colorize(refresh, colors);
+        return true;
+    }   else    {
+        return false;
+    }
 }
 
 
