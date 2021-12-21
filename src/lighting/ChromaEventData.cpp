@@ -153,8 +153,4 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
             ChromaEventDatas[beatmapEventData] = chromaEventData;
         }
     }
-
-    // Deallocate unused memory.
-    auto shrinkedMap = EventMapType(ChromaEventDatas.begin(), ChromaEventDatas.end());
-    ChromaEventDatas = shrinkedMap;
 }

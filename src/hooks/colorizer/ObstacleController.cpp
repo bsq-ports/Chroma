@@ -82,8 +82,7 @@ MAKE_HOOK_MATCH(
                     ChromaTimeSourceHelper::getSongTimeChroma(self->audioTimeSyncController) - self->startTimeOffset;
             float normalTime = (elapsedTime - self->move1Duration) / (jumpDuration + self->obstacleDuration);
 
-            std::optional<Sombrero::FastColor> colorOffset;
-            AnimationHelper::GetColorOffset(pathPointDefinition, tracks, normalTime, colorOffset);
+            std::optional<Sombrero::FastColor> colorOffset = AnimationHelper::GetColorOffset(pathPointDefinition, tracks, normalTime);
 
             if (colorOffset) {
                 ObstacleColorizer::ColorizeObstacle(self, colorOffset.value());

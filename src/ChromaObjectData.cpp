@@ -25,29 +25,17 @@ void Chroma::ChromaObjectDataManager::deserialize(GlobalNamespace::IReadonlyBeat
     TracksAD::BeatmapAssociatedData& beatmapAD = TracksAD::getBeatmapAD(beatmapDataCast->customData);
 
 
-    // too lazy to optional and reference wrap
-    rapidjson::Value* pointDefinitionIt = nullptr;
-
-    if (beatmapDataCast->customData && beatmapDataCast->customData->value) {
-        rapidjson::Value& beatmapCustomData = *beatmapDataCast->customData->value;
-        auto pointDefinitions = beatmapCustomData.FindMember("pointDefinitions");
-        if (pointDefinitions != beatmapCustomData.MemberEnd()) {
-            pointDefinitionIt = &pointDefinitions->value;
-        }
-    }
-
     for (int i = 0; i < beatmapLines->Length(); i++) {
         auto beatmapLineData = il2cpp_utils::cast<GlobalNamespace::BeatmapLineData>(beatmapLines->get(i));
 
         if (beatmapLineData && beatmapLineData->beatmapObjectsData) {
-            debugSpamLog(contextLogger, "Klass: %s", il2cpp_utils::ClassStandardName(beatmapLineData->klass).c_str());
             for (int j = 0; j < beatmapLineData->beatmapObjectsData->items->Length(); j++) {
                 auto beatmapObjectData = beatmapLineData->beatmapObjectsData->items->get(j);
 
                 if (beatmapObjectData) {
                     std::shared_ptr<ChromaObjectData> chromaObjectData;
 
-                    CustomJSONData::JSONWrapper* eventDynData;
+                    CustomJSONData::JSONWrapper* eventDynData = nullptr;
 
                     static auto CustomNoteDataKlass = classof(CustomJSONData::CustomNoteData *);
                     static auto CustomObstacleDataKlass = classof(CustomJSONData::CustomObstacleData *);
@@ -60,15 +48,10 @@ void Chroma::ChromaObjectDataManager::deserialize(GlobalNamespace::IReadonlyBeat
                         eventDynData = customBeatmapEvent->customData;
 
                         auto data = std::make_shared<ChromaNoteData>();
-                        debugSpamLog(contextLogger, "Color");
-                        data->Color = ChromaUtilities::GetColorFromData(eventDynData->value);
-                        if (eventDynData->value)
-                            PrintJSONValue(eventDynData->value.value());
-                        debugSpamLog(contextLogger, "Spawn effects");
 
+                        data->Color = ChromaUtilities::GetColorFromData(eventDynData->value);
                         data->DisableSpawnEffect = getIfExists<bool>(eventDynData->value, DISABLESPAWNEFFECT);
 
-                        debugSpamLog(contextLogger,"Shared ptr custom note");
                         chromaObjectData = data;
                     } else if (ASSIGNMENT_CHECK(CustomObstacleDataKlass,beatmapObjectData->klass)) {
                         debugSpamLog(contextLogger, "Custom obstacle");
@@ -125,8 +108,4 @@ void Chroma::ChromaObjectDataManager::deserialize(GlobalNamespace::IReadonlyBeat
             }
         }
     }
-
-    // Deallocate unused memory.
-    auto shrinkedMap = ChromaObjectDataType(ChromaObjectDatas.begin(), ChromaObjectDatas.end());
-    ChromaObjectDatas = shrinkedMap;
 }

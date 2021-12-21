@@ -58,18 +58,15 @@ namespace Chroma {
             return valid ? std::make_optional(total) : std::nullopt;
         }
 
-        static void
-        GetColorOffset(std::optional<PointDefinition *> const &localColor, std::vector<Track *> const &tracks,
-                       float const time, std::optional<Sombrero::FastColor> &color) {
+        static std::optional<Sombrero::FastColor> GetColorOffset(std::optional<PointDefinition *> const &localColor, std::vector<Track *> const &tracks,
+                       float const time) {
             std::optional<NEVector::Vector4> pathColor;
 
             if (localColor) {
-//        getLogger().debug("Local color!");
                 pathColor = localColor.value()->InterpolateVector4(time);
             } else if (tracks.empty()) {
                 // Early return because no color will be given
-                color = std::nullopt;
-                return;
+                return std::nullopt;
             }
 
             std::optional<NEVector::Vector4> colorVector;
@@ -119,10 +116,9 @@ namespace Chroma {
             }
 
             if (colorVector) {
-                NEVector::Vector4 vectorValue(colorVector.value());
-                color = Sombrero::FastColor(vectorValue.x, vectorValue.y, vectorValue.z, vectorValue.w);
+                return Sombrero::FastColor(colorVector->x, colorVector->y, colorVector->z, colorVector->w);
             } else {
-                color = std::nullopt;
+                return std::nullopt;
             }
         }
 
