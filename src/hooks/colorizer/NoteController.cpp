@@ -47,8 +47,7 @@ MAKE_HOOK_MATCH(
     if (chromaData != ChromaObjectDataManager::ChromaObjectDatas.end()) {
         auto tracks = chromaData->second->Tracks;
         auto pathPointDefinition = chromaData->second->LocalPathColor;
-        if (!tracks.empty() || pathPointDefinition)
-        {
+        if ((tracks && !tracks->get().empty()) || pathPointDefinition) {
             NoteJump* noteJump = self->noteMovement->jump;
             float jumpDuration = noteJump->jumpDuration;
             float elapsedTime = ChromaTimeSourceHelper::getSongTimeChroma(noteJump->audioTimeSyncController) - (self->noteData->time - (jumpDuration * 0.5f));

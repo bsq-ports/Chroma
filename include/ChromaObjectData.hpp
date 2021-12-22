@@ -26,7 +26,7 @@ namespace Chroma {
     public:
         const ObjectDataType dataType;
         std::optional<Sombrero::FastColor> Color;
-        std::vector<Track*> Tracks;
+        std::optional<std::reference_wrapper<std::vector<Track*>>> Tracks;
         std::optional<PointDefinition*> LocalPathColor;
 
         ChromaObjectData() : dataType(ObjectDataType::Object){};

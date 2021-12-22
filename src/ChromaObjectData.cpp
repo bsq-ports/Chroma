@@ -64,7 +64,7 @@ void Chroma::ChromaObjectDataManager::deserialize(GlobalNamespace::IReadonlyBeat
                         data->Color = ChromaUtilities::GetColorFromData(eventDynData->value);
 
                         chromaObjectData = data;
-                    } else if (ASSIGNMENT_CHECK(CustomWaypointDataKlass,beatmapObjectData->klass)) {
+                    } else if (false && ASSIGNMENT_CHECK(CustomWaypointDataKlass,beatmapObjectData->klass)) {
                         debugSpamLog(contextLogger, "Custom waypoint");
                         auto *customBeatmapEvent = il2cpp_utils::cast<CustomJSONData::CustomWaypointData>(beatmapObjectData);
 
@@ -99,7 +99,7 @@ void Chroma::ChromaObjectDataManager::deserialize(GlobalNamespace::IReadonlyBeat
                         }
 
                         auto& tracks = TracksAD::getAD(eventDynData).tracks;
-                        chromaObjectData->Tracks = tracks;
+                        chromaObjectData->Tracks = std::ref(tracks);
                     }
                     debugSpamLog(contextLogger,"Adding to list");
                     ChromaObjectDatas[beatmapObjectData] = chromaObjectData;
