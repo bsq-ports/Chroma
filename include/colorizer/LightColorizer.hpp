@@ -36,11 +36,14 @@ namespace Chroma {
                        GlobalNamespace::BeatmapEventType beatmapEventType);
 
     public:
+        using LightColorOptionalPalette = std::array<std::optional<Sombrero::FastColor>, 4>;
+        using LightColorPalette = std::array<Sombrero::FastColor, 4>;
+
         static std::shared_ptr<LightColorizer> New(GlobalNamespace::LightSwitchEventEffect *lightSwitchEventEffect,
                                                    GlobalNamespace::BeatmapEventType beatmapEventType);
 
-        inline static std::array<std::optional<Sombrero::FastColor>, 4> GlobalColor{std::nullopt, std::nullopt,
-                                                                                  std::nullopt, std::nullopt};
+        inline static LightColorOptionalPalette GlobalColor{std::nullopt, std::nullopt,
+                                                            std::nullopt, std::nullopt};
 
         inline static UnorderedEventCallback<GlobalNamespace::BeatmapEventType, std::array<Sombrero::FastColor, 4>> LightColorChanged;
 
@@ -51,8 +54,8 @@ namespace Chroma {
         std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId *>> LightsPropagationGrouped{};
 
 
-        std::array<Sombrero::FastColor, 4> getColor() {
-            std::array<Sombrero::FastColor, 4> colors;
+        LightColorPalette getColor() {
+            LightColorPalette colors;
 #pragma unroll
             for (int i = 0; i < COLOR_FIELDS; i++) {
                 auto &color = _colors[i];
@@ -70,11 +73,11 @@ namespace Chroma {
             return colors;
         }
 
-        static void GlobalColorize(bool refresh, std::array<std::optional<Sombrero::FastColor>, 4> const &colors);
+        static void GlobalColorize(bool refresh, LightColorOptionalPalette const &colors);
 
         static void RegisterLight(UnityEngine::MonoBehaviour *lightWithId, std::optional<int> lightId);
 
-        void Colorize(bool refresh, std::array<std::optional<Sombrero::FastColor>, 4> const &colors) {
+        void Colorize(bool refresh, LightColorOptionalPalette const &colors) {
             for (int i = 0; i < colors.size(); i++) {
                 _colors[i] = colors[i];
             }
@@ -101,12 +104,12 @@ namespace Chroma {
         }
 
         inline static void ColorizeLight(GlobalNamespace::BeatmapEventType beatmapEventType, bool refresh,
-                                         std::array<std::optional<Sombrero::FastColor>, 4> const &colors) {
+                                         LightColorOptionalPalette const &colors) {
             CRASH_UNLESS(GetLightColorizer(beatmapEventType))->Colorize(refresh, colors);
         }
 
     private:
-        void SetSOs(std::array<Sombrero::FastColor, 4> const &colors) {
+        void SetSOs(LightColorPalette const &colors) {
             static auto SetColor = FPtrWrapper<&GlobalNamespace::SimpleColorSO::SetColor>::get();
 
             for (int i = 0; i < colors.size(); i++) {

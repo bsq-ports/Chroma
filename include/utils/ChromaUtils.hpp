@@ -204,8 +204,34 @@ namespace ChromaUtils {
 
 class ChromaUtilities {
     public:
-        static std::optional<Sombrero::FastColor> GetColorFromData(std::optional<std::reference_wrapper<rapidjson::Value>> data, const std::string& member = Chroma::COLOR);
-        static std::optional<Sombrero::FastColor> GetColorFromData(rapidjson::Value& data, const std::string& member = Chroma::COLOR);
+        static std::optional<Sombrero::FastColor> GetColorFromData(std::optional<std::reference_wrapper<rapidjson::Value>> data, const std::string& member = Chroma::COLOR) {
+            if (!data) return std::nullopt;
+
+            rapidjson::Value& unwrapped = *data;
+
+            if (unwrapped.MemberCount() == 0)
+                return std::nullopt;
+
+            rapidjson::Value::MemberIterator color = unwrapped.FindMember(member);
+
+            if (color == unwrapped.MemberEnd() || !color->value.IsArray() || color->value.IsNull() || color->value.Empty())
+                return std::nullopt;
+
+            return Sombrero::FastColor(color->value[0].GetFloat(), color->value[1].GetFloat(), color->value[2].GetFloat(), color->value.Size() > 3 ? color->value[3].GetFloat() : 1);
+        }
+
+        static std::optional<Sombrero::FastColor> GetColorFromData(rapidjson::Value& data, const std::string& member = Chroma::COLOR) {
+            if (data.GetType() == rapidjson::kNullType || data.MemberCount() == 0) return std::nullopt;
+
+            rapidjson::Value::MemberIterator color = data.FindMember(member);
+
+            if (color == data.MemberEnd()|| !color->value.IsArray() || color->value.IsNull() || color->value.Empty())
+                return std::nullopt;
+
+
+
+            return Sombrero::FastColor(color->value[0].GetFloat(), color->value[1].GetFloat(), color->value[2].GetFloat(), color->value.Size() > 3 ? color->value[3].GetFloat() : 1);
+        }
     };
 
     inline static std::string transformStr(UnityEngine::Transform* transform) {

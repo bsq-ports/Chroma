@@ -67,10 +67,10 @@ Sombrero::FastColor ChromaGradientController::AddGradient(ChromaEventData::Gradi
     Sombrero::FastColor const& endcolor = gradientObject.EndColor;
     Functions easing = gradientObject.Easing;
 
-    auto it = getInstance()->Gradients.emplace(id.value, ChromaGradientEvent(initcolor, endcolor, time, duration, id, easing));
+    auto it = getInstance()->Gradients.try_emplace(id.value, ChromaGradientEvent(initcolor, endcolor, time, duration, id, easing));
     // Grab by reference since assignment copies to the map
     // This way calling interpolate actually modifies the struct itself.
-    auto& newGradientEvent = it.first->second;
+    auto const& newGradientEvent = it.first->second;
     bool erased = false;
 
 
