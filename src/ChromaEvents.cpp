@@ -17,8 +17,21 @@ using namespace GlobalNamespace;
 using namespace NEVector;
 
 void ChromaEvents::parseEventData(TracksAD::BeatmapAssociatedData &beatmapAD, const CustomJSONData::CustomEventData *customEventData) {
-    if (customEventData->type != Chroma::ASSIGNFOGTRACK)
+    bool isType = false;
+
+    static std::hash<std::string_view> stringViewHash;
+    auto typeHash = stringViewHash(customEventData->type);
+
+#define TYPE_GET(jsonName, varName)                                \
+    static auto jsonNameHash_##varName = stringViewHash(jsonName); \
+    if (!isType && typeHash == (jsonNameHash_##varName))                      \
+        isType = true;
+
+    TYPE_GET(Chroma::ASSIGNFOGTRACK, ASSIGNFOGTRACK)
+
+    if (!isType) {
         return;
+    }
 
     rapidjson::Value &eventData = *customEventData->data;
     auto& eventAD = getEventAD(customEventData);
@@ -39,7 +52,7 @@ void ChromaEvents::parseEventData(TracksAD::BeatmapAssociatedData &beatmapAD, co
 
     eventAD.track = track;
 
-    if (customEventData->type == Chroma::ASSIGNFOGTRACK) {}
+    if (typeHash == jsonNameHash_ASSIGNFOGTRACK) {}
 
     eventAD.parsed = true;
 }
@@ -63,7 +76,19 @@ void ChromaEvents::deserialize(GlobalNamespace::IReadonlyBeatmapData* readOnlyBe
 
 void CustomEventCallback(BeatmapObjectCallbackController *callbackController,
                          CustomJSONData::CustomEventData *customEventData) {
-    if (customEventData->type != Chroma::ASSIGNFOGTRACK) {
+    bool isType = false;
+
+    static std::hash<std::string_view> stringViewHash;
+    auto typeHash = stringViewHash(customEventData->type);
+
+#define TYPE_GET(jsonName, varName)                                \
+    static auto jsonNameHash_##varName = stringViewHash(jsonName); \
+    if (!isType && typeHash == (jsonNameHash_##varName))                      \
+        isType = true;
+
+    TYPE_GET(Chroma::ASSIGNFOGTRACK, ASSIGNFOGTRACK)
+
+    if (!isType) {
         return;
     }
 
@@ -77,7 +102,7 @@ void CustomEventCallback(BeatmapObjectCallbackController *callbackController,
         ChromaEvents::parseEventData(beatmapAD, customEventData);
     }
 
-    if (customEventData->type == Chroma::ASSIGNFOGTRACK) {
+    if (typeHash == jsonNameHash_ASSIGNFOGTRACK) {
         Chroma::ChromaFogController::getInstance()->AssignTrack(ad.track);
     }
 }
