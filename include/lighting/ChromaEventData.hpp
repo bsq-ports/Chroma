@@ -15,9 +15,9 @@
 namespace Chroma {
     class ChromaEventData {
     public:
-        std::optional<std::reference_wrapper<rapidjson::Value>> LightID;
+        std::optional<std::reference_wrapper<const rapidjson::Value>> LightID;
 
-        std::optional<std::reference_wrapper<rapidjson::Value>> PropID;
+        std::optional<std::reference_wrapper<const rapidjson::Value>> PropID;
 
         std::optional<Sombrero::FastColor> ColorData;
 

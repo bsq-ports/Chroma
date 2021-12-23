@@ -46,31 +46,25 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
 
 
 
+            std::optional<ChromaEventData::GradientObjectData> gradientObject = std::nullopt;
+            std::optional<std::reference_wrapper<const rapidjson::Value>> lightIdOpt;
+            std::optional<std::reference_wrapper<const rapidjson::Value>> propIdOpt;
+
             debugSpamLog(contextLogger, "Light gradient");
 
 
             if (optionalDynData) {
-                rapidjson::Value &unwrappedData = *optionalDynData;
-
-                // Empty object
-                if (unwrappedData.MemberCount() == 0 || unwrappedData.IsNull())
-                    continue;
-
-                std::optional<ChromaEventData::GradientObjectData> gradientObject = std::nullopt;
-                std::optional<std::reference_wrapper<rapidjson::Value>> lightIdOpt;
-                std::optional<std::reference_wrapper<rapidjson::Value>> propIdOpt;
+                rapidjson::Value const& unwrappedData = *optionalDynData;
 
                 auto gradientJSON = unwrappedData.FindMember(LIGHTGRADIENT);
                 if (gradientJSON != unwrappedData.MemberEnd() && !gradientJSON->value.IsNull() && gradientJSON->value.IsObject()) {
-                    auto &gValue = gradientJSON->value;
+                    auto const& gValue = gradientJSON->value;
 
-                    float duration = gValue.FindMember(Chroma::DURATION)->value.GetFloat();
+                    float duration = gValue.FindMember(Chroma::DURATION)->value.GetFloat(); // Trees.at(gradientObject, DURATION);
 
-                    Sombrero::FastColor initcolor = ChromaUtils::ChromaUtilities::GetColorFromData(gValue,
-                                                                                                   STARTCOLOR).value();
+                    Sombrero::FastColor initcolor = ChromaUtils::ChromaUtilities::GetColorFromData(gValue,STARTCOLOR).value();
 
-                    Sombrero::FastColor endcolor = ChromaUtils::ChromaUtilities::GetColorFromData(gValue,
-                                                                                                  ENDCOLOR).value();
+                    Sombrero::FastColor endcolor = ChromaUtils::ChromaUtilities::GetColorFromData(gValue,ENDCOLOR).value();
 
                     std::string easingString = std::string(gValue.FindMember(EASING)->value.GetString());
 
@@ -91,64 +85,64 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
                 }
 
                 debugSpamLog(contextLogger, "Light ID");
-
                 auto lightId = unwrappedData.FindMember(LIGHTID);
                 auto propId = unwrappedData.FindMember(PROPAGATIONID);
+                debugSpamLog(contextLogger, "Done ");
 
                 lightIdOpt = lightId == unwrappedData.MemberEnd() ? std::nullopt : std::make_optional(
                         std::ref(lightId->value));
 
+
                 propIdOpt = propId == unwrappedData.MemberEnd() ? std::nullopt : std::make_optional(
                         std::ref(propId->value));
-
-
-                // RING STUFF
-                std::optional<std::string> NameFilter = getIfExists<std::string>(optionalDynData, NAMEFILTER);
-                std::optional<bool> reset = getIfExists<bool>(optionalDynData, RESET);
-                std::optional<bool> counterSpin = getIfExists<bool>(optionalDynData, COUNTERSPIN);
-
-
-                std::optional<int> direction = getIfExists<int>(optionalDynData, DIRECTION);
-                std::optional<float> step = getIfExistsFloatOpt(optionalDynData, STEP);
-                std::optional<float> prop = getIfExistsFloatOpt(optionalDynData, PROP);
-                std::optional<float> speed = getIfExistsFloatOpt(optionalDynData, SPEED);
-
-                if (!speed)
-                    speed = getIfExistsFloatOpt(optionalDynData, PRECISESPEED);
-
-                std::optional<float> rotation = getIfExistsFloatOpt(optionalDynData, ROTATION);
-
-                auto stepMult = getIfExistsFloat(optionalDynData, STEPMULT, 1.0f);
-                auto propMult = getIfExistsFloat(optionalDynData, PROPMULT, 1.0f);
-                auto speedMult = getIfExistsFloat(optionalDynData, SPEEDMULT, 1.0f);
-
-                // ASSIGN
-                auto chromaEventData = std::make_shared<ChromaEventData>();
-                chromaEventData->LightID = lightIdOpt;
-                chromaEventData->PropID = propIdOpt;
-                chromaEventData->ColorData = ChromaUtilities::GetColorFromData(optionalDynData);
-                chromaEventData->GradientObject = gradientObject;
-
-                chromaEventData->NameFilter = NameFilter;
-                chromaEventData->Direction = direction;
-                chromaEventData->CounterSpin = counterSpin;
-                chromaEventData->Reset = reset;
-
-
-                chromaEventData->Prop = prop;
-                chromaEventData->Step = step;
-                chromaEventData->Speed = speed;
-                chromaEventData->Rotation = rotation;
-
-                chromaEventData->StepMult = stepMult;
-                chromaEventData->PropMult = propMult;
-                chromaEventData->SpeedMult = speedMult;
-
-                chromaEventData->LockPosition = getIfExists<bool>(optionalDynData, LOCKPOSITION, false);
-
-
-                ChromaEventDatas[beatmapEventData] = chromaEventData;
             }
+
+            // RING STUFF
+            std::optional<std::string> NameFilter = getIfExists<std::string>(optionalDynData, NAMEFILTER);
+            std::optional<bool> reset = getIfExists<bool>(optionalDynData, RESET);
+            std::optional<bool> counterSpin = getIfExists<bool>(optionalDynData, COUNTERSPIN);
+
+
+            std::optional<int> direction = getIfExists<int>(optionalDynData, DIRECTION);
+            std::optional<float> step = getIfExistsFloatOpt(optionalDynData, STEP);
+            std::optional<float> prop = getIfExistsFloatOpt(optionalDynData, PROP);
+            std::optional<float> speed = getIfExistsFloatOpt(optionalDynData, SPEED);
+
+            if (!speed)
+                speed = getIfExistsFloatOpt(optionalDynData, PRECISESPEED);
+
+            std::optional<float> rotation = getIfExistsFloatOpt(optionalDynData, ROTATION);
+
+            auto stepMult = getIfExistsFloat(optionalDynData, STEPMULT, 1.0f);
+            auto propMult = getIfExistsFloat(optionalDynData, PROPMULT, 1.0f);
+            auto speedMult = getIfExistsFloat(optionalDynData, SPEEDMULT, 1.0f);
+
+            // ASSIGN
+            std::shared_ptr<ChromaEventData> chromaEventData = std::make_shared<ChromaEventData>();
+            chromaEventData->LightID = lightIdOpt;
+            chromaEventData->PropID = propIdOpt;
+            chromaEventData->ColorData = ChromaUtilities::GetColorFromData(optionalDynData);
+            chromaEventData->GradientObject = gradientObject;
+
+            chromaEventData->NameFilter = NameFilter;
+            chromaEventData->Direction = direction;
+            chromaEventData->CounterSpin = counterSpin;
+            chromaEventData->Reset = reset;
+
+
+            chromaEventData->Prop = prop;
+            chromaEventData->Step = step;
+            chromaEventData->Speed = speed;
+            chromaEventData->Rotation = rotation;
+
+            chromaEventData->StepMult = stepMult;
+            chromaEventData->PropMult = propMult;
+            chromaEventData->SpeedMult = speedMult;
+
+            chromaEventData->LockPosition = getIfExists<bool>(optionalDynData, LOCKPOSITION, false);
+
+
+            ChromaEventDatas[beatmapEventData] = chromaEventData;
         }
     }
 }
