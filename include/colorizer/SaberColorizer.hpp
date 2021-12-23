@@ -43,7 +43,7 @@ namespace Chroma {
         void ColorColorable(Sombrero::FastColor color);
 
     protected:
-        std::optional<Sombrero::FastColor> GlobalColorGetter() override;
+        [[nodiscard]] std::optional<Sombrero::FastColor> GlobalColorGetter() const override;
 
         void Refresh() override;
 
