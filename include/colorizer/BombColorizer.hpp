@@ -24,7 +24,7 @@
      protected:
          void Refresh() override;
 
-         [[nodiscard]] std::optional<Sombrero::FastColor> GlobalColorGetter() const override;
+         std::optional<Sombrero::FastColor> GlobalColorGetter() override;
 
      public:
          inline static bool BombColorable = false;

@@ -54,16 +54,17 @@ namespace Chroma {
         std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId *>> LightsPropagationGrouped{};
 
 
-        [[nodiscard]] LightColorPalette getColor() const {
+        LightColorPalette getColor() {
             LightColorPalette colors;
+#pragma unroll
             for (int i = 0; i < COLOR_FIELDS; i++) {
-                auto color = _colors.at(i);
+                auto color = _colors[i];
 
                 if (!color)
-                    color = GlobalColor.at(i);
+                    color = GlobalColor[i];
 
                 if (!color)
-                    color = _originalColors.at(i);
+                    color = _originalColors[i];
 
 
                 colors[i] = *color;

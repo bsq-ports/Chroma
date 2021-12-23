@@ -1,10 +1,6 @@
 # include some defines automatically made by qpm
 include(qpm_defines.cmake)
 
-# Enable link time optimization
-# In my experience, this can be highly unstable but it nets a huge size optimization and likely performance
-# set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
-
 cmake_minimum_required(VERSION 3.21)
 project(${COMPILE_ID})
 

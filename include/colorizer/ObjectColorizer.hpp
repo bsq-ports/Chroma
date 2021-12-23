@@ -13,7 +13,7 @@ namespace Chroma {
         std::optional<Sombrero::FastColor> _color;
     protected:
         Sombrero::FastColor OriginalColor;
-        [[nodiscard]] virtual std::optional<Sombrero::FastColor> GlobalColorGetter() const = 0;
+        virtual std::optional<Sombrero::FastColor> GlobalColorGetter() = 0;
         virtual std::optional<Sombrero::FastColor> OriginalColorGetter() {
             return OriginalColor;
         }
@@ -21,7 +21,7 @@ namespace Chroma {
         virtual void Refresh() = 0;
 
     public:
-        [[nodiscard]] std::optional<Sombrero::FastColor> getSelfColor() const {
+        std::optional<Sombrero::FastColor> getSelfColor() {
             return _color;
         }
 

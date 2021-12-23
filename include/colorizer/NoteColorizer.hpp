@@ -44,9 +44,9 @@ namespace Chroma {
     protected:
 //        override Color? GlobalColorGetter => GlobalColor[(int)ColorType];
 //        override Color OriginalColorGetter => OriginalColors[(int)ColorType];
-        [[nodiscard]] std::optional<Sombrero::FastColor> GlobalColorGetter() const override;
+        std::optional<Sombrero::FastColor> GlobalColorGetter() override;
 
-        [[nodiscard]] std::optional<Sombrero::FastColor> OriginalColorGetter() override;
+        std::optional<Sombrero::FastColor> OriginalColorGetter() override;
 
         void Refresh() override;
 
@@ -54,8 +54,8 @@ namespace Chroma {
         inline static bool NoteColorable = false;
         inline static std::unordered_map<GlobalNamespace::NoteControllerBase*, std::shared_ptr<NoteColorizer>> Colorizers;
         inline static std::array<std::optional<Sombrero::FastColor>, 2> GlobalColor = {std::nullopt, std::nullopt};
-        [[nodiscard]] constexpr std::array<Sombrero::FastColor, 2> getOriginalColors();
-        [[nodiscard]] GlobalNamespace::ColorType getColorType() const;
+        std::array<Sombrero::FastColor, 2> getOriginalColors();
+        GlobalNamespace::ColorType getColorType();
 
         static std::shared_ptr<NoteColorizer> New(GlobalNamespace::NoteControllerBase* noteControllerBase);
 

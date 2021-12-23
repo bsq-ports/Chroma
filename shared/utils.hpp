@@ -5,9 +5,6 @@
 
 #define CHROMA_ID "chroma"
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wreturn-type-c-linkage"
-
 namespace Chroma {
 
     inline static int floorToInt(float f) {

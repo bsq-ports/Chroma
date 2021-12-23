@@ -63,7 +63,7 @@ std::shared_ptr<BombColorizer> BombColorizer::New(GlobalNamespace::NoteControlle
     return bombColorizer;
 }
 
-std::optional<Sombrero::FastColor> BombColorizer::GlobalColorGetter() const {
+std::optional<Sombrero::FastColor> BombColorizer::GlobalColorGetter() {
     return GlobalColor;
 }
 

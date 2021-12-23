@@ -211,6 +211,7 @@ void LightColorizer::RegisterLight(UnityEngine::MonoBehaviour *lightWithId, std:
 }
 
 void LightColorizer::Reset() {
+#pragma unroll
     for (int i = 0; i < COLOR_FIELDS; i++)
     {
         GlobalColor[i] = std::nullopt;

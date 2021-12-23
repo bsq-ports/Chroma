@@ -55,13 +55,13 @@ SaberColorizer::SaberColorizer(GlobalNamespace::Saber *saber) {
 std::shared_ptr<SaberColorizer> SaberColorizer::New(GlobalNamespace::Saber *saber) {
     std::shared_ptr<SaberColorizer> saberColorizer(new SaberColorizer(saber));
 
-    Colorizers.try_emplace(saberColorizer->_saberModelController, saberColorizer);
+    Colorizers.emplace(saberColorizer->_saberModelController, saberColorizer);
 
     return saberColorizer;
 }
 
-std::optional<Sombrero::FastColor> SaberColorizer::GlobalColorGetter() const {
-    return GlobalColor.at((int) _saberType);
+std::optional<Sombrero::FastColor> SaberColorizer::GlobalColorGetter() {
+    return GlobalColor[(int) _saberType];
 }
 
 void SaberColorizer::GlobalColorize(GlobalNamespace::SaberType saberType, std::optional<Sombrero::FastColor> const& color) {

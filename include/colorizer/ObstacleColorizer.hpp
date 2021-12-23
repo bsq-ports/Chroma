@@ -40,7 +40,7 @@ namespace Chroma {
         explicit ObstacleColorizer(GlobalNamespace::ObstacleControllerBase *obstacleController);
 
     protected:
-        [[nodiscard]] std::optional<Sombrero::FastColor> GlobalColorGetter() const override {
+        std::optional<Sombrero::FastColor> GlobalColorGetter() override {
             return GlobalColor;
         }
 

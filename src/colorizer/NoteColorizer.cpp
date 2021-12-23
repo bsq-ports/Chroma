@@ -44,7 +44,7 @@ std::shared_ptr<NoteColorizer> NoteColorizer::New(GlobalNamespace::NoteControlle
     return noteColorizer;
 }
 
-constexpr std::array<Sombrero::FastColor, 2> NoteColorizer::getOriginalColors() {
+std::array<Sombrero::FastColor, 2> NoteColorizer::getOriginalColors() {
     if (!_originalColors) {
         ColorManager *colorManager = _colorNoteVisuals->colorManager;
         if (colorManager) {
@@ -67,7 +67,7 @@ constexpr std::array<Sombrero::FastColor, 2> NoteColorizer::getOriginalColors() 
     return *_originalColors;
 }
 
-GlobalNamespace::ColorType NoteColorizer::getColorType() const {
+GlobalNamespace::ColorType NoteColorizer::getColorType() {
     auto gameNoteControllerCast = il2cpp_utils::try_cast<GameNoteController>(_noteController);
     if (gameNoteControllerCast)
     {
@@ -82,12 +82,12 @@ GlobalNamespace::ColorType NoteColorizer::getColorType() const {
     return ColorType::ColorA;
 }
 
-std::optional<Sombrero::FastColor> NoteColorizer::GlobalColorGetter() const {
-    return GlobalColor.at((int) getColorType());
+std::optional<Sombrero::FastColor> NoteColorizer::GlobalColorGetter() {
+    return GlobalColor[(int) getColorType()];
 }
 
 std::optional<Sombrero::FastColor> NoteColorizer::OriginalColorGetter() {
-    return getOriginalColors().at((int) getColorType());
+    return getOriginalColors()[(int) getColorType()];
 }
 
 void NoteColorizer::GlobalColorize(std::optional<Sombrero::FastColor> const& color, GlobalNamespace::ColorType const& colorType) {
