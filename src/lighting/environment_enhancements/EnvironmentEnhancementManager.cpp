@@ -212,7 +212,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
 
         rapidjson::Value &dynData = *customDynWrapper;
 
-        auto environmentData = dynData.FindMember(to_utf8(ENVIRONMENT));
+        auto environmentData = dynData.FindMember(ENVIRONMENT);
 
 
         if (environmentData != dynData.MemberEnd()) {

@@ -27,7 +27,8 @@ void SceneTransitionHelper::Patch(GlobalNamespace::IDifficultyBeatmap* customBea
     }
 }
 
-static bool CheckIfInArrayOrKey(ValueUTF16 const& val, const std::u16string_view stringToCheck) {
+template<typename RValue = ValueUTF16, typename StringValue = std::u16string_view>
+static bool CheckIfInArrayOrKey(RValue const& val, const StringValue stringToCheck) {
     if (val.IsArray()) {
         for (auto &element : val.GetArray()) {
             if (element.IsString() && element.GetString() == stringToCheck)
@@ -45,6 +46,15 @@ static bool CheckIfInArrayOrKey(ValueUTF16 const& val, const std::u16string_view
     return false;
 }
 
+template<typename RValue = ValueUTF16, typename StringValue = std::u16string_view>
+inline static bool CheckIfInArrayOrKey(std::optional<std::reference_wrapper<RValue>> const val, const StringValue stringToCheck) {
+    if (!val)
+        return false;
+
+    return CheckIfInArrayOrKey<RValue, StringValue>(val->get(), stringToCheck);
+}
+
+
 void SceneTransitionHelper::Patch(GlobalNamespace::IDifficultyBeatmap* customBeatmapData, OverrideEnvironmentSettings*& overrideEnvironmentSettings) {
     if (!customBeatmapData)
         return;
@@ -55,15 +65,15 @@ void SceneTransitionHelper::Patch(GlobalNamespace::IDifficultyBeatmap* customBea
         bool chromaRequirement = SceneTransitionHelper::BasicPatch(customBeatmapData, customBeatmapDataCustom);
         if (chromaRequirement && getChromaConfig().environmentEnhancementsEnabled.GetValue()) {
 
-            if (customBeatmapDataCustom->levelCustomData) {
-                auto dynData = customBeatmapDataCustom->levelCustomData->value;
+            if (overrideEnvironmentSettings && customBeatmapDataCustom->levelCustomData && CheckIfInArrayOrKey(customBeatmapDataCustom->levelCustomData->value, ENVIRONMENTREMOVAL)) {
+                overrideEnvironmentSettings = nullptr;
+            }
+            if (overrideEnvironmentSettings && customBeatmapDataCustom->customData && CheckIfInArrayOrKey<rapidjson::Value>(customBeatmapDataCustom->customData->value, ENVIRONMENT)) {
+                overrideEnvironmentSettings = nullptr;
+            }
 
-                if (dynData) {
-                    if (CheckIfInArrayOrKey(dynData->get(), ENVIRONMENT) ||
-                        CheckIfInArrayOrKey(dynData->get(), ENVIRONMENTREMOVAL)) {
-                        overrideEnvironmentSettings = nullptr;
-                    }
-                }
+            if (!overrideEnvironmentSettings) {
+                getLogger().debug("Environment removal!");
             }
         }
     }
