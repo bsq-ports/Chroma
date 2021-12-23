@@ -204,15 +204,15 @@ namespace ChromaUtils {
 
 class ChromaUtilities {
     public:
-        static std::optional<Sombrero::FastColor> GetColorFromData(std::optional<std::reference_wrapper<rapidjson::Value>> data, const std::string& member = Chroma::COLOR) {
+        static std::optional<Sombrero::FastColor> GetColorFromData(std::optional<std::reference_wrapper<rapidjson::Value>> const data, const std::string& member = Chroma::COLOR) {
             if (!data) return std::nullopt;
 
-            rapidjson::Value& unwrapped = *data;
+            rapidjson::Value const& unwrapped = *data;
 
             if (unwrapped.MemberCount() == 0)
                 return std::nullopt;
 
-            rapidjson::Value::MemberIterator color = unwrapped.FindMember(member);
+            auto color = unwrapped.FindMember(member);
 
             if (color == unwrapped.MemberEnd() || !color->value.IsArray() || color->value.IsNull() || color->value.Empty())
                 return std::nullopt;
@@ -220,10 +220,10 @@ class ChromaUtilities {
             return Sombrero::FastColor(color->value[0].GetFloat(), color->value[1].GetFloat(), color->value[2].GetFloat(), color->value.Size() > 3 ? color->value[3].GetFloat() : 1);
         }
 
-        static std::optional<Sombrero::FastColor> GetColorFromData(rapidjson::Value& data, const std::string& member = Chroma::COLOR) {
+        static std::optional<Sombrero::FastColor> GetColorFromData(rapidjson::Value const& data, const std::string& member = Chroma::COLOR) {
             if (data.GetType() == rapidjson::kNullType || data.MemberCount() == 0) return std::nullopt;
 
-            rapidjson::Value::MemberIterator color = data.FindMember(member);
+            auto const color = data.FindMember(member);
 
             if (color == data.MemberEnd()|| !color->value.IsArray() || color->value.IsNull() || color->value.Empty())
                 return std::nullopt;
@@ -298,14 +298,32 @@ class ChromaUtilities {
     }
 
     template<typename T>
-    std::optional<T> getIfExists(std::optional<std::reference_wrapper<rapidjson::Value>> const& val, const std::string& member) {
+    inline std::optional<T> getIfExists(std::optional<std::reference_wrapper<rapidjson::Value>> const& val, const std::string& member) {
         if (!val) return std::nullopt;
 
         return getIfExists<T>(val->get(), member);
     }
 
+//    std::optional<float> getIfExistsFloatOpt(std::optional<std::reference_wrapper<rapidjson::Value>> val, const std::string& member) {
+//        if (!val ||  val->get().MemberCount() == 0 || !val->get().IsObject()) return std::nullopt;
+//
+//        auto it = val->get().FindMember(member);
+//        if (it == val->get().MemberEnd()) return std::nullopt;
+//
+//
+//        return it->value.GetFloat();
+//    }
+//
+//    float getIfExistsFloat(std::optional<std::reference_wrapper<rapidjson::Value>> val, const std::string& member, float def) {
+//        if (!val || !val->get().IsObject() || val->get().Empty()) return def;
+//
+//        auto it = val->get().FindMember(member);
+//        if (it == val->get().MemberEnd()) return def;
+//        return it->value.GetFloat();
+//    }
+
     template<typename T>
-    static constexpr std::optional<T*> ptrToOpt(T* t) {
+    inline static constexpr std::optional<T*> ptrToOpt(T* t) {
         return t ? std::make_optional<T*>(t) : std::nullopt;
     }
 
