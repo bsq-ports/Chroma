@@ -58,7 +58,7 @@ namespace Chroma {
             LightColorPalette colors;
 #pragma unroll
             for (int i = 0; i < COLOR_FIELDS; i++) {
-                auto &color = _colors[i];
+                auto color = _colors[i];
 
                 if (!color)
                     color = GlobalColor[i];
