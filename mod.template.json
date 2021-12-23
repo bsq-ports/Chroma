@@ -2,6 +2,7 @@
   "_QPVersion": "0.1.1",
   "name": "Chroma",
   "id": "${mod_id}",
+  "coverImage": "cover.png",
   "author": "Aeroluna",
   "porter": "FernTheDev, nyamimi~",
   "version": "${version}-q5",
