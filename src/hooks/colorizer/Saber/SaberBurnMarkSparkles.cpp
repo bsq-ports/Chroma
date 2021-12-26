@@ -45,8 +45,10 @@ MAKE_HOOK_MATCH(SaberBurnMarkSparkles_Start, &SaberBurnMarkSparkles::Start, void
     if (!ChromaController::DoChromaHooks() || !self) {
         return;
     }
-    if (self->burnMarksPS)
-        self->burnMarksPS->copy_to(_burnMarksPS);
+    if (self->burnMarksPS && self->burnMarksPS->Length() >= 2) {
+        _burnMarksPS[0] = self->burnMarksPS->get(0);
+        _burnMarksPS[1] = self->burnMarksPS->get(1);
+    }
 
     if (subCount == 0) {
         SaberColorizer::SaberColorChanged += &OnSaberColorChanged;

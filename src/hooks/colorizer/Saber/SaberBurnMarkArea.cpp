@@ -47,8 +47,10 @@ MAKE_HOOK_MATCH(SaberBurnMarkArea_Start,
         return;
     }
 
-    if (self->lineRenderers)
-        self->lineRenderers->copy_to(_lineRenderers);
+    if (self->lineRenderers && self->lineRenderers->Length() >= 2) {
+        _lineRenderers[0] = self->lineRenderers->get(0);
+        _lineRenderers[1] = self->lineRenderers->get(1);
+    }
 
     if (saberBurnMarkCount == 0) {
         SaberColorizer::SaberColorChanged += &OnSaberColorChanged_SaberBurnMarkArea;
