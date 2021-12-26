@@ -15,23 +15,36 @@
 #include "custom-types/shared/macros.hpp"
 #include "main.hpp"
 
-DECLARE_CLASS_CODEGEN(Chroma, ChromaRotationEffect, Il2CppObject,
-public:
-        DECLARE_INSTANCE_FIELD(float, RotationAngle);
+namespace Chroma {
+    struct ChromaRotationEffect {
+    public:
+        float RotationAngle;
 
-        DECLARE_INSTANCE_FIELD(float, RotationStep);
+        float RotationStep;
 
-        DECLARE_INSTANCE_FIELD(float, RotationFlexySpeed);
+        float RotationFlexySpeed;
 
-        DECLARE_INSTANCE_FIELD(float, RotationPropagationSpeed);
+        float RotationPropagationSpeed;
 
-        DECLARE_INSTANCE_FIELD(float, ProgressPos);
-)
+        float ProgressPos;
+
+        ChromaRotationEffect(float rotationAngle, float rotationStep, float rotationFlexySpeed,
+                             float rotationPropagationSpeed, float progressPos) : RotationAngle(rotationAngle),
+                                                                                  RotationStep(rotationStep),
+                                                                                  RotationFlexySpeed(
+                                                                                          rotationFlexySpeed),
+                                                                                  RotationPropagationSpeed(
+                                                                                          rotationPropagationSpeed),
+                                                                                  ProgressPos(progressPos) {}
+
+        ChromaRotationEffect() = default;
+    };
+}
 
 DECLARE_CLASS_CODEGEN(Chroma, ChromaRingsRotationEffect, GlobalNamespace::TrackLaneRingsRotationEffect,
 public:
-        std::vector<ChromaRotationEffect*> _activeRingRotationEffects;
-        std::vector<ChromaRotationEffect*> _ringRotationEffectsPool;
+        std::vector<ChromaRotationEffect> _activeRingRotationEffects;
+        std::vector<ChromaRotationEffect> _ringRotationEffectsPool;
 
         DECLARE_DEFAULT_CTOR();
         DECLARE_SIMPLE_DTOR();
@@ -71,6 +84,6 @@ public:
         DECLARE_INSTANCE_METHOD(void, Start);
         DECLARE_INSTANCE_METHOD(void, FixedUpdate);
 
-        DECLARE_INSTANCE_METHOD(ChromaRotationEffect*, SpawnRingRotationEffect);
-        DECLARE_INSTANCE_METHOD(void, RecycleRingRotationEffect, ChromaRotationEffect* ringRotationEffect);
+        ChromaRotationEffect SpawnRingRotationEffect();
+        void RecycleRingRotationEffect(ChromaRotationEffect const& ringRotationEffect);
 )
