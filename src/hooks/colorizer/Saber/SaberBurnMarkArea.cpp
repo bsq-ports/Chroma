@@ -20,7 +20,7 @@ using namespace GlobalNamespace;
 using namespace Chroma;
 using namespace UnityEngine;
 
-std::vector<LineRenderer*> _lineRenderers = {nullptr, nullptr};
+std::array<LineRenderer*, 2> _lineRenderers = {nullptr, nullptr};
 
 int saberBurnMarkCount = 0;
 

@@ -461,7 +461,8 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
 void EnvironmentEnhancementManager::GetChildRecursive(UnityEngine::Transform *gameObject,
                                                       std::vector<UnityEngine::Transform *> &children) {
     children.reserve(children.size() + gameObject->get_childCount());
-    for (int i = 0; i < gameObject->get_childCount(); i++) {
+    auto gameObjectChildCount = gameObject->get_childCount();
+    for (int i = 0; i < gameObjectChildCount; i++) {
         auto child = gameObject->GetChild(i);
         children.push_back(child);
         GetChildRecursive(child, children);

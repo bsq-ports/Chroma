@@ -80,7 +80,7 @@ namespace Chroma {
     inline const std::string LIGHTGRADIENT = "_lightGradient";
 
     inline const std::u16string ENVIRONMENTREMOVAL = u"_environmentRemoval";
-    inline const std::u16string ENVIRONMENT = u"_environment";
+    inline const std::string ENVIRONMENT = "_environment";
     inline const std::string IDVAR = "_id";
     inline const std::string LOOKUPMETHOD = "_lookupMethod";
     inline const std::string DUPLICATIONAMOUNT = "_duplicate";

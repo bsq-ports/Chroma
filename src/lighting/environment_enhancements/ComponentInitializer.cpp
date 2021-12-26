@@ -206,7 +206,9 @@ Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root,
     GameObjectInfo gameObjectInfo(root->get_gameObject());
     auto const& newGameObject = gameObjectInfos.emplace_back(gameObjectInfo);
 
-    for (int i = 0; i < root->get_childCount(); i++)
+    auto rootChildCount = root->get_childCount();
+
+    for (int i = 0; i < rootChildCount; i++)
     {
         auto transform = root->GetChild(i);
 
@@ -229,7 +231,8 @@ ComponentInitializer::PrefillComponentsData(UnityEngine::Transform *root, std::v
     }
 
     componentDatas.reserve(componentDatas.size() + root->get_childCount());
-    for (int i = 0; i < root->get_childCount(); i++) {
+    auto rootChildCount = root->get_childCount();
+    for (int i = 0; i < rootChildCount; i++) {
         auto transform = root->GetChild(i);
         PrefillComponentsData(transform, componentDatas);
     }
@@ -261,8 +264,8 @@ ComponentInitializer::PostfillComponentsData(UnityEngine::Transform *root, Unity
         UnityEngine::Object::Destroy(rotationEffect);
     }
 
-
-    for (int i = 0; i < root->get_childCount(); i++) {
+    auto rootChildCount = root->get_childCount();
+    for (int i = 0; i < rootChildCount; i++) {
         auto transform = root->GetChild(i);
         auto index = transform->GetSiblingIndex();
         PostfillComponentsData(transform, original->GetChild(index), componentDatas);

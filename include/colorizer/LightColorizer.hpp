@@ -56,7 +56,6 @@ namespace Chroma {
 
         LightColorPalette getColor() {
             LightColorPalette colors;
-#pragma unroll
             for (int i = 0; i < COLOR_FIELDS; i++) {
                 auto color = _colors[i];
 
