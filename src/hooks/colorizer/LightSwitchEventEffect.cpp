@@ -91,7 +91,7 @@ MAKE_HOOK_MATCH(LightSwitchEventEffect_SetColor,
 
 
         for (auto id : newIds) {
-            if (id < 0 || id > lights.size()) {
+            if (id < 0 || id >= lights.size()) {
                 getLogger().warning("Type %d does not contain id %d", type, id);
             } else {
                 auto l = lights.at(id);
