@@ -11,6 +11,7 @@
 #include "UnityEngine/Color.hpp"
 
 #include "GlobalNamespace/BeatmapEventType.hpp"
+#include "GlobalNamespace/VariableBpmProcessor.hpp"
 
 #include "beatsaber-hook/shared/config/rapidjson-utils.hpp"
 
@@ -41,7 +42,7 @@ namespace Chroma {
                                       :
                                       _initcolor(initcolor), _endcolor(endcolor),
                                       _start(start),
-                                      _duration(60.0f * duration / ChromaController::BeatmapObjectSpawnController->get_currentBpm()),
+                                      _duration(60.0f * duration / ChromaController::BeatmapObjectSpawnController->variableBpmProcessor->currentBpm),
                                       _event(eventType),
                                       _easing(easing) {}
 
