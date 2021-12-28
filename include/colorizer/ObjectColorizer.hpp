@@ -14,14 +14,14 @@ namespace Chroma {
     protected:
         Sombrero::FastColor OriginalColor;
         virtual std::optional<Sombrero::FastColor> GlobalColorGetter() = 0;
-        virtual std::optional<Sombrero::FastColor> OriginalColorGetter() {
+        [[nodiscard]] virtual std::optional<Sombrero::FastColor> OriginalColorGetter() {
             return OriginalColor;
         }
 
         virtual void Refresh() = 0;
 
     public:
-        std::optional<Sombrero::FastColor> getSelfColor() {
+        [[nodiscard]] std::optional<Sombrero::FastColor> getSelfColor() const {
             return _color;
         }
 

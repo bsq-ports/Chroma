@@ -26,7 +26,7 @@ namespace Chroma {
     public:
         const ObjectDataType dataType;
         std::optional<Sombrero::FastColor> Color;
-        std::optional<std::reference_wrapper<std::vector<Track*>>> Tracks;
+        std::vector<Track*> Tracks;
         std::optional<PointDefinition*> LocalPathColor;
 
         ChromaObjectData() : dataType(ObjectDataType::Object){};
@@ -36,7 +36,7 @@ namespace Chroma {
 
     class ChromaObjectDataManager {
     public:
-        typedef std::unordered_map<GlobalNamespace::BeatmapObjectData *, std::shared_ptr<ChromaObjectData>> ChromaObjectDataType;
+        using ChromaObjectDataType = std::unordered_map<GlobalNamespace::BeatmapObjectData *, std::shared_ptr<ChromaObjectData>>;
         inline static ChromaObjectDataType ChromaObjectDatas;
 
         static void deserialize(GlobalNamespace::IReadonlyBeatmapData *beatmapData);

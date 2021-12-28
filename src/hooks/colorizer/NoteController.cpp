@@ -47,7 +47,7 @@ MAKE_HOOK_MATCH(
     if (chromaData != ChromaObjectDataManager::ChromaObjectDatas.end()) {
         auto tracks = chromaData->second->Tracks;
         auto pathPointDefinition = chromaData->second->LocalPathColor;
-        if ((tracks && !tracks->get().empty()) || pathPointDefinition) {
+        if (!tracks.empty() || pathPointDefinition) {
             NoteJump* noteJump = self->noteMovement->jump;
             float jumpDuration = noteJump->jumpDuration;
             float elapsedTime = ChromaTimeSourceHelper::getSongTimeChroma(noteJump->audioTimeSyncController) - (self->noteData->time - (jumpDuration * 0.5f));
@@ -57,7 +57,8 @@ MAKE_HOOK_MATCH(
 
             if (colorOffset)
             {
-                if (il2cpp_utils::AssignableFrom<BombNoteController*>(self->klass)) {
+                static auto BombNoteControllerKlass = classof(BombNoteController*);
+                if (ASSIGNMENT_CHECK(BombNoteControllerKlass, self->klass)) {
                     BombColorizer::ColorizeBomb((BombNoteController*) self, colorOffset);
                 } else {
                     NoteColorizer::ColorizeNote((NoteControllerBase*) self, colorOffset);
