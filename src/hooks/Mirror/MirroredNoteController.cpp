@@ -56,7 +56,7 @@ MAKE_HOOK_MATCH(MirroredNoteController_UpdatePositionAndRotationGeneric,
         return;
     }
 
-    UpdateMirror(self, il2cpp_utils::cast<NoteControllerBase>(self->followedNote));
+    UpdateMirror(self, reinterpret_cast<NoteControllerBase *>(self->followedNote));
 }
 
 
@@ -70,7 +70,7 @@ MAKE_HOOK_MATCH(MirroredNoteController_UpdatePositionAndRotationCubeGeneric,
         return;
     }
 
-    UpdateMirror(self, il2cpp_utils::cast<NoteControllerBase>(self->followedNote));
+    UpdateMirror(self, reinterpret_cast<NoteControllerBase *>(self->followedNote));
 }
 
 

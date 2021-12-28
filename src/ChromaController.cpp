@@ -52,8 +52,7 @@ custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(Global
 
     try {
         Chroma::ChromaController::BeatmapObjectSpawnController = beatmapObjectSpawnController;
-        BeatmapObjectCallbackController *coreSetup = il2cpp_utils::cast<BeatmapObjectCallbackController>(
-                beatmapObjectSpawnController->beatmapObjectCallbackController);
+        BeatmapObjectCallbackController *coreSetup = il2cpp_utils::cast<BeatmapObjectCallbackController>(beatmapObjectSpawnController->beatmapObjectCallbackController);
         Chroma::ChromaController::IAudioTimeSource = coreSetup->audioTimeSource;
 
         IReadonlyBeatmapData *beatmapData = coreSetup->beatmapData;
