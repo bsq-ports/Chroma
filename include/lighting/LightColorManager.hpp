@@ -46,73 +46,31 @@ namespace Chroma {
 
                 auto const lightMember = chromaData->LightID;
                 if (lightMember) {
-                    rapidjson::Value const &lightIdData = *lightMember;
-
-                    if (lightIdData.IsNumber()) {
-                        auto lightIdLong = lightIdData.GetInt64();
-                        LightSwitchEventEffectHolder::LightIDOverride = std::vector<int>{(int) lightIdLong};
-                    }
-                    else if (lightIdData.IsObject() || lightIdData.IsArray()) {
-                        // It's a object
-                        std::vector<int> lightIDArray;
-
-                        if (lightIdData.IsObject()) {
-                            auto const &lightIDobjects = lightIdData.GetObject();
-
-                            lightIDArray.reserve(lightIDobjects.MemberCount());
-                            for (auto &lightId: lightIDobjects) {
-                                lightIDArray.push_back(lightId.value.GetInt());
-                            }
-                        }
-                        else if (lightIdData.IsArray()) {
-                            // It's a list
-                            auto const &lightIDobjects = lightIdData.GetArray();
-
-                            lightIDArray.reserve(lightIDobjects.Size());
-
-                            for (auto &lightId: lightIDobjects) {
-                                lightIDArray.push_back(lightId.GetInt());
-                            }
-                        }
-
-                        LightSwitchEventEffectHolder::LightIDOverride = lightIDArray;
-                    }
+                    auto const &lightIdData = *lightMember;
+                    LightSwitchEventEffectHolder::LightIDOverride = lightIdData;
                 }
+
 
 
                 // Prop ID is deprecated apparently.  https://github.com/Aeroluna/Chroma/commit/711cb19f7d03a1776a24cef52fd8ef6fd7685a2b#diff-b8fcfff3ebc4ceb7b43d8401d9f50750dc88326d0a87897c5593923e55b23879R41
                 auto propMember = chromaData->PropID;
                 if (propMember) {
-                    rapidjson::Value const &propIDData = *propMember;
+                    auto const &propIDData = *propMember;
 
-                    std::unordered_map<int, std::vector<ILightWithId *>> lights = LightColorizer::GetLightColorizer(
-                            beatmapEventData->type)->LightsPropagationGrouped;
-                    int lightCount = (int) lights.size();
+                    auto const &lights = LightColorizer::GetLightColorizer(beatmapEventData->type)->LightsPropagationGrouped;
+                    auto lightCount = (int) lights.size();
 
+                    std::vector<ILightWithId *> overrideLights;
 
-                    if (propIDData.IsNumber()) {
-                        auto propIdLong = propIDData.GetInt();
-
-                        if (lightCount > propIdLong) {
-                            SetLegacyPropIdOverride(lights[propIdLong]);
-                        }
-                    } else {
-                        // It's a list
-                        auto const &propIDobjects = propIDData.GetObject();
-
-                        std::vector<ILightWithId *> overrideLights;
-
-                        for (auto const &lightId: propIDobjects) {
-                            int propId = lightId.value.GetInt();
-                            if (lightCount > propId) {
-                                for (auto &l: lights[propId]) {
-                                    overrideLights.push_back(l);
-                                }
+                    for (auto const &propId: propIDData) {
+                        if (lightCount > propId) {
+                            for (auto &l: lights.at(propId)) {
+                                overrideLights.push_back(l);
                             }
                         }
-
-                        SetLegacyPropIdOverride(overrideLights);
                     }
+
+                    SetLegacyPropIdOverride(overrideLights);
                 }
 
 

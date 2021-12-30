@@ -28,8 +28,6 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
 
 
             std::optional<ChromaEventData::GradientObjectData> gradientObject = std::nullopt;
-            std::optional<std::reference_wrapper<const rapidjson::Value>> lightIdOpt;
-            std::optional<std::reference_wrapper<const rapidjson::Value>> propIdOpt;
 
             debugSpamLog(contextLogger, "Light gradient");
 
@@ -72,17 +70,66 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
                 auto propId = unwrappedData.FindMember(PROPAGATIONID);
                 debugSpamLog(contextLogger, "Done ");
 
-                lightIdOpt = lightId == unwrappedData.MemberEnd() ? std::nullopt : std::make_optional(
-                        std::ref(lightId->value));
+                if (lightId != unwrappedData.MemberEnd()) {
+                    rapidjson::Value const &lightIdData = lightId->value;
+                    std::vector<int> lightIds;
+
+                    if (lightIdData.IsNumber()) {
+                        auto lightIdLong = lightIdData.GetInt64();
+                        lightIds.push_back((int) lightIdLong);
+
+                    } else if (lightIdData.IsArray()) {
+                        lightIds.reserve(lightIdData.Size());
+                        // It's an array
+                        auto const &lightIDobjects = lightIdData.GetArray();
+                        for (auto const& lightId: lightIDobjects) {
+                            lightIds.push_back(lightId.GetInt());
+                        }
+                    } else {
+                        getLogger().error("Light id type is not array or number!");
+                    }
+
+                    chromaEventData->LightID = lightIds;
+                }
 
 
-                propIdOpt = propId == unwrappedData.MemberEnd() ? std::nullopt : std::make_optional(
-                        std::ref(propId->value));
+                // Prop ID is deprecated apparently.  https://github.com/Aeroluna/Chroma/commit/711cb19f7d03a1776a24cef52fd8ef6fd7685a2b#diff-b8fcfff3ebc4ceb7b43d8401d9f50750dc88326d0a87897c5593923e55b23879R41
+                if (propId != unwrappedData.MemberEnd()) {
+                    rapidjson::Value const &propIDData = propId->value;
 
+                    std::vector<int> propIds;
+
+
+                    if (propIDData.IsNumber()) {
+                        auto propIdLong = propIDData.GetInt();
+                        propIds.push_back(propIdLong);
+                    } else {
+                        // It's a list
+                        if (propIDData.IsObject()) {
+                            auto const &propIDobjects = propIDData.GetObject();
+                            propIds.reserve(propIDobjects.MemberCount());
+
+                            for (auto const &lightId: propIDobjects) {
+                                auto propId = lightId.value.GetInt64();
+                                propIds.push_back((int) propId);
+                            }
+                        } else if (propIDData.IsArray()) {
+                            auto const &propIDArray = propIDData.GetArray();
+                            propIds.reserve(propIDArray.Size());
+
+                            for (auto const &lightId: propIDArray) {
+                                auto propId = lightId.GetInt64();
+                                propIds.push_back((int) propId);
+                            }
+                        } else {
+                            getLogger().error("Prop id type is not array or number!");
+                        }
+                    }
+
+                    chromaEventData->PropID = propIds;
+                }
 
                 // Light stuff
-                chromaEventData->LightID = lightIdOpt;
-                chromaEventData->PropID = propIdOpt;
                 chromaEventData->ColorData = ChromaUtilities::GetColorFromData(optionalDynData);
                 chromaEventData->GradientObject = gradientObject;
 
