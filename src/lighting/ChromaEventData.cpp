@@ -18,9 +18,12 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
     auto beatmapEvents = il2cpp_utils::cast<System::Collections::Generic::List_1<GlobalNamespace::BeatmapEventData *>>(
             beatmapDataCast->get_beatmapEventsData());
 
-    for (int i = 0; i < beatmapEvents->items->Length(); i++) {
+    auto beatmapEventsLength = beatmapEvents->items->Length();
+    for (int i = 0; i < beatmapEventsLength; i++) {
         auto beatmapEventData = beatmapEvents->items->get(i);
 
+        if (!beatmapEventData)
+            continue;
 
         auto customBeatmapEvent = il2cpp_utils::try_cast<CustomJSONData::CustomBeatmapEventData>(beatmapEventData);
         if (customBeatmapEvent) {
@@ -47,7 +50,7 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
 
                     Sombrero::FastColor endcolor = ChromaUtils::ChromaUtilities::GetColorFromData(gValue, ENDCOLOR).value();
 
-                    auto easingString = std::string(gValue.FindMember(EASING)->value.GetString());
+                    std::string_view easingString = gValue.FindMember(EASING)->value.GetString();
 
                     Functions easing;
 
