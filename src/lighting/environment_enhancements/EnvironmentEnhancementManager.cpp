@@ -125,11 +125,11 @@ void EnvironmentEnhancementManager::GetAllGameObjects() {
 
     auto gameObjectsAll = UnityEngine::Resources::FindObjectsOfTypeAll<UnityEngine::GameObject*>();
     std::vector<UnityEngine::GameObject*> gameObjectsVec;
-    gameObjectsVec.reserve(gameObjectsAll->Length());
+    gameObjectsVec.reserve(gameObjectsAll.Length());
 
     // I'll probably revist this formula for getting objects by only grabbing the root objects and adding all the children
-    for (int i = 0; i < gameObjectsAll->Length(); i++) {
-        auto gameObject = gameObjectsAll->get(i);
+    for (int i = 0; i < gameObjectsAll.Length(); i++) {
+        auto gameObject = gameObjectsAll.get(i);
         if (!gameObject) continue;
 
         auto sceneNameIl2cpp = gameObject->get_scene().get_name();

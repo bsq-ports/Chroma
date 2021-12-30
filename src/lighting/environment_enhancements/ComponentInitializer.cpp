@@ -39,12 +39,12 @@ using namespace Chroma;
 
 template <typename T>
 static void constexpr GetComponentAndOriginal(UnityEngine::Transform* root, UnityEngine::Transform* original, std::function < void(T*, T*)> const& initializeDelegate) {
-    Array<T*>* rootComponents = root->GetComponents<T*>();
-    Array<T*>* originalComponents = original->GetComponents<T*>();
+    ArrayW<T*> rootComponents = root->GetComponents<T*>();
+    ArrayW<T*> originalComponents = original->GetComponents<T*>();
 
-    for (int i = 0; i < rootComponents->Length(); i++)
+    for (int i = 0; i < rootComponents.Length(); i++)
     {
-        initializeDelegate(rootComponents->get(i), originalComponents->get(i));
+        initializeDelegate(rootComponents.get(i), originalComponents.get(i));
 
         if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue())
         {
@@ -96,7 +96,7 @@ Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root,
                 managerToAdd = (GlobalNamespace::TrackLaneRingsManager*) componentData.value()->NewTrackLaneRingsManager;
             } else {
                 auto rings = manager->rings;
-                if (rings->Contains(originalComponent))
+                if (rings.Contains(originalComponent))
                     managerToAdd = manager;
             }
 
@@ -104,7 +104,7 @@ Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root,
                 auto rings = managerToAdd->rings;
 
                 if (rings) {
-                    std::vector<GlobalNamespace::TrackLaneRing *> newRingList(rings->values,rings->values + rings->Length());
+                    std::vector<GlobalNamespace::TrackLaneRing *> newRingList(rings.begin(), rings.end());
                     newRingList.push_back(rootComponent);
 
                     managerToAdd->rings = il2cpp_utils::vectorToArray(newRingList);

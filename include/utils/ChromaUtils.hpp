@@ -206,11 +206,9 @@ class ChromaUtilities {
 public:
     static std::optional<Sombrero::FastColor>
     GetColorFromData(rapidjson::Value const &data, const std::string &member = Chroma::COLOR) {
-        if (data.IsNull() || data.MemberCount() == 0) return std::nullopt;
-
         auto const color = data.FindMember(member);
 
-        if (color == data.MemberEnd() || !color->value.IsArray() ||color->value.Empty())
+        if (color == data.MemberEnd() || !color->value.IsArray() || color->value.Empty())
             return std::nullopt;
 
 
@@ -227,6 +225,21 @@ public:
         return GetColorFromData(unwrapped, member);
     }
 };
+
+
+    template<typename T, typename Predicate = std::function<bool(T const&)> >
+    int FindIndex(std::span<T> const& list, Predicate const& predicate, int startIndex = 0, int endIndex = -1) {
+        if (endIndex == -1) endIndex = list.size();
+
+        for (int i = startIndex; i < endIndex; i++) {
+            auto const& element = list[i];
+            if (predicate(element)) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
 
     inline static std::string transformStr(UnityEngine::Transform* transform) {
         return "{(" + Sombrero::vector3Str(transform->get_position()) + ") (" + Sombrero::QuaternionStr(transform->get_rotation()) + ") (" + Sombrero::vector3Str(transform->get_localScale()) + ")";

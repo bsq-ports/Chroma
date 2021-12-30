@@ -61,7 +61,7 @@ public:
                 trackLaneRingsManager->rings = Array<GlobalNamespace::TrackLaneRing *>::New();
             }
 
-            return GetRotation(trackLaneRingsManager->rings->get(0));
+            return GetRotation(trackLaneRingsManager->rings.get(0));
         }
 
         float GetFirstRingDestinationRotationAngleCpp() {
@@ -72,7 +72,7 @@ public:
                 trackLaneRingsManager->rings = Array<GlobalNamespace::TrackLaneRing *>::New();
             }
 
-            return GetDestinationRotation(trackLaneRingsManager->rings->get(0));
+            return GetDestinationRotation(trackLaneRingsManager->rings.get(0));
         }
 
         DECLARE_INSTANCE_METHOD(void, AddRingRotationEffectF, float angle, float step, float propagationSpeed, float flexySpeed);

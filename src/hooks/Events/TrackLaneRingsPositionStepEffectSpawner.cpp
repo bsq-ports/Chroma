@@ -66,13 +66,13 @@ MAKE_HOOK_MATCH(TrackLaneRingsPositionStepEffectSpawner_HandleBeatmapObjectCallb
 
     self->prevWasMinStep = !self->prevWasMinStep;
     auto rings = self->trackLaneRingsManager->rings;
-    for (int i = 0; i < rings->Length(); i++)
+    for (int i = 0; i < rings.Length(); i++)
     {
         float destPosZ = (float)i * num;
         static auto SetPosition = FPtrWrapper<&GlobalNamespace::TrackLaneRing::SetPosition>::get();
 
         float moveSpeed = GetPrecisionSpeed(self->moveSpeed, beatmapEventData);
-        SetPosition(rings->get(i), destPosZ, moveSpeed);
+        SetPosition(rings.get(i), destPosZ, moveSpeed);
     }
 
 }

@@ -24,7 +24,7 @@ Chroma::GameObjectInfo::GameObjectInfo(UnityEngine::GameObject *gameObject) {
         {
             // Why doesnt GetSiblingIndex work on root objects?
             auto rootGameObjects = transformGameObject->get_scene().GetRootGameObjects();
-            index = rootGameObjects->IndexOf(transformGameObject);
+            index = rootGameObjects.IndexOf(transformGameObject);
         }
 
         nameList.push_back("[" + std::to_string(index) + "]" + to_utf8(csstrtostr(transform->get_name())));

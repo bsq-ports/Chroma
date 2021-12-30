@@ -34,7 +34,7 @@ namespace Chroma {
         GlobalNamespace::ParametricBoxFakeGlowController *_obstacleFakeGlow;
         float _addColorMultiplier;
         float _obstacleCoreLerpToWhiteFactor;
-        std::span<GlobalNamespace::MaterialPropertyBlockController *> _materialPropertyBlockControllers;
+        ArrayW<GlobalNamespace::MaterialPropertyBlockController *> _materialPropertyBlockControllers;
 
 
         explicit ObstacleColorizer(GlobalNamespace::ObstacleControllerBase *obstacleController);

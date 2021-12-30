@@ -44,11 +44,11 @@ EnvironmentLightDataT GreenDayGrenadeEnvironment::getEnvironmentLights() {
         {6, 5 },
     }},
     {4, {
-        {1, 6 },
-        {2, 12 },
-        {3, 13 },
+        {1, -1 },
+        {2, 11 },
+        {3, 12 },
         {4, 5 },
-        {5, 8 },
+        {5, 7 },
     }},
     {5, {
     }},

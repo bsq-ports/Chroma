@@ -12,10 +12,10 @@ using namespace System::Collections;
 
 LegacyLightHelper::ColorMap LegacyLightHelper::LegacyColorEvents = LegacyLightHelper::ColorMap();
 
-void LegacyLightHelper::Activate(const std::vector<GlobalNamespace::BeatmapEventData*>& eventData) {
+void LegacyLightHelper::Activate(ArrayW<GlobalNamespace::BeatmapEventData*> eventData) {
     static auto contextLogger = getLogger().WithContext(ChromaLogger::LegacyLightColor);
 
-    LegacyColorEvents = LegacyLightHelper::ColorMap(eventData.size());
+    LegacyColorEvents = LegacyLightHelper::ColorMap(eventData.Length());
     debugSpamLog(contextLogger, "Got the events, checking for legacy %d", eventData.size());
     for (auto& d : eventData)
     {

@@ -1,6 +1,10 @@
 # include some defines automatically made by qpm
 include(qpm_defines.cmake)
 
+# Enable link time optimization
+# In my experience, this can be highly unstable but it nets a huge size optimization and likely performance
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+
 cmake_minimum_required(VERSION 3.21)
 project(${COMPILE_ID})
 
@@ -19,6 +23,7 @@ add_compile_options(-O3)
 add_compile_definitions(VERSION=\"${MOD_VERSION}\")
 add_compile_definitions(ID=\"${MOD_ID}\")
 add_compile_definitions(MOD_ID=\"${MOD_ID}\")
+add_compile_definitions(USE_CODEGEN_FIELDS)
 add_compile_definitions(DEBUGB=1) # disable debug logs
 
 # recursively get all src files

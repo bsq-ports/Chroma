@@ -55,6 +55,26 @@ namespace Chroma {
             return std::nullopt;
         }
 
+        static std::optional<int> GetActiveTableValueReverse(int type, int id) {
+            if (activeTable) {
+                auto &table = activeTable.value();
+
+                auto typeTableIt = table.find(type);
+
+                if (typeTableIt == table.end()) {
+                    return std::nullopt;
+                }
+
+                const auto &typeTable = typeTableIt->second;
+                for (auto const& [key, value] : typeTable) {
+                    if (value == id)
+                        return key;
+                }
+            }
+
+            return std::nullopt;
+        }
+
         static void SetEnvironment(const std::string& environmentName);
 
         static void InitTable();

@@ -29,9 +29,8 @@ void Chroma::ChromaObjectDataManager::deserialize(GlobalNamespace::IReadonlyBeat
         auto beatmapLineData = il2cpp_utils::cast<GlobalNamespace::BeatmapLineData>(beatmapLines->get(i));
 
         if (beatmapLineData && beatmapLineData->beatmapObjectsData) {
-            auto beatmapObjectsDataLength = beatmapLineData->beatmapObjectsData->items->Length();
-            for (int j = 0; j < beatmapObjectsDataLength; j++) {
-                auto beatmapObjectData = beatmapLineData->beatmapObjectsData->items->get(j);
+            for (auto beatmapObjectData : beatmapLineData->beatmapObjectsData->items) {
+
 
                 if (!beatmapObjectData) continue;
 

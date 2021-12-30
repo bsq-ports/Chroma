@@ -96,16 +96,14 @@ void SaberColorizer::Refresh() {
     _lastColor = color;
     if (!IsColorable(_saberModelController))
     {
-        Array<GlobalNamespace::SetSaberGlowColor*>* _setSaberGlowColors = _saberModelController->setSaberGlowColors;
-        Array<GlobalNamespace::SetSaberFakeGlowColor*>* _setSaberFakeGlowColors = _saberModelController->setSaberFakeGlowColors;
+        auto _setSaberGlowColors = _saberModelController->setSaberGlowColors;
+        auto _setSaberFakeGlowColors = _saberModelController->setSaberFakeGlowColors;
 
         auto saberTrail = _saberTrail;
         saberTrail->color = (color * _trailTintColor).Linear();
 
         if (_setSaberGlowColors) {
-            for (int i = 0; i < _setSaberGlowColors->Length(); i++) {
-                auto setSaberGlowColor = _setSaberGlowColors->get(i);
-
+            for (auto setSaberGlowColor : _setSaberGlowColors) {
                 if (!setSaberGlowColor)
                     continue;
 
@@ -117,8 +115,8 @@ void SaberColorizer::Refresh() {
 
                 auto propertyTintColorPairs = setSaberGlowColor->propertyTintColorPairs;
 
-                if (propertyTintColorPairs && propertyTintColorPairs->Length() > 0) {
-                    for (auto &propertyTintColorPair : propertyTintColorPairs->ref_to()) {
+                if (propertyTintColorPairs) {
+                    for (auto &propertyTintColorPair : propertyTintColorPairs) {
                         if (propertyTintColorPair)
                             SetColor(materialPropertyBlock, propertyTintColorPair->property, color * Sombrero::FastColor(propertyTintColorPair->tintColor));
                     }
@@ -130,8 +128,7 @@ void SaberColorizer::Refresh() {
         }
 
         if (_setSaberFakeGlowColors) {
-            for (int i = 0; i < _setSaberFakeGlowColors->Length(); i++) {
-                auto setSaberFakeGlowColor = _setSaberFakeGlowColors->get(i);
+            for (auto setSaberFakeGlowColor : _setSaberFakeGlowColors) {
                 if (!setSaberFakeGlowColor) continue;
 
                 auto parametric3SliceSprite = setSaberFakeGlowColor->parametric3SliceSprite;

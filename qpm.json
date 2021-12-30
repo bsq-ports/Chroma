@@ -4,7 +4,7 @@
   "info": {
     "name": "Chroma",
     "id": "chroma",
-    "version": "0.1.0",
+    "version": "2.5.7",
     "url": "https://github.com/bsq-ports/Chroma",
     "additionalData": {
       "headersOnly": true,
@@ -14,7 +14,7 @@
   "dependencies": [
     {
       "id": "beatsaber-hook",
-      "versionRange": "^2.3.2",
+      "versionRange": "^3.0",
       "additionalData": {
         "extraFiles": [
           "src/inline-hook"
@@ -23,14 +23,14 @@
     },
     {
       "id": "custom-types",
-      "versionRange": "^0.12.0",
+      "versionRange": "^0.14.0",
       "additionalData": {
         "private": true
       }
     },
     {
       "id": "codegen",
-      "versionRange": "^0.14.0",
+      "versionRange": "^0.18.2",
       "additionalData": {}
     },
     {
@@ -49,7 +49,7 @@
     },
     {
       "id": "questui",
-      "versionRange": "^0.11.1",
+      "versionRange": "^0.12",
       "additionalData": {
         "private": true
       }
@@ -95,6 +95,11 @@
     {
       "id": "modloader",
       "versionRange": "*",
+      "additionalData": {}
+    },
+    {
+      "id": "libil2cpp",
+      "versionRange": "^0.2.3",
       "additionalData": {}
     }
   ],
