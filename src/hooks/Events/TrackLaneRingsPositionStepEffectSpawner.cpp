@@ -18,10 +18,10 @@ static float GetPrecisionStep(float const defaultF, GlobalNamespace::BeatmapEven
     auto it = map.find(beatmapEventData);
 
     if (it != map.end()) {
-        auto chromaData = it->second;
+        auto const& chromaData = it->second;
 
-        if (chromaData->Step) {
-            return chromaData->Step.value();
+        if (chromaData.Step) {
+            return chromaData.Step.value();
         }
     }
 
@@ -34,10 +34,10 @@ static float GetPrecisionSpeed(float const defaultF, GlobalNamespace::BeatmapEve
     auto it = map.find(beatmapEventData);
 
     if (it != map.end()) {
-        auto chromaData = it->second;
+        auto const& chromaData = it->second;
 
-        if (chromaData->Speed) {
-            return chromaData->Speed.value();
+        if (chromaData.Speed) {
+            return chromaData.Speed.value();
         }
     }
 

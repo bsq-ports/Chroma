@@ -47,7 +47,7 @@ EXPOSE_API(getNoteControllerColorSafe, OptColor, NoteController* noteController,
     if (it == ChromaObjectDataManager::ChromaObjectDatas.end())
         return OptColorNull;
 
-    auto color = it->second->Color;
+    auto color = it->second.Color;
 
     if (!color)
         return OptColorNull;

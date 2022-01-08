@@ -48,7 +48,7 @@ MAKE_HOOK_MATCH(
 
     auto chromaData = ChromaObjectDataManager::ChromaObjectDatas.find(obstacleData);
     if (chromaData != ChromaObjectDataManager::ChromaObjectDatas.end()) {
-        auto const &color = chromaData->second->Color;
+        auto const &color = chromaData->second.Color;
 
         ObstacleColorizer::ColorizeObstacle(self, color);
     }
@@ -74,8 +74,8 @@ MAKE_HOOK_MATCH(
 
     auto chromaData = ChromaObjectDataManager::ChromaObjectDatas.find(self->obstacleData);
     if (chromaData != ChromaObjectDataManager::ChromaObjectDatas.end()) {
-        auto const &tracks = chromaData->second->Tracks;
-        auto const &pathPointDefinition = chromaData->second->LocalPathColor;
+        auto const &tracks = chromaData->second.Tracks;
+        auto const &pathPointDefinition = chromaData->second.LocalPathColor;
         if (!tracks.empty() || pathPointDefinition) {
             float jumpDuration = self->move2Duration;
             float elapsedTime =

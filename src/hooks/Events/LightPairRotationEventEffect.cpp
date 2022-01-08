@@ -74,7 +74,7 @@ MAKE_HOOK_MATCH(
         return;
     }
 
-    auto chromaData = chromaIt->second;
+    auto const& chromaData = chromaIt->second;
 
 
     bool isLeftEvent = beatmapEventData->type == self->eventL;
@@ -83,9 +83,9 @@ MAKE_HOOK_MATCH(
                                                                                  : self->rotationDataR;
 
 
-    bool lockPosition = chromaData->LockPosition;
-    float precisionSpeed = chromaData->Speed.value_or(beatmapEventData->value);
-    std::optional<int> dir = chromaData->Direction;
+    bool lockPosition = chromaData.LockPosition;
+    float precisionSpeed = chromaData.Speed.value_or(beatmapEventData->value);
+    std::optional<int> dir = chromaData.Direction;
 
     if (dir) {
         switch (*dir) {

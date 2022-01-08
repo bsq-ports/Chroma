@@ -38,17 +38,17 @@ MAKE_HOOK_MATCH(
         return;
     }
 
-    auto chromaData = std::static_pointer_cast<ChromaEventData>(chromaIt->second);
+    auto const& chromaData = chromaIt->second;
 
 
     bool isLeftEvent = self->event == BeatmapEventType::Event12;
 
 
-    bool lockPosition = chromaData->LockPosition;
+    bool lockPosition = chromaData.LockPosition;
 
-    float precisionSpeed = chromaData->Speed.value_or(beatmapEventData->value);
+    float precisionSpeed = chromaData.Speed.value_or(beatmapEventData->value);
 
-    std::optional<int> dir = chromaData->Direction;
+    std::optional<int> dir = chromaData.Direction;
 
     float direction = (Sombrero::RandomFast::randomNumber() > 0.5f) ? 1.0f : -1.0f;
     if (dir) {

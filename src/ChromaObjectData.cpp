@@ -35,37 +35,29 @@ void Chroma::ChromaObjectDataManager::deserialize(GlobalNamespace::IReadonlyBeat
 
                 if (!beatmapObjectData) continue;
 
-                std::shared_ptr<ChromaObjectData> chromaObjectData;
+                ChromaObjectData chromaObjectData;
 
-                CustomJSONData::JSONWrapper* objectDynData = nullptr;
+                CustomJSONData::JSONWrapper *objectDynData = nullptr;
 
                 static auto CustomNoteDataKlass = classof(CustomJSONData::CustomNoteData *);
                 static auto CustomObstacleDataKlass = classof(CustomJSONData::CustomObstacleData *);
                 static auto CustomWaypointDataKlass = classof(CustomJSONData::CustomWaypointData *);
 
                 if (ASSIGNMENT_CHECK(CustomNoteDataKlass, beatmapObjectData->klass)) {
-                    debugSpamLog(contextLogger, "Custom note %s", il2cpp_utils::ClassStandardName(beatmapObjectData->klass).c_str());
+                    debugSpamLog(contextLogger, "Custom note %s",
+                                 il2cpp_utils::ClassStandardName(beatmapObjectData->klass).c_str());
                     auto *customNoteData = static_cast<CustomJSONData::CustomNoteData *>(beatmapObjectData);
 
                     objectDynData = customNoteData->customData;
 
-                    auto data = std::make_shared<ChromaNoteData>();
-
-                    data->Color = ChromaUtilities::GetColorFromData(objectDynData->value);
-                    data->DisableSpawnEffect = getIfExists<bool>(objectDynData->value, DISABLESPAWNEFFECT);
-
-                    chromaObjectData = data;
-                } else if (ASSIGNMENT_CHECK(CustomObstacleDataKlass,beatmapObjectData->klass)) {
+                    chromaObjectData.Color = ChromaUtilities::GetColorFromData(objectDynData->value);
+                    chromaObjectData.DisableSpawnEffect = getIfExists<bool>(objectDynData->value, DISABLESPAWNEFFECT);
+                } else if (ASSIGNMENT_CHECK(CustomObstacleDataKlass, beatmapObjectData->klass)) {
                     debugSpamLog(contextLogger, "Custom obstacle");
                     auto *customObstacleData = static_cast<CustomJSONData::CustomObstacleData *>(beatmapObjectData);
 
                     objectDynData = customObstacleData->customData;
-
-                    auto data = std::make_shared<ChromaObjectData>();
-
-                    data->Color = ChromaUtilities::GetColorFromData(objectDynData->value);
-
-                    chromaObjectData = data;
+                    chromaObjectData.Color = ChromaUtilities::GetColorFromData(objectDynData->value);
                 }
 //                else if (false && ASSIGNMENT_CHECK(CustomWaypointDataKlass,beatmapObjectData->klass)) {
 //                    debugSpamLog(contextLogger, "Custom waypoint");
@@ -85,30 +77,27 @@ void Chroma::ChromaObjectDataManager::deserialize(GlobalNamespace::IReadonlyBeat
 //                }
                 else continue;
 
-                if (chromaObjectData) {
-                    if (objectDynData->value) {
-                        rapidjson::Value &customData = *objectDynData->value;
-                        auto animationObjectDyn = customData.FindMember(Chroma::ANIMATION);
-                        if (animationObjectDyn != customData.MemberEnd()) {
-                            PointDefinition *anonPointDef = nullptr;
-                            PointDefinition *localColor = Animation::TryGetPointData(beatmapAD, anonPointDef,
-                                                                                     animationObjectDyn->value, Chroma::COLOR);
 
-                            if (anonPointDef) {
-                                beatmapAD.anonPointDefinitions.push_back(anonPointDef);
-                            }
+                if (objectDynData && objectDynData->value) {
+                    rapidjson::Value const& customData = *objectDynData->value;
+                    auto animationObjectDyn = customData.FindMember(Chroma::ANIMATION);
+                    if (animationObjectDyn != customData.MemberEnd()) {
+                        PointDefinition *anonPointDef = nullptr;
+                        PointDefinition *localColor = Animation::TryGetPointData(beatmapAD, anonPointDef,
+                                                                                 animationObjectDyn->value,
+                                                                                 Chroma::COLOR);
 
-                            chromaObjectData->LocalPathColor = localColor ? std::make_optional(localColor)
-                                                                          : std::nullopt;
+                        if (anonPointDef) {
+                            beatmapAD.anonPointDefinitions.push_back(anonPointDef);
                         }
-                    }
-                    auto &tracks = TracksAD::getAD(objectDynData).tracks;
-                    chromaObjectData->Tracks = tracks;
 
-                    debugSpamLog(contextLogger,"Adding to list");
-                    ChromaObjectDatas[beatmapObjectData] = chromaObjectData;
-                    debugSpamLog(contextLogger,"Added to list");
+                        chromaObjectData.LocalPathColor = localColor ? std::make_optional(localColor): std::nullopt;
+                    }
                 }
+                auto &tracks = TracksAD::getAD(objectDynData).tracks;
+                chromaObjectData.Tracks = tracks;
+
+                ChromaObjectDatas.try_emplace(beatmapObjectData, std::move(chromaObjectData));
             }
         }
     }

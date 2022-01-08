@@ -31,22 +31,18 @@ MAKE_HOOK_MATCH(
         void,
         NoteController * self
 ) {
-    static auto MultiplayerConnectedPlayerObstacleControllerKlass = classof(
-            MultiplayerConnectedPlayerObstacleController*);
-
     NoteController_Update(self);
 
     // Do nothing if Chroma shouldn't run
-    if (!ChromaController::DoChromaHooks() ||
-        ASSIGNMENT_CHECK(MultiplayerConnectedPlayerObstacleControllerKlass, self->klass)) {
+    if (!ChromaController::DoChromaHooks() || !ChromaController::DoColorizerSabers()) {
         return;
     }
 
 
     auto chromaData = ChromaObjectDataManager::ChromaObjectDatas.find(self->noteData);
     if (chromaData != ChromaObjectDataManager::ChromaObjectDatas.end()) {
-        auto tracks = chromaData->second->Tracks;
-        auto pathPointDefinition = chromaData->second->LocalPathColor;
+        auto const& tracks = chromaData->second.Tracks;
+        auto pathPointDefinition = chromaData->second.LocalPathColor;
         if (!tracks.empty() || pathPointDefinition) {
             NoteJump* noteJump = self->noteMovement->jump;
             float jumpDuration = noteJump->jumpDuration;

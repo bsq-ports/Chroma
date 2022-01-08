@@ -29,9 +29,9 @@ MAKE_HOOK_MATCH(ColorNoteVisuals_HandleNoteControllerDidInit,
         auto it = ChromaObjectDataManager::ChromaObjectDatas.find(NoteControllerCast.value()->noteData);
 
         if (it != ChromaObjectDataManager::ChromaObjectDatas.end()) {
-            auto chromaData = std::static_pointer_cast<ChromaNoteData>(it->second);
+            auto const& chromaData = it->second;
 
-            std::optional<Sombrero::FastColor> const& color = chromaData->Color;
+            std::optional<Sombrero::FastColor> const& color = chromaData.Color;
 
             NoteColorizer::ColorizeNote(noteController, color);
         }

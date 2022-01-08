@@ -34,7 +34,7 @@ MAKE_HOOK_MATCH(
 
     auto chromaData = ChromaObjectDataManager::ChromaObjectDatas.find(noteData);
     if (chromaData != ChromaObjectDataManager::ChromaObjectDatas.end()) {
-        auto const& color = chromaData->second->Color;
+        auto const& color = chromaData->second.Color;
 
         BombColorizer::ColorizeBomb(self, color);
     }

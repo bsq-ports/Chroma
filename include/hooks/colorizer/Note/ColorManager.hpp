@@ -15,12 +15,11 @@ namespace Chroma {
         inline static std::optional<Sombrero::FastColor> _noteColorOverride;
 
         static void EnableColorOverride(GlobalNamespace::NoteControllerBase *noteController) {
-            if (!ChromaController::DoColorizerSabers()) {
+            if (ChromaController::DoColorizerSabers()) {
+                _noteColorOverride = NoteColorizer::GetNoteColorizer(noteController)->getColor();
+            } else {
                 _noteColorOverride = std::nullopt;
-                return;
             }
-
-            _noteColorOverride = NoteColorizer::GetNoteColorizer(noteController)->getColor();
         }
 
         static void DisableColorOverride() {

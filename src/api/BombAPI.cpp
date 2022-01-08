@@ -46,7 +46,7 @@ EXPOSE_API(getBombNoteControllerColorSafe, OptColor, BombNoteController* BombNot
     if (it == ChromaObjectDataManager::ChromaObjectDatas.end())
         return OptColorNull;
 
-    auto color = it->second->Color;
+    auto color = it->second.Color;
 
     if (!color)
         return OptColorNull;

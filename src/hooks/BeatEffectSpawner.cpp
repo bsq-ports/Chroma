@@ -30,8 +30,8 @@ MAKE_HOOK_MATCH(BeatEffectSpawner_HandleNoteDidStartJump, &BeatEffectSpawner::Ha
     auto it = ChromaObjectDataManager::ChromaObjectDatas.find(noteController->noteData);
 
     if (it != ChromaObjectDataManager::ChromaObjectDatas.end()) {
-        auto chromaData = std::static_pointer_cast<ChromaNoteData>(it->second);
-        std::optional<bool> disable = chromaData->DisableSpawnEffect;
+        auto const& chromaData = it->second;
+        std::optional<bool> disable = chromaData.DisableSpawnEffect;
 
         if (disable && disable.value()) {
             return;

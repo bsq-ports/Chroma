@@ -14,7 +14,14 @@
 
 namespace Chroma {
     class ChromaEventData {
+    private:
+        ChromaEventData(const ChromaEventData&) = default;
+        friend class std::unordered_map<GlobalNamespace::BeatmapEventData *, ChromaEventData>;
+        friend class std::pair<GlobalNamespace::BeatmapEventData *const, Chroma::ChromaEventData>;
+
     public:
+        ChromaEventData() = default;
+
         std::optional<std::vector<int>> LightID;
 
         std::optional<std::vector<int>> PropID;
@@ -64,7 +71,7 @@ namespace Chroma {
 
     class ChromaEventDataManager {
     public:
-        typedef std::unordered_map<GlobalNamespace::BeatmapEventData *, std::shared_ptr<ChromaEventData>> EventMapType;
+        using EventMapType = std::unordered_map<GlobalNamespace::BeatmapEventData *, ChromaEventData>;
         inline static EventMapType ChromaEventDatas;
 
         static void deserialize(GlobalNamespace::IReadonlyBeatmapData *beatmapData);

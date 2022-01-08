@@ -35,7 +35,7 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
             debugSpamLog(contextLogger, "Light gradient");
 
             // ASSIGN
-            auto chromaEventData = std::make_shared<ChromaEventData>();
+            ChromaEventData chromaEventData;
 
             if (optionalDynData) {
                 rapidjson::Value const &unwrappedData = *optionalDynData;
@@ -92,7 +92,7 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
                         getLogger().error("Light id type is not array or number!");
                     }
 
-                    chromaEventData->LightID = lightIds;
+                    chromaEventData.LightID = lightIds;
                 }
 
 
@@ -129,40 +129,40 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
                         }
                     }
 
-                    chromaEventData->PropID = propIds;
+                    chromaEventData.PropID = propIds;
                 }
 
                 // Light stuff
-                chromaEventData->ColorData = ChromaUtilities::GetColorFromData(optionalDynData);
-                chromaEventData->GradientObject = gradientObject;
+                chromaEventData.ColorData = ChromaUtilities::GetColorFromData(optionalDynData);
+                chromaEventData.GradientObject = gradientObject;
 
                 // RING STUFF
-                chromaEventData->NameFilter = getIfExists<std::string>(optionalDynData, NAMEFILTER);
-                chromaEventData->Direction = getIfExists<int>(optionalDynData, DIRECTION);
-                chromaEventData->CounterSpin = getIfExists<bool>(optionalDynData, COUNTERSPIN);
-                chromaEventData->Reset = getIfExists<bool>(optionalDynData, RESET);
+                chromaEventData.NameFilter = getIfExists<std::string>(optionalDynData, NAMEFILTER);
+                chromaEventData.Direction = getIfExists<int>(optionalDynData, DIRECTION);
+                chromaEventData.CounterSpin = getIfExists<bool>(optionalDynData, COUNTERSPIN);
+                chromaEventData.Reset = getIfExists<bool>(optionalDynData, RESET);
 
                 std::optional<float> speed = getIfExists<float>(optionalDynData, SPEED);
 
                 if (!speed)
                     speed = getIfExists<float>(optionalDynData, PRECISESPEED);
 
-                chromaEventData->Prop = getIfExists<float>(optionalDynData, PROP);
-                chromaEventData->Step = getIfExists<float>(optionalDynData, STEP);
-                chromaEventData->Speed = speed;
-                chromaEventData->Rotation = getIfExists<float>(optionalDynData, ROTATION);
+                chromaEventData.Prop = getIfExists<float>(optionalDynData, PROP);
+                chromaEventData.Step = getIfExists<float>(optionalDynData, STEP);
+                chromaEventData.Speed = speed;
+                chromaEventData.Rotation = getIfExists<float>(optionalDynData, ROTATION);
             }
 
-            chromaEventData->StepMult = getIfExists<float>(optionalDynData, STEPMULT, 1.0f);
-            chromaEventData->PropMult = getIfExists<float>(optionalDynData, PROPMULT, 1.0f);
-            chromaEventData->SpeedMult = getIfExists<float>(optionalDynData, SPEEDMULT, 1.0f);
+            chromaEventData.StepMult = getIfExists<float>(optionalDynData, STEPMULT, 1.0f);
+            chromaEventData.PropMult = getIfExists<float>(optionalDynData, PROPMULT, 1.0f);
+            chromaEventData.SpeedMult = getIfExists<float>(optionalDynData, SPEEDMULT, 1.0f);
 
 
             // Light stuff again
-            chromaEventData->LockPosition = getIfExists<bool>(optionalDynData, LOCKPOSITION, false);
+            chromaEventData.LockPosition = getIfExists<bool>(optionalDynData, LOCKPOSITION, false);
 
 
-            ChromaEventDatas[beatmapEventData] = chromaEventData;
+            ChromaEventDatas.try_emplace(beatmapEventData, std::move(chromaEventData));
         }
     }
 }

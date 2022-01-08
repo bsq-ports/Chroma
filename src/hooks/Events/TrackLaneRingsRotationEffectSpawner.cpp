@@ -140,7 +140,7 @@ MAKE_HOOK_MATCH(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCallbackC
             return;
         }
 
-        auto chromaData = chromaIt->second;
+        auto const& chromaData = chromaIt->second;
 
 
         debugSpamLog(contextLogger, "Doing stuff with custom Data ring");
@@ -165,14 +165,14 @@ MAKE_HOOK_MATCH(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCallbackC
             debugSpamLog(contextLogger, "Got the data");
             auto selfName = to_utf8(csstrtostr(self->get_name()));
 
-            auto nameFilter = chromaData->NameFilter;
+            auto nameFilter = chromaData.NameFilter;
             // If not equal with ignore case
             if (nameFilter && stringCompare(selfName, nameFilter.value()) != 0) {
                 debugSpamLog(contextLogger, "Name filter ignored");
                 return;
             }
 
-            auto dir = chromaData->Direction;
+            auto dir = chromaData.Direction;
 
             // https://github.com/Aeroluna/Chroma/commit/3900969d3fef1eaeea745bcfc23c61bfbe525586#diff-e83fa5da7e2e725f2cfb2ee5a6d6a085b2065a95e0d4757e01fe3c29f0fa4024
             bool rotRight;
@@ -182,14 +182,14 @@ MAKE_HOOK_MATCH(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCallbackC
                 rotRight = dir.value() == 1;
             }
 
-            auto counterSpinV = chromaData->CounterSpin;
+            auto counterSpinV = chromaData.CounterSpin;
             if (counterSpinV && counterSpinV.value()) {
                 if (selfName.find("Big") == std::string::npos) {
                     rotRight = !rotRight;
                 }
             }
 
-            auto reset = chromaData->Reset;
+            auto reset = chromaData.Reset;
             if (reset && reset.value()) {
                 debugSpamLog(contextLogger, "Reset spawn, returning");
                 TriggerRotation(self->trackLaneRingsRotationEffect, rotRight, originalRotation, 0, 50, 50);
@@ -198,14 +198,14 @@ MAKE_HOOK_MATCH(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCallbackC
 
             debugSpamLog(contextLogger, "Getting the last values");
 
-            float step = chromaData->Step.value_or(rotationStep);
-            float prop = chromaData->Prop.value_or(originalRotationPropagationSpeed);
-            float speed = chromaData->Speed.value_or(originalRotationFlexySpeed);
-            float rotation = chromaData->Rotation.value_or(originalRotation);
+            float step = chromaData.Step.value_or(rotationStep);
+            float prop = chromaData.Prop.value_or(originalRotationPropagationSpeed);
+            float speed = chromaData.Speed.value_or(originalRotationFlexySpeed);
+            float rotation = chromaData.Rotation.value_or(originalRotation);
 
-            float stepMult = chromaData->SpeedMult;
-            float propMult = chromaData->PropMult;
-            float speedMult = chromaData->SpeedMult;
+            float stepMult = chromaData.SpeedMult;
+            float propMult = chromaData.PropMult;
+            float speedMult = chromaData.SpeedMult;
 
             TriggerRotation(self->trackLaneRingsRotationEffect, rotRight, rotation, step * stepMult, prop * propMult,
                             speed * speedMult);
