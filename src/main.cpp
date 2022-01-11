@@ -63,7 +63,11 @@ void DidActivate(HMUI::ViewController* self, bool firstActivation, bool addedToH
 
         view = new ViewComponent(self->get_transform(), {
             new ScrollableContainer({
-                Chroma::UIUtils::buildMainUI<true>()
+                new Text("Chroma settings."),
+                new Text("Settings are saved when changed."),
+                new Text("Not all settings have been tested or implemented."),
+                new Text("Please use with caution."),
+                Chroma::UIUtils::buildMainUI<false>()
             })
         });
     }

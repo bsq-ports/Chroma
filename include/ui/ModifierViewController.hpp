@@ -6,6 +6,23 @@
 #include "questui_components/shared/components/settings/ToggleSetting.hpp"
 #include "questui_components/shared/components/Text.hpp"
 #include "UnityEngine/MonoBehaviour.hpp"
+#pragma region QuestUI
+namespace QuestUI {
+    UnityEngine::UI::Toggle* CreateModifierButton(UnityEngine::Transform* parent, std::u16string_view buttonText, bool currentValue, UnityEngine::Sprite* iconSprite, std::function<void(bool)> const& onClick = nullptr, UnityEngine::Vector2 anchoredPosition = {0,0});
+
+    inline UnityEngine::UI::Toggle* CreateModifierButton(UnityEngine::Transform* parent, std::u16string_view buttonText, bool currentValue, std::function<void(bool)> const& onClick = nullptr, UnityEngine::Vector2 anchoredPosition = {0,0}) {
+        return CreateModifierButton(parent, buttonText, currentValue, nullptr, onClick, anchoredPosition);
+    }
+
+    inline UnityEngine::UI::Toggle* CreateModifierButton(UnityEngine::Transform* parent, std::string_view buttonText, bool currentValue, std::function<void(bool)> const& onClick = nullptr, UnityEngine::Vector2 anchoredPosition = {0,0}) {
+        return CreateModifierButton(parent, to_utf16(buttonText), currentValue, nullptr, onClick, anchoredPosition);
+    }
+
+    inline UnityEngine::UI::Toggle* CreateModifierButton(UnityEngine::Transform* parent, std::string_view buttonText, bool currentValue, UnityEngine::Sprite* iconSprite, std::function<void(bool)> const& onClick = nullptr, UnityEngine::Vector2 anchoredPosition = {0,0}) {
+        return CreateModifierButton(parent, to_utf16(buttonText), currentValue, iconSprite, onClick, anchoredPosition);
+    }
+}
+#pragma endregion
 
 #include <vector>
 #include <string>
@@ -14,30 +31,70 @@
 #include "custom-types/shared/macros.hpp"
 #include "main.hpp"
 
+#pragma region QUC
+namespace QuestUI_Components {
+
+    using MutableToggleSettingsData = MutableSettingsData<bool>;
+
+    // TODO: Somehow this causes game buttons to be wide. How to fix?
+    class ModifierToggle : public BaseSetting<bool, ModifierToggle, MutableToggleSettingsData> {
+    public:
+        struct InitToggleSettingsData {
+            UnityEngine::Vector2 anchoredPosition = {0,0};
+            UnityEngine::Sprite* iconImage;
+        };
+
+        explicit ModifierToggle(std::string_view text, bool currentValue, OnCallback callback = nullptr,
+                               std::optional<InitToggleSettingsData> toggleData = std::nullopt)
+                : BaseSetting(text, currentValue, std::move(callback)),
+                  toggleInitData(toggleData) {}
+
+    protected:
+        void update() override;
+        Component* render(UnityEngine::Transform *parentTransform) override;
+
+        // render time
+        UnityEngine::UI::Toggle* uiToggle = nullptr;
+
+        // Constructor time
+        const std::optional<InitToggleSettingsData> toggleInitData;
+    };
+
+
+
+#if defined(AddConfigValue) || __has_include("config-utils/shared/config-utils.hpp")
+    using ConfigUtilsModifierToggleSetting = ConfigUtilsSetting<bool, ModifierToggle>;
+#endif
+}
+#pragma endregion
+
 namespace Chroma {
     namespace UIUtils {
-        template<bool HaveWarningText>
+        UnityEngine::Sprite* configToIcon(ConfigUtils::ConfigValue<bool> const& configValue);
+
+        template<bool GameplayModifier, typename... TArgs>
+        auto chromaToggleUI(ConfigUtils::ConfigValue<bool>& configValue, TArgs&&... args) {
+            using namespace QuestUI_Components;
+
+            if constexpr(GameplayModifier) {
+                ModifierToggle::InitToggleSettingsData initData;
+                initData.iconImage = configToIcon(configValue);
+                return new ConfigUtilsModifierToggleSetting(configValue, std::forward<TArgs>(args)..., initData);
+            } else {
+                return new ConfigUtilsToggleSetting(configValue, std::forward<TArgs>(args)...);
+            }
+        }
+
+        template<bool GameplayModifier>
         QuestUI_Components::MultiComponentGroup* buildMainUI() {
             using namespace QuestUI_Components;
 
-            std::vector<ComponentWrapper> warningText;
-
-            if constexpr (HaveWarningText) {
-                warningText = {
-                        new Text("Chroma settings."),
-                        new Text("Settings are saved when changed."),
-                        new Text("Not all settings have been tested or implemented."),
-                        new Text("Please use with caution.")
-                };
-            }
-
             return new MultiComponentGroup({
-                    new MultiComponentGroup(warningText),
-                    new ConfigUtilsToggleSetting(getChromaConfig().environmentEnhancementsEnabled),
-                    new ConfigUtilsToggleSetting(getChromaConfig().customColorEventsEnabled, [](ToggleSetting*, bool, UnityEngine::Transform*){
+                    chromaToggleUI<GameplayModifier>(getChromaConfig().environmentEnhancementsEnabled, [](auto*, bool, UnityEngine::Transform*){}),
+                    chromaToggleUI<GameplayModifier>(getChromaConfig().customColorEventsEnabled, [](auto*, bool, UnityEngine::Transform*){
                         setChromaEnv();
                     }),
-                   new ConfigUtilsToggleSetting(getChromaConfig().customNoteColors, [](ToggleSetting*, bool, UnityEngine::Transform*){
+                    chromaToggleUI<GameplayModifier>(getChromaConfig().customNoteColors, [](auto*, bool, UnityEngine::Transform*){
                        setChromaEnv();
                    })
             });
