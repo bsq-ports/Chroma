@@ -71,9 +71,9 @@ void Chroma::ChromaLightSwitchEventEffect::HandleBeatmapObjectCallbackController
                 debugSpamLog(contextLogger, "Color is legacy? %s", color ? "true" : "false");
 
 
-                auto const chromaData = chromaIt->second;
+                auto const& chromaData = chromaIt->second;
 
-                auto const lightMember = chromaData->LightID;
+                auto const lightMember = chromaData.LightID;
                 if (lightMember) {
                     auto const &lightIdData = *lightMember;
                     selectLights = lightColorizer->GetLightWithIds(lightIdData);
@@ -82,7 +82,7 @@ void Chroma::ChromaLightSwitchEventEffect::HandleBeatmapObjectCallbackController
 
 
                 // Prop ID is deprecated apparently.  https://github.com/Aeroluna/Chroma/commit/711cb19f7d03a1776a24cef52fd8ef6fd7685a2b#diff-b8fcfff3ebc4ceb7b43d8401d9f50750dc88326d0a87897c5593923e55b23879R41
-                auto propMember = chromaData->PropID;
+                auto propMember = chromaData.PropID;
                 if (propMember) {
                     auto const &propIDData = *propMember;
 
@@ -90,21 +90,21 @@ void Chroma::ChromaLightSwitchEventEffect::HandleBeatmapObjectCallbackController
                 }
 
 
-                auto gradient = chromaData->GradientObject;
+                auto gradient = chromaData.GradientObject;
                 if (gradient) {
                     color = ChromaGradientController::AddGradient(gradient.value(), beatmapEventData->type,
                                                                   beatmapEventData->time);
                 }
 
 
-                std::optional<Sombrero::FastColor> const &colorData = chromaData->ColorData;
+                std::optional<Sombrero::FastColor> const &colorData = chromaData.ColorData;
                 if (colorData) {
                     color = colorData;
                     ChromaGradientController::CancelGradient(beatmapEventData->type);
                 }
 
-                easing = chromaData->Easing;
-                lerpType = chromaData->LerpType;
+                easing = chromaData.Easing;
+                lerpType = chromaData.LerpType;
             }
 
 
@@ -193,7 +193,7 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, const std::optional<std::v
 
         auto CheckNextEventForFadeBetter = [previousEvent, tween, this, boost, previousValue, previousFloatValue, hard, easing, lerpType](){
             auto eventDataIt = ChromaEventDataManager::ChromaEventDatas.find(previousEvent);
-            auto eventData = eventDataIt != ChromaEventDataManager::ChromaEventDatas.end() ? eventDataIt->second : nullptr;
+            auto* eventData = eventDataIt != ChromaEventDataManager::ChromaEventDatas.end() ? &eventDataIt->second : nullptr;
 
             std::optional<std::unordered_map<int, BeatmapEventData*>> nextSameTypesDict;
 
@@ -220,7 +220,7 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, const std::optional<std::v
             Sombrero::FastColor nextColor = GetOriginalColor(nextValue, boost);
 
             eventDataIt = ChromaEventDataManager::ChromaEventDatas.find(*nextSameTypeEvent);
-            auto nextEventData = eventDataIt != ChromaEventDataManager::ChromaEventDatas.end() ? eventDataIt->second : nullptr;
+            auto nextEventData = eventDataIt != ChromaEventDataManager::ChromaEventDatas.end() ? &eventDataIt->second : nullptr;
 
             std::optional<Sombrero::FastColor> nextColorData = nextEventData ? nextEventData->ColorData : std::nullopt;
             if (ChromaController::DoChromaHooks() && nextColorData) {

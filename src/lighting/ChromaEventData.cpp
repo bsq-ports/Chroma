@@ -81,7 +81,7 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
                         easing = FunctionFromStr(*easingString);
                     }
 
-                    chromaEventData->Easing = easing;
+                    chromaEventData.Easing = easing;
                 }
 
                 auto lerpTypeStr = getIfExists<std::string>(optionalDynData, LERP_TYPE);
@@ -95,7 +95,7 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
                         lerpType = LerpTypeFromString(*easingString);
                     }
 
-                    chromaEventData->LerpType = lerpType;
+                    chromaEventData.LerpType = lerpType;
                 }
 
                 debugSpamLog(contextLogger, "Light ID");
@@ -205,14 +205,14 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
             continue;
 
         auto* customBeatmapEvent = static_cast<CustomJSONData::CustomBeatmapEventData *>(beatmapEventData);
-        auto const& currentEventData = chromaEventDataIt->second;
+        auto& currentEventData = chromaEventDataIt->second;
 // Horrible stupid logic to get next same type event per light id
-        if (currentEventData->LightID) {
+        if (currentEventData.LightID) {
             auto type = customBeatmapEvent->type;
-            auto &nextSameTypeEvent = currentEventData->NextSameTypeEvent;
+            auto &nextSameTypeEvent = currentEventData.NextSameTypeEvent;
 
 
-            for (int id: *currentEventData->LightID) {
+            for (int id: *currentEventData.LightID) {
                 if (i >= beatmapEventsLength - 1) {
                     continue;
                 }
@@ -227,14 +227,14 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
                     if (it == ChromaEventDatas.end())
                         return false;
 
-                    ChromaEventData* nextEventData = it->second.get();
-                    auto lightId = nextEventData->LightID;
+                    ChromaEventData const& nextEventData = it->second;
+                    auto lightId = nextEventData.LightID;
 
                     return lightId && std::find(lightId->begin(), lightId->end(), id) != lightId->end();
                 }, i + 1);
 
                 if (nextIndex != -1) {
-                    currentEventData->NextSameTypeEvent[id] = beatmapEvents->items.get(nextIndex);
+                    currentEventData.NextSameTypeEvent[id] = beatmapEvents->items.get(nextIndex);
                 } else {
                     int nextIndex = FindIndex(beatmapEventsRef.ref_to(), [type](GlobalNamespace::BeatmapEventData* n) {
                         if (n->type != type) {
@@ -244,11 +244,11 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
                         auto it = ChromaEventDatas.find(n);
 
 
-                        return it == ChromaEventDatas.end() || !it->second->LightID.has_value();
+                        return it == ChromaEventDatas.end() || !it->second.LightID.has_value();
                     }, i + 1);
 
                     if (nextIndex != -1) {
-                        currentEventData->NextSameTypeEvent[id] = beatmapEvents->items.get(nextIndex);
+                        currentEventData.NextSameTypeEvent[id] = beatmapEvents->items.get(nextIndex);
                     }
                 }
             }

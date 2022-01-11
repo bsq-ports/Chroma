@@ -7,6 +7,7 @@
 #include "UnityEngine/Color.hpp"
 #include "UnityEngine/GameObject.hpp"
 #include "UnityEngine/Resources.hpp"
+#include "tracks/shared/Animation/Animation.h"
 
 
 DEFINE_TYPE(Chroma, ChromaFogController);
@@ -15,6 +16,7 @@ using namespace Chroma;
 using namespace ChromaUtils;
 using namespace GlobalNamespace;
 using namespace UnityEngine;
+using namespace Animation;
 
 Chroma::ChromaFogController* ChromaFogController::_instance = nullptr;
 
