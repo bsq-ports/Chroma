@@ -61,6 +61,7 @@ namespace Chroma {
     inline const std::string COUNTERSPIN = "_counterSpin";
     inline const std::string DURATION = "_duration";
     inline const std::string EASING = "_easing";
+    inline const std::string LERP_TYPE = "_lerpType";
     inline const std::string STARTCOLOR = "_startColor";
     inline const std::string ENDCOLOR = "_endColor";
     inline const std::string PRECISESPEED = "_preciseSpeed";

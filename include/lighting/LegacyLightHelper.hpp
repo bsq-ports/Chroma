@@ -28,7 +28,7 @@ namespace Chroma {
         static ColorMap LegacyColorEvents;
 
         // internal
-        static void Activate(const std::vector<GlobalNamespace::BeatmapEventData*>& eventData);
+        static void Activate(ArrayW<GlobalNamespace::BeatmapEventData*> eventData);
 
         // internal
         static std::optional<Sombrero::FastColor> GetLegacyColor(GlobalNamespace::BeatmapEventData* beatmapEventData);

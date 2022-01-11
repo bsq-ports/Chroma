@@ -46,10 +46,10 @@ void ChromaFogController::AssignTrack(Track *track) {
 }
 
 void ChromaFogController::Awake() {
-    ::Array<BloomFogSO *> *fogs = Resources::FindObjectsOfTypeAll<BloomFogSO *>();
+    ArrayW<BloomFogSO *> fogs = Resources::FindObjectsOfTypeAll<BloomFogSO *>();
 
-    if (fogs && fogs->Length() > 0) {
-        bloomFog = fogs->get(0);
+    if (fogs && fogs.Length() > 0) {
+        bloomFog = fogs.get(0);
     }
 
     _transitionFogParams = ScriptableObject::CreateInstance<BloomFogEnvironmentParams*>();

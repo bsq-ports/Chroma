@@ -29,8 +29,9 @@ using namespace UnityEngine;
 using namespace Sombrero;
 using namespace Chroma;
 
-LightColorizer::LightColorizer(GlobalNamespace::LightSwitchEventEffect *lightSwitchEventEffect,
-                               GlobalNamespace::BeatmapEventType beatmapEventType)
+LightColorizer::LightColorizer(ChromaLightSwitchEventEffect *lightSwitchEventEffect,
+                               GlobalNamespace::BeatmapEventType beatmapEventType,
+                               LightWithIdManager* lightManager)
                                : _simpleColorSOs(COLOR_FIELDS),
                                _colors(COLOR_FIELDS),
                                _originalColors(),
@@ -39,26 +40,13 @@ LightColorizer::LightColorizer(GlobalNamespace::LightSwitchEventEffect *lightSwi
     static auto contextLogger = getLogger().WithContext(ChromaLogger::LightColorizer);
 
 
-
-    InitializeSO("_lightColor0", 0);
-    InitializeSO("_highlightColor0", 0);
-    InitializeSO("_lightColor1", 1);
-    InitializeSO("_highlightColor1", 1);
-    InitializeSO("_lightColor0Boost", 2);
-    InitializeSO("_highlightColor0Boost", 2);
-    InitializeSO("_lightColor1Boost", 3);
-    InitializeSO("_highlightColor1Boost", 3);
-
     // AAAAAA PROPAGATION STUFFF
-
-    auto lightManager = lightSwitchEventEffect->lightManager;
-    System::Collections::Generic::List_1<GlobalNamespace::ILightWithId *> *lightList = lightManager->lights->get(
-            (lightSwitchEventEffect)->lightsID);
-    Array<ILightWithId *> *lightArray = lightList->items;
+    System::Collections::Generic::List_1<GlobalNamespace::ILightWithId *> *lightList = lightManager->lights.get((lightSwitchEventEffect)->lightsID);
+    ArrayW<ILightWithId *> lightArray = lightList->items;
 
 
     Lights = std::vector<ILightWithId *>();
-    Lights.reserve(lightArray->Length());
+    Lights.reserve(lightArray.Length());
 
 
     // Keep track of order
@@ -69,60 +57,51 @@ LightColorizer::LightColorizer(GlobalNamespace::LightSwitchEventEffect *lightSwi
 
     auto managers = UnityEngine::Object::FindObjectsOfType<TrackLaneRingsManager *>();
 
-    for (int i = 0; i < lightArray->Length(); i++) {
-        auto light = lightArray->get(i);
+    for (auto light : lightArray) {
         if (light == nullptr) continue;
 
-        debugSpamLog(contextLogger, "Adding light to list");
         Lights.emplace_back(light);
 
         auto object = il2cpp_utils::cast<Il2CppObject>(light);
-        debugSpamLog(contextLogger, "Doing light %s", object->klass->name);
         auto monoBehaviour = il2cpp_utils::try_cast<MonoBehaviour>(object);
 
-        if (monoBehaviour) {
+        if (!monoBehaviour) continue;
 
-            int z = UnityEngine::Mathf::RoundToInt((*monoBehaviour)->get_transform()->get_position().z);
+        int z1 = UnityEngine::Mathf::RoundToInt((*monoBehaviour)->get_transform()->get_position().z);
 
-            auto ring = (*monoBehaviour)->GetComponentInParent<TrackLaneRing *>();
+        auto ring = (*monoBehaviour)->GetComponentInParent<TrackLaneRing *>();
 
-            if (ring) {
+        if (ring) {
+            TrackLaneRingsManager *mngr = nullptr;
+            auto indexR = 0;
 
-                TrackLaneRingsManager *mngr = nullptr;
-                auto indexR = 0;
-
-                for (int ii = 0; ii < managers->Length(); ii++) {
-                    auto m = managers->get(ii);
-
-                    if (m) {
-                        indexR = m->rings->IndexOf(ring);
-                        if (indexR >= 0) {
-                            mngr = m;
-                            break;
-                        }
+            for (auto m : managers) {
+                if (m) {
+                    indexR = m->rings.IndexOf(ring);
+                    if (indexR >= 0) {
+                        mngr = m;
+                        break;
                     }
                 }
-
-                if (mngr != nullptr)
-                    z = 1000 + indexR;
-
             }
 
-            debugSpamLog(contextLogger, "Grouping to %d", z);
-
-            std::vector<ILightWithId *> list;
-
-            auto it = lightsPreGroup.find(z);
-            // Not found
-            if (it == lightsPreGroup.end()) {
-                insertionOrder[index] = z;
-                index++;
-            } else list = it->second;
-
-            list.push_back(light);
-
-            lightsPreGroup.insert_or_assign(it, z, list);
+            if (mngr != nullptr) { z1 = 1000 + indexR; }
         }
+
+        debugSpamLog(contextLogger, "Grouping to %d", z1);
+
+        std::vector<ILightWithId *> list;
+
+        auto it = lightsPreGroup.find(z1);
+        // Not found
+        if (it == lightsPreGroup.end()) {
+            insertionOrder[index] = z1;
+            index++;
+        } else list = it->second;
+
+        list.push_back(light);
+
+        lightsPreGroup.insert_or_assign(it, z1, list);
     }
 
 
@@ -144,48 +123,40 @@ LightColorizer::LightColorizer(GlobalNamespace::LightSwitchEventEffect *lightSwi
     LightsPropagationGrouped = lightsPreGroupFinal;
 }
 
-std::shared_ptr<LightColorizer> LightColorizer::New(GlobalNamespace::LightSwitchEventEffect *lightSwitchEventEffect,GlobalNamespace::BeatmapEventType beatmapEventType) {
-    std::shared_ptr<LightColorizer> lightColorizer = std::shared_ptr<LightColorizer>(new LightColorizer(lightSwitchEventEffect, beatmapEventType));
+std::shared_ptr<LightColorizer> LightColorizer::New(ChromaLightSwitchEventEffect *lightSwitchEventEffect,GlobalNamespace::BeatmapEventType beatmapEventType, GlobalNamespace::LightWithIdManager* lightManager) {
+    auto lightColorizer = std::shared_ptr<LightColorizer>(new LightColorizer(lightSwitchEventEffect, beatmapEventType, lightManager));
 
     Colorizers[beatmapEventType.value] = lightColorizer;
     return lightColorizer;
 }
 
-void LightColorizer::GlobalColorize(bool refresh, std::array<std::optional<Sombrero::FastColor>, 4> const& colors) {
+
+
+void LightColorizer::GlobalColorize(bool refresh, std::optional<std::vector<GlobalNamespace::ILightWithId*>> const& lights, LightColorOptionalPalette const& colors) {
     for (int i = 0; i < colors.size(); i++)
     {
         GlobalColor[i] = colors[i];
     }
 
-    for (auto& valuePair : Colorizers)
+    for (auto& [_, colorizer] : Colorizers)
     {
+        colorizer->SetSOs(colorizer->getColor());
         // Allow light colorizer to not force color
-        if (refresh)
+        if (!refresh)
         {
-            valuePair.second->Refresh();
+            continue;
         }
-        else
-        {
-            valuePair.second->SetSOs(valuePair.second->getColor());
-        }
+
+        colorizer->Refresh(lights);
     }
 }
 
 void LightColorizer::RegisterLight(UnityEngine::MonoBehaviour *lightWithId, std::optional<int> lightId) {
-
-
-
     auto const RegisterLightWithID = [&lightId](ILightWithId* lightToRegister) {
         int type = lightToRegister->get_lightId() - 1;
         std::shared_ptr<LightColorizer> lightColorizer = GetLightColorizer((BeatmapEventType) type);
         auto index = lightColorizer->Lights.size();
         LightIDTableManager::RegisterIndex(type, index, lightId);
-
-//        int lightIndex = (int) lightColorizer->Lights.size();
-//
-//        while (lightColorizer->Lights.contains(lightIndex))
-//            lightIndex++;
-//        lightColorizer->Lights.emplace(lightIndex, lightToRegister);
 
 
         lightColorizer->Lights.emplace_back(lightToRegister);
@@ -202,7 +173,7 @@ void LightColorizer::RegisterLight(UnityEngine::MonoBehaviour *lightWithId, std:
 
     if (lightWithIdsCast) {
         auto lightWithIds = *lightWithIdsCast;
-        ArrayWrapper<GlobalNamespace::LightWithIds::LightData*> lightsWithIdArray = System::Linq::Enumerable::ToArray(lightWithIds->get_lightIntensityData());
+        auto lightsWithIdArray = System::Linq::Enumerable::ToArray(lightWithIds->get_lightIntensityData());
 
         for (auto const& lightIdData : lightsWithIdArray) {
             RegisterLightWithID(reinterpret_cast<ILightWithId*>(lightIdData));
@@ -220,29 +191,81 @@ void LightColorizer::Reset() {
     LightColorChanged.clear();
 }
 
-void LightColorizer::InitializeSO(std::string_view id, int index) {
-    auto colorSOAcessor = il2cpp_utils::FindField(classof(LightSwitchEventEffect*), (std::string_view) id);
-    auto lightMultSO = il2cpp_utils::cast<MultipliedColorSO>(CRASH_UNLESS(il2cpp_utils::GetFieldValue<GlobalNamespace::ColorSO*>(_lightSwitchEventEffect, colorSOAcessor)));
+void LightColorizer::InitializeSO(ColorSO *&lightColor0, ColorSO *&highlightColor0, ColorSO *&lightColor1,
+                                  ColorSO *&highlightColor1, ColorSO *&lightColor0Boost, ColorSO *&highlightColor0Boost,
+                                  ColorSO *&lightColor1Boost, ColorSO *&highlightColor1Boost) {
+    auto Initialize = [this](ColorSO*& colorSO, int index) {
+        auto lightMultSO = il2cpp_utils::cast<MultipliedColorSO>(colorSO);
 
-    Sombrero::FastColor multiplierColor = lightMultSO->multiplierColor;
-    auto lightSO = lightMultSO->baseColor;
-    _originalColors[index] = lightSO->color;
+        Sombrero::FastColor multiplierColor = lightMultSO->multiplierColor;
+        auto lightSO = lightMultSO->baseColor;
+        _originalColors[index] = lightSO->color;
 
-    SafePtr<MultipliedColorSO> mColorSO(ScriptableObject::CreateInstance<MultipliedColorSO*>());
-    mColorSO->multiplierColor = multiplierColor;
+        SafePtr<MultipliedColorSO> mColorSO(ScriptableObject::CreateInstance<MultipliedColorSO *>());
+        mColorSO->multiplierColor = multiplierColor;
 
 
-    if (!_simpleColorSOs.contains(index))
+        if (!_simpleColorSOs.contains(index)) {
+            SafePtr<SimpleColorSO> sColorSO(ScriptableObject::CreateInstance<SimpleColorSO *>());
+            sColorSO->SetColor(lightSO->color);
+            _simpleColorSOs.emplace(index, sColorSO);
+        }
+
+        SafePtr<SimpleColorSO> &sColorSO = _simpleColorSOs[index];
+
+        mColorSO->baseColor = (SimpleColorSO *) sColorSO;
+
+        colorSO = (MultipliedColorSO*) mColorSO;
+    };
+
+    Initialize(lightColor0, 0);
+    Initialize(highlightColor0, 0);
+    Initialize(lightColor1, 1);
+    Initialize(highlightColor1, 1);
+    Initialize(lightColor0Boost, 2);
+    Initialize(highlightColor0Boost, 2);
+    Initialize(lightColor1Boost, 3);
+    Initialize(highlightColor1Boost, 3);
+}
+
+std::vector<ILightWithId *> LightColorizer::GetPropagationLightWithIds(const std::vector<int> &ids) {
+    std::vector<ILightWithId*> result;
+    auto lightCount = LightsPropagationGrouped.size();
+    for (int id : ids)
     {
-        SafePtr<SimpleColorSO> sColorSO(ScriptableObject::CreateInstance<SimpleColorSO*>());
-        sColorSO->SetColor(lightSO->color);
-        _simpleColorSOs.emplace(index, sColorSO);
+        if (lightCount > id)
+        {
+            auto const& lights = LightsPropagationGrouped[id];
+
+            for (auto light : lights) {
+                result.push_back(light);
+            }
+        }
     }
 
-    SafePtr<SimpleColorSO>& sColorSO = _simpleColorSOs[index];
+    return result;
+}
 
-    mColorSO->baseColor = (SimpleColorSO*) sColorSO;
+std::vector<ILightWithId *> LightColorizer::GetLightWithIds(const std::vector<int> &ids) {
+    std::vector<ILightWithId*> result;
+    auto type = (int)_eventType;
 
-    il2cpp_utils::SetFieldValue<ColorSO*>(_lightSwitchEventEffect, colorSOAcessor, (MultipliedColorSO*) mColorSO);
+    for (int id : ids)
+    {
+        // Transform
+        id = LightIDTableManager::GetActiveTableValue(type, id).value_or(id);
+
+        auto lightWithId = id >= 0 && id < Lights.size() ? Lights[id] : nullptr;
+        if (lightWithId)
+        {
+            result.push_back(lightWithId);
+        }
+        else
+        {
+            getLogger().error("Type [%i] does not contain id [%i].", type, id);
+        }
+    }
+
+    return result;
 }
 

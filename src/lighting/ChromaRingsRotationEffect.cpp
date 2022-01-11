@@ -63,16 +63,16 @@ void ChromaRingsRotationEffect::FixedUpdate() {
             auto num = (long) ringRotationEffect.ProgressPos;
             auto progressPos = ringRotationEffect.ProgressPos += ringRotationEffect.RotationPropagationSpeed;
 
-            auto length = (int) rings->Length();
+            auto length = (int) rings.Length();
 
             while (num < progressPos && num < length) {
-                SetDestRotation(rings->get(num),
+                SetDestRotation(rings.get(num),
                         ringRotationEffect.RotationAngle + ((float) num * ringRotationEffect.RotationStep),
                         ringRotationEffect.RotationFlexySpeed);
                 num++;
             }
 
-            if (progressPos >= rings->Length()) {
+            if (progressPos >= rings.Length()) {
                 RecycleRingRotationEffect(ringRotationEffect);
                 _activeRingRotationEffects.erase(std::next(it).base());
             }

@@ -30,8 +30,7 @@ NoteColorizer::NoteColorizer(GlobalNamespace::NoteControllerBase *noteController
     auto colorNoteVisuals = _noteController->GetComponent<GlobalNamespace::ColorNoteVisuals*>();
     _colorNoteVisuals = colorNoteVisuals;
 
-    colorNoteVisuals->materialPropertyBlockControllers->copy_to(_materialPropertyBlockControllers);
-    _materialPropertyBlockControllers.shrink_to_fit();
+    _materialPropertyBlockControllers = colorNoteVisuals->materialPropertyBlockControllers;
 }
 
 std::shared_ptr<NoteColorizer> NoteColorizer::New(GlobalNamespace::NoteControllerBase *noteControllerBase) {

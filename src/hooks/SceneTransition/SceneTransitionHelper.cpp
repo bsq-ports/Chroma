@@ -125,11 +125,9 @@ bool SceneTransitionHelper::BasicPatch(GlobalNamespace::IDifficultyBeatmap* cust
 
 
     auto beatmapEvents = customBeatmapDifficultyData->get_beatmapData()->beatmapEventsData->items;
-    auto length = beatmapEvents->Length();
+    auto length = beatmapEvents.Length();
     getLogger().debug("Checking at most %d for ChromaLite notes", (int) length);
-    for (int i = 0; i < length; i++) {
-        auto event = beatmapEvents->get(i);
-
+    for (auto event : beatmapEvents) {
         if (!event) continue;
 
         if (event->value >= LegacyLightHelper::RGB_INT_OFFSET)

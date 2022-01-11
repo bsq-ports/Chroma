@@ -1,6 +1,7 @@
 #pragma once
 #include "lighting/environments/BTSEnvironment.hpp"
 #include "lighting/environments/BigMirrorEnvironment.hpp"
+#include "lighting/environments/BillieEnvironment.hpp"
 #include "lighting/environments/CrabRaveEnvironment.hpp"
 #include "lighting/environments/DefaultEnvironment.hpp"
 #include "lighting/environments/DragonsEnvironment.hpp"
@@ -8,6 +9,7 @@
 #include "lighting/environments/GlassDesertEnvironment.hpp"
 #include "lighting/environments/GreenDayEnvironment.hpp"
 #include "lighting/environments/GreenDayGrenadeEnvironment.hpp"
+#include "lighting/environments/HalloweenEnvironment.hpp"
 #include "lighting/environments/InterscopeEnvironment.hpp"
 #include "lighting/environments/KDAEnvironment.hpp"
 #include "lighting/environments/KaleidoscopeEnvironment.hpp"

@@ -12,6 +12,8 @@
 
 #include "sombrero/shared/ColorUtils.hpp"
 
+#include "lighting/LerpType.hpp"
+
 namespace Chroma {
     class ChromaEventData {
     private:
@@ -21,6 +23,10 @@ namespace Chroma {
 
     public:
         ChromaEventData() = default;
+
+        std::optional<Functions> Easing;
+
+        std::optional<LerpType> LerpType;
 
         std::optional<std::vector<int>> LightID;
 
@@ -67,6 +73,8 @@ namespace Chroma {
         // ChromaLaserSpeedEventData
 
         bool LockPosition;
+
+        std::unordered_map<int, GlobalNamespace::BeatmapEventData*> NextSameTypeEvent;
     };
 
     class ChromaEventDataManager {

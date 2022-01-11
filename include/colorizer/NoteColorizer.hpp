@@ -36,7 +36,7 @@ namespace Chroma {
 
 
         GlobalNamespace::ColorNoteVisuals* _colorNoteVisuals;
-        std::vector<GlobalNamespace::MaterialPropertyBlockController*> _materialPropertyBlockControllers;
+        ArrayW<GlobalNamespace::MaterialPropertyBlockController*> _materialPropertyBlockControllers;
         std::optional<std::array<Sombrero::FastColor, 2>> _originalColors;
 
         NoteColorizer(GlobalNamespace::NoteControllerBase* noteController);

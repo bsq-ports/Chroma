@@ -86,7 +86,7 @@ EnvironmentLightDataT SkrillexEnvironment::getEnvironmentLights() {
         {66, 60 },
     }},
     {2, {
-        {1, 23 },
+        {1, -1 },
         {2, 22 },
         {3, 10 },
         {4, 20 },

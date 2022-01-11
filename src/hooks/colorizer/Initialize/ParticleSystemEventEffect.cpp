@@ -1,7 +1,6 @@
 #include "Chroma.hpp"
 #include "ChromaController.hpp"
 #include "ChromaObjectData.hpp"
-#include "lighting/LightColorManager.hpp"
 #include "colorizer/LightColorizer.hpp"
 #include "colorizer/Monobehaviours/ChromaParticleEventController.hpp"
 #include "utils/ChromaUtils.hpp"

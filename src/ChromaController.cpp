@@ -75,11 +75,9 @@ custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(Global
         if (GetChromaLegacy()) {
             try {
                 auto list = il2cpp_utils::cast<Generic::List_1<BeatmapEventData *>>(beatmapData->get_beatmapEventsData());
-                std::vector<GlobalNamespace::BeatmapEventData *> eventData;
-                list->items->copy_to(eventData);
 
                 // please let me kill legacy
-                LegacyLightHelper::Activate(eventData);
+                LegacyLightHelper::Activate(list->items);
             } catch (const Il2CppException &e) {
                 getLogger().error("Unable to run legacy due to exception?");
             }

@@ -29,7 +29,7 @@ ObstacleColorizer::ObstacleColorizer(GlobalNamespace::ObstacleControllerBase *ob
     _obstacleFakeGlow = stretchableObstacle->obstacleFakeGlow;
     _addColorMultiplier = stretchableObstacle->addColorMultiplier;
     _obstacleCoreLerpToWhiteFactor = stretchableObstacle->obstacleCoreLerpToWhiteFactor;
-    _materialPropertyBlockControllers = stretchableObstacle->materialPropertyBlockControllers->ref_to();
+    _materialPropertyBlockControllers = stretchableObstacle->materialPropertyBlockControllers;
 
     auto trueObstacleControllerCast = il2cpp_utils::try_cast<ObstacleController>(obstacleController);
     if (trueObstacleControllerCast)
