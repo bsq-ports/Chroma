@@ -23,7 +23,7 @@
     },
     {
       "id": "custom-types",
-      "versionRange": "^0.14.0",
+      "versionRange": "^0.15.0",
       "additionalData": {
         "private": true
       }

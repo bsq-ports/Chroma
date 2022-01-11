@@ -218,6 +218,9 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
                 }
 
                 int nextIndex = FindIndex(beatmapEventsRef.ref_to(), [type, id](GlobalNamespace::BeatmapEventData* n) {
+                    if (!n)
+                        return false;
+
                     if (n->type != type) {
                         return false;
                     }
@@ -237,6 +240,9 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
                     currentEventData.NextSameTypeEvent[id] = beatmapEvents->items.get(nextIndex);
                 } else {
                     int nextIndex = FindIndex(beatmapEventsRef.ref_to(), [type](GlobalNamespace::BeatmapEventData* n) {
+                        if (!n)
+                            return false;
+
                         if (n->type != type) {
                             return false;
                         }

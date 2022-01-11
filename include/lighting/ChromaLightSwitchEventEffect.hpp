@@ -41,11 +41,13 @@ public:
 
           std::shared_ptr<Chroma::LightColorizer> lightColorizer;
 
+          DECLARE_INSTANCE_METHOD(void, Awake);
           DECLARE_INSTANCE_METHOD(void, OnDestroy);
           DECLARE_SIMPLE_DTOR();
           DECLARE_DEFAULT_CTOR();
 
 public:
+    static std::unordered_set<ChromaLightSwitchEventEffect*> livingLightSwitch;
 
           void HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(GlobalNamespace::BeatmapEventData* beatmapEventData);
           void Refresh(bool hard, std::optional<std::vector<GlobalNamespace::ILightWithId*>> const& selectLights, std::optional<GlobalNamespace::BeatmapEventData*> beatmapEventData = std::nullopt, std::optional<Functions> easing = std::nullopt, std::optional<LerpType> lerpType = std::nullopt);

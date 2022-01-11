@@ -53,9 +53,9 @@ MAKE_HOOK_MATCH(
         UnityEngine::Object::Destroy(oldController);
     }
 
-    auto* coro = custom_types::Helpers::CoroutineHelper::New(WaitThenStartParticle(self, self->colorEvent));
+    auto coro = custom_types::Helpers::CoroutineHelper::New(WaitThenStartParticle(self, self->colorEvent));
 
-    self->StartCoroutine(reinterpret_cast<enumeratorT*>(coro));
+    self->StartCoroutine(coro);
 }
 
 MAKE_HOOK_MATCH(

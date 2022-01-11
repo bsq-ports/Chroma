@@ -19,7 +19,7 @@ MAKE_HOOK_MATCH(BeatmapObjectSpawnController_Start,&BeatmapObjectSpawnController
 
     auto delayedStartCoro = CoroutineHelper::New(Chroma::ChromaController::DelayedStartEnumerator(self));
 
-    self->StartCoroutine(reinterpret_cast<enumeratorT*>(delayedStartCoro));
+    self->StartCoroutine(delayedStartCoro);
 }
 
 void BeatmapObjectSpawnControllerHook(Logger& logger) {

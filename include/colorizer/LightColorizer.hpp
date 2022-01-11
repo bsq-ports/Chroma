@@ -127,7 +127,8 @@ namespace Chroma {
 
         inline static void ColorizeLight(GlobalNamespace::BeatmapEventType beatmapEventType, bool refresh,
                                          LightColorOptionalPalette const &colors) {
-            CRASH_UNLESS(GetLightColorizer(beatmapEventType))->Colorize(refresh, colors);
+            auto colorizer = GetLightColorizer(beatmapEventType);
+            CRASH_UNLESS(colorizer)->Colorize(refresh, colors);
         }
 
         void InitializeSO(

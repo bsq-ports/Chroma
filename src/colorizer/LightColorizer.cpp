@@ -32,16 +32,16 @@ using namespace Chroma;
 LightColorizer::LightColorizer(ChromaLightSwitchEventEffect *lightSwitchEventEffect,
                                GlobalNamespace::BeatmapEventType beatmapEventType,
                                LightWithIdManager* lightManager)
-                               : _simpleColorSOs(COLOR_FIELDS),
-                               _colors(COLOR_FIELDS),
-                               _originalColors(),
-                               _lightSwitchEventEffect(lightSwitchEventEffect),
-                               _eventType(beatmapEventType){
+                               : _lightSwitchEventEffect(lightSwitchEventEffect),
+                                 _eventType(beatmapEventType),
+                                 _colors(COLOR_FIELDS),
+                                 _originalColors(),
+                                 _simpleColorSOs(COLOR_FIELDS){
     static auto contextLogger = getLogger().WithContext(ChromaLogger::LightColorizer);
 
 
     // AAAAAA PROPAGATION STUFFF
-    System::Collections::Generic::List_1<GlobalNamespace::ILightWithId *> *lightList = lightManager->lights.get((lightSwitchEventEffect)->lightsID);
+    System::Collections::Generic::List_1<GlobalNamespace::ILightWithId *> *lightList = lightManager->lights.get(lightSwitchEventEffect->lightsID);
     ArrayW<ILightWithId *> lightArray = lightList->items;
 
 
@@ -126,7 +126,8 @@ LightColorizer::LightColorizer(ChromaLightSwitchEventEffect *lightSwitchEventEff
 std::shared_ptr<LightColorizer> LightColorizer::New(ChromaLightSwitchEventEffect *lightSwitchEventEffect,GlobalNamespace::BeatmapEventType beatmapEventType, GlobalNamespace::LightWithIdManager* lightManager) {
     auto lightColorizer = std::shared_ptr<LightColorizer>(new LightColorizer(lightSwitchEventEffect, beatmapEventType, lightManager));
 
-    Colorizers[beatmapEventType.value] = lightColorizer;
+    CRASH_UNLESS(!Colorizers.contains(beatmapEventType.value));
+    Colorizers.try_emplace(beatmapEventType.value, lightColorizer);
     return lightColorizer;
 }
 
