@@ -176,11 +176,11 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, const std::optional<std::v
 
     if (selectLights) {
         for (auto light : *selectLights) {
-            selectTweens.push_back(ColorTweens[light]);
+            selectTweens.push_back(static_cast<ChromaIDColorTween*>(ColorTweens[light]));
         }
     } else {
         for (auto const& [_, tween] : ColorTweens) {
-            selectTweens.push_back(tween);
+            selectTweens.push_back(static_cast<ChromaIDColorTween*>(tween));
         }
     }
 
@@ -336,4 +336,51 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, const std::optional<std::v
             }
         }
     }
+}
+
+// improve speed, avoid codegen
+constexpr bool ChromaLightSwitchEventEffect::IsColor0(int beatmapEventValue) {
+    return beatmapEventValue == 1 || beatmapEventValue == 2 || beatmapEventValue == 3 || beatmapEventValue == 4 || beatmapEventValue == 0 || beatmapEventValue == -1;
+}
+
+Sombrero::FastColor ChromaLightSwitchEventEffect::GetNormalColor(int beatmapEventValue, bool colorBoost) {
+    if (colorBoost)
+    {
+        if (!this->IsColor0(beatmapEventValue))
+        {
+            return this->lightColor1Boost->get_color();
+        }
+        return this->lightColor0Boost->get_color();
+    }
+    else
+    {
+        if (!this->IsColor0(beatmapEventValue))
+        {
+            return this->lightColor1->get_color();
+        }
+        return this->lightColor0->get_color();
+    }
+}
+
+Sombrero::FastColor ChromaLightSwitchEventEffect::GetHighlightColor(int beatmapEventValue, bool colorBoost) {
+    if (colorBoost)
+    {
+        if (!this->IsColor0(beatmapEventValue))
+        {
+            return this->highlightColor1Boost->get_color();
+        }
+        return this->highlightColor0Boost->get_color();
+    }
+    else
+    {
+        if (!this->IsColor0(beatmapEventValue))
+        {
+            return this->highlightColor1->get_color();
+        }
+        return this->highlightColor0->get_color();
+    }
+}
+
+constexpr bool ChromaLightSwitchEventEffect::IsFixedDurationLightSwitch(int beatmapEventValue) {
+    return beatmapEventValue == 2 || beatmapEventValue == 6 || beatmapEventValue == 3 || beatmapEventValue == 7 || beatmapEventValue == -1;
 }

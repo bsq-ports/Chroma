@@ -23,6 +23,10 @@ MAKE_HOOK_MATCH(ColorTween_GetColor,
                 &ColorTween::GetValue,
                 UnityEngine::Color, ColorTween* self,
                 float t) {
+    if (!ChromaController::GetChromaLegacy() && !ChromaController::DoChromaHooks()) {
+        return ColorTween_GetColor(self, t);
+    }
+
     static auto ColorTweenKlass = classof(ColorTween*);
 
     if (self->klass == ColorTweenKlass) {

@@ -89,6 +89,10 @@ MAKE_HOOK_MATCH(BeatmapObjectCallbackController_SendBeatmapEventDidTriggerEvent,
                 BeatmapObjectCallbackController* self, BeatmapEventData* eventData) {
     BeatmapObjectCallbackController_SendBeatmapEventDidTriggerEvent(self, eventData);
 
+    // Do nothing if Chroma shouldn't run
+    if (!ChromaController::GetChromaLegacy() && !ChromaController::DoChromaHooks()) {
+        return;
+    }
     // Orig hook no work, guess we do this now
     for (auto const& _lightSwitchEventEffect :ChromaLightSwitchEventEffect::livingLightSwitch) {
         _lightSwitchEventEffect->HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(eventData);

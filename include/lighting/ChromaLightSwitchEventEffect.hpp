@@ -35,7 +35,7 @@ public:
           DECLARE_INSTANCE_FIELD(GlobalNamespace::ColorSO*, _originalLightColor0Boost);
           DECLARE_INSTANCE_FIELD(GlobalNamespace::ColorSO*, _originalLightColor1Boost);
 
-          std::unordered_map<GlobalNamespace::ILightWithId *, ChromaIDColorTween*> ColorTweens;
+          std::unordered_map<GlobalNamespace::ILightWithId *, SafePtr<ChromaIDColorTween>> ColorTweens;
 
           GlobalNamespace::BeatmapEventType EventType;
 
@@ -48,6 +48,12 @@ public:
 
 public:
     static std::unordered_set<ChromaLightSwitchEventEffect*> livingLightSwitch;
+
+    // improve speed, avoid codegen
+    Sombrero::FastColor GetNormalColor(int beatmapEventValue, bool colorBoost);
+    Sombrero::FastColor GetHighlightColor(int beatmapEventValue, bool colorBoost);
+    static constexpr bool IsFixedDurationLightSwitch(int beatmapEventValue);
+    static constexpr bool IsColor0(int beatmapEventValue);
 
           void HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(GlobalNamespace::BeatmapEventData* beatmapEventData);
           void Refresh(bool hard, std::optional<std::vector<GlobalNamespace::ILightWithId*>> const& selectLights, std::optional<GlobalNamespace::BeatmapEventData*> beatmapEventData = std::nullopt, std::optional<Functions> easing = std::nullopt, std::optional<LerpType> lerpType = std::nullopt);
