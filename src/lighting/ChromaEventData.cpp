@@ -231,7 +231,7 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
                         return false;
 
                     ChromaEventData const& nextEventData = it->second;
-                    auto lightId = nextEventData.LightID;
+                    auto const& lightId = nextEventData.LightID;
 
                     return lightId && std::find(lightId->begin(), lightId->end(), id) != lightId->end();
                 }, i + 1);

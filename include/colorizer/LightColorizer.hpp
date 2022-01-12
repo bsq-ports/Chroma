@@ -104,12 +104,12 @@ namespace Chroma {
                 _colors[i] = colors[i];
             }
 
+            SetSOs(getColor());
+
             // Allow light colorizer to not force color
-            if (refresh) {
-                Refresh(selectLights);
-            } else {
-                SetSOs(getColor());
-            }
+            if (!refresh) return;
+
+            Refresh(selectLights);
         }
 
         static void Reset();

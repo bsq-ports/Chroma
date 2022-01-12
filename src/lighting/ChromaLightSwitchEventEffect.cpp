@@ -203,35 +203,30 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, const std::optional<std::v
         int previousValue = previousEvent->value;
         float previousFloatValue = previousEvent->floatValue;
 
-        auto CheckNextEventForFadeBetter = [previousEvent, tween, this, boost, previousValue, previousFloatValue, hard, easing, lerpType](){
+        auto CheckNextEventForFadeBetter = [&previousEvent, &tween, this, &boost, &previousValue, &previousFloatValue, hard, easing, lerpType](){
             auto eventDataIt = ChromaEventDataManager::ChromaEventDatas.find(previousEvent);
-            auto* eventData = eventDataIt != ChromaEventDataManager::ChromaEventDatas.end() ? &eventDataIt->second : nullptr;
+            auto const* eventData = eventDataIt != ChromaEventDataManager::ChromaEventDatas.end() ? &eventDataIt->second : nullptr;
 
-            std::optional<std::unordered_map<int, BeatmapEventData*>> nextSameTypesDict;
-
-            if (eventData)
-                nextSameTypesDict = eventData->NextSameTypeEvent;
-
-            std::optional<BeatmapEventData*> nextSameTypeEvent;
-            if (ChromaController::DoChromaHooks() && (nextSameTypesDict && nextSameTypesDict->contains(tween->Id)))
+            BeatmapEventData* nextSameTypeEvent;
+            if (eventData && eventData->NextSameTypeEvent.contains(tween->Id))
             {
-                nextSameTypeEvent = nextSameTypesDict.value()[tween->Id];
+                nextSameTypeEvent = eventData->NextSameTypeEvent.at(tween->Id);
             }
             else
             {
                 nextSameTypeEvent = previousEvent->nextSameTypeEvent;
             }
 
-            if (!nextSameTypeEvent || (nextSameTypeEvent.value()->value != 4 && nextSameTypeEvent.value()->value != 8))
+            if (!nextSameTypeEvent || (nextSameTypeEvent->value != 4 && nextSameTypeEvent->value != 8))
             {
                 return;
             }
 
-            float nextFloatValue = nextSameTypeEvent.value()->floatValue;
-            int nextValue = nextSameTypeEvent.value()->value;
+            float nextFloatValue = nextSameTypeEvent->floatValue;
+            int nextValue = nextSameTypeEvent->value;
             Sombrero::FastColor nextColor = GetOriginalColor(nextValue, boost);
 
-            eventDataIt = ChromaEventDataManager::ChromaEventDatas.find(*nextSameTypeEvent);
+            eventDataIt = ChromaEventDataManager::ChromaEventDatas.find(nextSameTypeEvent);
             auto nextEventData = eventDataIt != ChromaEventDataManager::ChromaEventDatas.end() ? &eventDataIt->second : nullptr;
 
             std::optional<Sombrero::FastColor> nextColorData = nextEventData ? nextEventData->ColorData : std::nullopt;
@@ -256,7 +251,7 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, const std::optional<std::v
                 return;
             }
 
-            tween->SetStartTimeAndEndTime(previousEvent->time, nextSameTypeEvent.value()->time);
+            tween->SetStartTimeAndEndTime(previousEvent->time, nextSameTypeEvent->time);
             tween->easing = easing.value_or(Functions::easeLinear);
             tween->lerpType = lerpType.value_or(LerpType::RGB);
             tweeningManager->ResumeTween(tween, this);
