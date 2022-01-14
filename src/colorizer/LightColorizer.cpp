@@ -159,7 +159,7 @@ void LightColorizer::RegisterLight(UnityEngine::MonoBehaviour *lightWithId, std:
         auto index = lightColorizer->Lights.size();
         LightIDTableManager::RegisterIndex(type, index, lightId);
 
-
+        lightColorizer->_lightSwitchEventEffect->RegisterLight(lightToRegister, type, index);
         lightColorizer->Lights.emplace_back(lightToRegister);
     };
 

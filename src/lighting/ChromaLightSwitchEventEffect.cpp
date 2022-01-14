@@ -176,7 +176,10 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, const std::optional<std::v
 
     if (selectLights) {
         for (auto light : *selectLights) {
-            selectTweens.push_back(static_cast<ChromaIDColorTween*>(ColorTweens[light]));
+            auto tweenIt = ColorTweens.find(light);
+            if (tweenIt != ColorTweens.end()) {
+                selectTweens.push_back(static_cast<ChromaIDColorTween *>(tweenIt->second));
+            }
         }
     } else {
         for (auto const& [_, tween] : ColorTweens) {

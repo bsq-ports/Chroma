@@ -32,7 +32,7 @@ namespace Chroma {
 
         static std::optional<int> GetActiveTableValue(int type, int id) {
             if (activeTable) {
-                auto &table = activeTable.value();
+                auto const& table = activeTable.value();
 
                 auto typeTableIt = table.find(type);
 
@@ -57,7 +57,7 @@ namespace Chroma {
 
         static std::optional<int> GetActiveTableValueReverse(int type, int id) {
             if (activeTable) {
-                auto &table = activeTable.value();
+                auto const& table = activeTable.value();
 
                 auto typeTableIt = table.find(type);
 
