@@ -1,13 +1,14 @@
 #pragma once
 
-#include "questui_components/shared/components/ViewComponent.hpp"
+#include "questui_components/shared/context.hpp"
+#include "questui_components/shared/RootContainer.hpp"
 #include "questui_components/shared/components/ScrollableContainer.hpp"
-#include "questui_components/shared/components/layouts/MultiComponentGroup.hpp"
 #include "questui_components/shared/components/settings/ToggleSetting.hpp"
 #include "questui_components/shared/components/Text.hpp"
+#include "questui_components/shared/components/Image.hpp"
 #include "UnityEngine/MonoBehaviour.hpp"
 #pragma region QuestUI
-namespace QuestUI {
+namespace QuestUI::BeatSaberUI {
     UnityEngine::UI::Toggle* CreateModifierButton(UnityEngine::Transform* parent, std::u16string_view buttonText, bool currentValue, UnityEngine::Sprite* iconSprite, std::function<void(bool)> const& onClick = nullptr, UnityEngine::Vector2 anchoredPosition = {0,0});
 
     inline UnityEngine::UI::Toggle* CreateModifierButton(UnityEngine::Transform* parent, std::u16string_view buttonText, bool currentValue, std::function<void(bool)> const& onClick = nullptr, UnityEngine::Vector2 anchoredPosition = {0,0}) {
@@ -24,6 +25,7 @@ namespace QuestUI {
 }
 #pragma endregion
 
+#include <utility>
 #include <vector>
 #include <string>
 #include <optional>
@@ -32,33 +34,88 @@ namespace QuestUI {
 #include "main.hpp"
 
 #pragma region QUC
-namespace QuestUI_Components {
-
-    using MutableToggleSettingsData = MutableSettingsData<bool>;
+namespace QUC {
 
     // TODO: Somehow this causes game buttons to be wide. How to fix?
-    class ModifierToggle : public BaseSetting<bool, ModifierToggle, MutableToggleSettingsData> {
+    struct ModifierToggle : public ToggleSetting {
     public:
-        struct InitToggleSettingsData {
-            UnityEngine::Vector2 anchoredPosition = {0,0};
-            UnityEngine::Sprite* iconImage;
-        };
+        Image image;
 
-        explicit ModifierToggle(std::string_view text, bool currentValue, OnCallback callback = nullptr,
-                               std::optional<InitToggleSettingsData> toggleData = std::nullopt)
-                : BaseSetting(text, currentValue, std::move(callback)),
-                  toggleInitData(toggleData) {}
+        template<class F = OnCallback>
+        ModifierToggle(Text const &txt, F &&callable, bool currentValue, Image image = Image(nullptr, {0, 0}))
+                : ToggleSetting(txt,
+                                callable,
+                                currentValue),
+                  image(std::move(image)) {}
 
-    protected:
-        void update() override;
-        Component* render(UnityEngine::Transform *parentTransform) override;
+        template<class F = OnCallback>
+        ModifierToggle(std::string_view txt, F &&callable, bool currentValue, Image image = Image(nullptr, {0, 0}))
+                : ToggleSetting(txt,
+                                callable,
+                                currentValue),
+                  image(std::move(image)) {}
 
-        // render time
-        UnityEngine::UI::Toggle* uiToggle = nullptr;
+        template<class F = OnCallback>
+        ModifierToggle(Text const &txt, F &&callable, bool currentValue,
+                       bool enabled_ = true, bool interact = true,
+                       std::optional<UnityEngine::Vector2> anch = std::nullopt, Image image = Image(nullptr, {0, 0}))
+                : ToggleSetting(txt,
+                                callable,
+                                currentValue,
+                                enabled_,
+                                interact,
+                                anch),
+                  image(std::move(image)) {}
 
-        // Constructor time
-        const std::optional<InitToggleSettingsData> toggleInitData;
+        template<class F = OnCallback>
+        ModifierToggle(std::string_view const &txt, F &&callable, bool currentValue,
+                       bool enabled_ = true, bool interact = true,
+                       std::optional<UnityEngine::Vector2> anch = std::nullopt, Image image = Image(nullptr, {0, 0}))
+                : ToggleSetting(txt,
+                                callable,
+                                currentValue,
+                                enabled_,
+                                interact,
+                                anch),
+                  image(std::move(image)) {}
+
+        UnityEngine::Transform *render(RenderContext &ctx, RenderContextChildData &data) {
+            auto &toggle = ctx.getChildData(ToggleSetting::key).getData<UnityEngine::UI::Toggle*>();
+            auto &toggleText = ctx.getChildData(text->key).getData<TMPro::TextMeshProUGUI *>();
+            auto &imageView = ctx.getChildData(image.key).getData<HMUI::ImageView *>();
+
+
+            if (!toggle) {
+                auto parent = &ctx.parentTransform;
+                auto const &usableText = text ? text->text : *str;
+
+                auto cbk = [this, callback = this->callback, parent, &ctx](bool val) {
+                    toggleButton.value = val;
+                    toggleButton.value.clear();
+                    if (callback)
+                        callback(*this, val, parent, ctx);
+                };
+                if (anchoredPosition) {
+                    toggle = QuestUI::BeatSaberUI::CreateModifierButton(parent, usableText, *toggleButton.value,
+                                                                        *image.sprite, cbk, *anchoredPosition);
+                } else {
+                    toggle = QuestUI::BeatSaberUI::CreateModifierButton(parent, usableText, *toggleButton.value,
+                                                                        *image.sprite, cbk);
+                }
+                image.sprite.clear();
+                toggleButton.value.clear();
+
+                auto toggleTransform = toggle->get_transform();
+
+                imageView = toggleTransform->Find(il2cpp_utils::newcsstr("Icon"))->GetComponent<HMUI::ImageView *>();
+                toggleText = toggleTransform->Find(il2cpp_utils::newcsstr("Name"))->GetComponent<TMPro::TextMeshProUGUI *>();
+            }
+
+            return ToggleSetting::render(ctx, data);
+        }
     };
+
+    static_assert(renderable<ModifierToggle>);
 
 
 
@@ -72,39 +129,40 @@ namespace Chroma {
     namespace UIUtils {
         UnityEngine::Sprite* configToIcon(ConfigUtils::ConfigValue<bool> const& configValue);
 
-        template<bool GameplayModifier, typename... TArgs>
-        auto chromaToggleUI(ConfigUtils::ConfigValue<bool>& configValue, TArgs&&... args) {
-            using namespace QuestUI_Components;
+        template<bool GameplayModifier, typename F, typename... TArgs>
+        auto chromaToggleUI(ConfigUtils::ConfigValue<bool>& configValue, F&& callable, TArgs&&... args) {
+            using namespace QUC;
 
             if constexpr(GameplayModifier) {
-                ModifierToggle::InitToggleSettingsData initData;
-                initData.iconImage = configToIcon(configValue);
-                return new ConfigUtilsModifierToggleSetting(configValue, std::forward<TArgs>(args)..., initData);
+                QUC::Image image(configToIcon(configValue), {0,0});
+//                return ConfigUtilsToggleSetting(configValue, callable, std::forward<TArgs>(args)...);
+                return ConfigUtilsModifierToggleSetting(configValue, std::forward<F>(callable), std::forward<TArgs>(args)..., image);
             } else {
-                return new ConfigUtilsToggleSetting(configValue, std::forward<TArgs>(args)...);
+                return ConfigUtilsToggleSetting(configValue, callable, std::forward<TArgs>(args)...);
             }
         }
 
         template<bool GameplayModifier>
-        QuestUI_Components::MultiComponentGroup* buildMainUI() {
-            using namespace QuestUI_Components;
+        auto buildMainUI() {
+            using namespace QUC;
 
-            return new MultiComponentGroup({
-                    chromaToggleUI<GameplayModifier>(getChromaConfig().environmentEnhancementsEnabled, [](auto*, bool, UnityEngine::Transform*){}),
-                    chromaToggleUI<GameplayModifier>(getChromaConfig().customColorEventsEnabled, [](auto*, bool, UnityEngine::Transform*){
+            return Container(
+                    chromaToggleUI<GameplayModifier>(getChromaConfig().environmentEnhancementsEnabled, [](auto&, bool, UnityEngine::Transform *, QUC::RenderContext &){}),
+                    chromaToggleUI<GameplayModifier>(getChromaConfig().customColorEventsEnabled, [](auto&, bool, UnityEngine::Transform *, QUC::RenderContext &){
                         setChromaEnv();
                     }),
-                    chromaToggleUI<GameplayModifier>(getChromaConfig().customNoteColors, [](auto*, bool, UnityEngine::Transform*){
+                    chromaToggleUI<GameplayModifier>(getChromaConfig().customNoteColors, [](auto&, bool, UnityEngine::Transform *, QUC::RenderContext &){
                        setChromaEnv();
                    })
-            });
+            );
         }
     }
 }
 
 DECLARE_CLASS_CODEGEN(Chroma, ModifierViewController, UnityEngine::MonoBehaviour,
   private:
-      QuestUI_Components::ViewComponent view;
+      QUC::RenderContext ctx{nullptr};
+
 
       DECLARE_INSTANCE_METHOD(void, DidActivate, bool first);
 

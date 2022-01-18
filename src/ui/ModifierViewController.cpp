@@ -14,7 +14,7 @@
 #include "main.hpp"
 
 using namespace Chroma;
-using namespace QuestUI_Components;
+using namespace QUC;
 using namespace QuestUI::BeatSaberUI;
 using namespace UnityEngine::UI;
 using namespace UnityEngine;
@@ -33,7 +33,7 @@ using namespace UnityEngine::Events;
 
 #define MakeDelegate(DelegateType, varName) (il2cpp_utils::MakeDelegate<DelegateType>(classof(DelegateType), varName))
 
-Toggle *QuestUI::CreateModifierButton(UnityEngine::Transform *parent, std::u16string_view buttonText, bool currentValue,
+Toggle *QuestUI::BeatSaberUI::CreateModifierButton(UnityEngine::Transform *parent, std::u16string_view buttonText, bool currentValue,
                                       UnityEngine::Sprite *iconSprite, std::function<void(bool)> const &onClick,
                                       UnityEngine::Vector2 anchoredPosition) {
 //    static WeakPtrGO <GameplayModifierToggle> toggleTemplate;
@@ -66,7 +66,7 @@ Toggle *QuestUI::CreateModifierButton(UnityEngine::Transform *parent, std::u16st
     if (localizer != nullptr)
         GameObject::Destroy(localizer);
 
-    Image *image = gameObject->get_transform()->Find(il2cpp_utils::newcsstr("Icon"))->GetComponent<Image *>();
+    UnityEngine::UI::Image *image = gameObject->get_transform()->Find(il2cpp_utils::newcsstr("Icon"))->GetComponent<UnityEngine::UI::Image *>();
 
     auto externalComponents = gameObject->AddComponent<ExternalComponents *>();
     externalComponents->Add(text);
@@ -79,7 +79,6 @@ Toggle *QuestUI::CreateModifierButton(UnityEngine::Transform *parent, std::u16st
         Object::Destroy(image);
     }
 
-    getLogger().debug("toggle magic");
     auto toggle = gameObject->GetComponent<Toggle *>();
     toggle->onValueChanged = Toggle::ToggleEvent::New_ctor();
     toggle->set_interactable(true);
@@ -87,7 +86,6 @@ Toggle *QuestUI::CreateModifierButton(UnityEngine::Transform *parent, std::u16st
     if (onClick)
         toggle->onValueChanged->AddListener(MakeDelegate(UnityAction_1<bool>*, onClick));
 
-    getLogger().debug("anchor position");
     auto *rectTransform = gameObject->GetComponent<RectTransform *>();
     rectTransform->set_anchoredPosition(anchoredPosition);
 
@@ -98,43 +96,6 @@ Toggle *QuestUI::CreateModifierButton(UnityEngine::Transform *parent, std::u16st
 #pragma endregion
 
 DEFINE_TYPE(Chroma, ModifierViewController)
-
-#pragma region QUC
-void ModifierToggle::update() {
-    if (!rendered)
-        throw std::runtime_error("Toggle setting component has not rendered!");
-
-    BaseSetting::update();
-    uiToggle->set_enabled(data.enabled);
-    uiToggle->set_interactable(data.interactable);
-
-    uiToggle->set_isOn(getValue());
-}
-
-QuestUI_Components::Component *ModifierToggle::render(UnityEngine::Transform *parentTransform) {
-    using namespace QuestUI;
-    CallbackWrapper callback = constructWrapperCallback(parentTransform);
-
-    if (toggleInitData) {
-        uiToggle = CreateModifierButton(parentTransform, data.text, getValue(), toggleInitData->iconImage, callback,
-                                        toggleInitData->anchoredPosition);
-    } else {
-        uiToggle = CreateModifierButton(parentTransform, data.text, getValue(), callback);
-    }
-
-    transform = uiToggle->get_transform();
-
-    // From QuestUI
-    UnityEngine::GameObject *nameText = transform->Find(il2cpp_utils::newcsstr("Name"))->get_gameObject();
-    uiText = nameText->GetComponent<TMPro::TextMeshProUGUI *>();
-
-
-    markAsRendered();
-    update();
-
-    return this;
-}
-#pragma endregion
 
 UnityEngine::Sprite *UIUtils::configToIcon(ConfigUtils::ConfigValue<bool> const &configValue) {
     static const std::unordered_map<ConfigUtils::ConfigValue<bool> const*, std::string> spriteNameMap = {
@@ -158,25 +119,22 @@ UnityEngine::Sprite *UIUtils::configToIcon(ConfigUtils::ConfigValue<bool> const 
 }
 
 void Chroma::ModifierViewController::DidActivate(bool first) {
+
+    static detail::BackgroundableContainer container("round-rect-panel",
+                Backgroundable("round-rect-panel", true,
+                    ModifierContainer(
+                        UIUtils::buildMainUI<true>()
+                    )
+                )
+            );
+
     if (first) {
-        ModifierContainer *modifierContainer;
+        this->ctx = RenderContext(get_transform());
 
-        view = ViewComponent(get_transform(), {
-                new BackgroundableContainer("round-rect-panel", {
-                        new Backgroundable("round-rect-panel",
-                           modifierContainer = new ModifierContainer({
-                                UIUtils::buildMainUI<true>()
-                         })
-                        )
-                })
-        });
+        auto ret = detail::renderSingle(container, ctx);
 
-        view.render();
-
-        modifierContainer->getTransform()->get_gameObject()->GetComponent<LayoutElement *>()->set_preferredWidth(65);
+        ret->get_gameObject()->GetComponentInChildren<LayoutElement *>()->set_preferredWidth(65);
     } else {
-        view.render();
+        detail::renderSingle(container, ctx);
     }
-
-
 }

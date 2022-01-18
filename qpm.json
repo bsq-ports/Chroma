@@ -35,7 +35,7 @@
     },
     {
       "id": "custom-json-data",
-      "versionRange": "^0.14.0",
+      "versionRange": "^0.15.0",
       "additionalData": {
         "private": true
       }
@@ -80,7 +80,7 @@
     },
     {
       "id": "questui_components",
-      "versionRange": "*",
+      "versionRange": "^2.0.1",
       "additionalData": {
         "private": true
       }

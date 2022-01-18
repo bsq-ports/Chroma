@@ -14,13 +14,13 @@
 
 #include "pinkcore/shared/RequirementAPI.hpp"
 
-#include "questui_components/shared/components/ViewComponent.hpp"
 #include "questui_components/shared/components/ScrollableContainer.hpp"
+#include "questui_components/shared/components/Text.hpp"
 #include "ui/ModifierViewController.hpp"
 
 using namespace Chroma;
 using namespace QuestUI;
-using namespace QuestUI_Components;
+using namespace QUC;
 
 
 Configuration& getConfig() {
@@ -49,31 +49,22 @@ void setChromaEnv() {
 void DidActivate(HMUI::ViewController* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling){
     getLogger().info("DidActivate: %p, %d, %d, %d", self, firstActivation, addedToHierarchy, screenSystemEnabling);
 
-    static ViewComponent *view;
+    static QUC::RenderContext ctx{nullptr};
+
+    static QUC::ScrollableContainer container(
+            Text("Chroma settings."),
+            Text("Settings are saved when changed."),
+            Text("Not all settings have been tested or implemented."),
+            Text("Please use with caution."),
+            Chroma::UIUtils::buildMainUI<false>()
+        );
 
     if(firstActivation) {
-//        self->get_gameObject()->AddComponent<HMUI::Touchable *>();
-
-
-
-        if (view) {
-            delete view;
-            view = nullptr;
-        }
-
-        view = new ViewComponent(self->get_transform(), {
-            new ScrollableContainer({
-                new Text("Chroma settings."),
-                new Text("Settings are saved when changed."),
-                new Text("Not all settings have been tested or implemented."),
-                new Text("Please use with caution."),
-                Chroma::UIUtils::buildMainUI<false>()
-            })
-        });
+        ctx.destroyTree();
+        ctx = RenderContext(self->get_transform());
     }
 
-    view->render();
-
+    detail::renderSingle(container, ctx);
 }
 
 extern "C" void setup(ModInfo& info) {
