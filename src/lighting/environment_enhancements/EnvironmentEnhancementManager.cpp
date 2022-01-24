@@ -201,6 +201,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
     getLogger().debug("Custom beat map custom data %p", customBeatmapData->customData);
     auto customDynWrapper = customBeatmapData->customData->value;
     TracksAD::BeatmapAssociatedData& trackBeatmapAD = TracksAD::getBeatmapAD(customBeatmapData->customData);
+    GameObjectTrackController::LeftHanded = trackBeatmapAD.leftHanded;
     GameObjectTrackController::ClearData();
 
     AvoidanceRotation.clear();

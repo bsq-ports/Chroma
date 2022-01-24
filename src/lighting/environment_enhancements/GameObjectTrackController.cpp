@@ -12,28 +12,23 @@
 
 DEFINE_TYPE(Chroma, GameObjectTrackController)
 
+using namespace Chroma;
+
 template<typename T>
-static constexpr std::optional<T> getPropertyNullable(const std::optional<PropertyValue>& prop) {
-    if (!prop) return std::nullopt;
+static constexpr std::optional<T> getPropertyNullable(Track* track, const std::optional<PropertyValue>& prop) {
+    auto ret = Animation::getPropertyNullable<T>(track, prop);
 
-    // TODO: Left handed
+    if (GameObjectTrackController::LeftHanded) {
+        if constexpr(std::is_same_v<T, NEVector::Vector3>) {
+            return Animation::MirrorVectorNullable(ret);
+        }
 
-    //    float linear;
-    //    NEVector::Vector3 vector3;
-    //    NEVector::Vector4 vector4;
-    //    NEVector::Quaternion quaternion;
-
-    if constexpr(std::is_same_v<T, float>) {
-        return prop.value().linear;
-    } else if constexpr(std::is_same_v<T, NEVector::Vector3>) {
-        return prop.value().vector3;
-    } else if constexpr(std::is_same_v<T, NEVector::Vector4>) {
-        return prop.value().vector4;
-    } else if constexpr(std::is_same_v<T, NEVector::Quaternion>) {
-        return prop.value().quaternion;
+        if constexpr(std::is_same_v<T, NEVector::Quaternion>) {
+            return Animation::MirrorQuaternionNullable(ret);
+        }
     }
 
-    return std::nullopt;
+    return ret;
 }
 
 //static NEVector::Quaternion QuatInverse(const NEVector::Quaternion &a) {
@@ -79,11 +74,11 @@ void Chroma::GameObjectTrackController::Update() {
         return;
     }
     const auto& properties = _track->properties;
-    const auto rotation = getPropertyNullable<NEVector::Quaternion>(properties.rotation.value);
-    const auto localRotation = getPropertyNullable<NEVector::Quaternion>(properties.localRotation.value);
-    const auto position = getPropertyNullable<NEVector::Vector3>(properties.position.value);
-    const auto localPosition = getPropertyNullable<NEVector::Vector3>(properties.localPosition.value);
-    const auto scale = getPropertyNullable<NEVector::Vector3>(properties.scale.value);
+    const auto rotation = getPropertyNullable<NEVector::Quaternion>(_track, properties.rotation.value);
+    const auto localRotation = getPropertyNullable<NEVector::Quaternion>(_track, properties.localRotation.value);
+    const auto position = getPropertyNullable<NEVector::Vector3>(_track, properties.position.value);
+    const auto localPosition = getPropertyNullable<NEVector::Vector3>(_track, properties.localPosition.value);
+    const auto scale = getPropertyNullable<NEVector::Vector3>(_track, properties.scale.value);
 
     auto transform = get_transform();
 

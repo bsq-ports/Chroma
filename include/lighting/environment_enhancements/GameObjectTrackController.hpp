@@ -60,6 +60,7 @@ private:
 
     DECLARE_INSTANCE_METHOD(void, Update);
 public:
+    inline static bool LeftHanded;
     void Init(Track* track, float noteLinesDistance, GlobalNamespace::TrackLaneRing* trackLaneRing,
                             GlobalNamespace::ParametricBoxController* parametricBoxController,
                             GlobalNamespace::BeatmapObjectsAvoidance* beatmapObjectsAvoidance);
