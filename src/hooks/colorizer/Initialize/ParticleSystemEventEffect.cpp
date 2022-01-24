@@ -29,7 +29,7 @@ using namespace ChromaUtils;
 using namespace custom_types::Helpers;
 
 Coroutine WaitThenStartParticle(ParticleSystemEventEffect* instance, BeatmapEventType eventType) {
-    co_yield reinterpret_cast<enumeratorT*>(UnityEngine::WaitForEndOfFrame::New_ctor());
+    co_yield reinterpret_cast<enumeratorT>(UnityEngine::WaitForEndOfFrame::New_ctor());
     instance->get_gameObject()->AddComponent<ChromaParticleEventController*>()->Init(instance, eventType);
 }
 

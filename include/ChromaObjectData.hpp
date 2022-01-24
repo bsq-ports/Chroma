@@ -30,7 +30,7 @@ namespace Chroma {
 
     public:
         std::optional<Sombrero::FastColor> Color;
-        std::vector<Track*> Tracks;
+        std::span<Track*> Tracks; // probably a bad idea
         std::optional<PointDefinition*> LocalPathColor;
 
         // note

@@ -19,11 +19,10 @@ using namespace NEVector;
 void ChromaEvents::parseEventData(TracksAD::BeatmapAssociatedData &beatmapAD, const CustomJSONData::CustomEventData *customEventData) {
     bool isType = false;
 
-    static std::hash<std::string_view> stringViewHash;
-    auto typeHash = stringViewHash(customEventData->type);
+    auto typeHash = customEventData->typeHash;
 
 #define TYPE_GET(jsonName, varName)                                \
-    static auto jsonNameHash_##varName = stringViewHash(jsonName); \
+    static auto jsonNameHash_##varName = std::hash<std::string_view>()(jsonName); \
     if (!isType && typeHash == (jsonNameHash_##varName))                      \
         isType = true;
 
@@ -39,10 +38,11 @@ void ChromaEvents::parseEventData(TracksAD::BeatmapAssociatedData &beatmapAD, co
     if (eventAD.parsed)
         return;
 
+    eventAD.parsed = true;
+
     auto trackIt = eventData.FindMember("_track");
 
     if (trackIt == eventData.MemberEnd() || trackIt->value.IsNull() || !trackIt->value.IsString()) {
-        eventAD.parsed = true;
         getLogger().debug("Track data is missing for Chroma custom event %f", customEventData->time);
         return;
     }
@@ -53,8 +53,6 @@ void ChromaEvents::parseEventData(TracksAD::BeatmapAssociatedData &beatmapAD, co
     eventAD.track = track;
 
     if (typeHash == jsonNameHash_ASSIGNFOGTRACK) {}
-
-    eventAD.parsed = true;
 }
 
 void ChromaEvents::deserialize(GlobalNamespace::IReadonlyBeatmapData* readOnlyBeatmap) {
@@ -78,11 +76,10 @@ void CustomEventCallback(BeatmapObjectCallbackController *callbackController,
                          CustomJSONData::CustomEventData *customEventData) {
     bool isType = false;
 
-    static std::hash<std::string_view> stringViewHash;
-    auto typeHash = stringViewHash(customEventData->type);
+    auto typeHash = customEventData->typeHash;
 
 #define TYPE_GET(jsonName, varName)                                \
-    static auto jsonNameHash_##varName = stringViewHash(jsonName); \
+    static auto jsonNameHash_##varName = std::hash<std::string_view>()(jsonName); \
     if (!isType && typeHash == (jsonNameHash_##varName))                      \
         isType = true;
 

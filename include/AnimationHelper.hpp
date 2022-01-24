@@ -40,9 +40,8 @@ namespace Chroma {
             return std::nullopt;
         }
 
-        static std::optional<NEVector::Vector4> MultiTrackGetPathColor(std::vector<Track *> const &tracks,
-                                                                       std::function<std::optional<NEVector::Vector4>(
-                                                                               Track *)> const &vectorExpression) {
+        template<typename F = std::function<std::optional<NEVector::Vector4>(Track *)> const&>
+        static std::optional<NEVector::Vector4> MultiTrackGetPathColor(std::span<Track *> const &tracks, F vectorExpression) {
             bool valid = false;
             NEVector::Vector4 total = NEVector::Vector4{1, 1, 1, 1};
 
@@ -58,7 +57,7 @@ namespace Chroma {
             return valid ? std::make_optional(total) : std::nullopt;
         }
 
-        static std::optional<Sombrero::FastColor> GetColorOffset(std::optional<PointDefinition *> const &localColor, std::vector<Track *> const &tracksOpt,
+        static std::optional<Sombrero::FastColor> GetColorOffset(std::optional<PointDefinition *> const &localColor, std::span<Track *> const &tracksOpt,
                        float const time) {
             std::optional<NEVector::Vector4> pathColor;
 
@@ -73,7 +72,7 @@ namespace Chroma {
 
 
             if (!tracksOpt.empty()) {
-                std::vector<Track*> const& tracks = tracksOpt;
+                std::span<Track*> const& tracks = tracksOpt;
                 if (tracks.size() > 1) {
 
                     if (!pathColor) {

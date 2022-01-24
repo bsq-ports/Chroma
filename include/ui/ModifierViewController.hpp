@@ -81,13 +81,13 @@ namespace QUC {
 
         UnityEngine::Transform *render(RenderContext &ctx, RenderContextChildData &data) {
             auto &toggle = ctx.getChildData(ToggleSetting::key).getData<UnityEngine::UI::Toggle*>();
-            auto &toggleText = ctx.getChildData(text->key).getData<TMPro::TextMeshProUGUI *>();
+            auto &toggleText = ctx.getChildData(text.key).getData<TMPro::TextMeshProUGUI *>();
             auto &imageView = ctx.getChildData(image.key).getData<HMUI::ImageView *>();
 
 
             if (!toggle) {
                 auto parent = &ctx.parentTransform;
-                auto const &usableText = text ? text->text : *str;
+                auto const &usableText = *text.text;
 
                 auto cbk = [this, callback = this->callback, parent, &ctx](bool val) {
                     toggleButton.value = val;
@@ -102,6 +102,7 @@ namespace QUC {
                     toggle = QuestUI::BeatSaberUI::CreateModifierButton(parent, usableText, *toggleButton.value,
                                                                         *image.sprite, cbk);
                 }
+                text.text.clear();
                 image.sprite.clear();
                 toggleButton.value.clear();
 
