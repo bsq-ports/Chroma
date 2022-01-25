@@ -58,67 +58,67 @@ void Chroma::ChromaLightSwitchEventEffect::HandleBeatmapObjectCallbackController
         std::optional<LerpType> lerpType;
 
         // fun fun chroma stuff
-        if (ChromaController::DoChromaHooks()) {
-            static auto contextLogger = getLogger().WithContext(ChromaLogger::ColorLightSwitch);
 
-            auto chromaIt = ChromaEventDataManager::ChromaEventDatas.find(beatmapEventData);
+        static auto contextLogger = getLogger().WithContext(ChromaLogger::ColorLightSwitch);
 
-
-            // Aero thinks legacy was a mistake. I think a Quest port was a bigger mistake.
-            std::optional<Sombrero::FastColor> color;
-
-            if (chromaIt == ChromaEventDataManager::ChromaEventDatas.end()) {
-                color = LegacyLightHelper::GetLegacyColor(beatmapEventData);
-            } else {
-                debugSpamLog(contextLogger, "Color is legacy? %s", color ? "true" : "false");
+        auto chromaIt = ChromaEventDataManager::ChromaEventDatas.find(beatmapEventData);
 
 
-                auto const& chromaData = chromaIt->second;
+        // Aero thinks legacy was a mistake. I think a Quest port was a bigger mistake.
+        std::optional<Sombrero::FastColor> color;
 
-                auto const& lightMember = chromaData.LightID;
-                if (lightMember) {
-                    auto const &lightIdData = *lightMember;
-                    selectLights = lightColorizer->GetLightWithIds(lightIdData);
-                }
-
-
-
-                // Prop ID is deprecated apparently.  https://github.com/Aeroluna/Chroma/commit/711cb19f7d03a1776a24cef52fd8ef6fd7685a2b#diff-b8fcfff3ebc4ceb7b43d8401d9f50750dc88326d0a87897c5593923e55b23879R41
-                auto const& propMember = chromaData.PropID;
-                if (propMember) {
-                    auto const &propIDData = *propMember;
-
-                    selectLights = lightColorizer->GetPropagationLightWithIds(propIDData);
-                }
+        if (chromaIt == ChromaEventDataManager::ChromaEventDatas.end()) {
+            color = LegacyLightHelper::GetLegacyColor(beatmapEventData);
+        } else {
+            debugSpamLog(contextLogger, "Color is legacy? %s", color ? "true" : "false");
 
 
-                auto const& gradient = chromaData.GradientObject;
-                if (gradient) {
-                    color = ChromaGradientController::AddGradient(gradient.value(), beatmapEventData->type,
-                                                                  beatmapEventData->time);
-                }
+            auto const& chromaData = chromaIt->second;
 
-
-                std::optional<Sombrero::FastColor> const &colorData = chromaData.ColorData;
-                if (colorData) {
-                    color = colorData;
-                    ChromaGradientController::CancelGradient(beatmapEventData->type);
-                }
-
-                easing = chromaData.Easing;
-                lerpType = chromaData.LerpType;
+            auto const& lightMember = chromaData.LightID;
+            if (lightMember) {
+                auto const &lightIdData = *lightMember;
+                selectLights = lightColorizer->GetLightWithIds(lightIdData);
             }
 
 
-            if (color) {
-                lightColorizer->Colorize(false, {*color, *color, *color, *color});
-            } else if (!ChromaGradientController::IsGradientActive(beatmapEventData->type)) {
-                lightColorizer->Colorize(false,
-                                         {std::nullopt, std::nullopt, std::nullopt, std::nullopt});
+
+            // Prop ID is deprecated apparently.  https://github.com/Aeroluna/Chroma/commit/711cb19f7d03a1776a24cef52fd8ef6fd7685a2b#diff-b8fcfff3ebc4ceb7b43d8401d9f50750dc88326d0a87897c5593923e55b23879R41
+            auto const& propMember = chromaData.PropID;
+            if (propMember) {
+                auto const &propIDData = *propMember;
+
+                selectLights = lightColorizer->GetPropagationLightWithIds(propIDData);
             }
 
 
+            auto const& gradient = chromaData.GradientObject;
+            if (gradient) {
+                color = ChromaGradientController::AddGradient(gradient.value(), beatmapEventData->type,
+                                                              beatmapEventData->time);
+            }
+
+
+            std::optional<Sombrero::FastColor> const &colorData = chromaData.ColorData;
+            if (colorData) {
+                color = colorData;
+                ChromaGradientController::CancelGradient(beatmapEventData->type);
+            }
+
+            easing = chromaData.Easing;
+            lerpType = chromaData.LerpType;
         }
+
+
+        if (color) {
+            lightColorizer->Colorize(false, {*color, *color, *color, *color});
+        } else if (!ChromaGradientController::IsGradientActive(beatmapEventData->type)) {
+            lightColorizer->Colorize(false,
+                                     {std::nullopt, std::nullopt, std::nullopt, std::nullopt});
+        }
+
+
+
 
         Refresh(true, selectLights, beatmapEventData, easing, lerpType);
     } else if (beatmapEventData->type == colorBoostEvent) {
