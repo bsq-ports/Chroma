@@ -27,9 +27,9 @@ MAKE_HOOK_MATCH(ColorTween_GetColor,
         return ColorTween_GetColor(self, t);
     }
 
-    static auto ColorTweenKlass = classof(ColorTween*);
+    static auto ColorTweenKlass = classof(ChromaIDColorTween*);
 
-    if (self->klass == ColorTweenKlass) {
+    if (self && self->klass == ColorTweenKlass) {
         return reinterpret_cast<ChromaIDColorTween*>(self)->GetColor(t);
     }
 

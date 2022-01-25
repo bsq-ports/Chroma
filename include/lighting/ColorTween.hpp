@@ -43,7 +43,7 @@ public:
       time = Easings::Interpolate(time, easing);
       switch (lerpType) {
           case LerpType::RGB:
-          return Sombrero::FastColor::LerpUnclamped(fromValue, toValue, time);
+            return Sombrero::FastColor::LerpUnclamped(fromValue, toValue, time);
 
           case LerpType::HSV:
               float fromH, fromS, fromV;
@@ -52,9 +52,10 @@ public:
               Sombrero::FastColor::RGBToHSV(toValue, toH, toS, toV);
 
               return Sombrero::FastColor::HSVToRGB(std::lerp(fromH, toH, time), std::lerp(fromS, toS, time), std::lerp(fromV, toV, time)).Alpha(std::lerp(fromValue.a, toValue.a, time));
-
-          default:
+          default: {
+              getLogger().debug("Lerp not valid for id %i using lerp %i", Id, lerpType);
               throw std::runtime_error("Lerp not valid");
+          }
       }
     }
 
