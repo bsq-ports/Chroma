@@ -25,8 +25,8 @@ namespace ChromaUtils {
 class ChromaUtilities {
 public:
     static std::optional<Sombrero::FastColor>
-    GetColorFromData(rapidjson::Value const &data, const std::string &member = Chroma::COLOR) {
-        auto const color = data.FindMember(member);
+    GetColorFromData(rapidjson::Value const &data, const std::string_view member = Chroma::COLOR) {
+        auto const color = data.FindMember(member.data());
 
         if (color == data.MemberEnd() || !color->value.IsArray() || color->value.Empty())
             return std::nullopt;
@@ -37,7 +37,7 @@ public:
     }
 
     inline static std::optional<Sombrero::FastColor> GetColorFromData(std::optional<std::reference_wrapper<rapidjson::Value>> const data,
-                     const std::string &member = Chroma::COLOR) {
+                                                                      const std::string_view member = Chroma::COLOR) {
         if (!data) return std::nullopt;
 
         rapidjson::Value const &unwrapped = *data;
@@ -139,20 +139,24 @@ public:
             if constexpr (std::is_same_v<T, int>) {
                 return std::stoi(it->value.GetString());
             }
+
+            if constexpr (std::is_same_v<T, std::string> || std::is_same_v<T, std::string_view> || std::is_same_v<T, char const*>) {
+                return it->value.GetString();
+            }
         }
 
         return it->value.Get<T>();
     }
 
     template<typename T>
-    inline static T getIfExists(std::optional<std::reference_wrapper<rapidjson::Value>> val, std::string_view member, T const& def) {
+    inline static T getIfExists(std::optional<std::reference_wrapper<rapidjson::Value>> val, const std::string_view member, T const& def) {
         if (!val) return def;
 
         return getIfExists<T>(val->get(), member, def);
     }
 
     template<typename T>
-    inline static std::optional<T> getIfExists(std::optional<std::reference_wrapper<rapidjson::Value>> const& val, std::string_view member) {
+    inline static std::optional<T> getIfExists(std::optional<std::reference_wrapper<rapidjson::Value>> const& val, const std::string_view member) {
         if (!val) return std::nullopt;
 
         return getIfExists<T>(val->get(), member);

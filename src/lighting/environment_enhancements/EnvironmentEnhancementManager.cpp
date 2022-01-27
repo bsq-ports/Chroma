@@ -106,8 +106,8 @@ Chroma::EnvironmentEnhancementManager::LookupId(const std::string& id, Chroma::L
 }
 
 std::optional<Sombrero::FastVector3>
-EnvironmentEnhancementManager::GetVectorData(const rapidjson::Value &dynData, std::string const& name) {
-    auto objectsValIt = dynData.FindMember(name);
+EnvironmentEnhancementManager::GetVectorData(const rapidjson::Value &dynData, const std::string_view name) {
+    auto objectsValIt = dynData.FindMember(name.data());
 
     if (objectsValIt == dynData.MemberEnd())
         return std::nullopt;
@@ -213,7 +213,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
 
         rapidjson::Value &dynData = *customDynWrapper;
 
-        auto environmentData = dynData.FindMember(ENVIRONMENT);
+        auto environmentData = dynData.FindMember(ENVIRONMENT.data());
 
 
         if (environmentData != dynData.MemberEnd()) {
@@ -231,10 +231,10 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                 auto& profiler = profileData.emplace_back();
                 profiler.startTimer();
 
-                auto idMember = gameObjectDataVal.FindMember(IDVAR);
+                auto idMember = gameObjectDataVal.FindMember(IDVAR.data());
 
                 std::string id = idMember == gameObjectDataVal.MemberEnd() ? "" : idMember->value.GetString();
-                std::string lookupString = gameObjectDataVal.FindMember(LOOKUPMETHOD)->value.GetString();
+                std::string lookupString = gameObjectDataVal.FindMember(LOOKUPMETHOD.data())->value.GetString();
 
                 // Convert string to lower case
                 std::transform(lookupString.begin(), lookupString.end(), lookupString.begin(), ::tolower);
@@ -281,7 +281,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                 }
 
                 // Create track if objects are found
-                auto trackNameIt = gameObjectDataVal.FindMember(Chroma::TRACK);
+                auto trackNameIt = gameObjectDataVal.FindMember(Chroma::TRACK.data());
 
                 std::optional<std::string> trackName;
                 std::optional<Track*> track;

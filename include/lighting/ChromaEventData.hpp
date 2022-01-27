@@ -74,7 +74,7 @@ namespace Chroma {
 
         bool LockPosition;
 
-        std::unordered_map<int, GlobalNamespace::BeatmapEventData*> NextSameTypeEvent;
+        std::unordered_map<int, std::pair<GlobalNamespace::BeatmapEventData*, ChromaEventData*>> NextSameTypeEvent;
     };
 
     class ChromaEventDataManager {

@@ -79,7 +79,7 @@ void Chroma::ChromaObjectDataManager::deserialize(GlobalNamespace::IReadonlyBeat
 
                 if (objectDynData && objectDynData->value) {
                     rapidjson::Value const& customData = *objectDynData->value;
-                    auto animationObjectDyn = customData.FindMember(Chroma::ANIMATION);
+                    auto animationObjectDyn = customData.FindMember(Chroma::ANIMATION.data());
                     if (animationObjectDyn != customData.MemberEnd()) {
                         PointDefinition *anonPointDef = nullptr;
                         PointDefinition *localColor = Animation::TryGetPointData(beatmapAD, anonPointDef,

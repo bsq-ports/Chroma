@@ -211,9 +211,12 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, const std::optional<std::v
             auto const* eventData = eventDataIt != ChromaEventDataManager::ChromaEventDatas.end() ? &eventDataIt->second : nullptr;
 
             BeatmapEventData* nextSameTypeEvent;
+            ChromaEventData* nextEventData = nullptr;
             if (eventData && eventData->NextSameTypeEvent.contains(tween->Id))
             {
-                nextSameTypeEvent = eventData->NextSameTypeEvent.at(tween->Id);
+                auto [anextSameTypeEvent, anextEventData] = eventData->NextSameTypeEvent.at(tween->Id);
+                nextSameTypeEvent = anextSameTypeEvent;
+                nextEventData = anextEventData;
             }
             else
             {
@@ -230,7 +233,8 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, const std::optional<std::v
             Sombrero::FastColor nextColor = GetOriginalColor(nextValue, boost);
 
             eventDataIt = ChromaEventDataManager::ChromaEventDatas.find(nextSameTypeEvent);
-            auto nextEventData = eventDataIt != ChromaEventDataManager::ChromaEventDatas.end() ? &eventDataIt->second : nullptr;
+            if (!nextEventData)
+                nextEventData = eventDataIt != ChromaEventDataManager::ChromaEventDatas.end() ? &eventDataIt->second : nullptr;
 
             std::optional<Sombrero::FastColor> nextColorData = nextEventData ? nextEventData->ColorData : std::nullopt;
             if (nextColorData) {

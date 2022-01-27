@@ -42,17 +42,17 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
             if (optionalDynData) {
                 rapidjson::Value const &unwrappedData = *optionalDynData;
 
-                auto gradientJSON = unwrappedData.FindMember(LIGHTGRADIENT);
+                auto gradientJSON = unwrappedData.FindMember(LIGHTGRADIENT.data());
                 if (gradientJSON != unwrappedData.MemberEnd() && !gradientJSON->value.IsNull() && gradientJSON->value.IsObject()) {
                     auto const &gValue = gradientJSON->value;
 
-                    float duration = gValue.FindMember(Chroma::DURATION)->value.GetFloat(); // Trees.at(gradientObject, DURATION);
+                    float duration = ChromaUtils::getIfExists<float>(gValue, Chroma::DURATION).value_or(0);
 
                     Sombrero::FastColor initcolor = ChromaUtils::ChromaUtilities::GetColorFromData(gValue, STARTCOLOR).value();
 
                     Sombrero::FastColor endcolor = ChromaUtils::ChromaUtilities::GetColorFromData(gValue, ENDCOLOR).value();
 
-                    std::string_view easingString = gValue.FindMember(EASING)->value.GetString();
+                    std::string_view easingString = gValue.FindMember(EASING.data())->value.GetString();
 
                     Functions easing;
 
@@ -99,8 +99,8 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
                 }
 
                 debugSpamLog(contextLogger, "Light ID");
-                auto lightId = unwrappedData.FindMember(LIGHTID);
-                auto propId = unwrappedData.FindMember(PROPAGATIONID);
+                auto lightId = unwrappedData.FindMember(LIGHTID.data());
+                auto propId = unwrappedData.FindMember(PROPAGATIONID.data());
                 debugSpamLog(contextLogger, "Done ");
 
                 if (lightId != unwrappedData.MemberEnd()) {
@@ -237,7 +237,8 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
                 }, i + 1);
 
                 if (nextIndex != -1) {
-                    currentEventData.NextSameTypeEvent[id] = beatmapEvents->items.get(nextIndex);
+                    auto beatmapEvent = beatmapEvents->items.get(nextIndex);
+                    currentEventData.NextSameTypeEvent[id] = {beatmapEvent, &ChromaEventDatas.at(beatmapEvent)};
                 } else {
                     int nextIndex = FindIndex(beatmapEventsRef.ref_to(), [type](GlobalNamespace::BeatmapEventData* n) {
                         if (!n)
@@ -254,7 +255,8 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
                     }, i + 1);
 
                     if (nextIndex != -1) {
-                        currentEventData.NextSameTypeEvent[id] = beatmapEvents->items.get(nextIndex);
+                        auto beatmapEvent = beatmapEvents->items.get(nextIndex);
+                        currentEventData.NextSameTypeEvent[id] = {beatmapEvent, &ChromaEventDatas.at(beatmapEvent)};
                     }
                 }
             }
