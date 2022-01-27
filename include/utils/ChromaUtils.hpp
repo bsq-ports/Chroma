@@ -91,41 +91,68 @@ public:
     }
 
     template<typename T>
-    static T getIfExists(rapidjson::Value const& val, const std::string& member, T const& def) {
+    static T getIfExists(rapidjson::Value const& val, std::string_view member, T const& def) {
         if (!val.IsObject() || val.Empty() || val.IsNull()) return def;
 
-        auto it = val.FindMember(member);
+        auto it = val.FindMember(member.data());
         if (it == val.MemberEnd()) return def;
 
         if (it->value.IsNull())
             return def;
 
+        if (it->value.IsString()) {
+            if constexpr (std::is_same_v<T, bool>) {
+                return std::string(it->value.GetString()) == "true";
+            }
+
+            if constexpr (std::is_same_v<T, float>) {
+                return std::stof(it->value.GetString());
+            }
+
+            if constexpr (std::is_same_v<T, int> || std::is_enum_v<T>) {
+                return std::stoi(it->value.GetString());
+            }
+        }
+
         return it->value.Get<T>();
     }
 
+    template<typename T>
+    static std::optional<T> getIfExists(rapidjson::Value const& val, std::string_view member) {
+        if (!val.IsObject() || val.Empty() || val.IsNull()) return std::nullopt;
+
+        auto it = val.FindMember(member.data());
+        if (it == val.MemberEnd()) return std::nullopt;
+
+        if (it->value.IsNull())
+            return std::nullopt;
+
+        if (it->value.IsString()) {
+            if constexpr (std::is_same_v<T, bool>) {
+                return std::string(it->value.GetString()) == "true";
+            }
+
+            if constexpr (std::is_same_v<T, float>) {
+                return std::stof(it->value.GetString());
+            }
+
+            if constexpr (std::is_same_v<T, int>) {
+                return std::stoi(it->value.GetString());
+            }
+        }
+
+        return it->value.Get<T>();
+    }
 
     template<typename T>
-    inline static T getIfExists(std::optional<std::reference_wrapper<rapidjson::Value>> val, const std::string& member, T const& def) {
+    inline static T getIfExists(std::optional<std::reference_wrapper<rapidjson::Value>> val, std::string_view member, T const& def) {
         if (!val) return def;
 
         return getIfExists<T>(val->get(), member, def);
     }
 
     template<typename T>
-    std::optional<T> getIfExists(rapidjson::Value const& val, const std::string& member) {
-        if (!val.IsObject() || val.Empty() || val.IsNull()) return std::nullopt;
-
-        auto it = val.FindMember(member);
-        if (it == val.MemberEnd()) return std::nullopt;
-
-        if (it->value.IsNull())
-            return std::nullopt;
-
-        return it->value.Get<T>();
-    }
-
-    template<typename T>
-    inline std::optional<T> getIfExists(std::optional<std::reference_wrapper<rapidjson::Value>> const& val, const std::string& member) {
+    inline static std::optional<T> getIfExists(std::optional<std::reference_wrapper<rapidjson::Value>> const& val, std::string_view member) {
         if (!val) return std::nullopt;
 
         return getIfExists<T>(val->get(), member);
