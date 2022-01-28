@@ -52,12 +52,15 @@ namespace Chroma {
 
     public:
         inline static bool NoteColorable = false;
-        inline static std::unordered_map<GlobalNamespace::NoteControllerBase*, std::shared_ptr<NoteColorizer>> Colorizers;
+        inline static std::unordered_map<GlobalNamespace::NoteControllerBase const*, NoteColorizer> Colorizers;
         inline static std::array<std::optional<Sombrero::FastColor>, 2> GlobalColor = {std::nullopt, std::nullopt};
         std::array<Sombrero::FastColor, 2> getOriginalColors();
         GlobalNamespace::ColorType getColorType();
 
-        static std::shared_ptr<NoteColorizer> New(GlobalNamespace::NoteControllerBase* noteControllerBase);
+        friend class std::pair<GlobalNamespace::NoteControllerBase const*, NoteColorizer>;
+        friend class std::pair<const GlobalNamespace::NoteControllerBase *const, Chroma::NoteColorizer>;
+        NoteColorizer(NoteColorizer const&) = delete;
+        static NoteColorizer* New(GlobalNamespace::NoteControllerBase* noteControllerBase);
 
         static void GlobalColorize(std::optional<Sombrero::FastColor> const& color, GlobalNamespace::ColorType const& colorType);
 
@@ -66,12 +69,12 @@ namespace Chroma {
         static void ColorizeSaber(GlobalNamespace::NoteController* noteController, GlobalNamespace::NoteCutInfo& noteCutInfo);
 
         // extensions
-        inline static std::shared_ptr<NoteColorizer> GetNoteColorizer(GlobalNamespace::NoteControllerBase* noteController) {
+        inline static NoteColorizer* GetNoteColorizer(GlobalNamespace::NoteControllerBase* noteController) {
             auto it = Colorizers.find(noteController);
             if (it == Colorizers.end())
                 return nullptr;
 
-            return it->second;
+            return &it->second;
         }
 
         inline static void ColorizeNote(GlobalNamespace::NoteControllerBase* noteController, std::optional<Sombrero::FastColor> const& color) {

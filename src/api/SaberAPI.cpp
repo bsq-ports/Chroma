@@ -35,12 +35,9 @@ EXPOSE_API(setGlobalSaberColorSafe, void, int saberType, std::optional<Sombrero:
 }
 
 EXPOSE_API(getSaberColorSafe, OptColor, GlobalNamespace::SaberModelController* saberModelController) {
-    auto colorizer = SaberColorizer::GetColorizer(saberModelController);
+    auto& colorizer = SaberColorizer::GetColorizer(saberModelController);
 
-    if (!colorizer)
-        return OptColorNull;
-
-    auto optional = colorizer->getSelfColor();
+    auto optional = colorizer.getSelfColor();
 
     Sombrero::FastColor color;
 

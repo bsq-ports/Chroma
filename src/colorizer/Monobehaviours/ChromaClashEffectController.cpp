@@ -18,8 +18,8 @@ void ChromaClashEffectController::Init(UnityEngine::ParticleSystem *sparkleParti
                                        GlobalNamespace::ColorManager *colorManager) {
     _sparkleParticleSystem = sparkleParticleSystem;
     _glowParticleSystem = glowParticleSystem;
-    _colors.push_back(colorManager->ColorForSaberType(SaberType::SaberA));
-    _colors.push_back(colorManager->ColorForSaberType(SaberType::SaberB));
+    _colors.emplace_back(colorManager->ColorForSaberType(SaberType::SaberA));
+    _colors.emplace_back(colorManager->ColorForSaberType(SaberType::SaberB));
     SaberColorizer::SaberColorChanged += {&ChromaClashEffectController::OnSaberColorChanged, this};
 }
 

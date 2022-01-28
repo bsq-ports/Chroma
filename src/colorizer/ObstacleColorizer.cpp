@@ -45,25 +45,20 @@ ObstacleColorizer::ObstacleColorizer(GlobalNamespace::ObstacleControllerBase *ob
     }
 }
 
-std::shared_ptr<ObstacleColorizer> ObstacleColorizer::New(GlobalNamespace::ObstacleControllerBase *obstacleController) {
-    std::shared_ptr<ObstacleColorizer> obstacleColorizer(new ObstacleColorizer(obstacleController));
-
-    Colorizers[obstacleController] = obstacleColorizer;
-
-    return obstacleColorizer;
+ObstacleColorizer& ObstacleColorizer::New(GlobalNamespace::ObstacleControllerBase *obstacleController) {
+    return Colorizers.try_emplace(obstacleController, obstacleController).first->second;
 }
 
 void ObstacleColorizer::Reset() {
     GlobalColor = std::nullopt;
     Colorizers.clear();
-    Colorizers = {};
 }
 
 void ObstacleColorizer::GlobalColorize(std::optional<Sombrero::FastColor> const& color) {
     GlobalColor = color;
-    for (auto& valuePair : Colorizers)
+    for (auto& [_, colorizer] : Colorizers)
     {
-        valuePair.second->Refresh();
+        colorizer.Refresh();
     }
 }
 

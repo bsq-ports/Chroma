@@ -20,7 +20,7 @@
 
 DECLARE_CLASS_CODEGEN(Chroma, ChromaSaberController, UnityEngine::MonoBehaviour,
   private:
-          std::shared_ptr<SaberColorizer> _colorizer;
+          SaberColorizer* _colorizer;
           GlobalNamespace::SaberType _saberType;
           DECLARE_INSTANCE_FIELD(GlobalNamespace::SaberModelController*, _saberModelController);
 

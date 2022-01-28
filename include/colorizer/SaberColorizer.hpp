@@ -34,13 +34,17 @@ namespace Chroma {
         GlobalNamespace::SaberType _saberType;
         Sombrero::FastColor _lastColor;
         GlobalNamespace::SaberModelController* _saberModelController;
+    public:
+        [[nodiscard]] GlobalNamespace::SaberModelController *getSaberModelController() const;
 
-        explicit SaberColorizer(GlobalNamespace::Saber* saber);
+    private:
+
+        explicit SaberColorizer(GlobalNamespace::Saber* saber, GlobalNamespace::SaberModelController* saberModelController);
 
         // SiraUtil stuff
         inline static std::unordered_set<GlobalNamespace::SaberModelController*> ColorableModels;
 
-        void ColorColorable(Sombrero::FastColor color);
+        void ColorColorable(Sombrero::FastColor const& color);
 
     protected:
         std::optional<Sombrero::FastColor> GlobalColorGetter() override;
@@ -48,11 +52,14 @@ namespace Chroma {
         void Refresh() override;
 
     public:
-        static std::shared_ptr<SaberColorizer> New(GlobalNamespace::Saber* saber);
+        friend class std::pair<GlobalNamespace::SaberModelController const*, SaberColorizer>;
+        friend class std::pair<const GlobalNamespace::SaberModelController *const, Chroma::SaberColorizer>;
+        SaberColorizer(SaberColorizer const&) = delete;
+        static SaberColorizer& New(GlobalNamespace::Saber* saber);
 
         inline static UnorderedEventCallback<int, GlobalNamespace::SaberModelController*, Sombrero::FastColor> SaberColorChanged;
 
-        inline static std::unordered_map<GlobalNamespace::SaberModelController*, std::shared_ptr<SaberColorizer>> Colorizers;
+        inline static std::unordered_map<GlobalNamespace::SaberModelController const*, SaberColorizer> Colorizers;
 
 
         inline static std::array<std::optional<Sombrero::FastColor>, 2> GlobalColor = {std::nullopt, std::nullopt};
@@ -67,10 +74,10 @@ namespace Chroma {
         static std::unordered_set<SaberColorizer*> GetColorizerList(GlobalNamespace::SaberType saberType);
 
         static void RemoveColorizer(GlobalNamespace::SaberModelController* saberModelController);
-        static std::shared_ptr<SaberColorizer>& GetColorizer(GlobalNamespace::SaberModelController* saberModelController);
+        static SaberColorizer& GetColorizer(GlobalNamespace::SaberModelController* saberModelController);
 
         inline static void ColorizeSaber(GlobalNamespace::SaberModelController* saberModelController, std::optional<Sombrero::FastColor> const& color) {
-            GetColorizer(saberModelController)->Colorize(color);
+            GetColorizer(saberModelController).Colorize(color);
         }
     };
 }

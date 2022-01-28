@@ -34,7 +34,7 @@ void Chroma::ChromaLightSwitchEventEffect::CopyValues(GlobalNamespace::LightSwit
     this->beatmapObjectCallbackController = lightSwitchEventEffect->beatmapObjectCallbackController;
     this->tweeningManager = lightSwitchEventEffect->tweeningManager;
 
-    this->lightColorizer = LightColorizer::New(this, event, lightManager);
+    this->lightColorizer = &LightColorizer::New(this, event, lightManager);
     _originalLightColor0 = lightColor0;
     _originalLightColor0Boost = lightColor0Boost;
     _originalLightColor1 = lightColor1;
@@ -142,7 +142,7 @@ void Chroma::ChromaLightSwitchEventEffect::OnDestroy() {
     static auto LightSwitchEventEffect_OnDestroy = il2cpp_utils::il2cpp_type_check::MetadataGetter<&LightSwitchEventEffect::OnDestroy>::get();
     il2cpp_utils::RunMethodRethrow<void, false>(this, LightSwitchEventEffect_OnDestroy);
 
-    CRASH_UNLESS(LightColorizer::Colorizers.at(event) == lightColorizer);
+    CRASH_UNLESS(&LightColorizer::Colorizers.at(event) == lightColorizer);
     LightColorizer::Colorizers.erase(event);
 }
 

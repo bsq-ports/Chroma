@@ -123,12 +123,10 @@ LightColorizer::LightColorizer(ChromaLightSwitchEventEffect *lightSwitchEventEff
     LightsPropagationGrouped = lightsPreGroupFinal;
 }
 
-std::shared_ptr<LightColorizer> LightColorizer::New(ChromaLightSwitchEventEffect *lightSwitchEventEffect,GlobalNamespace::BeatmapEventType beatmapEventType, GlobalNamespace::LightWithIdManager* lightManager) {
-    auto lightColorizer = std::shared_ptr<LightColorizer>(new LightColorizer(lightSwitchEventEffect, beatmapEventType, lightManager));
-
+LightColorizer& LightColorizer::New(ChromaLightSwitchEventEffect *lightSwitchEventEffect,GlobalNamespace::BeatmapEventType beatmapEventType, GlobalNamespace::LightWithIdManager* lightManager) {
     CRASH_UNLESS(!Colorizers.contains(beatmapEventType.value));
-    Colorizers.try_emplace(beatmapEventType.value, lightColorizer);
-    return lightColorizer;
+
+    return Colorizers.try_emplace(beatmapEventType.value, lightSwitchEventEffect, beatmapEventType, lightManager).first->second;
 }
 
 
@@ -141,21 +139,21 @@ void LightColorizer::GlobalColorize(bool refresh, std::optional<std::vector<Glob
 
     for (auto& [_, colorizer] : Colorizers)
     {
-        colorizer->SetSOs(colorizer->getColor());
+        colorizer.SetSOs(colorizer.getColor());
         // Allow light colorizer to not force color
         if (!refresh)
         {
             continue;
         }
 
-        colorizer->Refresh(lights);
+        colorizer.Refresh(lights);
     }
 }
 
 void LightColorizer::RegisterLight(UnityEngine::MonoBehaviour *lightWithId, std::optional<int> lightId) {
     auto const RegisterLightWithID = [&lightId](ILightWithId* lightToRegister) {
         int type = lightToRegister->get_lightId() - 1;
-        std::shared_ptr<LightColorizer> lightColorizer = GetLightColorizer((BeatmapEventType) type);
+        auto lightColorizer = GetLightColorizer((BeatmapEventType) type);
         auto index = lightColorizer->Lights.size();
         LightIDTableManager::RegisterIndex(type, index, lightId);
 
@@ -188,7 +186,6 @@ void LightColorizer::Reset() {
         GlobalColor[i] = std::nullopt;
     }
     Colorizers.clear();
-    Colorizers = {};
     LightColorChanged.clear();
 }
 

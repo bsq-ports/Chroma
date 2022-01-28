@@ -84,9 +84,13 @@ namespace Chroma {
     public:
         inline static bool ObstacleColorable = false;
 
-        static std::shared_ptr<ObstacleColorizer> New(GlobalNamespace::ObstacleControllerBase *obstacleController);
+        ObstacleColorizer(ObstacleColorizer const&) = delete;
+        friend class std::pair<GlobalNamespace::ObstacleControllerBase const*, ObstacleColorizer>;
+        friend class std::pair<const GlobalNamespace::ObstacleControllerBase *const, Chroma::ObstacleColorizer>;
 
-        inline static std::unordered_map<GlobalNamespace::ObstacleControllerBase *, std::shared_ptr<ObstacleColorizer>> Colorizers;
+        static ObstacleColorizer& New(GlobalNamespace::ObstacleControllerBase *obstacleController);
+
+        inline static std::unordered_map<GlobalNamespace::ObstacleControllerBase const*, ObstacleColorizer> Colorizers;
         inline static std::optional<Sombrero::FastColor> GlobalColor;
 
         static void GlobalColorize(std::optional<Sombrero::FastColor> const &color);
@@ -94,13 +98,13 @@ namespace Chroma {
         static void Reset();
 
         // extensions
-        inline static std::shared_ptr<ObstacleColorizer>
+        inline static ObstacleColorizer*
         GetObstacleColorizer(GlobalNamespace::ObstacleControllerBase *obstacleController) {
             auto it = Colorizers.find(obstacleController);
             if (it == Colorizers.end())
                 return nullptr;
 
-            return it->second;
+            return &it->second;
         }
 
         inline static void ColorizeObstacle(GlobalNamespace::ObstacleControllerBase *obstacleControllerBase,

@@ -37,10 +37,10 @@ using namespace custom_types::Helpers;
 using namespace Chroma;
 using namespace Sombrero;
 
-SaberColorizer::SaberColorizer(GlobalNamespace::Saber *saber) {
+SaberColorizer::SaberColorizer(GlobalNamespace::Saber *saber, SaberModelController* saberModelController) {
     _saberType = saber->get_saberType();
 
-    _saberModelController = saber->get_gameObject()->GetComponentInChildren<SaberModelController *>(true);
+    _saberModelController = saberModelController;
 
     _saberTrail = _saberModelController->saberTrail;
     _trailTintColor = _saberModelController->initData->trailTintColor;
@@ -52,12 +52,10 @@ SaberColorizer::SaberColorizer(GlobalNamespace::Saber *saber) {
 
 }
 
-std::shared_ptr<SaberColorizer> SaberColorizer::New(GlobalNamespace::Saber *saber) {
-    std::shared_ptr<SaberColorizer> saberColorizer(new SaberColorizer(saber));
+SaberColorizer& SaberColorizer::New(GlobalNamespace::Saber *saber) {
+    auto saberModelController = saber->get_gameObject()->GetComponentInChildren<SaberModelController *>(true);
 
-    Colorizers.emplace(saberColorizer->_saberModelController, saberColorizer);
-
-    return saberColorizer;
+    return Colorizers.try_emplace(saberModelController, saber, saberModelController).first->second;
 }
 
 std::optional<Sombrero::FastColor> SaberColorizer::GlobalColorGetter() {
@@ -75,7 +73,6 @@ void SaberColorizer::Reset() {
     GlobalColor[0] = std::nullopt;
     GlobalColor[1] = std::nullopt;
     Colorizers.clear();
-    Colorizers = {};
 
     SaberColorChanged.clear();
     ColorableModels.clear();
@@ -150,9 +147,9 @@ void SaberColorizer::Refresh() {
     SaberColorChanged.invoke(_saberType, _saberModelController, color);
 }
 
-std::shared_ptr<SaberColorizer> &
+SaberColorizer &
 SaberColorizer::GetColorizer(GlobalNamespace::SaberModelController *saberModelController) {
-    return Colorizers[saberModelController];
+    return Colorizers.at(saberModelController);
 }
 
 void SaberColorizer::RemoveColorizer(GlobalNamespace::SaberModelController *saberModelController) {
@@ -162,16 +159,16 @@ void SaberColorizer::RemoveColorizer(GlobalNamespace::SaberModelController *sabe
 std::unordered_set<SaberColorizer*> SaberColorizer::GetColorizerList(GlobalNamespace::SaberType saberType) {
     std::unordered_set<SaberColorizer*> colorizers;
 
-    for (auto const& saber : Colorizers) {
-        if (saber.second->_saberType.value == saberType.value) {
-            colorizers.emplace(saber.second.get());
+    for (auto& [_, colorizer]  : Colorizers) {
+        if (colorizer._saberType.value == saberType.value) {
+            colorizers.emplace(&colorizer);
         }
     }
 
     return colorizers;
 }
 
-void SaberColorizer::ColorColorable(Sombrero::FastColor color) {
+void SaberColorizer::ColorColorable(Sombrero::FastColor const& color) {
     // Nothing here I guess
 }
 
@@ -184,4 +181,8 @@ void SaberColorizer::SetColorable(GlobalNamespace::SaberModelController *saberMo
 
 bool SaberColorizer::IsColorable(GlobalNamespace::SaberModelController *saberModelController) {
     return ColorableModels.contains(saberModelController);
+}
+
+SaberModelController *SaberColorizer::getSaberModelController() const {
+    return _saberModelController;
 }

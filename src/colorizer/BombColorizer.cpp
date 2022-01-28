@@ -49,18 +49,14 @@ std::optional<Sombrero::FastColor> BombColorizer::getGlobalColor() {
 
 void BombColorizer::GlobalColorize(std::optional<Sombrero::FastColor> const& color) {
     GlobalColor = color;
-    for (auto& valuePair : Colorizers)
+    for (auto& [_, colorizer] : Colorizers)
     {
-        valuePair.second->Refresh();
+        colorizer.Refresh();
     }
 }
 
-std::shared_ptr<BombColorizer> BombColorizer::New(GlobalNamespace::NoteControllerBase *noteController) {
-    std::shared_ptr<BombColorizer> bombColorizer(new BombColorizer(noteController));
-
-    Colorizers[noteController] = bombColorizer;
-
-    return bombColorizer;
+BombColorizer& BombColorizer::New(GlobalNamespace::NoteControllerBase *noteController) {
+    return Colorizers.try_emplace(noteController, noteController).first->second;
 }
 
 std::optional<Sombrero::FastColor> BombColorizer::GlobalColorGetter() {
@@ -70,7 +66,6 @@ std::optional<Sombrero::FastColor> BombColorizer::GlobalColorGetter() {
 void BombColorizer::Reset() {
     GlobalColor = std::nullopt;
     Colorizers.clear();
-    Colorizers = {};
 }
 
 

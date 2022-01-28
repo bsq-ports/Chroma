@@ -42,7 +42,10 @@ namespace Chroma {
         using LightColorOptionalPalette = std::array<std::optional<Sombrero::FastColor>, 4>;
         using LightColorPalette = std::array<Sombrero::FastColor, 4>;
 
-        static std::shared_ptr<LightColorizer> New(ChromaLightSwitchEventEffect *lightSwitchEventEffect,
+        friend class std::pair<int, LightColorizer>;
+        friend class std::pair<const int, Chroma::LightColorizer>;
+        LightColorizer(LightColorizer const&) = delete;
+        static LightColorizer& New(ChromaLightSwitchEventEffect *lightSwitchEventEffect,
                                                    GlobalNamespace::BeatmapEventType beatmapEventType,
                                                    GlobalNamespace::LightWithIdManager* lightManager);
 
@@ -51,7 +54,7 @@ namespace Chroma {
 
         inline static UnorderedEventCallback<GlobalNamespace::BeatmapEventType, std::array<Sombrero::FastColor, 4>> LightColorChanged;
 
-        inline static std::unordered_map<int, std::shared_ptr<LightColorizer>> Colorizers;
+        inline static std::unordered_map<int, LightColorizer> Colorizers;
 
         std::vector<GlobalNamespace::ILightWithId *> Lights{};
 
@@ -115,14 +118,13 @@ namespace Chroma {
         static void Reset();
 
         // extensions
-        inline static std::shared_ptr<LightColorizer>
-        GetLightColorizer(GlobalNamespace::BeatmapEventType beatmapEventType) {
+        inline static LightColorizer* GetLightColorizer(GlobalNamespace::BeatmapEventType beatmapEventType) {
             auto it = Colorizers.find(beatmapEventType.value);
             if (it == Colorizers.end()) {
                 return nullptr;
             }
 
-            return it->second;
+            return &it->second;
         }
 
         inline static void ColorizeLight(GlobalNamespace::BeatmapEventType beatmapEventType, bool refresh,

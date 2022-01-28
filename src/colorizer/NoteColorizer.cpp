@@ -33,14 +33,11 @@ NoteColorizer::NoteColorizer(GlobalNamespace::NoteControllerBase *noteController
     _materialPropertyBlockControllers = colorNoteVisuals->materialPropertyBlockControllers;
 }
 
-std::shared_ptr<NoteColorizer> NoteColorizer::New(GlobalNamespace::NoteControllerBase *noteControllerBase) {
+NoteColorizer* NoteColorizer::New(GlobalNamespace::NoteControllerBase *noteControllerBase) {
     if (!ChromaController::DoColorizerSabers())
         return nullptr;
 
-    std::shared_ptr<NoteColorizer> noteColorizer(new NoteColorizer(noteControllerBase));
-
-    Colorizers[noteControllerBase] = noteColorizer;
-    return noteColorizer;
+    return &Colorizers.try_emplace(noteControllerBase, noteControllerBase).first->second;
 }
 
 std::array<Sombrero::FastColor, 2> NoteColorizer::getOriginalColors() {
@@ -91,9 +88,9 @@ std::optional<Sombrero::FastColor> NoteColorizer::OriginalColorGetter() {
 
 void NoteColorizer::GlobalColorize(std::optional<Sombrero::FastColor> const& color, GlobalNamespace::ColorType const& colorType) {
     GlobalColor[(int)colorType] = color;
-    for (auto& valuePair : Colorizers)
+    for (auto& [_, colorizer] : Colorizers)
     {
-        valuePair.second->Refresh();
+        colorizer.Refresh();
     }
 }
 
@@ -101,7 +98,6 @@ void NoteColorizer::Reset() {
     GlobalColor[0] = std::nullopt;
     GlobalColor[1] = std::nullopt;
     Colorizers.clear();
-    Colorizers = {};
 }
 
 void NoteColorizer::ColorizeSaber(GlobalNamespace::NoteController *noteController, NoteCutInfo &noteCutInfo) {

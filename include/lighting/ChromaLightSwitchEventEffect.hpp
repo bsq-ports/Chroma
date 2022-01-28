@@ -39,7 +39,7 @@ public:
 
           GlobalNamespace::BeatmapEventType EventType;
 
-          std::shared_ptr<Chroma::LightColorizer> lightColorizer;
+          Chroma::LightColorizer* lightColorizer;
 
           DECLARE_INSTANCE_METHOD(void, Awake);
           DECLARE_INSTANCE_METHOD(void, OnDestroy);

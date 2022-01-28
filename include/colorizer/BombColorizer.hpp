@@ -29,9 +29,13 @@
      public:
          inline static bool BombColorable = false;
 
-         static std::shared_ptr<BombColorizer> New(GlobalNamespace::NoteControllerBase* noteController);
+         BombColorizer(BombColorizer const&) = delete;
+         friend class std::pair<GlobalNamespace::NoteControllerBase const*, BombColorizer>;
+         friend class std::pair<const GlobalNamespace::NoteControllerBase *const, BombColorizer>;
 
-         using ColorizerMap = std::unordered_map<GlobalNamespace::NoteControllerBase*, std::shared_ptr<BombColorizer>>;
+         static BombColorizer& New(GlobalNamespace::NoteControllerBase* noteController);
+
+         using ColorizerMap = std::unordered_map<GlobalNamespace::NoteControllerBase const*, BombColorizer>;
          static ColorizerMap Colorizers;
 
          static std::optional<Sombrero::FastColor> getGlobalColor();
@@ -41,12 +45,12 @@
          static void Reset();
 
          // extensions
-         inline static std::shared_ptr<BombColorizer> GetBombColorizer(GlobalNamespace::NoteControllerBase* noteController) {
+         inline static BombColorizer* GetBombColorizer(GlobalNamespace::NoteControllerBase* noteController) {
              auto it = Colorizers.find(noteController);
              if (it == Colorizers.end())
                  return nullptr;
 
-             return it->second;
+             return &it->second;
          }
 
          inline static void ColorizeBomb(GlobalNamespace::NoteControllerBase* noteController, std::optional<Sombrero::FastColor> const& color) {

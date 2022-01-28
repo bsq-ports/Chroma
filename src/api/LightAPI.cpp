@@ -39,7 +39,7 @@ EXPOSE_API(setLightColorSafe, bool, BeatmapEventType mb, bool refresh, std::opti
         std::array<std::optional<Sombrero::FastColor>, 4> {lseData->_lightColor0, lseData->_lightColor1, lseData->_lightColor0Boost, lseData->_lightColor1Boost} : 
         std::array<std::optional<Sombrero::FastColor>, 4> {std::nullopt, std::nullopt, std::nullopt, std::nullopt};
 
-    std::shared_ptr<LightColorizer> colorizer = LightColorizer::GetLightColorizer(mb);
+    auto colorizer = LightColorizer::GetLightColorizer(mb);
     if(colorizer) {
         colorizer->Colorize(refresh, colors);
         return true;
