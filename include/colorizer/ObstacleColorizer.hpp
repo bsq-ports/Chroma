@@ -25,8 +25,10 @@
 
 
 namespace Chroma {
-    class ObstacleColorizer : public ObjectColorizer {
+    class ObstacleColorizer : public ObjectColorizer<ObstacleColorizer> {
     private:
+        friend class ObjectColorizer<ObstacleColorizer>;
+
         static int _tintColorID();
         static int _addColorID();
 
@@ -40,11 +42,11 @@ namespace Chroma {
         explicit ObstacleColorizer(GlobalNamespace::ObstacleControllerBase *obstacleController);
 
     protected:
-        std::optional<Sombrero::FastColor> GlobalColorGetter() override {
+        static std::optional<Sombrero::FastColor> GlobalColorGetter() {
             return GlobalColor;
         }
 
-        void Refresh() override {
+        void Refresh() {
             // We do not handle coloring in obstacle colorable
             if (ObstacleColorable) return;
 

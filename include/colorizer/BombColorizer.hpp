@@ -14,17 +14,18 @@
 #include "custom-types/shared/macros.hpp"
 
  namespace Chroma {
-     class BombColorizer : public ObjectColorizer {
+     class BombColorizer : public ObjectColorizer<BombColorizer> {
      private:
+         friend class ObjectColorizer<BombColorizer>;
          UnityEngine::Renderer *_bombRenderer;
 
          inline static std::optional<Sombrero::FastColor> GlobalColor;
 
          explicit BombColorizer(GlobalNamespace::NoteControllerBase *noteController);
      protected:
-         void Refresh() override;
+         void Refresh();
 
-         std::optional<Sombrero::FastColor> GlobalColorGetter() override;
+         std::optional<Sombrero::FastColor> GlobalColorGetter();
 
      public:
          inline static bool BombColorable = false;

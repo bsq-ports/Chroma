@@ -26,8 +26,9 @@
 #include "custom-types/shared/coroutine.hpp"
 
 namespace Chroma {
-    class SaberColorizer : public ObjectColorizer {
+    class SaberColorizer : public ObjectColorizer<SaberColorizer> {
     private:
+        friend class ObjectColorizer<SaberColorizer>;
         GlobalNamespace::SaberTrail* _saberTrail;
         Sombrero::FastColor _trailTintColor;
         GlobalNamespace::TubeBloomPrePassLight* _saberLight;
@@ -47,9 +48,9 @@ namespace Chroma {
         void ColorColorable(Sombrero::FastColor const& color);
 
     protected:
-        std::optional<Sombrero::FastColor> GlobalColorGetter() override;
+        std::optional<Sombrero::FastColor> GlobalColorGetter();
 
-        void Refresh() override;
+        void Refresh();
 
     public:
         friend class std::pair<GlobalNamespace::SaberModelController const*, SaberColorizer>;

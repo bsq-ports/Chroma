@@ -22,14 +22,14 @@
 
 #include "custom-json-data/shared/CustomBeatmapData.h"
 
-typedef std::pair<std::optional<Sombrero::FastColor>, std::optional<Sombrero::FastColor>> ColorPair;
+using ColorPair = std::pair<std::optional<Sombrero::FastColor>, std::optional<Sombrero::FastColor>>;
 using NoteColorStack = std::stack<ColorPair>;
 
-// TODO: Document properly
 namespace Chroma {
-    class NoteColorizer : public ObjectColorizer
+    class NoteColorizer : public ObjectColorizer<NoteColorizer>
     {
     private:
+        friend class ObjectColorizer<NoteColorizer>;
         static int _colorID();
 
         GlobalNamespace::NoteControllerBase* _noteController;
@@ -44,11 +44,11 @@ namespace Chroma {
     protected:
 //        override Color? GlobalColorGetter => GlobalColor[(int)ColorType];
 //        override Color OriginalColorGetter => OriginalColors[(int)ColorType];
-        std::optional<Sombrero::FastColor> GlobalColorGetter() override;
+        std::optional<Sombrero::FastColor> GlobalColorGetter();
 
-        std::optional<Sombrero::FastColor> OriginalColorGetter() override;
+        std::optional<Sombrero::FastColor> OriginalColorGetter();
 
-        void Refresh() override;
+        void Refresh();
 
     public:
         inline static bool NoteColorable = false;
