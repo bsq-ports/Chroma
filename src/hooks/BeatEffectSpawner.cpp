@@ -39,13 +39,16 @@ MAKE_HOOK_MATCH(BeatEffectSpawner_HandleNoteDidStartJump, &BeatEffectSpawner::Ha
     }
 
 
-
+    Sombrero::FastColor oldBombColorEffect = self->bombColorEffect;
     if (noteController->noteData->colorType == ColorType::None) {
         self->bombColorEffect = BombColorizer::GetBombColorizer(noteController)->getColor().Alpha(0.5f);
     } else {
         ColorManagerColorForType::EnableColorOverride(noteController);
     }
     BeatEffectSpawner_HandleNoteDidStartJump(self, noteController);
+    if (noteController->noteData->colorType == ColorType::None) {
+        self->bombColorEffect = oldBombColorEffect;
+    }
 
     ColorManagerColorForType::DisableColorOverride();
 }
