@@ -23,13 +23,13 @@ using namespace Chroma;
 
 MAKE_HOOK_MATCH(StandardLevelScenesTransitionSetupDataSO_Init,
                 &StandardLevelScenesTransitionSetupDataSO::Init,
-                void,StandardLevelScenesTransitionSetupDataSO* self, Il2CppString* gameMode,
+                void,StandardLevelScenesTransitionSetupDataSO* self, StringW gameMode,
                      GlobalNamespace::IDifficultyBeatmap* difficultyBeatmap,
                      GlobalNamespace::IPreviewBeatmapLevel* previewBeatmapLevel,
                      GlobalNamespace::OverrideEnvironmentSettings* overrideEnvironmentSettings,
                      GlobalNamespace::ColorScheme* overrideColorScheme, GlobalNamespace::GameplayModifiers* gameplayModifiers,
                      GlobalNamespace::PlayerSpecificSettings* playerSpecificSettings,
-                     GlobalNamespace::PracticeSettings* practiceSettings, Il2CppString* backButtonText,
+                     GlobalNamespace::PracticeSettings* practiceSettings, StringW backButtonText,
                      bool useTestNoteCutSoundEffects) {
     auto settings = overrideEnvironmentSettings;
     SceneTransitionHelper::Patch(difficultyBeatmap, settings);

@@ -85,7 +85,7 @@ bool SceneTransitionHelper::BasicPatch(GlobalNamespace::IDifficultyBeatmap* cust
     ChromaController::TutorialMode = false;
     auto environmentInfo = BeatmapEnvironmentHelper::GetEnvironmentInfo(customBeatmapDifficultyData);
 
-    LightIDTableManager::SetEnvironment(to_utf8(csstrtostr(environmentInfo->serializedName)));
+    LightIDTableManager::SetEnvironment(static_cast<std::string>(environmentInfo->serializedName));
 
     bool chromaRequirement = false;
 

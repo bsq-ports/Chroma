@@ -56,7 +56,7 @@ void Chroma::GameObjectTrackController::Update() {
     }
 
     if (!data){
-        getLogger().error("Data is null! Should remove component or just early return? %p %s", this, to_utf8(csstrtostr(get_gameObject()->get_name())).c_str());
+        getLogger().error("Data is null! Should remove component or just early return? %p %s", this, static_cast<std::string>(get_gameObject()->get_name()).c_str());
         Destroy(this);
         return;
     }
@@ -69,7 +69,7 @@ void Chroma::GameObjectTrackController::Update() {
 
 
     if (!_track){
-        getLogger().error("Track is null! Should remove component or just early return? %p %s", this, to_utf8(csstrtostr(get_gameObject()->get_name())).c_str());
+        getLogger().error("Track is null! Should remove component or just early return? %p %s", this, static_cast<std::string>(get_gameObject()->get_name()).c_str());
         Destroy(this);
         return;
     }

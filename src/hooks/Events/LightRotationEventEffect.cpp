@@ -50,7 +50,7 @@ MAKE_HOOK_MATCH(
 
     std::optional<int> dir = chromaData.Direction;
 
-    float direction = (Sombrero::RandomFast::randomNumber() > 0.5f) ? 1.0f : -1.0f;
+    float direction;
     if (dir) {
         switch (dir.value()) {
             case 0:
@@ -60,6 +60,8 @@ MAKE_HOOK_MATCH(
                 direction = isLeftEvent ? 1.0f : -1.0f;
                 break;
         }
+    } else {
+        direction = (Sombrero::RandomFast::randomNumber() > 0.5f) ? 1.0f : -1.0f;
     }
 
     if (beatmapEventData->value == 0) {

@@ -20,14 +20,14 @@ void Chroma::LightIDTableManager::InitTable() {
     installed = true;
 }
 
-void LightIDTableManager::SetEnvironment(const std::string& environmentName) {
+void LightIDTableManager::SetEnvironment(std::string_view environmentName) {
     auto it = lightIdTable.find(environmentName);
 
     if (it == lightIdTable.end()) {
-        getLogger().warning("Table not found for %s", environmentName.c_str());
+        getLogger().warning("Table not found for %s", environmentName.data());
         activeTable = std::nullopt;
     } else {
-        getLogger().debug("Set the environment as %s", environmentName.c_str());
+        getLogger().debug("Set the environment as %s", environmentName.data());
         auto map = it->second;
         activeTable = EnvironmentLightDataT(map.begin(), map.end());
     }

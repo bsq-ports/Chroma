@@ -135,7 +135,7 @@ void EnvironmentEnhancementManager::GetAllGameObjects() {
         auto sceneNameIl2cpp = gameObject->get_scene().get_name();
         if (!sceneNameIl2cpp) continue;
 
-        std::string sceneName = to_utf8(csstrtostr(sceneNameIl2cpp));
+        std::string sceneName = sceneNameIl2cpp;
 
         if ((sceneName.find("Environment") != std::string::npos && sceneName.find("Menu") == std::string::npos) || gameObject->GetComponent<GlobalNamespace::TrackLaneRing*>()) {
             gameObjectsVec.emplace_back(gameObject);
@@ -164,7 +164,7 @@ void EnvironmentEnhancementManager::GetAllGameObjects() {
 
         // seriously what the fuck beat games
         // GradientBackground permanently yeeted because it looks awful and can ruin multi-colored chroma maps
-        if (to_utf8(csstrtostr(gameObject->get_name())) == "GradientBackground")
+        if (gameObject->get_name() == "GradientBackground")
         {
             gameObject->SetActive(false);
         }

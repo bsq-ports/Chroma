@@ -86,7 +86,7 @@ void SaberColorizer::Refresh() {
     }
 
 
-    static auto SetColor = FPtrWrapper<static_cast<void (UnityEngine::MaterialPropertyBlock::*)(Il2CppString*, UnityEngine::Color)>(&UnityEngine::MaterialPropertyBlock::SetColor)>::get();
+    static auto SetColor = FPtrWrapper<static_cast<void (UnityEngine::MaterialPropertyBlock::*)(StringW, UnityEngine::Color)>(&UnityEngine::MaterialPropertyBlock::SetColor)>::get();
     static auto SetPropertyBlock = FPtrWrapper<static_cast<void (UnityEngine::Renderer::*)(UnityEngine::MaterialPropertyBlock*)>(&UnityEngine::Renderer::SetPropertyBlock)>::get();
     static auto Refresh = FPtrWrapper<&Parametric3SliceSpriteController::Refresh>::get();
 

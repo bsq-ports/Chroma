@@ -21,7 +21,7 @@ using namespace Animation;
 Chroma::ChromaFogController* ChromaFogController::_instance = nullptr;
 
 Chroma::ChromaFogController* ChromaFogController::getInstance() {
-    static auto str = il2cpp_utils::newcsstr<il2cpp_utils::CreationType::Manual>("Chroma_FogController");
+    static ConstString str("Chroma_FogController");
     if (_instance == nullptr)
     {
         _instance = UnityEngine::GameObject::New_ctor(str)->AddComponent<ChromaFogController*>();

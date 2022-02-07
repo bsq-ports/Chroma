@@ -63,11 +63,11 @@ void ObstacleColorizer::GlobalColorize(std::optional<Sombrero::FastColor> const&
 }
 
 int ObstacleColorizer::_tintColorID() {
-    static auto id = UnityEngine::Shader::PropertyToID(il2cpp_utils::newcsstr("_TintColor"));
+    static auto id = UnityEngine::Shader::PropertyToID("_TintColor");
     return id;
 }
 
 int ObstacleColorizer::_addColorID() {
-    static auto id = UnityEngine::Shader::PropertyToID(il2cpp_utils::newcsstr("_AddColor"));
+    static auto id = UnityEngine::Shader::PropertyToID("_AddColor");
     return id;
 }

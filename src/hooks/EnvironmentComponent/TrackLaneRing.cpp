@@ -32,9 +32,9 @@ MAKE_HOOK_MATCH(TrackLaneRing_FixedUpdateRing, &TrackLaneRing::FixedUpdateRing, 
     }
 
     self->prevRotZ = self->rotZ;
-    self->rotZ = Sombrero::Lerp(self->rotZ, self->destRotZ, fixedDeltaTime * self->rotationSpeed);
+    self->rotZ = std::lerp(self->rotZ, self->destRotZ, Sombrero::Clamp01(fixedDeltaTime * self->rotationSpeed));
     self->prevPosZ = self->posZ;
-    self->posZ = Sombrero::Lerp(self->posZ, self->destPosZ, fixedDeltaTime * self->moveSpeed);
+    self->posZ = std::lerp(self->posZ, self->destPosZ, Sombrero::Clamp01(fixedDeltaTime * self->moveSpeed));
 }
 
 MAKE_HOOK_MATCH(TrackLaneRing_LateUpdateRing, &TrackLaneRing::LateUpdateRing, void, GlobalNamespace::TrackLaneRing* self, float interpolationFactor) {

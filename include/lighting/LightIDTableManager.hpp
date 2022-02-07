@@ -75,7 +75,7 @@ namespace Chroma {
             return std::nullopt;
         }
 
-        static void SetEnvironment(const std::string& environmentName);
+        static void SetEnvironment(std::string_view environmentName);
 
         static void InitTable();
 

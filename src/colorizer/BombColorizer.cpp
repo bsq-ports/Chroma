@@ -26,7 +26,7 @@ void BombColorizer::Refresh() {
     UnityEngine::Material* bombMaterial = _bombRenderer->get_material();
     Sombrero::FastColor const& color = getColor();
 
-    static auto colorName = il2cpp_utils::newcsstr<il2cpp_utils::CreationType::Manual>("_SimpleColor");
+    static ConstString colorName("_SimpleColor");
 
     if (color == static_cast<Sombrero::FastColor>(bombMaterial->GetColor(colorName))) {
         return;
@@ -38,7 +38,7 @@ void BombColorizer::Refresh() {
 BombColorizer::BombColorizer(GlobalNamespace::NoteControllerBase *noteController) :
     _bombRenderer(noteController->get_gameObject()->GetComponentInChildren<Renderer*>())
 {
-    static auto colorName = il2cpp_utils::newcsstr<il2cpp_utils::CreationType::Manual>("_SimpleColor");
+    static ConstString colorName("_SimpleColor");
 
     OriginalColor = _bombRenderer->get_material()->GetColor(colorName);
 }

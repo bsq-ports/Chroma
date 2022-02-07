@@ -27,7 +27,7 @@ Chroma::GameObjectInfo::GameObjectInfo(UnityEngine::GameObject *gameObject) {
             index = rootGameObjects.IndexOf(transformGameObject);
         }
 
-        nameList.push_back("[" + std::to_string(index) + "]" + to_utf8(csstrtostr(transform->get_name())));
+        nameList.emplace_back("[" + std::to_string(index) + "]" + static_cast<std::string>(transform->get_name()));
 
         if (transformParent == nullptr)
         {
@@ -37,7 +37,7 @@ Chroma::GameObjectInfo::GameObjectInfo(UnityEngine::GameObject *gameObject) {
         transform = transformParent;
     }
 
-    nameList.push_back(to_utf8(csstrtostr(gameObject->get_scene().get_name())));
+    nameList.emplace_back(gameObject->get_scene().get_name());
     std::reverse(nameList.begin(), nameList.end());
 
     std::stringstream id;
@@ -50,7 +50,7 @@ Chroma::GameObjectInfo::GameObjectInfo(UnityEngine::GameObject *gameObject) {
     id << nameList.back();
 
     FullID = id.str();
-    FullIDHash = std::hash<std::string>()(FullID);
+    FullIDHash = std::hash<std::string_view>()(FullID);
 
     this->GameObject = gameObject;
 }

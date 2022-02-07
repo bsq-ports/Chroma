@@ -95,7 +95,7 @@ custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(Global
 void ChromaController::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene current) {
     getLogger().debug("Clear scene");
 
-    if (current && current.IsValid() && to_utf8(csstrtostr(current.get_name())) == "GameCore") {
+    if (current && current.IsValid() && current.get_name() == "GameCore") {
         ChromaGradientController::clearInstance();
         TrackLaneRingsManagerHolder::RingManagers.clear();
         TrackLaneRingsManagerHolder::RingManagers.shrink_to_fit(); // Deallocate unnecessary used memory

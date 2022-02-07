@@ -65,7 +65,7 @@ void Chroma::LegacyEnvironmentRemoval::Init(CustomJSONData::CustomBeatmapData* c
                             continue;
 
                         auto sceneNameIl2 = scene.get_name();
-                        std::string sceneName = sceneNameIl2 ? to_utf8(csstrtostr(sceneNameIl2)) : "";
+                        std::string sceneName = sceneNameIl2 ? sceneNameIl2 : "";
 
                         bool sceneEnvironment = !sceneName.empty() &&
                                                 sceneName.find("Environment") != std::string::npos;

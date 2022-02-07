@@ -142,7 +142,7 @@ void NoteColorizer::Refresh() {
 }
 
 int NoteColorizer::_colorID() {
-    static int colorID = UnityEngine::Shader::PropertyToID(il2cpp_utils::newcsstr("_Color"));
+    static int colorID = UnityEngine::Shader::PropertyToID("_Color");
 
     return colorID;
 }

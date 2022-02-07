@@ -24,7 +24,7 @@ using namespace Chroma;
 MAKE_HOOK_MATCH(MultiplayerLevelScenesTransitionSetupDataSO_Init,
                 &MultiplayerLevelScenesTransitionSetupDataSO::Init,
                 void,MultiplayerLevelScenesTransitionSetupDataSO* self,
-                     Il2CppString* gameMode, GlobalNamespace::IPreviewBeatmapLevel* previewBeatmapLevel,
+                     StringW gameMode, GlobalNamespace::IPreviewBeatmapLevel* previewBeatmapLevel,
                      GlobalNamespace::BeatmapDifficulty beatmapDifficulty, GlobalNamespace::BeatmapCharacteristicSO* beatmapCharacteristic,
                      GlobalNamespace::IDifficultyBeatmap* difficultyBeatmap, GlobalNamespace::ColorScheme* overrideColorScheme,
                      GlobalNamespace::GameplayModifiers* gameplayModifiers, GlobalNamespace::PlayerSpecificSettings* playerSpecificSettings,
