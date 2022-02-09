@@ -203,8 +203,7 @@ Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root,
         rootComponent->mirrorMaterial = UnityEngine::Object::Instantiate(originalComponent->mirrorMaterial);
     });
 
-    GameObjectInfo gameObjectInfo(root->get_gameObject());
-    auto const& newGameObject = gameObjectInfos.emplace_back(gameObjectInfo);
+    auto const& newGameObject = gameObjectInfos.emplace_back(root->get_gameObject());
 
     auto rootChildCount = root->get_childCount();
 

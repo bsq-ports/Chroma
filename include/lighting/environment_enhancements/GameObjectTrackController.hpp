@@ -54,11 +54,16 @@ private:
     inline static std::unordered_map<int, GameObjectTrackControllerData> _dataMap{};
 
     DECLARE_INSTANCE_FIELD(int, id);
+    DECLARE_INSTANCE_FIELD(UnityEngine::Transform*, parent);
+
+
 
     // This is retrived from the data map since Unity doesn't copy it.
     GameObjectTrackControllerData* data;
 
+    DECLARE_INSTANCE_METHOD(void, Awake);
     DECLARE_INSTANCE_METHOD(void, Update);
+    DECLARE_INSTANCE_METHOD(void, OnTransformParentChanged);
 public:
     inline static bool LeftHanded;
     void Init(Track* track, float noteLinesDistance, GlobalNamespace::TrackLaneRing* trackLaneRing,

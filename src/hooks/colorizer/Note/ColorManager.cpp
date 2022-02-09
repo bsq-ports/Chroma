@@ -30,7 +30,7 @@ MAKE_HOOK_MATCH(ColorManager_ColorForType,
         return ColorManager_ColorForType(self, type);
     }
 
-    return ColorManagerColorForType::_noteColorOverride.value();
+    return *ColorManagerColorForType::_noteColorOverride;
 }
 
 

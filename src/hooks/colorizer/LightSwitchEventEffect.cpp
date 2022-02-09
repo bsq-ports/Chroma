@@ -68,21 +68,6 @@ MAKE_HOOK_MATCH(LightSwitchEventEffect_Start,
     self->StartCoroutine(coro);
 }
 
-MAKE_HOOK_MATCH(LightSwitchEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger,
-                &LightSwitchEventEffect::HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger,
-                void, LightSwitchEventEffect* self, BeatmapEventData* beatmapEventData) {
-    // Do nothing if Chroma shouldn't run
-    if (!ChromaController::GetChromaLegacy() && !ChromaController::DoChromaHooks()) {
-        LightSwitchEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);
-        return;
-    }
-
-    // Forward call to avoid make delegate
-    getLogger().debug("LightSwitchEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger");
-    SAFE_ABORT();
-    reinterpret_cast<ChromaLightSwitchEventEffect*>(self)->HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(beatmapEventData);
-}
-
 MAKE_HOOK_MATCH(BeatmapObjectCallbackController_SendBeatmapEventDidTriggerEvent,
                 &BeatmapObjectCallbackController::SendBeatmapEventDidTriggerEvent,
                 void,
@@ -93,14 +78,14 @@ MAKE_HOOK_MATCH(BeatmapObjectCallbackController_SendBeatmapEventDidTriggerEvent,
     if (!ChromaController::GetChromaLegacy() && !ChromaController::DoChromaHooks()) {
         return;
     }
-    // Orig hook no work, guess we do this now
+
+    // I don't want to deal with delegates
     for (auto const& _lightSwitchEventEffect :ChromaLightSwitchEventEffect::livingLightSwitch) {
         _lightSwitchEventEffect->HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(eventData);
     }
 }
 
 void LightSwitchEventEffectHook(Logger& logger) {
-    INSTALL_HOOK_ORIG(logger, LightSwitchEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger);
     INSTALL_HOOK(logger, BeatmapObjectCallbackController_SendBeatmapEventDidTriggerEvent);
 
     INSTALL_HOOK(logger, LightSwitchEventEffect_Start);

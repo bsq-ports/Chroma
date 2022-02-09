@@ -46,6 +46,14 @@ void Chroma::GameObjectTrackController::ClearData() {
     nextId = 0;
 }
 
+void GameObjectTrackController::Awake() {
+    OnTransformParentChanged();
+}
+
+void GameObjectTrackController::OnTransformParentChanged() {
+    parent = get_transform()->get_parent();
+}
+
 void Chroma::GameObjectTrackController::Update() {
     if (!data) {
         auto it = _dataMap.find(id);
@@ -82,7 +90,7 @@ void Chroma::GameObjectTrackController::Update() {
 
     auto transform = get_transform();
 
-    auto transformParent = transform->get_parent();
+    auto transformParent = parent;
 
     bool updateParametricBox = false;
 
