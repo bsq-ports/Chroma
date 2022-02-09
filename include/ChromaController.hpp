@@ -13,6 +13,9 @@
 #include "UnityEngine/SceneManagement/Scene.hpp"
 
 #include "main.hpp"
+#include "utils/XoshiroCpp.hpp"
+
+#include <random>
 
 namespace Chroma {
     typedef rapidjson::GenericDocument<rapidjson::UTF16<char16_t>> DocumentUTF16;
@@ -25,6 +28,15 @@ namespace Chroma {
 
     public:
         static bool TutorialMode;
+        inline static XoshiroCpp::Xoshiro128PlusPlus randomizerThing;
+
+        // probably belongs in utils but whatever
+        static inline auto randomXoshiro(float min = 0, float max = 1.0f) {
+            std::uniform_real_distribution<float> distr(min, max);
+
+            return distr(randomizerThing);
+        }
+
         // Return true if Chroma should color the sabers
         // Practically the same as DoChromaHooks, so yeet?
         static bool DoColorizerSabers() {

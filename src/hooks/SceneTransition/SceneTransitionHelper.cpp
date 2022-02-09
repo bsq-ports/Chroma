@@ -146,6 +146,9 @@ bool SceneTransitionHelper::BasicPatch(GlobalNamespace::IDifficultyBeatmap* cust
     ChromaController::SetChromaLegacy(legacyOverride);
     ChromaController::setChromaRequired(chromaRequirement);
 
+    // Reset the randomizer state
+    // This probably does nothing but whatever
+    ChromaController::randomizerThing = XoshiroCpp::Xoshiro128PlusPlus();
 
     return ChromaController::ChromaRequired();
 }

@@ -61,7 +61,7 @@ MAKE_HOOK_MATCH(
                 break;
         }
     } else {
-        direction = (Sombrero::RandomFast::randomNumber() > 0.5f) ? 1.0f : -1.0f;
+        direction = (ChromaController::randomXoshiro() > 0.5f) ? 1.0f : -1.0f;
     }
 
     if (beatmapEventData->value == 0) {
@@ -73,8 +73,9 @@ MAKE_HOOK_MATCH(
         self->set_enabled(true);
         self->rotationSpeed = precisionSpeed * 20.0f * direction;
         if (!lockPosition) {
-            self->get_transform()->set_localRotation(self->startRotation);
-            self->get_transform()->Rotate(self->rotationVector, Sombrero::RandomFast::randomNumber(0.0f, 180.0f), Space::Self);
+            auto transform = self->get_transform();
+            transform->set_localRotation(self->startRotation);
+            transform->Rotate(self->rotationVector, ChromaController::randomXoshiro(0.0f, 180.0f), Space::Self);
         }
     }
 }
