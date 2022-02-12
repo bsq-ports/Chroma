@@ -18,12 +18,12 @@ void ChromaClashEffectController::Init(UnityEngine::ParticleSystem *sparkleParti
                                        GlobalNamespace::ColorManager *colorManager) {
     _sparkleParticleSystem = sparkleParticleSystem;
     _glowParticleSystem = glowParticleSystem;
-    _colors.emplace_back(colorManager->ColorForSaberType(SaberType::SaberA));
-    _colors.emplace_back(colorManager->ColorForSaberType(SaberType::SaberB));
+    _colors[0] = colorManager->ColorForSaberType(SaberType::SaberA);
+    _colors[1] = colorManager->ColorForSaberType(SaberType::SaberB);
     SaberColorizer::SaberColorChanged += {&ChromaClashEffectController::OnSaberColorChanged, this};
 }
 
-void ChromaClashEffectController::OnSaberColorChanged(int saberType, GlobalNamespace::SaberModelController* saberModelController, Sombrero::FastColor color) {
+void ChromaClashEffectController::OnSaberColorChanged(int saberType, GlobalNamespace::SaberModelController* saberModelController, Sombrero::FastColor const& color) {
     float h;
     float s;
     float _;

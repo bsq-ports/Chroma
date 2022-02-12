@@ -109,5 +109,21 @@ namespace Chroma {
 
             return std::nullopt;
         }
+
+        /// This retrieves the callback used for Saber Color changed.
+        ///
+        /// \return
+        using BombCallback = UnorderedEventCallback<GlobalNamespace::NoteControllerBase*, Sombrero::FastColor const&>;
+        static std::optional<std::reference_wrapper<BombCallback>> getBombChangedColorCallbackSafe() {
+            static auto function = CondDeps::Find<BombCallback*>(CHROMA_ID, "getBombChangedColorCallbackSafe");
+
+            /// Oh boi what have I done
+            if (function) {
+                BombCallback& callback = *function.value()();
+                return std::make_optional(std::ref(callback));
+            }
+
+            return std::nullopt;
+        }
     };
 }

@@ -69,3 +69,6 @@ EXPOSE_API(setBombColorable, void, bool colorable) {
 EXPOSE_API(isBombColorable, bool) {
     return BombColorizer::BombColorable;
 }
+EXPOSE_API(getBombChangedColorCallbackSafe, BombAPI::BombCallback *) {
+    return &BombColorizer::BombColorChanged;
+}

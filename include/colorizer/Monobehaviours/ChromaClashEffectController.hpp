@@ -23,9 +23,9 @@ DECLARE_CLASS_CODEGEN(Chroma, ChromaClashEffectController, UnityEngine::MonoBeha
   private:
           DECLARE_INSTANCE_FIELD(UnityEngine::ParticleSystem*, _sparkleParticleSystem);
           DECLARE_INSTANCE_FIELD(UnityEngine::ParticleSystem*, _glowParticleSystem);
-          std::vector<Sombrero::FastColor> _colors;
+          std::array<Sombrero::FastColor, 2> _colors;
 
-          DECLARE_INSTANCE_METHOD(void, OnSaberColorChanged, int saberType, GlobalNamespace::SaberModelController* saberModelController, Sombrero::FastColor color);
+          void OnSaberColorChanged(int saberType, GlobalNamespace::SaberModelController* saberModelController, Sombrero::FastColor const& color);
           public:
           DECLARE_INSTANCE_METHOD(void, Init, UnityEngine::ParticleSystem* sparkleParticleSystem, UnityEngine::ParticleSystem* glowParticleSystem, GlobalNamespace::ColorManager* colorManager);
           DECLARE_INSTANCE_METHOD(void, OnDestroy);

@@ -26,7 +26,7 @@ int subCount = 0;
 
 std::array<ParticleSystem*, 2> _burnMarksPS = {nullptr, nullptr};
 
-void OnSaberColorChanged(int saberType, GlobalNamespace::SaberModelController* saberModelController, Color color)
+void OnSaberColorChanged(int saberType, GlobalNamespace::SaberModelController* saberModelController, Color const& color)
 {
     float h;
     float s;

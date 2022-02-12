@@ -24,7 +24,7 @@ std::array<LineRenderer*, 2> _lineRenderers = {nullptr, nullptr};
 
 int saberBurnMarkCount = 0;
 
-void OnSaberColorChanged_SaberBurnMarkArea(int saberType, GlobalNamespace::SaberModelController* saberModelController, Color color)
+void OnSaberColorChanged_SaberBurnMarkArea(int saberType, GlobalNamespace::SaberModelController* saberModelController, Color const& color)
 {
     float h;
     float s;

@@ -37,6 +37,7 @@ namespace Chroma {
         float _addColorMultiplier;
         float _obstacleCoreLerpToWhiteFactor;
         ArrayW<GlobalNamespace::MaterialPropertyBlockController *> _materialPropertyBlockControllers;
+        GlobalNamespace::ObstacleControllerBase * obstacleController;
 
 
         explicit ObstacleColorizer(GlobalNamespace::ObstacleControllerBase *obstacleController);
@@ -47,13 +48,15 @@ namespace Chroma {
         }
 
         void Refresh() {
-            // We do not handle coloring in obstacle colorable
-            if (ObstacleColorable) return;
-
             Sombrero::FastColor const &color = getColor();
             if (color == Sombrero::FastColor(_obstacleFrame->color)) {
                 return;
             }
+
+            ObstacleColorChanged.invoke(obstacleController, color);
+
+            // We do not handle coloring in obstacle colorable
+            if (ObstacleColorable) return;
 
             _obstacleFrame->color = color;
             static auto Refresh = FPtrWrapper<&GlobalNamespace::ParametricBoxFakeGlowController::Refresh>::get();
@@ -85,6 +88,7 @@ namespace Chroma {
 
     public:
         inline static bool ObstacleColorable = false;
+        inline static UnorderedEventCallback<GlobalNamespace::ObstacleControllerBase*, Sombrero::FastColor const&> ObstacleColorChanged;
 
         ObstacleColorizer(ObstacleColorizer const&) = delete;
         friend class std::pair<GlobalNamespace::ObstacleControllerBase const*, ObstacleColorizer>;

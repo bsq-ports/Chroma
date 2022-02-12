@@ -27,9 +27,7 @@ EXPOSE_API(getGlobalNoteColorSafe, OptColor, int colorType) {
     }
 }
 
-EXPOSE_API(getNoteControllerOverrideColorSafe, OptColor, NoteController* noteController, int colorType) {
-    CRASH_UNLESS(colorType >= ColorType::ColorA && colorType <= ColorType::ColorB);
-
+EXPOSE_API(getNoteControllerOverrideColorSafe, OptColor, NoteController* noteController) {
     auto cnv = NoteColorizer::GetNoteColorizer(noteController);
 
     if (!cnv) return OptColor();
@@ -39,9 +37,7 @@ EXPOSE_API(getNoteControllerOverrideColorSafe, OptColor, NoteController* noteCon
     return OptColorFromColor(color);
 }
 
-EXPOSE_API(getNoteControllerColorSafe, OptColor, NoteController* noteController, int colorType) {
-    CRASH_UNLESS(colorType >= ColorType::ColorA && colorType <= ColorType::ColorB);
-
+EXPOSE_API(getNoteControllerColorSafe, OptColor, NoteController* noteController) {
     auto it = ChromaObjectDataManager::ChromaObjectDatas.find(noteController->noteData);
 
     if (it == ChromaObjectDataManager::ChromaObjectDatas.end())
@@ -70,4 +66,7 @@ EXPOSE_API(setGlobalNoteColorSafe, void, std::optional<Sombrero::FastColor> colo
 
 EXPOSE_API(isNoteColorable, bool) {
     return NoteColorizer::NoteColorable;
+}
+EXPOSE_API(getNoteChangedColorCallbackSafe, NoteAPI::NoteCallback*) {
+    return &NoteColorizer::NoteColorChanged;
 }

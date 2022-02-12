@@ -23,7 +23,7 @@ using namespace UnityEngine;
 using namespace Chroma;
 
 
-ObstacleColorizer::ObstacleColorizer(GlobalNamespace::ObstacleControllerBase *obstacleController) {
+ObstacleColorizer::ObstacleColorizer(GlobalNamespace::ObstacleControllerBase *obstacleController) : obstacleController(obstacleController) {
     auto stretchableObstacle = obstacleController->GetComponent<StretchableObstacle*>();
     _obstacleFrame = stretchableObstacle->obstacleFrame;
     _obstacleFakeGlow = stretchableObstacle->obstacleFakeGlow;
@@ -52,6 +52,7 @@ ObstacleColorizer& ObstacleColorizer::New(GlobalNamespace::ObstacleControllerBas
 void ObstacleColorizer::Reset() {
     GlobalColor = std::nullopt;
     Colorizers.clear();
+    ObstacleColorChanged.clear();
 }
 
 void ObstacleColorizer::GlobalColorize(std::optional<Sombrero::FastColor> const& color) {

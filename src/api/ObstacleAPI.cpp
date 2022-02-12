@@ -39,3 +39,6 @@ EXPOSE_API(setObstacleColorable, void, bool colorable) {
 EXPOSE_API(isObstacleColorable, bool) {
     return ObstacleColorizer::ObstacleColorable;
 }
+EXPOSE_API(getObstacleChangedColorCallbackSafe, ObstacleAPI::ObstacleCallback*) {
+    return &ObstacleColorizer::ObstacleColorChanged;
+}

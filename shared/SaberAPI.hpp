@@ -113,13 +113,13 @@ namespace Chroma {
         /// This retrieves the callback used for Saber Color changed.
         ///
         /// \return
-        using SaberCallback = UnorderedEventCallback<int, GlobalNamespace::SaberModelController*, Sombrero::FastColor>;
+        using SaberCallback = UnorderedEventCallback<int, GlobalNamespace::SaberModelController*, Sombrero::FastColor const&>;
         static std::optional<std::reference_wrapper<SaberCallback>> getSaberChangedColorCallbackSafe() {
             static auto function = CondDeps::Find<SaberCallback*>(CHROMA_ID, "getSaberChangedColorCallbackSafe");
 
             /// Oh boi what have I done
             if (function) {
-                UnorderedEventCallback<int, GlobalNamespace::SaberModelController*, Sombrero::FastColor>& callback = *function.value()();
+                SaberCallback& callback = *function.value()();
                 return std::make_optional(std::ref(callback));
             }
 

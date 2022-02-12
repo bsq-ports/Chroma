@@ -5,6 +5,7 @@
 #include "utils.hpp"
 
 #include "GlobalNamespace/NoteController.hpp"
+#include "GlobalNamespace/ColorType.hpp"
 
 #include <optional>
 
@@ -37,12 +38,12 @@ namespace Chroma {
         /// Gets the note color or null if Chroma method was not found
         /// If Chroma is not setting the color, it returns the game's colors
         /// THIS WILL NOT PLAY NICELY WITH MIRRORED NOTE CONTROLLER
-        static std::optional<Sombrero::FastColor> getNoteControllerOverrideColorSafe(GlobalNamespace::NoteController* noteController, int colorType) noexcept {
-            static auto function = CondDeps::Find<OptColor, GlobalNamespace::NoteController*, int>(CHROMA_ID, "getNoteControllerOverrideColorSafe");
+        static std::optional<Sombrero::FastColor> getNoteControllerOverrideColorSafe(GlobalNamespace::NoteController* noteController) noexcept {
+            static auto function = CondDeps::Find<OptColor, GlobalNamespace::NoteController*>(CHROMA_ID, "getNoteControllerOverrideColorSafe");
 
             if (function) {
                 // Returns the color struct
-                auto optColor = function.value()(noteController, colorType);
+                auto optColor = function.value()(noteController);
 
                 if (!optColor.isSet) return std::nullopt;
 
@@ -55,12 +56,12 @@ namespace Chroma {
         /// Gets the note color or null if Chroma method was not found
         /// If Chroma is not setting the color, it returns std::nullopt
         /// THIS WILL NOT PLAY NICELY WITH MIRRORED NOTE CONTROLLER
-        static std::optional<Sombrero::FastColor> getNoteControllerColorSafe(GlobalNamespace::NoteController* noteController, int colorType) noexcept {
-            static auto function = CondDeps::Find<OptColor, GlobalNamespace::NoteController*, int>(CHROMA_ID, "getNoteControllerColorSafe");
+        static std::optional<Sombrero::FastColor> getNoteControllerColorSafe(GlobalNamespace::NoteController* noteController) noexcept {
+            static auto function = CondDeps::Find<OptColor, GlobalNamespace::NoteController*>(CHROMA_ID, "getNoteControllerColorSafe");
 
             if (function) {
                 // Returns the color struct
-                auto optColor = function.value()(noteController, colorType);
+                auto optColor = function.value()(noteController);
 
                 if (!optColor.isSet) return std::nullopt;
 
@@ -105,6 +106,22 @@ namespace Chroma {
 
             if (function) {
                 return function.value()();
+            }
+
+            return std::nullopt;
+        }
+
+        /// This retrieves the callback used for Saber Color changed.
+        ///
+        /// \return
+        using NoteCallback = UnorderedEventCallback<GlobalNamespace::NoteControllerBase*, Sombrero::FastColor const&, GlobalNamespace::ColorType>;
+        static std::optional<std::reference_wrapper<NoteCallback>> getNoteChangedColorCallbackSafe() {
+            static auto function = CondDeps::Find<NoteCallback*>(CHROMA_ID, "getNoteChangedColorCallbackSafe");
+
+            /// Oh boi what have I done
+            if (function) {
+                NoteCallback& callback = *function.value()();
+                return std::make_optional(std::ref(callback));
             }
 
             return std::nullopt;

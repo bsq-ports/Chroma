@@ -18,6 +18,9 @@
      private:
          friend class ObjectColorizer<BombColorizer>;
          UnityEngine::Renderer *_bombRenderer;
+         GlobalNamespace::NoteControllerBase *noteController;
+
+         static int _simpleColor();
 
          inline static std::optional<Sombrero::FastColor> GlobalColor;
 
@@ -29,6 +32,7 @@
 
      public:
          inline static bool BombColorable = false;
+         inline static UnorderedEventCallback<GlobalNamespace::NoteControllerBase*, Sombrero::FastColor const&> BombColorChanged;
 
          BombColorizer(BombColorizer const&) = delete;
          friend class std::pair<GlobalNamespace::NoteControllerBase const*, BombColorizer>;

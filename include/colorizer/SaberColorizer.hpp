@@ -58,7 +58,7 @@ namespace Chroma {
         SaberColorizer(SaberColorizer const&) = delete;
         static SaberColorizer& New(GlobalNamespace::Saber* saber);
 
-        inline static UnorderedEventCallback<int, GlobalNamespace::SaberModelController*, Sombrero::FastColor> SaberColorChanged;
+        inline static UnorderedEventCallback<int, GlobalNamespace::SaberModelController*, Sombrero::FastColor const&> SaberColorChanged;
 
         inline static std::unordered_map<GlobalNamespace::SaberModelController const*, SaberColorizer> Colorizers;
 

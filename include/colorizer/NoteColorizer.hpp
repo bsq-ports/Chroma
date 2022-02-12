@@ -52,6 +52,7 @@ namespace Chroma {
 
     public:
         inline static bool NoteColorable = false;
+        inline static UnorderedEventCallback<GlobalNamespace::NoteControllerBase*, Sombrero::FastColor const&, GlobalNamespace::ColorType> NoteColorChanged;
         inline static std::unordered_map<GlobalNamespace::NoteControllerBase const*, NoteColorizer> Colorizers;
         inline static std::array<std::optional<Sombrero::FastColor>, 2> GlobalColor = {std::nullopt, std::nullopt};
         std::array<Sombrero::FastColor, 2> getOriginalColors();
