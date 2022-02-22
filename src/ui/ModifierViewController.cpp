@@ -57,7 +57,11 @@ void Chroma::ModifierViewController::DidActivate(bool first) {
 
         auto ret = detail::renderSingle(container, ctx);
 
-        ret->get_gameObject()->GetComponentInChildren<LayoutElement *>()->set_preferredWidth(65);
+        auto layoutElement = ret->get_gameObject()->GetComponentInChildren<LayoutElement *>();
+        layoutElement->set_preferredWidth(55);
+        // am lazy, will add QUC components later
+        auto verticalLayout = ret->get_gameObject()->GetComponentInChildren<VerticalLayoutGroup *>();
+        verticalLayout->set_spacing(0.75f);
     } else {
         detail::renderSingle(container, ctx);
     }
