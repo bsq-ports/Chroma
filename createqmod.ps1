@@ -22,7 +22,7 @@ if ((-not ($cover -eq "./")) -and (Test-Path $cover))
 
 foreach ($mod in $modJson.modFiles)
 {
-        $path = "./build/" + $mod
+    $path = "./build/" + $mod
     if (-not (Test-Path $path))
     {
         $path = "./extern/libs/" + $mod
