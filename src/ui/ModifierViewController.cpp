@@ -1,15 +1,12 @@
 #include "ui/ModifierViewController.hpp"
 
-#include "HMUI/Touchable.hpp"
-
 #include "UnityEngine/RectOffset.hpp"
-#include "UnityEngine/RectTransform.hpp"
-#include "UnityEngine/UI/ContentSizeFitter.hpp"
 
 #include "questui/shared/CustomTypes/Components/Backgroundable.hpp"
 
 #include "questui_components/shared/components/Backgroundable.hpp"
 #include "questui_components/shared/components/layouts/ModifierContainer.hpp"
+#include "questui_components/shared/reference_comp.hpp"
 
 #include "main.hpp"
 
@@ -44,24 +41,28 @@ UnityEngine::Sprite *UIUtils::configToIcon(ConfigUtils::ConfigValue<bool> const 
 
 void Chroma::ModifierViewController::DidActivate(bool first) {
 
+    static detail::ModifierContainer layout(
+        UIUtils::buildMainUI<true>()
+    );
+
+
+
+    static ModifyLayoutElement layoutElement(QUC::detail::refComp(layout));
+
+
     static detail::BackgroundableContainer container("round-rect-panel",
                 Backgroundable("round-rect-panel", true,
-                    ModifierContainer(
-                        UIUtils::buildMainUI<true>()
-                    )
+                   QUC::RefComp(layoutElement)
                 )
             );
 
     if (first) {
         this->ctx = RenderContext(get_transform());
 
-        auto ret = detail::renderSingle(container, ctx);
+        layout.spacing = 0.75f;
+        layoutElement.preferredWidth = 55;
 
-        auto layoutElement = ret->get_gameObject()->GetComponentInChildren<LayoutElement *>();
-        layoutElement->set_preferredWidth(55);
-        // am lazy, will add QUC components later
-        auto verticalLayout = ret->get_gameObject()->GetComponentInChildren<VerticalLayoutGroup *>();
-        verticalLayout->set_spacing(0.75f);
+        detail::renderSingle(container, ctx);
     } else {
         detail::renderSingle(container, ctx);
     }
