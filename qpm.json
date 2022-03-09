@@ -53,7 +53,7 @@
     },
     {
       "id": "questui",
-      "versionRange": "^0.13.0",
+      "versionRange": "<=0.13.2",
       "additionalData": {
         "includeQmod": false,
         "private": true
