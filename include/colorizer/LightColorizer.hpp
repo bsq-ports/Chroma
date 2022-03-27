@@ -11,7 +11,7 @@
 
 #include "GlobalNamespace/ILightWithId.hpp"
 #include "GlobalNamespace/LightSwitchEventEffect.hpp"
-#include "GlobalNamespace/BeatmapEventType.hpp"
+#include "GlobalNamespace/BasicBeatmapEventType.hpp"
 #include "GlobalNamespace/SimpleColorSO.hpp"
 #include "GlobalNamespace/MultipliedColorSO.hpp"
 #include "GlobalNamespace/LightWithIdManager.hpp"
@@ -28,14 +28,14 @@ namespace Chroma {
         static const int COLOR_FIELDS = 4;
 
         ChromaLightSwitchEventEffect *_lightSwitchEventEffect;
-        GlobalNamespace::BeatmapEventType _eventType;
+        GlobalNamespace::BasicBeatmapEventType _eventType;
         std::unordered_map<int, std::optional<Sombrero::FastColor>> _colors;
 
         std::array<Sombrero::FastColor, 4> _originalColors;
         std::unordered_map<int, SafePtr<GlobalNamespace::SimpleColorSO>> _simpleColorSOs;
 
         LightColorizer(ChromaLightSwitchEventEffect *lightSwitchEventEffect,
-                       GlobalNamespace::BeatmapEventType beatmapEventType,
+                       GlobalNamespace::BasicBeatmapEventType BasicBeatmapEventType,
                        GlobalNamespace::LightWithIdManager* lightManager);
 
     public:
@@ -46,13 +46,13 @@ namespace Chroma {
         friend class std::pair<const int, Chroma::LightColorizer>;
         LightColorizer(LightColorizer const&) = delete;
         static LightColorizer& New(ChromaLightSwitchEventEffect *lightSwitchEventEffect,
-                                                   GlobalNamespace::BeatmapEventType beatmapEventType,
+                                                   GlobalNamespace::BasicBeatmapEventType BasicBeatmapEventType,
                                                    GlobalNamespace::LightWithIdManager* lightManager);
 
         inline static LightColorOptionalPalette GlobalColor{std::nullopt, std::nullopt,
                                                             std::nullopt, std::nullopt};
 
-        inline static UnorderedEventCallback<GlobalNamespace::BeatmapEventType, std::array<Sombrero::FastColor, 4>> LightColorChanged;
+        inline static UnorderedEventCallback<GlobalNamespace::BasicBeatmapEventType, std::array<Sombrero::FastColor, 4>> LightColorChanged;
 
         inline static std::unordered_map<int, LightColorizer> Colorizers;
 
@@ -118,8 +118,8 @@ namespace Chroma {
         static void Reset();
 
         // extensions
-        inline static LightColorizer* GetLightColorizer(GlobalNamespace::BeatmapEventType beatmapEventType) {
-            auto it = Colorizers.find(beatmapEventType.value);
+        inline static LightColorizer* GetLightColorizer(GlobalNamespace::BasicBeatmapEventType BasicBeatmapEventType) {
+            auto it = Colorizers.find(BasicBeatmapEventType.value);
             if (it == Colorizers.end()) {
                 return nullptr;
             }
@@ -127,9 +127,9 @@ namespace Chroma {
             return &it->second;
         }
 
-        inline static void ColorizeLight(GlobalNamespace::BeatmapEventType beatmapEventType, bool refresh,
+        inline static void ColorizeLight(GlobalNamespace::BasicBeatmapEventType BasicBeatmapEventType, bool refresh,
                                          LightColorOptionalPalette const &colors) {
-            auto colorizer = GetLightColorizer(beatmapEventType);
+            auto colorizer = GetLightColorizer(BasicBeatmapEventType);
             CRASH_UNLESS(colorizer)->Colorize(refresh, colors);
         }
 

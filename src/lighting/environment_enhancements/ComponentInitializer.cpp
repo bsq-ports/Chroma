@@ -164,7 +164,7 @@ Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root,
 
 
     GetComponentAndOriginal<TrackLaneRingsRotationEffectSpawner>(root, original, [&](TrackLaneRingsRotationEffectSpawner* rootComponent, TrackLaneRingsRotationEffectSpawner* originalComponent) {
-        rootComponent->beatmapObjectCallbackController = originalComponent->beatmapObjectCallbackController;
+        rootComponent->beatmapCallbacksController = originalComponent->beatmapCallbacksController;
         rootComponent->trackLaneRingsRotationEffect = rootComponent->GetComponent<ChromaRingsRotationEffect*>();
     });
 
@@ -173,11 +173,11 @@ Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root,
     });
 
     GetComponentAndOriginal<LightRotationEventEffect>(root, original, [&](LightRotationEventEffect* rootComponent, LightRotationEventEffect* originalComponent) {
-        rootComponent->beatmapObjectCallbackController = originalComponent->beatmapObjectCallbackController;
+        rootComponent->beatmapCallbacksController = originalComponent->beatmapCallbacksController;
     });
 
     GetComponentAndOriginal<LightPairRotationEventEffect>(root, original, [&](LightPairRotationEventEffect* rootComponent, LightPairRotationEventEffect* originalComponent) {
-        rootComponent->beatmapObjectCallbackController = originalComponent->beatmapObjectCallbackController;
+        rootComponent->beatmapCallbacksController = originalComponent->beatmapCallbacksController;
 
         auto transformL = originalComponent->transformL;
         auto transformR = originalComponent->transformR;
@@ -192,7 +192,7 @@ Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root,
 
 
     GetComponentAndOriginal<ParticleSystemEventEffect>(root, original, [&](ParticleSystemEventEffect* rootComponent, ParticleSystemEventEffect* originalComponent) {
-        rootComponent->beatmapObjectCallbackController = originalComponent->beatmapObjectCallbackController;
+        rootComponent->beatmapCallbacksController = originalComponent->beatmapCallbacksController;
         rootComponent->particleSystem = root->GetComponent<UnityEngine::ParticleSystem*>();
 
         rootComponent->set_enabled(true);

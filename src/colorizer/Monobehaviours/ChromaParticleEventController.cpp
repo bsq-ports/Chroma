@@ -7,7 +7,7 @@ using namespace GlobalNamespace;
 using namespace UnityEngine;
 
 void ChromaParticleEventController::Init(GlobalNamespace::ParticleSystemEventEffect *particleSystemEventEffect,
-                                         GlobalNamespace::BeatmapEventType eventType) {
+                                         GlobalNamespace::BasicBeatmapEventType eventType) {
     _eventType = eventType;
     _colorizer = ParticleColorizer::New(particleSystemEventEffect, eventType);
 }

@@ -5,7 +5,7 @@
 #include "UnityEngine/Color.hpp"
 
 #include "GlobalNamespace/SaberType.hpp"
-#include "GlobalNamespace/BeatmapEventType.hpp"
+#include "GlobalNamespace/BasicBeatmapEventType.hpp"
 #include "GlobalNamespace/ParticleSystemEventEffect.hpp"
 
 #include "colorizer/ParticleColorizer.hpp"
@@ -21,10 +21,10 @@
 DECLARE_CLASS_CODEGEN(Chroma, ChromaParticleEventController, UnityEngine::MonoBehaviour,
   private:
           std::shared_ptr<ParticleColorizer> _colorizer;
-          GlobalNamespace::BeatmapEventType _eventType;
+          GlobalNamespace::BasicBeatmapEventType _eventType;
 
           public:
-          DECLARE_INSTANCE_METHOD(void, Init, GlobalNamespace::ParticleSystemEventEffect* particleSystemEventEffect, GlobalNamespace::BeatmapEventType eventType);
+          DECLARE_INSTANCE_METHOD(void, Init, GlobalNamespace::ParticleSystemEventEffect* particleSystemEventEffect, GlobalNamespace::BasicBeatmapEventType eventType);
           DECLARE_INSTANCE_METHOD(void, OnDestroy);
 
           DECLARE_SIMPLE_DTOR();

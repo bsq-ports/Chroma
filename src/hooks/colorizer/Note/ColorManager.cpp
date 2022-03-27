@@ -23,7 +23,7 @@ using namespace GlobalNamespace;
 using namespace UnityEngine;
 
 MAKE_HOOK_MATCH(ColorManager_ColorForType,
-                  &ColorManager::ColorForType,
+                  static_cast<::UnityEngine::Color (GlobalNamespace::ColorManager::*)(::GlobalNamespace::ColorType)>(&GlobalNamespace::ColorManager::ColorForType),
                   Color, ColorManager* self, GlobalNamespace::ColorType type) {
     // Do nothing if Chroma shouldn't run
     if (!ChromaController::DoChromaHooks() || !ColorManagerColorForType::_noteColorOverride) {

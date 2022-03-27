@@ -22,12 +22,13 @@ using namespace GlobalNamespace;
 using namespace Chroma;
 
 MAKE_HOOK_MATCH(BeatmapDataTransformHelper_CreateTransformedBeatmapData,&BeatmapDataTransformHelper::CreateTransformedBeatmapData, GlobalNamespace::IReadonlyBeatmapData*,
-                IReadonlyBeatmapData* beatmapData, GlobalNamespace::IPreviewBeatmapLevel* beatmapLevel,
-                GlobalNamespace::GameplayModifiers* gameplayModifiers, GlobalNamespace::PracticeSettings* practiceSettings,
-                bool leftHanded, GlobalNamespace::EnvironmentEffectsFilterPreset environmentEffectsFilterPreset,
-                GlobalNamespace::EnvironmentIntensityReductionOptions* environmentIntensityReductionOptions,
-                bool screenDisplacementEffectsEnabled) {
-    auto result = BeatmapDataTransformHelper_CreateTransformedBeatmapData(beatmapData, beatmapLevel, gameplayModifiers, practiceSettings, leftHanded, environmentEffectsFilterPreset, environmentIntensityReductionOptions, screenDisplacementEffectsEnabled);
+                ::GlobalNamespace::IReadonlyBeatmapData* beatmapData,
+                ::GlobalNamespace::IPreviewBeatmapLevel* beatmapLevel,
+                ::GlobalNamespace::GameplayModifiers* gameplayModifiers,
+                bool leftHanded, ::GlobalNamespace::EnvironmentEffectsFilterPreset environmentEffectsFilterPreset,
+                ::GlobalNamespace::EnvironmentIntensityReductionOptions* environmentIntensityReductionOptions,
+                ::GlobalNamespace::MainSettingsModelSO* mainSettingsModel) {
+    auto result = BeatmapDataTransformHelper_CreateTransformedBeatmapData(beatmapData, beatmapLevel, gameplayModifiers, leftHanded, environmentEffectsFilterPreset, environmentIntensityReductionOptions, mainSettingsModel);
 
     // Essentially, here we cancel the original method. DO NOT call it IF it's a Chroma map
     if (!ChromaController::DoChromaHooks() || MultiplayerConnectedPlayerInstallerHookHolder::MultiplayerInvoked) {

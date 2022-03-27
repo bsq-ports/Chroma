@@ -74,9 +74,9 @@ void TriggerRotation(
 // This method is directly ported from TrackLaneRingsRotationEffectSpawner. It is required to be ported since for some inexplicable reason
 // using the original method causes CJD or something else to stop loading the map and it
 // just stays as limbo. Hopefully with time we can fix that and use that instead
-void origHandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(GlobalNamespace::TrackLaneRingsRotationEffectSpawner* self, BeatmapEventData* beatmapEventData) {
+void origHandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(GlobalNamespace::TrackLaneRingsRotationEffectSpawner* self, BasicBeatmapEventData* beatmapEventData) {
     static auto contextLogger = getLogger().WithContext(Chroma::ChromaLogger::TrackLaneRings);
-    if (beatmapEventData->type != self->beatmapEventType) {
+    if (beatmapEventData->basicBeatmapEventType != self->beatmapEventType) {
         return;
     }
     float step = 0.0f;
@@ -116,9 +116,9 @@ void origHandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(GlobalNames
 }
 
 MAKE_HOOK_MATCH(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger,
-                &TrackLaneRingsRotationEffectSpawner::HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger,
+                &TrackLaneRingsRotationEffectSpawner::HandleBeatmapEvent,
                 void, GlobalNamespace::TrackLaneRingsRotationEffectSpawner* self,
-                     BeatmapEventData* beatmapEventData) {
+                     BasicBeatmapEventData* beatmapEventData) {
     if (!ChromaController::DoChromaHooks()) {
         TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self,
                                                                                                         beatmapEventData);
@@ -126,12 +126,12 @@ MAKE_HOOK_MATCH(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCallbackC
     }
 
 
-//    debugSpamLog(contextLogger, "Track lane rotation effect self %d beat %d and customData %d", self->beatmapEventType.value,
+//    debugSpamLog(contextLogger, "Track lane rotation effect self %d beat %d and customData %d", self->BasicBeatmapEventType.value,
 //                      beatmapEventData->type.value,
 //                      beatmapEventData->customData != nullptr && beatmapEventData->customData->value != nullptr ? 0 : 1);
     static auto contextLogger = getLogger().WithContext(Chroma::ChromaLogger::TrackLaneRings);
 
-    if (beatmapEventData->type == self->beatmapEventType) {
+    if (beatmapEventData->basicBeatmapEventType == self->beatmapEventType) {
         auto chromaIt = ChromaEventDataManager::ChromaEventDatas.find(beatmapEventData);
 
         // Not found

@@ -3,10 +3,8 @@
 
 #include "GlobalNamespace/BeatmapObjectManager.hpp"
 #include "GlobalNamespace/IReadonlyBeatmapData.hpp"
-#include "GlobalNamespace/BeatmapObjectCallbackController.hpp"
-#include "GlobalNamespace/IBeatmapObjectCallbackController.hpp"
+#include "GlobalNamespace/BeatmapCallbacksController.hpp"
 #include "GlobalNamespace/BeatmapLineData.hpp"
-#include "GlobalNamespace/BeatmapObjectType.hpp"
 #include "GlobalNamespace/BeatmapObjectData.hpp"
 #include "GlobalNamespace/Saber.hpp"
 
@@ -52,8 +50,8 @@ custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(Global
 
     try {
         Chroma::ChromaController::BeatmapObjectSpawnController = beatmapObjectSpawnController;
-        BeatmapObjectCallbackController *coreSetup = il2cpp_utils::cast<BeatmapObjectCallbackController>(beatmapObjectSpawnController->beatmapObjectCallbackController);
-        Chroma::ChromaController::IAudioTimeSource = coreSetup->audioTimeSource;
+        auto *coreSetup = il2cpp_utils::cast<BeatmapCallbacksController>(beatmapObjectSpawnController->beatmapCallbacksController);
+        Chroma::ChromaController::CallbacksController = coreSetup;
 
         IReadonlyBeatmapData *beatmapData = coreSetup->beatmapData;
 
@@ -63,24 +61,26 @@ custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(Global
 //            CRASH_UNLESS(beatmapData);
         }
 
-        if (DoChromaHooks() && getChromaConfig().environmentEnhancementsEnabled.GetValue()) {
-            if (auto customBeatmap = il2cpp_utils::try_cast<CustomJSONData::CustomBeatmapData>(beatmapData)) {
+        if (auto customBeatmap = il2cpp_utils::try_cast<CustomJSONData::CustomBeatmapData>(beatmapData)) {
+            if (DoChromaHooks() && getChromaConfig().environmentEnhancementsEnabled.GetValue()) {
+
                 EnvironmentEnhancementManager::Init(*customBeatmap,
                                                     beatmapObjectSpawnController->get_noteLinesDistance());
-            } else {
-                getLogger().debug("Beatmap class %s", il2cpp_utils::ClassStandardName(reinterpret_cast<Il2CppObject*>(beatmapData)->klass).c_str());
-            }
-        }
 
-        if (GetChromaLegacy()) {
-            try {
-                auto list = il2cpp_utils::cast<Generic::List_1<BeatmapEventData *>>(beatmapData->get_beatmapEventsData());
-
-                // please let me kill legacy
-                LegacyLightHelper::Activate(list->items);
-            } catch (const Il2CppException &e) {
-                getLogger().error("Unable to run legacy due to exception?");
             }
+
+            if (GetChromaLegacy()) {
+                try {
+                    auto list = customBeatmap.value()->GetBeatmapItemsCpp<BasicBeatmapEventData*>();
+
+                    // please let me kill legacy
+                    LegacyLightHelper::Activate(list);
+                } catch (const Il2CppException &e) {
+                    getLogger().error("Unable to run legacy due to exception?");
+                }
+            }
+        } else {
+            getLogger().debug("Beatmap class %s", il2cpp_utils::ClassStandardName(reinterpret_cast<Il2CppObject*>(beatmapData)->klass).c_str());
         }
 
     } catch (std::exception &e) {

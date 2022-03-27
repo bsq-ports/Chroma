@@ -1,5 +1,17 @@
 #pragma once
 
+#ifndef ID
+#define ID "Chroma"
+#define REMOVE_ID_CRHOMA
+#endif
+
+#include "conditional-dependencies/shared/main.hpp"
+
+#ifdef REMOVE_ID_CRHOMA
+#undef ID
+#undef REMOVE_ID_CRHOMA
+#endif
+
 #include "UnityEngine/Color.hpp"
 #include "sombrero/shared/ColorUtils.hpp"
 

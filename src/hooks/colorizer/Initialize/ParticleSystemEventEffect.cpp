@@ -28,7 +28,7 @@ using namespace Chroma;
 using namespace ChromaUtils;
 using namespace custom_types::Helpers;
 
-Coroutine WaitThenStartParticle(ParticleSystemEventEffect* instance, BeatmapEventType eventType) {
+Coroutine WaitThenStartParticle(ParticleSystemEventEffect* instance, BasicBeatmapEventType eventType) {
     co_yield reinterpret_cast<enumeratorT>(UnityEngine::WaitForEndOfFrame::New_ctor());
     instance->get_gameObject()->AddComponent<ChromaParticleEventController*>()->Init(instance, eventType);
 }
@@ -60,10 +60,10 @@ MAKE_HOOK_MATCH(
 
 MAKE_HOOK_MATCH(
         ParticleSystemEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger,
-        &ParticleSystemEventEffect::HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger,
+        &ParticleSystemEventEffect::HandleBeatmapEvent,
         void,
         ParticleSystemEventEffect* self,
-        BeatmapEventData* beatmapEventData
+        BasicBeatmapEventData* beatmapEventData
 ) {
     // Do nothing if Chroma shouldn't run
     if (!ChromaController::DoChromaHooks()) {
@@ -71,7 +71,7 @@ MAKE_HOOK_MATCH(
         return;
     }
 
-    if (beatmapEventData->type == self->colorEvent)
+    if (beatmapEventData->basicBeatmapEventType == self->colorEvent)
     {
         for (auto& colorizer : ParticleColorizer::GetParticleColorizers(self->colorEvent)) {
             colorizer->PreviousValue = beatmapEventData->value;

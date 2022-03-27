@@ -14,7 +14,9 @@
 #include "UnityEngine/Color.hpp"
 #include "UnityEngine/WaitForEndOfFrame.hpp"
 #include "GlobalNamespace/ILightWithId.hpp"
-#include "GlobalNamespace/BeatmapObjectCallbackController.hpp"
+#include "GlobalNamespace/BeatmapCallbacksController.hpp"
+#include "GlobalNamespace/CallbacksInTime.hpp"
+#include "System/Collections/Generic/Dictionary_2.hpp"
 #include "UnityEngine/GameObject.hpp"
 #include "hooks/LightSwitchEventEffect.hpp"
 #include "lighting/LightIDTableManager.hpp"
@@ -28,9 +30,10 @@ using namespace UnityEngine;
 using namespace System::Collections;
 using namespace custom_types::Helpers;
 
+BeatmapCallbacksController* beatmapCallbacksController;
 
 
-custom_types::Helpers::Coroutine WaitThenStartLight(LightSwitchEventEffect *instance, BeatmapEventType eventType) {
+custom_types::Helpers::Coroutine WaitThenStartLight(LightSwitchEventEffect *instance, BasicBeatmapEventType eventType) {
     co_yield reinterpret_cast<IEnumerator*>(CRASH_UNLESS(WaitForEndOfFrame::New_ctor()));
 
     auto* newEffect = instance->get_gameObject()->AddComponent<ChromaLightSwitchEventEffect*>();
@@ -69,20 +72,42 @@ MAKE_HOOK_MATCH(LightSwitchEventEffect_Start,
 }
 
 MAKE_HOOK_MATCH(BeatmapObjectCallbackController_SendBeatmapEventDidTriggerEvent,
-                &BeatmapObjectCallbackController::SendBeatmapEventDidTriggerEvent,
+                &BeatmapCallbacksController::ManualUpdate,
                 void,
-                BeatmapObjectCallbackController* self, BeatmapEventData* eventData) {
-    BeatmapObjectCallbackController_SendBeatmapEventDidTriggerEvent(self, eventData);
-
+                BeatmapCallbacksController* self, float songTime) {
     // Do nothing if Chroma shouldn't run
     if (!ChromaController::GetChromaLegacy() && !ChromaController::DoChromaHooks()) {
-        return;
+        return BeatmapObjectCallbackController_SendBeatmapEventDidTriggerEvent(self, songTime);
     }
 
-    // I don't want to deal with delegates
-    for (auto const& _lightSwitchEventEffect :ChromaLightSwitchEventEffect::livingLightSwitch) {
-        _lightSwitchEventEffect->HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(eventData);
+    if (self != beatmapCallbacksController) {
+        beatmapCallbacksController = self;
+
+        // I don't want to deal with delegates
+
+        auto basicEvents = CustomJSONData::CustomBeatmapDataCallbackWrapper::New_ctor();
+        basicEvents->controller = self;
+        basicEvents->BasicBeatmapEventType = csTypeOf(BasicBeatmapEventData*);
+        basicEvents->redirectEvent = [](auto* controller, BeatmapDataItem* item) {
+            for (auto const& _lightSwitchEventEffect :ChromaLightSwitchEventEffect::livingLightSwitch) {
+                _lightSwitchEventEffect->HandleEvent(static_cast<BasicBeatmapEventData *>(item));
+            }
+        };
+
+        auto boostEvents = CustomJSONData::CustomBeatmapDataCallbackWrapper::New_ctor();
+        boostEvents->controller = self;
+        boostEvents->BasicBeatmapEventType = csTypeOf(ColorBoostBeatmapEventData*);
+        boostEvents->redirectEvent = [](auto* controller, BeatmapDataItem* item) {
+            for (auto const& _lightSwitchEventEffect :ChromaLightSwitchEventEffect::livingLightSwitch) {
+                _lightSwitchEventEffect->HandleBoostEvent(static_cast<ColorBoostBeatmapEventData *>(item));
+            }
+        };
+
+        self->callbacksInTimes->get_Item(0)->AddCallback(basicEvents);
+        self->callbacksInTimes->get_Item(0)->AddCallback(boostEvents);
     }
+
+    BeatmapObjectCallbackController_SendBeatmapEventDidTriggerEvent(self, songTime);
 }
 
 void LightSwitchEventEffectHook(Logger& logger) {

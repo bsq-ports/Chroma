@@ -14,22 +14,18 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
     static auto contextLogger = getLogger().WithContext(ChromaLogger::ObjectDataDeserialize);
     ChromaEventDatas.clear();
 
-    auto beatmapDataCast = il2cpp_utils::cast<GlobalNamespace::BeatmapData>(beatmapData);
-    auto beatmapEvents = il2cpp_utils::cast<System::Collections::Generic::List_1<GlobalNamespace::BeatmapEventData *>>(
-            beatmapDataCast->get_beatmapEventsData());
+    auto beatmapDataCast = il2cpp_utils::cast<CustomJSONData::CustomBeatmapData>(beatmapData);
+    auto beatmapEvents = beatmapDataCast->GetBeatmapItemsCpp<GlobalNamespace::BasicBeatmapEventData*>();
 
-    auto beatmapEventsLength = beatmapEvents->get_Count();
-    auto beatmapEventsRef = beatmapEvents->items;
 
-    for (int i = 0; i < beatmapEventsLength; i++) {
-        auto beatmapEventData = beatmapEvents->items.get(i);
 
+    for (auto beatmapEventData : beatmapEvents) {
         if (!beatmapEventData)
             continue;
 
         auto customBeatmapEvent = il2cpp_utils::try_cast<CustomJSONData::CustomBeatmapEventData>(beatmapEventData);
         if (customBeatmapEvent) {
-            std::optional<std::reference_wrapper<rapidjson::Value>> optionalDynData = (*customBeatmapEvent)->customData->value;
+            auto const& optionalDynData = (*customBeatmapEvent)->customData->value;
 
 
             std::optional<ChromaEventData::GradientObjectData> gradientObject = std::nullopt;
@@ -196,9 +192,11 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
         }
     }
 
-    for (int i = 0; i < beatmapEventsLength; i++) {
-        auto beatmapEventData = beatmapEvents->items.get(i);
+    int i = -1;
+    auto beatmapEventsLength = beatmapEvents.size();
 
+    for (auto beatmapEventData : beatmapEvents) {
+        i++;
         auto chromaEventDataIt = ChromaEventDatas.find(beatmapEventData);
 
         if (chromaEventDataIt == ChromaEventDatas.end())
@@ -208,7 +206,7 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
         auto& currentEventData = chromaEventDataIt->second;
 // Horrible stupid logic to get next same type event per light id
         if (currentEventData.LightID) {
-            auto type = customBeatmapEvent->type;
+            auto type = customBeatmapEvent->basicBeatmapEventType;
             auto &nextSameTypeEvent = currentEventData.NextSameTypeEvent;
 
 
@@ -217,11 +215,11 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
                     continue;
                 }
 
-                int nextIndex = FindIndex(beatmapEventsRef.ref_to(), [type, id](GlobalNamespace::BeatmapEventData* n) {
+                int nextIndex = FindIndex(beatmapEvents, [type, id](GlobalNamespace::BasicBeatmapEventData* n) {
                     if (!n)
                         return false;
 
-                    if (n->type != type) {
+                    if (n->basicBeatmapEventType != type) {
                         return false;
                     }
 
@@ -237,14 +235,14 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
                 }, i + 1);
 
                 if (nextIndex != -1) {
-                    auto beatmapEvent = beatmapEvents->items.get(nextIndex);
+                    auto beatmapEvent = beatmapEvents[nextIndex];
                     currentEventData.NextSameTypeEvent[id] = {beatmapEvent, &ChromaEventDatas.at(beatmapEvent)};
                 } else {
-                    int nextIndex = FindIndex(beatmapEventsRef.ref_to(), [type](GlobalNamespace::BeatmapEventData* n) {
+                    int nextIndex = FindIndex(beatmapEvents, [type](GlobalNamespace::BasicBeatmapEventData* n) {
                         if (!n)
                             return false;
 
-                        if (n->type != type) {
+                        if (n->basicBeatmapEventType != type) {
                             return false;
                         }
 
@@ -255,7 +253,7 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
                     }, i + 1);
 
                     if (nextIndex != -1) {
-                        auto beatmapEvent = beatmapEvents->items.get(nextIndex);
+                        auto beatmapEvent = beatmapEvents[nextIndex];
                         currentEventData.NextSameTypeEvent[id] = {beatmapEvent, &ChromaEventDatas.at(beatmapEvent)};
                     }
                 }

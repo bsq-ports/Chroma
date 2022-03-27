@@ -16,9 +16,9 @@ using namespace Chroma;
 
 MAKE_HOOK_MATCH(TutorialScenesTransitionSetupDataSO_Init,
                 &TutorialScenesTransitionSetupDataSO::Init,
-                void,TutorialScenesTransitionSetupDataSO* self) {
+                void,TutorialScenesTransitionSetupDataSO* self, GlobalNamespace::PlayerSpecificSettings* playerSpecificSettings) {
     ChromaController::TutorialMode = true;
-    TutorialScenesTransitionSetupDataSO_Init(self);
+    TutorialScenesTransitionSetupDataSO_Init(self, playerSpecificSettings);
 }
 
 void TutorialScenesTransitionSetupDataSOHook(Logger& logger) {

@@ -4,7 +4,7 @@
 #include "lighting/ChromaFogController.hpp"
 
 #include "GlobalNamespace/BeatmapData.hpp"
-#include "GlobalNamespace/BeatmapObjectCallbackController.hpp"
+#include "GlobalNamespace/BeatmapCallbacksController.hpp"
 
 #include "custom-json-data/shared/CustomBeatmapData.h"
 #include "custom-json-data/shared/CustomEventData.h"
@@ -16,7 +16,7 @@
 using namespace GlobalNamespace;
 using namespace NEVector;
 
-void ChromaEvents::parseEventData(TracksAD::BeatmapAssociatedData &beatmapAD, const CustomJSONData::CustomEventData *customEventData) {
+void ChromaEvents::parseEventData(TracksAD::BeatmapAssociatedData &beatmapAD, CustomJSONData::CustomEventData const* customEventData) {
     bool isType = false;
 
     auto typeHash = customEventData->typeHash;
@@ -32,7 +32,7 @@ void ChromaEvents::parseEventData(TracksAD::BeatmapAssociatedData &beatmapAD, co
         return;
     }
 
-    rapidjson::Value &eventData = *customEventData->data;
+    rapidjson::Value const& eventData = *customEventData->data;
     auto& eventAD = getEventAD(customEventData);
 
     if (eventAD.parsed)
@@ -66,13 +66,13 @@ void ChromaEvents::deserialize(GlobalNamespace::IReadonlyBeatmapData* readOnlyBe
         }
 
         // Parse events
-        for (auto const &customEventData: *beatmap->customEventsData) {
-            parseEventData(beatmapAD, &customEventData);
+        for (auto const &customEventData: beatmap->GetBeatmapItemsCpp<CustomJSONData::CustomEventData*>()) {
+            parseEventData(beatmapAD, customEventData);
         }
     }
 }
 
-void CustomEventCallback(BeatmapObjectCallbackController *callbackController,
+void CustomEventCallback(BeatmapCallbacksController *callbackController,
                          CustomJSONData::CustomEventData *customEventData) {
     bool isType = false;
 

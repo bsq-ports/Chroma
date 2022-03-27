@@ -29,6 +29,8 @@ NoteColorizer::NoteColorizer(GlobalNamespace::NoteControllerBase *noteController
 
     auto colorNoteVisuals = _noteController->GetComponent<GlobalNamespace::ColorNoteVisuals*>();
     _colorNoteVisuals = colorNoteVisuals;
+    CRASH_UNLESS(_noteController);
+    CRASH_UNLESS(_colorNoteVisuals);
 
     _materialPropertyBlockControllers = colorNoteVisuals->materialPropertyBlockControllers;
 }
@@ -114,6 +116,8 @@ void NoteColorizer::ColorizeSaber(GlobalNamespace::NoteController *noteControlle
 }
 
 void NoteColorizer::Refresh() {
+    if (!_colorNoteVisuals->get_enabled()) return;
+
     Sombrero::FastColor const& color = getColor();
     if (color == Sombrero::FastColor(_colorNoteVisuals->noteColor))
     {

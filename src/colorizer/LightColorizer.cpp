@@ -14,7 +14,7 @@
 
 #include "GlobalNamespace/LightWithIdMonoBehaviour.hpp"
 #include "GlobalNamespace/LightWithIds.hpp"
-#include "GlobalNamespace/LightWithIds_LightData.hpp"
+#include "GlobalNamespace/LightWithIds_LightWithId.hpp"
 #include "GlobalNamespace/TrackLaneRingsManager.hpp"
 #include "GlobalNamespace/TrackLaneRing.hpp"
 #include "GlobalNamespace/ParticleSystemEventEffect.hpp"
@@ -30,10 +30,10 @@ using namespace Sombrero;
 using namespace Chroma;
 
 LightColorizer::LightColorizer(ChromaLightSwitchEventEffect *lightSwitchEventEffect,
-                               GlobalNamespace::BeatmapEventType beatmapEventType,
+                               GlobalNamespace::BasicBeatmapEventType BasicBeatmapEventType,
                                LightWithIdManager* lightManager)
                                : _lightSwitchEventEffect(lightSwitchEventEffect),
-                                 _eventType(beatmapEventType),
+                                 _eventType(BasicBeatmapEventType),
                                  _colors(COLOR_FIELDS),
                                  _originalColors(),
                                  _simpleColorSOs(COLOR_FIELDS){
@@ -123,10 +123,10 @@ LightColorizer::LightColorizer(ChromaLightSwitchEventEffect *lightSwitchEventEff
     LightsPropagationGrouped = lightsPreGroupFinal;
 }
 
-LightColorizer& LightColorizer::New(ChromaLightSwitchEventEffect *lightSwitchEventEffect,GlobalNamespace::BeatmapEventType beatmapEventType, GlobalNamespace::LightWithIdManager* lightManager) {
-    CRASH_UNLESS(!Colorizers.contains(beatmapEventType.value));
+LightColorizer& LightColorizer::New(ChromaLightSwitchEventEffect *lightSwitchEventEffect,GlobalNamespace::BasicBeatmapEventType BasicBeatmapEventType, GlobalNamespace::LightWithIdManager* lightManager) {
+    CRASH_UNLESS(!Colorizers.contains(BasicBeatmapEventType.value));
 
-    return Colorizers.try_emplace(beatmapEventType.value, lightSwitchEventEffect, beatmapEventType, lightManager).first->second;
+    return Colorizers.try_emplace(BasicBeatmapEventType.value, lightSwitchEventEffect, BasicBeatmapEventType, lightManager).first->second;
 }
 
 
@@ -153,7 +153,7 @@ void LightColorizer::GlobalColorize(bool refresh, std::optional<std::vector<Glob
 void LightColorizer::RegisterLight(UnityEngine::MonoBehaviour *lightWithId, std::optional<int> lightId) {
     auto const RegisterLightWithID = [&lightId](ILightWithId* lightToRegister) {
         int type = lightToRegister->get_lightId() - 1;
-        auto lightColorizer = GetLightColorizer((BeatmapEventType) type);
+        auto lightColorizer = GetLightColorizer((BasicBeatmapEventType) type);
         auto index = lightColorizer->Lights.size();
         LightIDTableManager::RegisterIndex(type, index, lightId);
 
@@ -172,10 +172,10 @@ void LightColorizer::RegisterLight(UnityEngine::MonoBehaviour *lightWithId, std:
 
     if (lightWithIdsCast) {
         auto lightWithIds = *lightWithIdsCast;
-        auto lightsWithIdArray = System::Linq::Enumerable::ToArray(lightWithIds->get_lightIntensityData());
+        auto lightsWithIdArray = System::Linq::Enumerable::ToArray(lightWithIds->lightWithIds);
 
         for (auto const& lightIdData : lightsWithIdArray) {
-            RegisterLightWithID(reinterpret_cast<ILightWithId*>(lightIdData));
+            RegisterLightWithID(il2cpp_utils::cast<ILightWithId>(lightIdData));
         }
     }
 }

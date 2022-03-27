@@ -4,7 +4,6 @@
 
 #include "GlobalNamespace/MultiplayerConnectedPlayerNoteController.hpp"
 #include "GlobalNamespace/TutorialNoteController.hpp"
-#include "GlobalNamespace/MirroredCubeNoteController.hpp"
 #include "GlobalNamespace/GameNoteController.hpp"
 
 #include "colorizer/NoteColorizer.hpp"

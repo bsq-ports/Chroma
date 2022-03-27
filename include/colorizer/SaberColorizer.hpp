@@ -3,7 +3,7 @@
 #include "Chroma.hpp"
 
 #include "UnityEngine/MonoBehaviour.hpp"
-#include "GlobalNamespace/BeatmapEventType.hpp"
+#include "GlobalNamespace/BasicBeatmapEventType.hpp"
 #include "GlobalNamespace/SaberBurnMarkArea.hpp"
 #include "GlobalNamespace/SaberBurnMarkSparkles.hpp"
 #include "GlobalNamespace/SaberTrail.hpp"

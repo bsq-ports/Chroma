@@ -28,10 +28,9 @@ void Chroma::ChromaLightSwitchEventEffect::CopyValues(GlobalNamespace::LightSwit
     lightOnStart = lightSwitchEventEffect->lightOnStart;
     lightsID = lightSwitchEventEffect->lightsID;
     event = lightSwitchEventEffect->event;
-    colorBoostEvent = lightSwitchEventEffect->colorBoostEvent;
 
     this->lightManager = lightSwitchEventEffect->lightManager;
-    this->beatmapObjectCallbackController = lightSwitchEventEffect->beatmapObjectCallbackController;
+    this->beatmapCallbacksController = lightSwitchEventEffect->beatmapCallbacksController;
     this->tweeningManager = lightSwitchEventEffect->tweeningManager;
 
     this->lightColorizer = &LightColorizer::New(this, event, lightManager);
@@ -51,8 +50,8 @@ void Chroma::ChromaLightSwitchEventEffect::CopyValues(GlobalNamespace::LightSwit
     SetColor(color);
 }
 
-void Chroma::ChromaLightSwitchEventEffect::HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(GlobalNamespace::BeatmapEventData *beatmapEventData) {
-    if (beatmapEventData->type == event) {
+void Chroma::ChromaLightSwitchEventEffect::HandleEvent(GlobalNamespace::BasicBeatmapEventData *beatmapEventData) {
+    if (beatmapEventData->basicBeatmapEventType == event) {
         std::optional<std::vector<ILightWithId *>> selectLights;
         std::optional<Functions> easing;
         std::optional<LerpType> lerpType;
@@ -94,7 +93,7 @@ void Chroma::ChromaLightSwitchEventEffect::HandleBeatmapObjectCallbackController
 
             auto const& gradient = chromaData.GradientObject;
             if (gradient) {
-                color = ChromaGradientController::AddGradient(gradient.value(), beatmapEventData->type,
+                color = ChromaGradientController::AddGradient(gradient.value(), beatmapEventData->basicBeatmapEventType,
                                                               beatmapEventData->time);
             }
 
@@ -102,7 +101,7 @@ void Chroma::ChromaLightSwitchEventEffect::HandleBeatmapObjectCallbackController
             std::optional<Sombrero::FastColor> const &colorData = chromaData.ColorData;
             if (colorData) {
                 color = colorData;
-                ChromaGradientController::CancelGradient(beatmapEventData->type);
+                ChromaGradientController::CancelGradient(beatmapEventData->basicBeatmapEventType);
             }
 
             easing = chromaData.Easing;
@@ -112,7 +111,7 @@ void Chroma::ChromaLightSwitchEventEffect::HandleBeatmapObjectCallbackController
 
         if (color) {
             lightColorizer->Colorize(false, {*color, *color, *color, *color});
-        } else if (!ChromaGradientController::IsGradientActive(beatmapEventData->type)) {
+        } else if (!ChromaGradientController::IsGradientActive(beatmapEventData->basicBeatmapEventType)) {
             lightColorizer->Colorize(false,
                                      {std::nullopt, std::nullopt, std::nullopt, std::nullopt});
         }
@@ -121,15 +120,16 @@ void Chroma::ChromaLightSwitchEventEffect::HandleBeatmapObjectCallbackController
 
 
         Refresh(true, selectLights, beatmapEventData, easing, lerpType);
-    } else if (beatmapEventData->type == colorBoostEvent) {
-        bool flag = beatmapEventData->value == 1;
-        if (flag == usingBoostColors) {
-            return;
-        }
-
-        usingBoostColors = flag;
-        Refresh(false, std::nullopt);
     }
+}
+
+void ChromaLightSwitchEventEffect::HandleBoostEvent(GlobalNamespace::ColorBoostBeatmapEventData *beatmapEventData) {
+    if(beatmapEventData->boostColorsAreOn == usingBoostColors) {
+        return;
+    }
+
+    usingBoostColors = beatmapEventData->boostColorsAreOn;
+    Refresh(false, std::nullopt);
 }
 
 
@@ -170,7 +170,7 @@ Chroma::ChromaLightSwitchEventEffect::GetOriginalColor(int beatmapEventValue, bo
 
 
 void ChromaLightSwitchEventEffect::Refresh(bool hard, const std::optional<std::vector<ILightWithId *>> &selectLights,
-                                           std::optional<BeatmapEventData *> beatmapEventData,
+                                           std::optional<BasicBeatmapEventData *> beatmapEventData,
                                            std::optional<Functions> easing, std::optional<LerpType> lerpType) {
     std::vector<ChromaIDColorTween*> selectTweens;
 
@@ -190,7 +190,7 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, const std::optional<std::v
 
     bool boost = usingBoostColors;
     for (auto const& tween : selectTweens) {
-        BeatmapEventData* previousEvent;
+        BasicBeatmapEventData* previousEvent;
         if (hard) {
             tween->PreviousEvent = beatmapEventData.value();
             previousEvent = beatmapEventData.value();
@@ -210,7 +210,7 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, const std::optional<std::v
             auto eventDataIt = ChromaEventDataManager::ChromaEventDatas.find(previousEvent);
             auto const* eventData = eventDataIt != ChromaEventDataManager::ChromaEventDatas.end() ? &eventDataIt->second : nullptr;
 
-            BeatmapEventData* nextSameTypeEvent;
+            BasicBeatmapEventData* nextSameTypeEvent;
             ChromaEventData* nextEventData = nullptr;
             if (eventData && eventData->NextSameTypeEvent.contains(tween->Id))
             {
@@ -220,7 +220,7 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, const std::optional<std::v
             }
             else
             {
-                nextSameTypeEvent = previousEvent->nextSameTypeEvent;
+                nextSameTypeEvent = static_cast<BasicBeatmapEventData *>(previousEvent->nextSameTypeEventData);
             }
 
             if (!nextSameTypeEvent || (nextSameTypeEvent->value != 4 && nextSameTypeEvent->value != 8))

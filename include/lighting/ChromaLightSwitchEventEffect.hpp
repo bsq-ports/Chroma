@@ -9,10 +9,11 @@
 
 #include "UnityEngine/Color.hpp"
 
-#include "GlobalNamespace/BeatmapEventType.hpp"
+#include "GlobalNamespace/ColorBoostBeatmapEventData.hpp"
+#include "GlobalNamespace/BasicBeatmapEventType.hpp"
 #include "GlobalNamespace/ILightWithId.hpp"
 #include "GlobalNamespace/LightWithIdManager.hpp"
-#include "GlobalNamespace/BeatmapEventData.hpp"
+#include "GlobalNamespace/BasicBeatmapEventData.hpp"
 #include "GlobalNamespace/LightSwitchEventEffect.hpp"
 #include "GlobalNamespace/ColorSO.hpp"
 
@@ -37,7 +38,7 @@ public:
 
           std::unordered_map<GlobalNamespace::ILightWithId *, SafePtr<ChromaIDColorTween>> ColorTweens;
 
-          GlobalNamespace::BeatmapEventType EventType;
+          GlobalNamespace::BasicBeatmapEventType EventType;
 
           Chroma::LightColorizer* lightColorizer;
 
@@ -55,8 +56,10 @@ public:
     static constexpr bool IsFixedDurationLightSwitch(int beatmapEventValue);
     static constexpr bool IsColor0(int beatmapEventValue);
 
-          void HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(GlobalNamespace::BeatmapEventData* beatmapEventData);
-          void Refresh(bool hard, std::optional<std::vector<GlobalNamespace::ILightWithId*>> const& selectLights, std::optional<GlobalNamespace::BeatmapEventData*> beatmapEventData = std::nullopt, std::optional<Functions> easing = std::nullopt, std::optional<LerpType> lerpType = std::nullopt);
+          void HandleEvent(GlobalNamespace::BasicBeatmapEventData* BasicBeatmapEventData);
+          void HandleBoostEvent(GlobalNamespace::ColorBoostBeatmapEventData* BasicBeatmapEventData);
+
+          void Refresh(bool hard, std::optional<std::vector<GlobalNamespace::ILightWithId*>> const& selectLights, std::optional<GlobalNamespace::BasicBeatmapEventData*> BasicBeatmapEventData = std::nullopt, std::optional<Functions> easing = std::nullopt, std::optional<LerpType> lerpType = std::nullopt);
 
           void CopyValues(LightSwitchEventEffect* lightSwitchEventEffect);
           void RegisterLight(GlobalNamespace::ILightWithId* lightWithId, int type, int id);

@@ -11,7 +11,7 @@ using namespace UnityEngine;
 
 // TODO: unsure of this
 
-EXPOSE_API(getLightColorSafe, LightAPI::LSEData*, BeatmapEventType mb) {
+EXPOSE_API(getLightColorSafe, LightAPI::LSEData*, BasicBeatmapEventType mb) {
 
     auto lse = LightColorizer::GetLightColorizer(mb);
 
@@ -34,7 +34,7 @@ EXPOSE_API(getLightColorSafe, LightAPI::LSEData*, BeatmapEventType mb) {
     return lseData;
 }
 
-EXPOSE_API(setLightColorSafe, bool, BeatmapEventType mb, bool refresh, std::optional<LightAPI::LSEData> lseData) {
+EXPOSE_API(setLightColorSafe, bool, BasicBeatmapEventType mb, bool refresh, std::optional<LightAPI::LSEData> lseData) {
     std::array<std::optional<Sombrero::FastColor>, 4> colors = lseData ?
         std::array<std::optional<Sombrero::FastColor>, 4> {lseData->_lightColor0, lseData->_lightColor1, lseData->_lightColor0Boost, lseData->_lightColor1Boost} : 
         std::array<std::optional<Sombrero::FastColor>, 4> {std::nullopt, std::nullopt, std::nullopt, std::nullopt};

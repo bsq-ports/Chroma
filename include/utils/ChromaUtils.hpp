@@ -36,7 +36,7 @@ public:
                                    color->value.Size() > 3 ? color->value[3].GetFloat() : 1);
     }
 
-    inline static std::optional<Sombrero::FastColor> GetColorFromData(std::optional<std::reference_wrapper<rapidjson::Value>> const data,
+    inline static std::optional<Sombrero::FastColor> GetColorFromData(std::optional<std::reference_wrapper<const rapidjson::Value>> const data,
                                                                       const std::string_view member = Chroma::COLOR) {
         if (!data) return std::nullopt;
 
@@ -47,8 +47,8 @@ public:
 };
 
 
-    template<typename T, typename Predicate = std::function<bool(T const&)> >
-    int FindIndex(std::span<T> const& list, Predicate const& predicate, int startIndex = 0, int endIndex = -1) {
+    template<typename List, typename Predicate = std::function<bool(typename List::value_type const&)> >
+    int FindIndex(List const& list, Predicate const& predicate, int startIndex = 0, int endIndex = -1) {
         if (endIndex == -1) endIndex = list.size();
 
         for (int i = startIndex; i < endIndex; i++) {
@@ -149,14 +149,14 @@ public:
     }
 
     template<typename T>
-    inline static T getIfExists(std::optional<std::reference_wrapper<rapidjson::Value>> val, const std::string_view member, T const& def) {
+    inline static T getIfExists(std::optional<std::reference_wrapper<const rapidjson::Value>> const& val, const std::string_view member, T const& def) {
         if (!val) return def;
 
         return getIfExists<T>(val->get(), member, def);
     }
 
     template<typename T>
-    inline static std::optional<T> getIfExists(std::optional<std::reference_wrapper<rapidjson::Value>> const& val, const std::string_view member) {
+    inline static std::optional<T> getIfExists(std::optional<std::reference_wrapper<const rapidjson::Value>> const& val, const std::string_view member) {
         if (!val) return std::nullopt;
 
         return getIfExists<T>(val->get(), member);

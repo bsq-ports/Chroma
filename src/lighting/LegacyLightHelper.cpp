@@ -12,10 +12,10 @@ using namespace System::Collections;
 
 LegacyLightHelper::ColorMap LegacyLightHelper::LegacyColorEvents = LegacyLightHelper::ColorMap();
 
-void LegacyLightHelper::Activate(ArrayW<GlobalNamespace::BeatmapEventData*> eventData) {
+void LegacyLightHelper::Activate(std::span<GlobalNamespace::BasicBeatmapEventData*> eventData) {
     static auto contextLogger = getLogger().WithContext(ChromaLogger::LegacyLightColor);
 
-    LegacyColorEvents = LegacyLightHelper::ColorMap(eventData.Length());
+    LegacyColorEvents = LegacyLightHelper::ColorMap(eventData.size());
     debugSpamLog(contextLogger, "Got the events, checking for legacy %d", eventData.size());
     for (auto& d : eventData)
     {
@@ -33,17 +33,17 @@ void LegacyLightHelper::Activate(ArrayW<GlobalNamespace::BeatmapEventData*> even
         debugSpamLog(contextLogger, "Checking d %d %s", d->value, d->value >= RGB_INT_OFFSET ? "true" : "false");
         if (d->value >= RGB_INT_OFFSET)
         {
-            auto& list = LegacyColorEvents.try_emplace(d->type).first->second;
+            auto& list = LegacyColorEvents.try_emplace(d->basicBeatmapEventType).first->second;
             list.emplace_back(d->time, ColorFromInt(d->value));
         }
     }
 }
 
-std::optional<Sombrero::FastColor> LegacyLightHelper::GetLegacyColor(GlobalNamespace::BeatmapEventData *beatmapEventData) {
+std::optional<Sombrero::FastColor> LegacyLightHelper::GetLegacyColor(GlobalNamespace::BasicBeatmapEventData *beatmapEventData) {
     if (!ChromaController::GetChromaLegacy())
         return std::nullopt;
 
-    auto it = LegacyColorEvents.find(beatmapEventData->type);
+    auto it = LegacyColorEvents.find(beatmapEventData->basicBeatmapEventType);
     if (it != LegacyColorEvents.end()) {
         auto dictionaryID = it->second;
         std::vector<pair<float, Sombrero::FastColor>> colors;

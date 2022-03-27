@@ -5,7 +5,7 @@
 #include "UnityEngine/Color.hpp"
 
 #include "GlobalNamespace/SaberType.hpp"
-#include "GlobalNamespace/BeatmapEventType.hpp"
+#include "GlobalNamespace/BasicBeatmapEventType.hpp"
 #include "GlobalNamespace/Saber.hpp"
 
 #include "colorizer/SaberColorizer.hpp"

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "UnityEngine/Color.hpp"
-#include "conditional-dependencies/shared/main.hpp"
 #include "utils.hpp"
+#include "conditional-dependencies/shared/main.hpp"
 
 #include "GlobalNamespace/BombNoteController.hpp"
 

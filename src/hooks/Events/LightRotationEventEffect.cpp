@@ -19,10 +19,10 @@ using namespace ChromaUtils;
 
 MAKE_HOOK_MATCH(
     LightRotationEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger,
-    &LightRotationEventEffect::HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger,
+    &LightRotationEventEffect::HandleBeatmapEvent,
     void,
     LightRotationEventEffect* self,
-    BeatmapEventData* beatmapEventData
+    BasicBeatmapEventData* beatmapEventData
 ) {
     // Do nothing if Chroma shouldn't run
     if (!ChromaController::DoChromaHooks()) {
@@ -41,7 +41,7 @@ MAKE_HOOK_MATCH(
     auto const& chromaData = chromaIt->second;
 
 
-    bool isLeftEvent = self->event == BeatmapEventType::Event12;
+    bool isLeftEvent = self->event == BasicBeatmapEventType::Event12;
 
 
     bool lockPosition = chromaData.LockPosition;
