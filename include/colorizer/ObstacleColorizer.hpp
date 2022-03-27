@@ -48,8 +48,6 @@ namespace Chroma {
         }
 
         void Refresh() {
-            if (!_obstacleFrame->get_isActiveAndEnabled()) return;
-
             Sombrero::FastColor const &color = getColor();
             if (color == Sombrero::FastColor(_obstacleFrame->color)) {
                 return;
