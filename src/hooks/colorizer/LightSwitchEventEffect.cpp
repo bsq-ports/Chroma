@@ -36,9 +36,11 @@ BeatmapCallbacksController* beatmapCallbacksController;
 custom_types::Helpers::Coroutine WaitThenStartLight(LightSwitchEventEffect *instance, BasicBeatmapEventType eventType) {
     co_yield reinterpret_cast<IEnumerator*>(CRASH_UNLESS(WaitForEndOfFrame::New_ctor()));
 
-    auto* newEffect = instance->get_gameObject()->AddComponent<ChromaLightSwitchEventEffect*>();
-    newEffect->CopyValues(instance);
-    Object::Destroy(instance);
+    IL2CPP_CATCH_HANDLER(
+        auto* newEffect = instance->get_gameObject()->AddComponent<ChromaLightSwitchEventEffect*>();
+        newEffect->CopyValues(instance);
+        Object::Destroy(instance);
+    )
 
     co_return;
 }

@@ -67,6 +67,8 @@ void ChromaEvents::deserialize(GlobalNamespace::IReadonlyBeatmapData* readOnlyBe
 
         // Parse events
         for (auto const &customEventData: beatmap->GetBeatmapItemsCpp<CustomJSONData::CustomEventData*>()) {
+            if (!customEventData) continue;
+
             parseEventData(beatmapAD, customEventData);
         }
     }

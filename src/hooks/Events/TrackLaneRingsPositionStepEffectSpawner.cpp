@@ -69,11 +69,6 @@ MAKE_HOOK_MATCH(TrackLaneRingsPositionStepEffectSpawner_HandleBeatmapObjectCallb
         float moveSpeed = GetPrecisionSpeed(self->moveSpeed, beatmapEventData);
         SetPosition(rings[i], destPosZ, moveSpeed);
     }
-
-    if (beatmapEventData->basicBeatmapEventType != self->beatmapEventType)
-    {
-        return;
-    }
 }
 
 void TrackLaneRingsPositionStepEffectSpawnerHook(Logger& logger) {

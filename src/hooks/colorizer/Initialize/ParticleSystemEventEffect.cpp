@@ -30,7 +30,9 @@ using namespace custom_types::Helpers;
 
 Coroutine WaitThenStartParticle(ParticleSystemEventEffect* instance, BasicBeatmapEventType eventType) {
     co_yield reinterpret_cast<enumeratorT>(UnityEngine::WaitForEndOfFrame::New_ctor());
-    instance->get_gameObject()->AddComponent<ChromaParticleEventController*>()->Init(instance, eventType);
+    IL2CPP_CATCH_HANDLER(
+        instance->get_gameObject()->AddComponent<ChromaParticleEventController*>()->Init(instance, eventType);
+    )
 }
 
 MAKE_HOOK_MATCH(

@@ -16,6 +16,7 @@
 #include "custom-json-data/shared/CustomBeatmapData.h"
 
 #include "main.hpp"
+#include "beatsaber-hook/shared/utils/hooking.hpp"
 #include "colorizer/NoteColorizer.hpp"
 #include "colorizer/SaberColorizer.hpp"
 #include "colorizer/ObstacleColorizer.hpp"
@@ -48,6 +49,7 @@ std::unordered_set<std::string> ChromaController::ModsForcingDoHooks = std::unor
 custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnController *beatmapObjectSpawnController) {
     co_yield reinterpret_cast<enumeratorT>(CRASH_UNLESS(il2cpp_utils::New<UnityEngine::WaitForEndOfFrame *>()));
 
+    IL2CPP_CATCH_HANDLER(
     try {
         Chroma::ChromaController::BeatmapObjectSpawnController = beatmapObjectSpawnController;
         auto *coreSetup = il2cpp_utils::cast<BeatmapCallbacksController>(beatmapObjectSpawnController->beatmapCallbacksController);
@@ -87,6 +89,7 @@ custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(Global
         getLogger().debug("Chroma controller failed: %s!", e.what());
         throw e;
     }
+    )
 
     co_return; // Reached end of coroutine
 }

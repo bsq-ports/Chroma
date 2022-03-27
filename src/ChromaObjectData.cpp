@@ -56,7 +56,6 @@ void Chroma::ChromaObjectDataManager::deserialize(GlobalNamespace::IReadonlyBeat
             chromaObjectData.Color = ChromaUtilities::GetColorFromData(objectDynData->value);
             chromaObjectData.DisableSpawnEffect = getIfExists<bool>(objectDynData->value, DISABLESPAWNEFFECT);
         } else if (ASSIGNMENT_CHECK(CustomObstacleDataKlass, beatmapObjectData->klass)) {
-            debugSpamLog(contextLogger, "Custom obstacle");
             auto *customObstacleData = static_cast<CustomJSONData::CustomObstacleData *>(beatmapObjectData);
 
             objectDynData = customObstacleData->customData;

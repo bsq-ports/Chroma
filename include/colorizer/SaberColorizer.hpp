@@ -83,5 +83,3 @@ namespace Chroma {
     };
 }
 
-inline static std::unordered_map<int, custom_types::Helpers::StandardCoroutine*> coroutineSabers;
-
