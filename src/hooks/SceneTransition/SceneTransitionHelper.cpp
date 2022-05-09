@@ -128,23 +128,25 @@ bool SceneTransitionHelper::BasicPatch(GlobalNamespace::IDifficultyBeatmap* cust
     bool legacyOverride = false;
 
 
-    auto beatmapEvents = customBeatmapDataCustom->basicBeatmapEvents->items;
-    auto length = beatmapEvents.Length();
-    getLogger().debug("Checking at most %d for ChromaLite notes", (int) length);
-    for (auto event : beatmapEvents) {
-        if (!event) continue;
+    if (customBeatmapDataCustom->isV2) {
+        auto beatmapEvents = customBeatmapDataCustom->basicBeatmapEvents->items;
+        auto length = beatmapEvents.Length();
+        getLogger().debug("Checking at most %d for ChromaLite notes", (int) length);
+        for (auto event: beatmapEvents) {
+            if (!event) continue;
 
-        if (event->get_value() >= LegacyLightHelper::RGB_INT_OFFSET)
-            legacyOverride = true;
+            if (event->get_value() >= LegacyLightHelper::RGB_INT_OFFSET)
+                legacyOverride = true;
 
-        if (legacyOverride)
-            break;
-    }
+            if (legacyOverride)
+                break;
+        }
 
-    if (legacyOverride) {
-        getLogger().warning("Legacy Chroma Detected...");
-        getLogger().warning(
-                "Please do not use Legacy Chroma for new maps as it is deprecated and its functionality in future versions of Chroma cannot be guaranteed");
+        if (legacyOverride) {
+            getLogger().warning("Legacy Chroma Detected...");
+            getLogger().warning(
+                    "Please do not use Legacy Chroma for new maps as it is deprecated and its functionality in future versions of Chroma cannot be guaranteed");
+        }
     }
 
     ChromaController::SetChromaLegacy(legacyOverride);

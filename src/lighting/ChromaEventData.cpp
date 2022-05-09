@@ -18,6 +18,7 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
     auto beatmapEvents = beatmapDataCast->GetBeatmapItemsCpp<GlobalNamespace::BasicBeatmapEventData*>();
 
 
+    bool v2 = beatmapDataCast->v2orEarlier;
 
     for (auto beatmapEventData : beatmapEvents) {
         if (!beatmapEventData)
@@ -38,35 +39,79 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
             if (optionalDynData) {
                 rapidjson::Value const &unwrappedData = *optionalDynData;
 
-                auto gradientJSON = unwrappedData.FindMember(LIGHTGRADIENT.data());
-                if (gradientJSON != unwrappedData.MemberEnd() && !gradientJSON->value.IsNull() && gradientJSON->value.IsObject()) {
-                    auto const &gValue = gradientJSON->value;
+#pragma region V2 Gradients and prop
+                if (v2) {
+                    auto gradientJSON = unwrappedData.FindMember(NewConstants::V2_LIGHT_GRADIENT.data());
+                    if (gradientJSON != unwrappedData.MemberEnd() && !gradientJSON->value.IsNull() &&
+                        gradientJSON->value.IsObject()) {
+                        auto const &gValue = gradientJSON->value;
 
-                    float duration = ChromaUtils::getIfExists<float>(gValue, Chroma::DURATION).value_or(0);
+                        float duration = ChromaUtils::getIfExists<float>(gValue, Chroma::NewConstants::V2_DURATION).value_or(0);
 
-                    Sombrero::FastColor initcolor = ChromaUtils::ChromaUtilities::GetColorFromData(gValue, STARTCOLOR).value();
+                        Sombrero::FastColor initcolor = ChromaUtils::ChromaUtilities::GetColorFromData(gValue,
+                                                                                                       Chroma::NewConstants::V2_START_COLOR).value();
 
-                    Sombrero::FastColor endcolor = ChromaUtils::ChromaUtilities::GetColorFromData(gValue, ENDCOLOR).value();
+                        Sombrero::FastColor endcolor = ChromaUtils::ChromaUtilities::GetColorFromData(gValue,
+                                                                                                      Chroma::NewConstants::V2_END_COLOR).value();
 
-                    std::string_view easingString = gValue.FindMember(EASING.data())->value.GetString();
+                        std::string_view easingString = gValue.FindMember(Chroma::NewConstants::V2_EASING.data())->value.GetString();
 
-                    Functions easing;
+                        Functions easing;
 
-                    if (easingString.empty()) {
-                        easing = Functions::easeLinear;
-                    } else {
-                        easing = FunctionFromStr(easingString);
+                        if (easingString.empty()) {
+                            easing = Functions::easeLinear;
+                        } else {
+                            easing = FunctionFromStr(easingString);
+                        }
+
+                        gradientObject = std::make_optional(ChromaEventData::GradientObjectData{
+                                duration,
+                                initcolor,
+                                endcolor,
+                                easing
+                        });
                     }
 
-                    gradientObject = std::make_optional(ChromaEventData::GradientObjectData{
-                            duration,
-                            initcolor,
-                            endcolor,
-                            easing
-                    });
-                }
 
-                auto easingString = getIfExists<std::string>(optionalDynData, EASING);
+                    auto propId = unwrappedData.FindMember(Chroma::NewConstants::V2_PROPAGATION_ID.data());
+                    // Prop ID is deprecated apparently.  https://github.com/Aeroluna/Chroma/commit/711cb19f7d03a1776a24cef52fd8ef6fd7685a2b#diff-b8fcfff3ebc4ceb7b43d8401d9f50750dc88326d0a87897c5593923e55b23879R41
+                    if (propId != unwrappedData.MemberEnd()) {
+                        rapidjson::Value const &propIDData = propId->value;
+
+                        std::vector<int> propIds;
+
+
+                        if (propIDData.IsNumber()) {
+                            auto propIdLong = propIDData.GetInt();
+                            propIds.push_back(propIdLong);
+                        } else {
+                            // It's a list
+                            if (propIDData.IsObject()) {
+                                auto const &propIDobjects = propIDData.GetObject();
+                                propIds.reserve(propIDobjects.MemberCount());
+
+                                for (auto const &lightId: propIDobjects) {
+                                    auto propId = lightId.value.GetInt64();
+                                    propIds.push_back((int) propId);
+                                }
+                            } else if (propIDData.IsArray()) {
+                                auto const &propIDArray = propIDData.GetArray();
+                                propIds.reserve(propIDArray.Size());
+
+                                for (auto const &lightId: propIDArray) {
+                                    auto propId = lightId.GetInt64();
+                                    propIds.push_back((int) propId);
+                                }
+                            } else {
+                                getLogger().error("Prop id type is not array or number!");
+                            }
+                        }
+
+                        chromaEventData.PropID = propIds;
+                    }
+                }
+#pragma endregion
+                auto easingString = getIfExists<std::string>(optionalDynData, v2 ? NewConstants::V2_EASING : NewConstants::EASING);
 
                 if (easingString) {
                     Functions easing;
@@ -80,7 +125,7 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
                     chromaEventData.Easing = easing;
                 }
 
-                auto lerpTypeStr = getIfExists<std::string>(optionalDynData, LERP_TYPE);
+                auto lerpTypeStr = getIfExists<std::string>(optionalDynData, v2 ? NewConstants::V2_LERP_TYPE : NewConstants::LERP_TYPE);
 
                 if (lerpTypeStr) {
                     LerpType lerpType;
@@ -95,9 +140,8 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
                 }
 
                 debugSpamLog(contextLogger, "Light ID");
-                auto lightId = unwrappedData.FindMember(LIGHTID.data());
-                auto propId = unwrappedData.FindMember(PROPAGATIONID.data());
-                debugSpamLog(contextLogger, "Done ");
+                auto lightId = unwrappedData.FindMember(v2 ? NewConstants::V2_LIGHT_ID.data() : NewConstants::LIGHT_ID.data());
+
 
                 if (lightId != unwrappedData.MemberEnd()) {
                     rapidjson::Value const &lightIdData = lightId->value;
@@ -122,70 +166,35 @@ void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatm
                 }
 
 
-                // Prop ID is deprecated apparently.  https://github.com/Aeroluna/Chroma/commit/711cb19f7d03a1776a24cef52fd8ef6fd7685a2b#diff-b8fcfff3ebc4ceb7b43d8401d9f50750dc88326d0a87897c5593923e55b23879R41
-                if (propId != unwrappedData.MemberEnd()) {
-                    rapidjson::Value const &propIDData = propId->value;
-
-                    std::vector<int> propIds;
-
-
-                    if (propIDData.IsNumber()) {
-                        auto propIdLong = propIDData.GetInt();
-                        propIds.push_back(propIdLong);
-                    } else {
-                        // It's a list
-                        if (propIDData.IsObject()) {
-                            auto const &propIDobjects = propIDData.GetObject();
-                            propIds.reserve(propIDobjects.MemberCount());
-
-                            for (auto const &lightId: propIDobjects) {
-                                auto propId = lightId.value.GetInt64();
-                                propIds.push_back((int) propId);
-                            }
-                        } else if (propIDData.IsArray()) {
-                            auto const &propIDArray = propIDData.GetArray();
-                            propIds.reserve(propIDArray.Size());
-
-                            for (auto const &lightId: propIDArray) {
-                                auto propId = lightId.GetInt64();
-                                propIds.push_back((int) propId);
-                            }
-                        } else {
-                            getLogger().error("Prop id type is not array or number!");
-                        }
-                    }
-
-                    chromaEventData.PropID = propIds;
-                }
 
                 // Light stuff
-                chromaEventData.ColorData = ChromaUtilities::GetColorFromData(optionalDynData);
+                chromaEventData.ColorData = ChromaUtilities::GetColorFromData(optionalDynData, v2);
                 chromaEventData.GradientObject = gradientObject;
 
                 // RING STUFF
-                chromaEventData.NameFilter = getIfExists<std::string>(optionalDynData, NAMEFILTER);
-                chromaEventData.Direction = getIfExists<int>(optionalDynData, DIRECTION);
-                chromaEventData.CounterSpin = getIfExists<bool>(optionalDynData, COUNTERSPIN);
-                chromaEventData.Reset = getIfExists<bool>(optionalDynData, RESET);
+                chromaEventData.NameFilter = getIfExists<std::string>(optionalDynData, v2 ? NewConstants::V2_NAME_FILTER : NewConstants::NAME_FILTER);
+                chromaEventData.Direction = getIfExists<int>(optionalDynData, v2 ? NewConstants::V2_DIRECTION : NewConstants::DIRECTION);
+                chromaEventData.CounterSpin = v2 ? getIfExists<bool>(optionalDynData, NewConstants::V2_COUNTER_SPIN) : std::nullopt;
+                chromaEventData.Reset = v2 ? getIfExists<bool>(optionalDynData, NewConstants::V2_RESET) : std::nullopt;
 
-                std::optional<float> speed = getIfExists<float>(optionalDynData, SPEED);
+                std::optional<float> speed = getIfExists<float>(optionalDynData, v2 ? NewConstants::V2_SPEED : NewConstants::SPEED);
 
-                if (!speed)
-                    speed = getIfExists<float>(optionalDynData, PRECISESPEED);
+                if (!speed && v2)
+                    speed = getIfExists<float>(optionalDynData, NewConstants::V2_PRECISE_SPEED);
 
-                chromaEventData.Prop = getIfExists<float>(optionalDynData, PROP);
-                chromaEventData.Step = getIfExists<float>(optionalDynData, STEP);
+                chromaEventData.Prop = getIfExists<float>(optionalDynData, v2 ? NewConstants::V2_PROP : NewConstants::PROP);
+                chromaEventData.Step = getIfExists<float>(optionalDynData, v2 ? NewConstants::V2_STEP : NewConstants::STEP);
                 chromaEventData.Speed = speed;
-                chromaEventData.Rotation = getIfExists<float>(optionalDynData, ROTATION);
+                chromaEventData.Rotation = getIfExists<float>(optionalDynData, v2 ? NewConstants::V2_ROTATION : NewConstants::ROTATION);
             }
 
-            chromaEventData.StepMult = getIfExists<float>(optionalDynData, STEPMULT, 1.0f);
-            chromaEventData.PropMult = getIfExists<float>(optionalDynData, PROPMULT, 1.0f);
-            chromaEventData.SpeedMult = getIfExists<float>(optionalDynData, SPEEDMULT, 1.0f);
+            chromaEventData.StepMult = v2 ? getIfExists<float>(optionalDynData, NewConstants::V2_STEP_MULT, 1.0f) : 1;
+            chromaEventData.PropMult = v2 ? getIfExists<float>(optionalDynData, NewConstants::V2_PROP_MULT, 1.0f) : 1;
+            chromaEventData.SpeedMult = v2 ? getIfExists<float>(optionalDynData, NewConstants::V2_SPEED_MULT, 1.0f) : 1;
 
 
             // Light stuff again
-            chromaEventData.LockPosition = getIfExists<bool>(optionalDynData, LOCKPOSITION, false);
+            chromaEventData.LockPosition = getIfExists<bool>(optionalDynData, v2 ? NewConstants::V2_LOCK_POSITION : NewConstants::LOCK_POSITION, false);
 
 
             ChromaEventDatas.try_emplace(beatmapEventData, std::move(chromaEventData));

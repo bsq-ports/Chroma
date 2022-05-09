@@ -7,7 +7,7 @@ using namespace Chroma;
 EnvironmentLightDataT GreenDayGrenadeEnvironment::getEnvironmentLights() {
     return EnvironmentLightDataT(
         {
-    {0, {
+    {1, {
         {1, 10 },
         {2, 11 },
         {3, 6 },
@@ -25,9 +25,7 @@ EnvironmentLightDataT GreenDayGrenadeEnvironment::getEnvironmentLights() {
         {15, 7 },
         {16, 14 },
     }},
-    {1, {
-    }},
-    {2, {
+    {3, {
         {1, 5 },
         {2, 3 },
         {3, 4 },
@@ -35,7 +33,7 @@ EnvironmentLightDataT GreenDayGrenadeEnvironment::getEnvironmentLights() {
         {5, 1 },
         {6, 6 },
     }},
-    {3, {
+    {4, {
         {1, 6 },
         {2, 1 },
         {3, 7 },
@@ -43,18 +41,12 @@ EnvironmentLightDataT GreenDayGrenadeEnvironment::getEnvironmentLights() {
         {5, 3 },
         {6, 5 },
     }},
-    {4, {
+    {5, {
         {1, -1 },
         {2, 11 },
         {3, 12 },
         {4, 5 },
         {5, 7 },
-    }},
-    {5, {
-    }},
-    {6, {
-    }},
-    {7, {
     }},
 }
     );

@@ -69,7 +69,7 @@ def allEnvironmentsHpp(environmentListParam):
 
 repository = Github().get_repo('AeroLuna/Heck')
 
-light_tables = repository.get_contents('Chroma/LightIDTables', 'chroma-v2.5.7')
+light_tables = repository.get_contents('Chroma/LightIDTables', '985cab1b53ea8cc2f6ca94f38080ed79dbe7eead')
 
 environmentFolder = "./environments_converted"
 

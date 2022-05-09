@@ -131,3 +131,5 @@ vcs.xml
 perf.data
 
 *.qmod
+extern.cmake
+qpm_defines.cmake

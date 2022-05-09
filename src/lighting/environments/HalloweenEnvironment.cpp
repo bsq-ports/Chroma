@@ -7,18 +7,18 @@ using namespace Chroma;
 EnvironmentLightDataT HalloweenEnvironment::getEnvironmentLights() {
     return EnvironmentLightDataT(
         {
-    {0, {
+    {1, {
         {1, 8 },
         {2, 7 },
         {3, 6 },
         {4, 3 },
     }},
-    {1, {
+    {2, {
         {1, 5 },
         {2, 6 },
         {3, 7 },
     }},
-    {2, {
+    {3, {
         {1, 1 },
         {2, 19 },
         {3, 18 },
@@ -38,7 +38,7 @@ EnvironmentLightDataT HalloweenEnvironment::getEnvironmentLights() {
         {17, 11 },
         {18, 9 },
     }},
-    {3, {
+    {4, {
         {1, 1 },
         {2, 15 },
         {3, 16 },
@@ -58,16 +58,10 @@ EnvironmentLightDataT HalloweenEnvironment::getEnvironmentLights() {
         {17, 11 },
         {18, 8 },
     }},
-    {4, {
+    {5, {
         {1, 3 },
         {2, 2 },
         {3, 6 },
-    }},
-    {5, {
-    }},
-    {6, {
-    }},
-    {7, {
     }},
 }
     );

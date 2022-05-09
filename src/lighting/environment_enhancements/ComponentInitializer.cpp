@@ -179,6 +179,7 @@ Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root,
 
     GetComponentAndOriginal<LightPairRotationEventEffect>(root, original, [&](LightPairRotationEventEffect* rootComponent, LightPairRotationEventEffect* originalComponent) constexpr {
         rootComponent->beatmapCallbacksController = originalComponent->beatmapCallbacksController;
+        rootComponent->audioTimeSource = originalComponent->audioTimeSource;
 
         auto transformL = originalComponent->transformL;
         auto transformR = originalComponent->transformR;

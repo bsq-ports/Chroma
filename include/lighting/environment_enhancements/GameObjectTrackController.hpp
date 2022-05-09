@@ -24,23 +24,25 @@
 
 namespace Chroma {
     struct GameObjectTrackControllerData {
-        Track *_track;
+        Track * const _track;
 
         // nullable
-        GlobalNamespace::TrackLaneRing * _trackLaneRing;
-        GlobalNamespace::ParametricBoxController * _parametricBoxController;
-        GlobalNamespace::BeatmapObjectsAvoidance * _beatmapObjectsAvoidance;
+        GlobalNamespace::TrackLaneRing * const _trackLaneRing;
+        GlobalNamespace::ParametricBoxController * const _parametricBoxController;
+        GlobalNamespace::BeatmapObjectsAvoidance * const _beatmapObjectsAvoidance;
 
-        float _noteLinesDistance;
+        float const _noteLinesDistance;
+
+        bool const v2;
 
         constexpr GameObjectTrackControllerData(Track *track,
                                                 GlobalNamespace::TrackLaneRing * trackLaneRing,
                                                 GlobalNamespace::ParametricBoxController * parametricBoxController,
                                                 GlobalNamespace::BeatmapObjectsAvoidance * beatmapObjectsAvoidance,
-                                                float noteLinesDistance) : _track(track), _trackLaneRing(trackLaneRing),
+                                                float noteLinesDistance, bool v2) : _track(track), _trackLaneRing(trackLaneRing),
                                                                  _parametricBoxController(parametricBoxController),
                                                                  _beatmapObjectsAvoidance(beatmapObjectsAvoidance),
-                                                                 _noteLinesDistance(noteLinesDistance) {}
+                                                                 _noteLinesDistance(noteLinesDistance), v2(v2) {}
     };
 }
 
@@ -59,7 +61,7 @@ private:
 
 
     // This is retrived from the data map since Unity doesn't copy it.
-    GameObjectTrackControllerData* data;
+    GameObjectTrackControllerData const* data;
 
     DECLARE_INSTANCE_METHOD(void, Awake);
     DECLARE_INSTANCE_METHOD(void, Update);
@@ -68,7 +70,7 @@ public:
     inline static bool LeftHanded;
     void Init(Track* track, float noteLinesDistance, GlobalNamespace::TrackLaneRing* trackLaneRing,
                             GlobalNamespace::ParametricBoxController* parametricBoxController,
-                            GlobalNamespace::BeatmapObjectsAvoidance* beatmapObjectsAvoidance);
+                            GlobalNamespace::BeatmapObjectsAvoidance* beatmapObjectsAvoidance, bool v2);
 
     static void HandleTrackData(UnityEngine::GameObject* gameObject,
                                 std::optional<Track*> track,

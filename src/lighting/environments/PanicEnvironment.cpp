@@ -7,11 +7,11 @@ using namespace Chroma;
 EnvironmentLightDataT PanicEnvironment::getEnvironmentLights() {
     return EnvironmentLightDataT(
         {
-    {0, {
+    {1, {
         {1, 6 },
         {2, 7 },
     }},
-    {1, {
+    {2, {
         {1, 4 },
         {2, 5 },
         {3, 6 },
@@ -75,7 +75,7 @@ EnvironmentLightDataT PanicEnvironment::getEnvironmentLights() {
         {61, 66 },
         {62, 67 },
     }},
-    {2, {
+    {3, {
         {1, 2 },
         {2, 3 },
         {3, 5 },
@@ -84,7 +84,7 @@ EnvironmentLightDataT PanicEnvironment::getEnvironmentLights() {
         {6, 7 },
         {7, 8 },
     }},
-    {3, {
+    {4, {
         {1, 3 },
         {2, 2 },
         {3, 5 },
@@ -93,7 +93,7 @@ EnvironmentLightDataT PanicEnvironment::getEnvironmentLights() {
         {6, 7 },
         {7, 8 },
     }},
-    {4, {
+    {5, {
         {1, 15 },
         {2, 11 },
         {3, 1 },
@@ -102,12 +102,6 @@ EnvironmentLightDataT PanicEnvironment::getEnvironmentLights() {
         {6, 16 },
         {7, 6 },
         {8, 8 },
-    }},
-    {5, {
-    }},
-    {6, {
-    }},
-    {7, {
     }},
 }
     );

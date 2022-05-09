@@ -7,7 +7,7 @@ using namespace Chroma;
 EnvironmentLightDataT CrabRaveEnvironment::getEnvironmentLights() {
     return EnvironmentLightDataT(
         {
-    {0, {
+    {1, {
         {1, 4 },
         {2, 6 },
         {3, 12 },
@@ -17,7 +17,7 @@ EnvironmentLightDataT CrabRaveEnvironment::getEnvironmentLights() {
         {7, 11 },
         {8, 5 },
     }},
-    {1, {
+    {2, {
         {1, 4 },
         {2, 12 },
         {3, 9 },
@@ -26,21 +26,21 @@ EnvironmentLightDataT CrabRaveEnvironment::getEnvironmentLights() {
         {6, 5 },
         {7, 10 },
     }},
-    {2, {
+    {3, {
         {1, 4 },
         {2, 2 },
         {3, 3 },
         {4, 5 },
         {5, 6 },
     }},
-    {3, {
+    {4, {
         {1, 6 },
         {2, 5 },
         {3, 3 },
         {4, 2 },
         {5, 4 },
     }},
-    {4, {
+    {5, {
         {1, 17 },
         {2, 19 },
         {3, 11 },
@@ -55,12 +55,6 @@ EnvironmentLightDataT CrabRaveEnvironment::getEnvironmentLights() {
         {12, 18 },
         {13, 6 },
         {14, 4 },
-    }},
-    {5, {
-    }},
-    {6, {
-    }},
-    {7, {
     }},
 }
     );

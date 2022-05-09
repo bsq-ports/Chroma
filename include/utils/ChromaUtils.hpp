@@ -22,10 +22,9 @@
 #define GET_FIND_METHOD(mPtr) il2cpp_utils::il2cpp_type_check::MetadataGetter<mPtr>::get()
 
 namespace ChromaUtils {
-class ChromaUtilities {
-public:
-    static std::optional<Sombrero::FastColor>
-    GetColorFromData(rapidjson::Value const &data, const std::string_view member = Chroma::COLOR) {
+struct ChromaUtilities {
+    inline static std::optional<Sombrero::FastColor>
+    GetColorFromData(rapidjson::Value const &data, const std::string_view member) {
         auto const color = data.FindMember(member.data());
 
         if (color == data.MemberEnd() || !color->value.IsArray() || color->value.Empty())
@@ -37,12 +36,17 @@ public:
     }
 
     inline static std::optional<Sombrero::FastColor> GetColorFromData(std::optional<std::reference_wrapper<const rapidjson::Value>> const data,
-                                                                      const std::string_view member = Chroma::COLOR) {
+                                                                      const std::string_view member) {
         if (!data) return std::nullopt;
 
         rapidjson::Value const &unwrapped = *data;
 
         return GetColorFromData(unwrapped, member);
+    }
+
+    template<typename T>
+    inline static auto GetColorFromData(T&& val, bool v2) {
+        return GetColorFromData(std::forward<T>(val), v2 ? Chroma::NewConstants::V2_COLOR : Chroma::NewConstants::COLOR);
     }
 };
 
@@ -160,6 +164,28 @@ public:
         if (!val) return std::nullopt;
 
         return getIfExists<T>(val->get(), member);
+    }
+
+    template<typename T, typename Value>
+    constexpr static std::optional<T> getIfExists(Value&& rapidValue, std::span<std::string_view> members) {
+        if (!rapidValue) return std::nullopt;
+
+        for (auto member : members) {
+            std::optional<T> val = getIfExists(std::forward<Value>(rapidValue), member);
+
+            if (!val) continue;
+
+            return val;
+        }
+
+        return std::nullopt;
+    }
+
+    template<typename T, typename Value>
+    constexpr static std::optional<T> getIfExists(Value&& rapidValue, std::span<std::string_view> members, T const& def) {
+        auto val = getIfExists<T, Value>(std::forward<Value>(rapidValue), members);
+
+        return val ? val : def;
     }
 
 //    std::optional<float> getIfExistsFloatOpt(std::optional<std::reference_wrapper<rapidjson::Value>> val, const std::string& member) {

@@ -141,8 +141,13 @@ void Chroma::GameObjectTrackController::Update() {
 
     if (position)
     {
-        Sombrero::FastVector3 positionValue = position.value() * _noteLinesDistance;
+        Sombrero::FastVector3 positionValue = position.value();
         NEVector::Vector3 finalOffset;
+
+        if (data->v2) {
+            positionValue *= _noteLinesDistance;
+        }
+
         if (transformParent)
         {
             finalOffset = transformParent->InverseTransformPoint(positionValue);
@@ -169,7 +174,11 @@ void Chroma::GameObjectTrackController::Update() {
 
     if (localPosition)
     {
-        NEVector::Vector3 localPositionValue = localPosition.value() * _noteLinesDistance;
+        NEVector::Vector3 localPositionValue = localPosition.value();
+        if (data->v2) {
+            localPositionValue *= _noteLinesDistance;
+        }
+
         if (_trackLaneRing)
         {
             _trackLaneRing->positionOffset = localPositionValue;
@@ -202,9 +211,9 @@ void Chroma::GameObjectTrackController::Update() {
 void Chroma::GameObjectTrackController::Init(Track *track, float noteLinesDistance,
                                              GlobalNamespace::TrackLaneRing * trackLaneRing,
                                              GlobalNamespace::ParametricBoxController * parametricBoxController,
-                                             GlobalNamespace::BeatmapObjectsAvoidance * beatmapObjectsAvoidance) {
+                                             GlobalNamespace::BeatmapObjectsAvoidance * beatmapObjectsAvoidance, bool v2) {
     CRASH_UNLESS(track);
-    this->data = &_dataMap.try_emplace(nextId, track, trackLaneRing, parametricBoxController, beatmapObjectsAvoidance, noteLinesDistance).first->second;
+    this->data = &_dataMap.try_emplace(nextId, track, trackLaneRing, parametricBoxController, beatmapObjectsAvoidance, noteLinesDistance, v2).first->second;
     nextId++;
 }
 
@@ -214,7 +223,7 @@ void Chroma::GameObjectTrackController::HandleTrackData(UnityEngine::GameObject 
                                                         GlobalNamespace::TrackLaneRing * trackLaneRing,
                                                         GlobalNamespace::ParametricBoxController * parametricBoxController,
                                                         GlobalNamespace::BeatmapObjectsAvoidance * beatmapObjectsAvoidance) {
-    GameObjectTrackController* existingTrackController = gameObject->GetComponent<GameObjectTrackController*>();
+    auto* existingTrackController = gameObject->GetComponent<GameObjectTrackController*>();
     if (existingTrackController)
     {
         Destroy(existingTrackController);
@@ -222,7 +231,7 @@ void Chroma::GameObjectTrackController::HandleTrackData(UnityEngine::GameObject 
 
     if (track)
     {
-        GameObjectTrackController* trackController = gameObject->AddComponent<GameObjectTrackController*>();
+        auto* trackController = gameObject->AddComponent<GameObjectTrackController*>();
         trackController->Init(track.value(), noteLinesDistance, trackLaneRing, parametricBoxController, beatmapObjectsAvoidance);
 
         track.value()->AddGameObject(gameObject);

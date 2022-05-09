@@ -7,7 +7,7 @@ using namespace Chroma;
 EnvironmentLightDataT DefaultEnvironment::getEnvironmentLights() {
     return EnvironmentLightDataT(
         {
-    {0, {
+    {1, {
         {1, 9 },
         {2, 10 },
         {3, 13 },
@@ -19,7 +19,7 @@ EnvironmentLightDataT DefaultEnvironment::getEnvironmentLights() {
         {9, 8 },
         {10, 15 },
     }},
-    {1, {
+    {2, {
         {1, 6 },
         {2, 7 },
         {3, 8 },
@@ -81,7 +81,7 @@ EnvironmentLightDataT DefaultEnvironment::getEnvironmentLights() {
         {59, 64 },
         {60, 65 },
     }},
-    {2, {
+    {3, {
         {1, 6 },
         {2, 8 },
         {3, 7 },
@@ -94,7 +94,7 @@ EnvironmentLightDataT DefaultEnvironment::getEnvironmentLights() {
         {10, 1 },
         {11, 16 },
     }},
-    {3, {
+    {4, {
         {1, 6 },
         {2, 7 },
         {3, 8 },
@@ -107,7 +107,7 @@ EnvironmentLightDataT DefaultEnvironment::getEnvironmentLights() {
         {10, 3 },
         {11, 10 },
     }},
-    {4, {
+    {5, {
         {1, 6 },
         {2, 5 },
         {3, 11 },
@@ -122,12 +122,6 @@ EnvironmentLightDataT DefaultEnvironment::getEnvironmentLights() {
         {12, 15 },
         {13, 19 },
         {14, 21 },
-    }},
-    {5, {
-    }},
-    {6, {
-    }},
-    {7, {
     }},
 }
     );

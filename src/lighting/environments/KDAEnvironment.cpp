@@ -7,7 +7,7 @@ using namespace Chroma;
 EnvironmentLightDataT KDAEnvironment::getEnvironmentLights() {
     return EnvironmentLightDataT(
         {
-    {0, {
+    {1, {
         {1, 5 },
         {2, 4 },
         {3, 8 },
@@ -15,14 +15,14 @@ EnvironmentLightDataT KDAEnvironment::getEnvironmentLights() {
         {5, 10 },
         {6, 9 },
     }},
-    {1, {
+    {2, {
         {1, 4 },
         {2, 10 },
         {3, 5 },
         {4, 9 },
         {5, 7 },
     }},
-    {2, {
+    {3, {
         {1, 8 },
         {2, 3 },
         {3, 2 },
@@ -31,7 +31,7 @@ EnvironmentLightDataT KDAEnvironment::getEnvironmentLights() {
         {6, 4 },
         {7, 5 },
     }},
-    {3, {
+    {4, {
         {1, 9 },
         {2, 3 },
         {3, 2 },
@@ -42,7 +42,7 @@ EnvironmentLightDataT KDAEnvironment::getEnvironmentLights() {
         {8, 13 },
         {9, 7 },
     }},
-    {4, {
+    {5, {
         {1, 53 },
         {2, 83 },
         {3, 4 },
@@ -123,12 +123,6 @@ EnvironmentLightDataT KDAEnvironment::getEnvironmentLights() {
         {78, 46 },
         {79, 76 },
         {80, 68 },
-    }},
-    {5, {
-    }},
-    {6, {
-    }},
-    {7, {
     }},
 }
     );

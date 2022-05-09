@@ -37,6 +37,7 @@ namespace Chroma {
         std::optional<bool> DisableSpawnEffect;
 
         ChromaObjectData() = default;
+        ChromaObjectData(ChromaObjectData&&) = default;
     };
 
     class ChromaObjectDataManager {

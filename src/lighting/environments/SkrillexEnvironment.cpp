@@ -7,7 +7,7 @@ using namespace Chroma;
 EnvironmentLightDataT SkrillexEnvironment::getEnvironmentLights() {
     return EnvironmentLightDataT(
         {
-    {0, {
+    {1, {
         {1, 6 },
         {2, 7 },
         {3, 0 },
@@ -17,7 +17,7 @@ EnvironmentLightDataT SkrillexEnvironment::getEnvironmentLights() {
         {7, 5 },
         {8, 3 },
     }},
-    {1, {
+    {2, {
         {1, 1 },
         {2, 6 },
         {3, 4 },
@@ -85,7 +85,7 @@ EnvironmentLightDataT SkrillexEnvironment::getEnvironmentLights() {
         {65, 58 },
         {66, 60 },
     }},
-    {2, {
+    {3, {
         {1, -1 },
         {2, 22 },
         {3, 10 },
@@ -110,7 +110,7 @@ EnvironmentLightDataT SkrillexEnvironment::getEnvironmentLights() {
         {22, 16 },
         {23, 3 },
     }},
-    {3, {
+    {4, {
         {1, 22 },
         {2, 23 },
         {3, 9 },
@@ -135,7 +135,7 @@ EnvironmentLightDataT SkrillexEnvironment::getEnvironmentLights() {
         {22, 19 },
         {23, 2 },
     }},
-    {4, {
+    {5, {
         {1, 6 },
         {2, 8 },
         {3, 1 },
@@ -202,8 +202,6 @@ EnvironmentLightDataT SkrillexEnvironment::getEnvironmentLights() {
         {64, 61 },
         {65, 60 },
         {66, 62 },
-    }},
-    {5, {
     }},
     {6, {
         {1, 23 },
