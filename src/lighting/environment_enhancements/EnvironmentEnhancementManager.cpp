@@ -274,8 +274,8 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                         position = *position * noteLinesDistance;
                     }
 
-                    if (rotation) {
-                        rotation = *rotation * noteLinesDistance;
+                    if (localPosition) {
+                        localPosition = *localPosition * noteLinesDistance;
                     }
                 }
 
