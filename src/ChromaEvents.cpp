@@ -8,7 +8,6 @@
 
 #include "custom-json-data/shared/CustomBeatmapData.h"
 #include "custom-json-data/shared/CustomEventData.h"
-#include "custom-types/shared/register.hpp"
 
 #include "tracks/shared/TimeSourceHelper.h"
 #include "tracks/shared/Vector.h"
@@ -17,7 +16,7 @@ using namespace GlobalNamespace;
 using namespace NEVector;
 
 void ChromaEvents::parseEventData(TracksAD::BeatmapAssociatedData &beatmapAD,
-                                  CustomJSONData::CustomEventData const *customEventData) {
+                                  CustomJSONData::CustomEventData const *customEventData, bool v2) {
     bool isType = false;
 
     auto typeHash = customEventData->typeHash;
@@ -49,7 +48,7 @@ void ChromaEvents::parseEventData(TracksAD::BeatmapAssociatedData &beatmapAD,
     }
 
     std::string trackName(trackIt->value.GetString());
-    Track *track = &beatmapAD.tracks[trackName];
+    Track *track = &beatmapAD.tracks.try_emplace(trackName, v2).first->second;
 
     eventAD.track = track;
 
@@ -70,7 +69,7 @@ void ChromaEvents::deserialize(GlobalNamespace::IReadonlyBeatmapData* readOnlyBe
         for (auto const &customEventData: beatmap->GetBeatmapItemsCpp<CustomJSONData::CustomEventData*>()) {
             if (!customEventData) continue;
 
-            parseEventData(beatmapAD, customEventData);
+            parseEventData(beatmapAD, customEventData, beatmap->v2orEarlier);
         }
     }
 }
@@ -99,7 +98,7 @@ void CustomEventCallback(BeatmapCallbacksController *callbackController,
     if (!ad.parsed) {
         auto *customBeatmapData = (CustomJSONData::CustomBeatmapData *)callbackController->beatmapData;
         TracksAD::BeatmapAssociatedData &beatmapAD = TracksAD::getBeatmapAD(customBeatmapData->customData);
-        ChromaEvents::parseEventData(beatmapAD, customEventData);
+        ChromaEvents::parseEventData(beatmapAD, customEventData, customBeatmapData->v2orEarlier);
     }
 
     if (typeHash == jsonNameHash_ASSIGNFOGTRACK) {
