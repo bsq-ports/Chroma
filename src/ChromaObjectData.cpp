@@ -42,9 +42,10 @@ void Chroma::ChromaObjectDataManager::deserialize(GlobalNamespace::IReadonlyBeat
 
         ChromaObjectData chromaObjectData;
 
-        CustomJSONData::JSONWrapper *objectDynData = nullptr;
+        CustomJSONData::JSONWrapper *objectDynData;
 
         static auto CustomNoteDataKlass = classof(CustomJSONData::CustomNoteData *);
+        static auto CustomSliderDataKlass = classof(CustomJSONData::CustomSliderData *);
         static auto CustomObstacleDataKlass = classof(CustomJSONData::CustomObstacleData *);
         static auto CustomWaypointDataKlass = classof(CustomJSONData::CustomWaypointData *);
 
@@ -52,6 +53,15 @@ void Chroma::ChromaObjectDataManager::deserialize(GlobalNamespace::IReadonlyBeat
             debugSpamLog(contextLogger, "Custom note %s",
                          il2cpp_utils::ClassStandardName(beatmapObjectData->klass).c_str());
             auto *customNoteData = static_cast<CustomJSONData::CustomNoteData *>(beatmapObjectData);
+
+            objectDynData = customNoteData->customData;
+
+            chromaObjectData.Color = ChromaUtilities::GetColorFromData(objectDynData->value, v2);
+            chromaObjectData.DisableSpawnEffect = getIfExists<bool>(objectDynData->value, NewConstants::NOTE_SPAWN_EFFECT).value_or(!getIfExists<bool>(objectDynData->value, NewConstants::V2_DISABLE_SPAWN_EFFECT).value_or(true));
+        } else if (ASSIGNMENT_CHECK(CustomSliderDataKlass, beatmapObjectData->klass)) {
+            debugSpamLog(contextLogger, "Custom note %s",
+                         il2cpp_utils::ClassStandardName(beatmapObjectData->klass).c_str());
+            auto *customNoteData = static_cast<CustomJSONData::CustomSliderData *>(beatmapObjectData);
 
             objectDynData = customNoteData->customData;
 

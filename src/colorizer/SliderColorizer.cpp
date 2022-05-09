@@ -1,17 +1,7 @@
 #include "Chroma.hpp"
 
-#include "UnityEngine/SpriteRenderer.hpp"
-#include "UnityEngine/MaterialPropertyBlock.hpp"
-#include "UnityEngine/MeshRenderer.hpp"
-
-#include "GlobalNamespace/GameSliderController.hpp"
-#include "GlobalNamespace/MaterialPropertyBlockController.hpp"
-
-#include "System/Action_2.hpp"
-
 #include <unordered_map>
 #include "colorizer/SliderColorizer.hpp"
-#include "colorizer/SaberColorizer.hpp"
 #include "ChromaController.hpp"
 #include "utils/ChromaUtils.hpp"
 #include "ChromaObjectData.hpp"

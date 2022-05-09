@@ -299,7 +299,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                 }
 
                 // Create track if objects are found
-                auto trackNameIt = gameObjectDataVal.FindMember(Chroma::TRACK.data());
+                auto trackNameIt = gameObjectDataVal.FindMember(v2 ? Chroma::NewConstants::V2_TRACK.data() : Chroma::NewConstants::TRACK.data());
 
                 std::optional<std::string> trackName;
                 std::optional<Track*> track;

@@ -35,9 +35,9 @@ MAKE_HOOK_MATCH(SliderController_OnDestroy,
     SliderColorizer::Colorizers.erase(self);
 }
 
-void BaseNoteVisualsHook(Logger& logger) {
+void SliderControllerHook(Logger& logger) {
     INSTALL_HOOK(logger, SliderController_Awake);
     INSTALL_HOOK(logger, SliderController_OnDestroy);
 }
 
-ChromaInstallHooks(BaseNoteVisualsHook)
+ChromaInstallHooks(SliderControllerHook)

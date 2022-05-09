@@ -77,7 +77,7 @@ public:
                                 float noteLinesDistance,
                                 GlobalNamespace::TrackLaneRing* trackLaneRing,
                                 GlobalNamespace::ParametricBoxController* parametricBoxController,
-                                GlobalNamespace::BeatmapObjectsAvoidance* beatmapObjectsAvoidance);
+                                GlobalNamespace::BeatmapObjectsAvoidance* beatmapObjectsAvoidance, bool v2);
 
     static void ClearData();
 

@@ -69,10 +69,12 @@ void SceneTransitionHelper::Patch(GlobalNamespace::IDifficultyBeatmap* customBea
         bool chromaRequirement = SceneTransitionHelper::BasicPatch(customBeatmapData, customBeatmapDataCustom);
         if (chromaRequirement && getChromaConfig().environmentEnhancementsEnabled.GetValue()) {
 
-            if (overrideEnvironmentSettings && customBeatmapDataCustom->levelCustomData && CheckIfInArrayOrKey(customBeatmapDataCustom->levelCustomData, ENVIRONMENTREMOVAL)) {
+            bool v2 = customBeatmapDataCustom->isV2;
+
+            if (v2 && overrideEnvironmentSettings && customBeatmapDataCustom->levelCustomData && CheckIfInArrayOrKey(customBeatmapDataCustom->levelCustomData, Chroma::NewConstants::V2_ENVIRONMENT_REMOVAL)) {
                 overrideEnvironmentSettings = nullptr;
             }
-            if (overrideEnvironmentSettings && customBeatmapDataCustom->customData && CheckIfInArrayOrKey<rapidjson::Value>(customBeatmapDataCustom->customData, ENVIRONMENT)) {
+            if (overrideEnvironmentSettings && customBeatmapDataCustom->customData && CheckIfInArrayOrKey<rapidjson::Value>(customBeatmapDataCustom->customData, v2 ? Chroma::NewConstants::V2_ENVIRONMENT : Chroma::NewConstants::ENVIRONMENT)) {
                 overrideEnvironmentSettings = nullptr;
             }
 

@@ -42,7 +42,6 @@ static constexpr std::optional<T> getPropertyNullable(Track* track, const std::o
 
 void Chroma::GameObjectTrackController::ClearData() {
     _dataMap.clear();
-    _dataMap = {};
     nextId = 0;
 }
 
@@ -222,7 +221,7 @@ void Chroma::GameObjectTrackController::HandleTrackData(UnityEngine::GameObject 
                                                         float noteLinesDistance,
                                                         GlobalNamespace::TrackLaneRing * trackLaneRing,
                                                         GlobalNamespace::ParametricBoxController * parametricBoxController,
-                                                        GlobalNamespace::BeatmapObjectsAvoidance * beatmapObjectsAvoidance) {
+                                                        GlobalNamespace::BeatmapObjectsAvoidance * beatmapObjectsAvoidance, bool v2) {
     auto* existingTrackController = gameObject->GetComponent<GameObjectTrackController*>();
     if (existingTrackController)
     {
@@ -232,7 +231,7 @@ void Chroma::GameObjectTrackController::HandleTrackData(UnityEngine::GameObject 
     if (track)
     {
         auto* trackController = gameObject->AddComponent<GameObjectTrackController*>();
-        trackController->Init(track.value(), noteLinesDistance, trackLaneRing, parametricBoxController, beatmapObjectsAvoidance);
+        trackController->Init(track.value(), noteLinesDistance, trackLaneRing, parametricBoxController, beatmapObjectsAvoidance, v2);
 
         track.value()->AddGameObject(gameObject);
     }

@@ -22,7 +22,7 @@ namespace ChromaEvents {
 
     void deserialize(GlobalNamespace::IReadonlyBeatmapData* customBeatmapData);
 
-    void parseEventData(TracksAD::BeatmapAssociatedData &beatmapAD, CustomJSONData::CustomEventData const* customData);
+    void parseEventData(TracksAD::BeatmapAssociatedData &beatmapAD, CustomJSONData::CustomEventData const *customEventData);
 
     void AddEventCallbacks(Logger &logger);
 }

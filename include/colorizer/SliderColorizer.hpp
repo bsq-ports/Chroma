@@ -1,13 +1,6 @@
 #pragma once
 
-#include "UnityEngine/MonoBehaviour.hpp"
-#include "UnityEngine/Shader.hpp"
-
-
-#include "GlobalNamespace/SliderControllerBase.hpp"
 #include "GlobalNamespace/SliderController.hpp"
-#include "GlobalNamespace/SliderCutInfo.hpp"
-#include "GlobalNamespace/ColorSliderVisuals.hpp"
 #include "GlobalNamespace/ColorManager.hpp"
 
 

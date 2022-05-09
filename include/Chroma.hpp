@@ -62,7 +62,7 @@ namespace Chroma {
         inline static constexpr const std::string_view V2_DIRECTION = "_direction";
         inline static constexpr const std::string_view V2_DISABLE_SPAWN_EFFECT = "_disableSpawnEffect";
         inline static constexpr const std::string_view V2_END_COLOR = "_endColor";
-        inline static constexpr const std::string_view V2_ENVIRONMENT_REMOVAL = "_environmentRemoval";
+        inline static constexpr const std::u16string_view V2_ENVIRONMENT_REMOVAL = u"_environmentRemoval";
         inline static constexpr const std::string_view V2_LERP_TYPE = "_lerpType";
         inline static constexpr const std::string_view V2_LIGHT_GRADIENT = "_lightGradient";
         inline static constexpr const std::string_view V2_LIGHT_ID = "_lightID";

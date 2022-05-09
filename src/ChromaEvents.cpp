@@ -16,7 +16,8 @@
 using namespace GlobalNamespace;
 using namespace NEVector;
 
-void ChromaEvents::parseEventData(TracksAD::BeatmapAssociatedData &beatmapAD, CustomJSONData::CustomEventData const* customEventData) {
+void ChromaEvents::parseEventData(TracksAD::BeatmapAssociatedData &beatmapAD,
+                                  CustomJSONData::CustomEventData const *customEventData) {
     bool isType = false;
 
     auto typeHash = customEventData->typeHash;
@@ -26,7 +27,7 @@ void ChromaEvents::parseEventData(TracksAD::BeatmapAssociatedData &beatmapAD, Cu
     if (!isType && typeHash == (jsonNameHash_##varName))                      \
         isType = true;
 
-    TYPE_GET(Chroma::ASSIGNFOGTRACK, ASSIGNFOGTRACK)
+    TYPE_GET(Chroma::OldConstants::ASSIGNFOGTRACK, ASSIGNFOGTRACK)
 
     if (!isType) {
         return;
@@ -85,7 +86,7 @@ void CustomEventCallback(BeatmapCallbacksController *callbackController,
     if (!isType && typeHash == (jsonNameHash_##varName))                      \
         isType = true;
 
-    TYPE_GET(Chroma::ASSIGNFOGTRACK, ASSIGNFOGTRACK)
+    TYPE_GET(Chroma::OldConstants::ASSIGNFOGTRACK, ASSIGNFOGTRACK)
 
     if (!isType) {
         return;
