@@ -40,7 +40,7 @@ void ChromaEvents::parseEventData(TracksAD::BeatmapAssociatedData &beatmapAD,
 
     eventAD.parsed = true;
 
-    auto trackIt = eventData.FindMember("_track");
+    auto trackIt = eventData.FindMember((v2 ? Chroma::NewConstants::V2_TRACK : Chroma::NewConstants::TRACK).data());
 
     if (trackIt == eventData.MemberEnd() || trackIt->value.IsNull() || !trackIt->value.IsString()) {
         getLogger().debug("Track data is missing for Chroma custom event %f", customEventData->time);
@@ -103,6 +103,7 @@ void CustomEventCallback(BeatmapCallbacksController *callbackController,
 
     if (typeHash == jsonNameHash_ASSIGNFOGTRACK) {
         Chroma::ChromaFogController::getInstance()->AssignTrack(ad.track);
+        CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Assigned fog controller to track");
     }
 }
 
