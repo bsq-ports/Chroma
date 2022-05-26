@@ -150,7 +150,8 @@ void Chroma::ChromaLightSwitchEventEffect::RegisterLight(GlobalNamespace::ILight
     using namespace Sombrero;
     if (!ColorTweens.contains(lightWithId))
     {
-        ColorTweens[lightWithId] = CRASH_UNLESS(il2cpp_utils::New<ChromaIDColorTween*>(FastColor::black(), FastColor::black(), lightWithId, lightManager, LightIDTableManager::GetActiveTableValueReverse(type, id).value_or(0)));
+        // https://github.com/Aeroluna/Heck/commit/985cab1b53ea8cc2f6ca94f38080ed79dbe7eead#diff-4879964c1cc52000f170a1b271d1569746571c53454b82c360fa92a85060ccd8L382
+        ColorTweens[lightWithId] = CRASH_UNLESS(il2cpp_utils::New<ChromaIDColorTween*>(FastColor::black(), FastColor::black(), lightWithId, lightManager, LightIDTableManager::GetActiveTableValueReverse(this.lig, id).value_or(0)));
     }
     else
     {
