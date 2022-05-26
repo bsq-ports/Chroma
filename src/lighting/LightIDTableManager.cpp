@@ -25,7 +25,7 @@ void LightIDTableManager::SetEnvironment(std::string_view environmentName) {
 
     if (it == lightIdTable.end()) {
         getLogger().warning("Table not found for %s", environmentName.data());
-        activeTable = std::nullopt;
+        activeTable = EnvironmentLightDataT();
     } else {
         getLogger().debug("Set the environment as %s", environmentName.data());
         auto map = it->second;
@@ -46,9 +46,12 @@ void LightIDTableManager::RegisterIndex(int type, int index, std::optional<int> 
         while (dictioanry.contains(key))
             key++;
     } else {
-        key = std::max_element(dictioanry.begin(), dictioanry.end())->first + 1;
+        if (dictioanry.empty()) {
+            key = 0;
+        } else {
+            key = std::max_element(dictioanry.begin(), dictioanry.end())->first + 1;
+        }
     }
-
 
     dictioanry.emplace(key, index);
     if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue())
