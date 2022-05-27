@@ -28,15 +28,14 @@ namespace Chroma {
         static const int COLOR_FIELDS = 4;
 
         ChromaLightSwitchEventEffect *_lightSwitchEventEffect;
-        GlobalNamespace::BasicBeatmapEventType _eventType;
+        int lightId;
         std::unordered_map<int, std::optional<Sombrero::FastColor>> _colors;
 
         std::array<Sombrero::FastColor, 4> _originalColors;
         std::unordered_map<int, SafePtr<GlobalNamespace::SimpleColorSO>> _simpleColorSOs;
 
         LightColorizer(ChromaLightSwitchEventEffect *lightSwitchEventEffect,
-                       GlobalNamespace::BasicBeatmapEventType BasicBeatmapEventType,
-                       GlobalNamespace::LightWithIdManager* lightManager);
+                       GlobalNamespace::LightWithIdManager *lightManager);
 
     public:
         using LightColorOptionalPalette = std::array<std::optional<Sombrero::FastColor>, 4>;
@@ -45,9 +44,8 @@ namespace Chroma {
         friend class std::pair<int, LightColorizer>;
         friend class std::pair<const int, Chroma::LightColorizer>;
         LightColorizer(LightColorizer const&) = delete;
-        static LightColorizer& New(ChromaLightSwitchEventEffect *lightSwitchEventEffect,
-                                                   GlobalNamespace::BasicBeatmapEventType BasicBeatmapEventType,
-                                                   GlobalNamespace::LightWithIdManager* lightManager);
+        static LightColorizer &New(ChromaLightSwitchEventEffect *lightSwitchEventEffect,
+                                   GlobalNamespace::LightWithIdManager *lightManager);
 
         inline static LightColorOptionalPalette GlobalColor{std::nullopt, std::nullopt,
                                                             std::nullopt, std::nullopt};
@@ -92,7 +90,7 @@ namespace Chroma {
         // dont use this please
         // cant be fucked to make an overload for this
         std::vector<GlobalNamespace::ILightWithId*> GetPropagationLightWithIds(std::vector<int> const& ids);
-        std::vector<GlobalNamespace::ILightWithId*> GetLightWithIds(std::vector<int> const& ids);
+        std::vector<GlobalNamespace::ILightWithId*> GetLightWithIds(std::vector<int> const &ids);
 
         inline void Colorize(std::optional<std::vector<GlobalNamespace::ILightWithId*>> const& selectLights, LightColorOptionalPalette const& colors) {
             Colorize(true, selectLights, colors);
@@ -153,7 +151,7 @@ namespace Chroma {
                 SetColor((GlobalNamespace::SimpleColorSO *) _simpleColorSOs[i], colors[i]);
             }
 
-            LightColorChanged.invoke(_eventType.value, colors);
+            LightColorChanged.invoke(lightId, colors);
         }
 
         void Refresh(std::optional<std::vector<GlobalNamespace::ILightWithId*>> const& selectLights) {

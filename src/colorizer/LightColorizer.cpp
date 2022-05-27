@@ -30,10 +30,9 @@ using namespace Sombrero;
 using namespace Chroma;
 
 LightColorizer::LightColorizer(ChromaLightSwitchEventEffect *lightSwitchEventEffect,
-                               GlobalNamespace::BasicBeatmapEventType BasicBeatmapEventType,
-                               LightWithIdManager* lightManager)
+                               LightWithIdManager *lightManager)
                                : _lightSwitchEventEffect(lightSwitchEventEffect),
-                                 _eventType(BasicBeatmapEventType),
+                                 lightId(lightSwitchEventEffect->lightsID),
                                  _colors(COLOR_FIELDS),
                                  _originalColors(),
                                  _simpleColorSOs(COLOR_FIELDS){
@@ -123,10 +122,12 @@ LightColorizer::LightColorizer(ChromaLightSwitchEventEffect *lightSwitchEventEff
     LightsPropagationGrouped = lightsPreGroupFinal;
 }
 
-LightColorizer& LightColorizer::New(ChromaLightSwitchEventEffect *lightSwitchEventEffect,GlobalNamespace::BasicBeatmapEventType BasicBeatmapEventType, GlobalNamespace::LightWithIdManager* lightManager) {
-    CRASH_UNLESS(!Colorizers.contains(BasicBeatmapEventType.value));
+LightColorizer & LightColorizer::New(ChromaLightSwitchEventEffect *lightSwitchEventEffect,
+                                     GlobalNamespace::LightWithIdManager *lightManager) {
+    CRASH_UNLESS(!Colorizers.contains(lightSwitchEventEffect->EventType.value));
 
-    return Colorizers.try_emplace(BasicBeatmapEventType.value, lightSwitchEventEffect, BasicBeatmapEventType, lightManager).first->second;
+    auto& light = Colorizers.try_emplace(lightSwitchEventEffect->EventType, lightSwitchEventEffect, lightManager).first->second;
+    return light;
 }
 
 
@@ -244,14 +245,15 @@ std::vector<ILightWithId *> LightColorizer::GetPropagationLightWithIds(const std
     return result;
 }
 
-std::vector<ILightWithId *> LightColorizer::GetLightWithIds(const std::vector<int> &ids) {
+std::vector<ILightWithId *> LightColorizer::GetLightWithIds(std::vector<int> const &ids) {
     std::vector<ILightWithId*> result;
-    auto type = (int)_eventType;
+    result.reserve(ids.size());
+
 
     for (int id : ids)
     {
         // Transform
-        id = LightIDTableManager::GetActiveTableValue(type, id).value_or(id);
+        id = LightIDTableManager::GetActiveTableValue(lightId, id).value_or(id);
 
         auto lightWithId = id >= 0 && id < Lights.size() ? Lights[id] : nullptr;
         if (lightWithId)
@@ -260,7 +262,7 @@ std::vector<ILightWithId *> LightColorizer::GetLightWithIds(const std::vector<in
         }
         else
         {
-            getLogger().error("Type [%i] does not contain id [%i].", type, id);
+            getLogger().error("Type [%i] does not contain id [%i].", lightId, id);
         }
     }
 

@@ -30,14 +30,14 @@ namespace Chroma {
     public:
         LightIDTableManager() = delete;
 
-        static std::optional<int> GetActiveTableValue(int type, int id) {
+        static std::optional<int> GetActiveTableValue(int lightId, int id) {
             if (activeTable) {
                 auto const& table = activeTable.value();
 
-                auto typeTableIt = table.find(type);
+                auto typeTableIt = table.find(lightId);
 
                 if (typeTableIt == table.end()) {
-                    getLogger().warning("Unable to find value for type %d", type);
+                    getLogger().warning("Unable to find value for type %d", lightId);
                     return std::nullopt;
                 }
 
@@ -47,7 +47,7 @@ namespace Chroma {
                 if (it != typeTable.end()) {
                     return it->second;
                 } else {
-                    getLogger().warning("Unable to find value for type %d and id %d.", type, id);
+                    getLogger().warning("Unable to find value for type %d and id %d.", lightId, id);
                 }
             }
 
@@ -55,11 +55,11 @@ namespace Chroma {
             return std::nullopt;
         }
 
-        static std::optional<int> GetActiveTableValueReverse(int type, int id) {
+        static std::optional<int> GetActiveTableValueReverse(int lightId, int id) {
             if (activeTable) {
                 auto const& table = activeTable.value();
 
-                auto typeTableIt = table.find(type);
+                auto typeTableIt = table.find(lightId);
 
                 if (typeTableIt == table.end()) {
                     return std::nullopt;
@@ -79,7 +79,7 @@ namespace Chroma {
 
         static void InitTable();
 
-        static void RegisterIndex(int type, int index, std::optional<int> requestedKey);
+        static void RegisterIndex(int lightId, int index, std::optional<int> requestedKey);
 
         static void AddEnvironment(InstallEnvironmentFunc environmentData);
     };
