@@ -66,7 +66,7 @@ LightColorizer::LightColorizer(ChromaLightSwitchEventEffect *lightSwitchEventEff
 
         if (!monoBehaviour) continue;
 
-        int z1 = UnityEngine::Mathf::RoundToInt((*monoBehaviour)->get_transform()->get_position().z);
+        int z1 = (int) std::round((double)(*monoBehaviour)->get_transform()->get_position().z);
 
         auto ring = (*monoBehaviour)->GetComponentInParent<TrackLaneRing *>();
 

@@ -38,7 +38,7 @@ void Chroma::ChromaFogController::clearInstance() {
 }
 
 void ChromaFogController::OnDestroy() {
-    bloomFog->transitionFogParams = nullptr;
+    bloomFog->set_transitionFogParams(nullptr);
     Destroy(_transitionFogParams);
     _instance = nullptr;
 }
@@ -55,20 +55,23 @@ void ChromaFogController::Awake() {
     }
 
     _transitionFogParams = ScriptableObject::CreateInstance<BloomFogEnvironmentParams*>();
-    BloomFogEnvironmentParams* defaultParams = bloomFog->get_defaultForParams();
+    BloomFogEnvironmentParams const* defaultParams = bloomFog->get_defaultForParams();
     _transitionFogParams->attenuation = defaultParams->attenuation;
     _transitionFogParams->offset = defaultParams->offset;
     _transitionFogParams->heightFogStartY = defaultParams->heightFogStartY;
     _transitionFogParams->heightFogHeight = defaultParams->heightFogHeight;
-    bloomFog->transitionFogParams = _transitionFogParams;
+    bloomFog->set_transitionFogParams(_transitionFogParams);
 }
 
 void Chroma::ChromaFogController::Update() {
     if (_track == nullptr) {
+        getLogger().error("Track is null");
+        CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Fog track is null!");
         return;
     }
     if (!_transitionFogParams) {
         getLogger().error("ChromaFog TransitionFogParams is null");
+        CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("ChromaFog TransitionFogParams is null!");
         return;
     }
     auto attenuation = getPropertyNullable<float>(_track, _track->properties.attentuation);

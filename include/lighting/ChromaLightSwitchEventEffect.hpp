@@ -63,7 +63,7 @@ public:
 
           void CopyValues(LightSwitchEventEffect* lightSwitchEventEffect);
           void RegisterLight(GlobalNamespace::ILightWithId* lightWithId, int type, int id);
-          Sombrero::FastColor GetOriginalColor(int beatmapEventValue, bool colorBoost);
+          Sombrero::FastColor GetOriginalColor(int beatmapEventValue, bool colorBoost) const;
 
 )
 

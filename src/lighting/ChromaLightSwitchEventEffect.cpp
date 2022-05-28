@@ -167,7 +167,7 @@ void Chroma::ChromaLightSwitchEventEffect::RegisterLight(GlobalNamespace::ILight
 }
 
 Sombrero::FastColor
-Chroma::ChromaLightSwitchEventEffect::GetOriginalColor(int beatmapEventValue, bool colorBoost) {
+Chroma::ChromaLightSwitchEventEffect::GetOriginalColor(int beatmapEventValue, bool colorBoost) const {
     if (colorBoost)
     {
         return !IsColor0(beatmapEventValue) ? _originalLightColor1Boost->get_color() : _originalLightColor0Boost->get_color();
