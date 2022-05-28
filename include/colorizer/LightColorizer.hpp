@@ -53,6 +53,7 @@ namespace Chroma {
         inline static UnorderedEventCallback<GlobalNamespace::BasicBeatmapEventType, std::array<Sombrero::FastColor, 4>> LightColorChanged;
 
         inline static std::unordered_map<int, LightColorizer> Colorizers;
+        inline static std::unordered_map<int, LightColorizer*> ColorizersByLightID;
 
         std::vector<GlobalNamespace::ILightWithId *> Lights{};
 
@@ -123,6 +124,15 @@ namespace Chroma {
             }
 
             return &it->second;
+        }
+
+        inline static LightColorizer* GetLightColorizerLightID(int lightId) {
+            auto it = ColorizersByLightID.find(lightId);
+            if (it == ColorizersByLightID.end()) {
+                return nullptr;
+            }
+
+            return it->second;
         }
 
         inline static void ColorizeLight(GlobalNamespace::BasicBeatmapEventType BasicBeatmapEventType, bool refresh,

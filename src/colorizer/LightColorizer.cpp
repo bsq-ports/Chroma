@@ -124,9 +124,10 @@ LightColorizer::LightColorizer(ChromaLightSwitchEventEffect *lightSwitchEventEff
 
 LightColorizer & LightColorizer::New(ChromaLightSwitchEventEffect *lightSwitchEventEffect,
                                      GlobalNamespace::LightWithIdManager *lightManager) {
-    CRASH_UNLESS(!Colorizers.contains(lightSwitchEventEffect->EventType.value));
+    CRASH_UNLESS(!Colorizers.contains(lightSwitchEventEffect->event.value));
 
-    auto& light = Colorizers.try_emplace(lightSwitchEventEffect->EventType, lightSwitchEventEffect, lightManager).first->second;
+    auto& light = Colorizers.try_emplace(lightSwitchEventEffect->event, lightSwitchEventEffect, lightManager).first->second;
+    ColorizersByLightID.try_emplace(lightSwitchEventEffect->lightsID, &light);
     return light;
 }
 
@@ -153,8 +154,9 @@ void LightColorizer::GlobalColorize(bool refresh, std::optional<std::vector<Glob
 
 void LightColorizer::RegisterLight(UnityEngine::MonoBehaviour *lightWithId, std::optional<int> lightId) {
     auto const RegisterLightWithID = [&lightId](ILightWithId* lightToRegister) {
-        int type = lightToRegister->get_lightId() - 1;
-        auto lightColorizer = GetLightColorizer((BasicBeatmapEventType) type);
+        int type = lightToRegister->get_lightId();
+        CRASH_UNLESS(type != -1);
+        auto lightColorizer = GetLightColorizerLightID(type);
         auto index = lightColorizer->Lights.size();
         LightIDTableManager::RegisterIndex(type, index, lightId);
 
@@ -187,6 +189,7 @@ void LightColorizer::Reset() {
         GlobalColor[i] = std::nullopt;
     }
     Colorizers.clear();
+    ColorizersByLightID.clear();
     LightColorChanged.clear();
 }
 
