@@ -155,7 +155,8 @@ void LightColorizer::GlobalColorize(bool refresh, std::optional<std::vector<Glob
 void LightColorizer::RegisterLight(UnityEngine::MonoBehaviour *lightWithId, std::optional<int> lightId) {
     auto const RegisterLightWithID = [&lightId](ILightWithId* lightToRegister) {
         int type = lightToRegister->get_lightId();
-        CRASH_UNLESS(type != -1);
+        getLogger().debug("Registering light type %i", type);
+        // TODO: Figure out -1 light ids
         auto lightColorizer = GetLightColorizerLightID(type);
         auto index = lightColorizer->Lights.size();
         LightIDTableManager::RegisterIndex(type, index, lightId);
