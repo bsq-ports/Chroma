@@ -102,7 +102,7 @@ void Chroma::ChromaObjectDataManager::deserialize(GlobalNamespace::IReadonlyBeat
                                                                          v2 ? Chroma::NewConstants::V2_COLOR : Chroma::NewConstants::COLOR);
 
                 if (anonPointDef) {
-                    beatmapAD.anonPointDefinitions.push_back(anonPointDef);
+                    beatmapAD.anonPointDefinitions.emplace(anonPointDef);
                 }
 
                 chromaObjectData.LocalPathColor = localColor ? std::make_optional(localColor) : std::nullopt;
