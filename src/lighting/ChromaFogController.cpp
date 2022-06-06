@@ -77,7 +77,17 @@ void Chroma::ChromaFogController::Update() {
     auto attenuation = getPropertyNullable<float>(_track, _track->properties.attentuation);
     if (attenuation)
     {
-        _transitionFogParams->attenuation = attenuation.value();
+        auto attenuationFloat = attenuation.value();
+
+        // if attenuation is not 0
+        if (attenuationFloat < -std::numeric_limits<float>::epsilon() || attenuationFloat > std::numeric_limits<float>::epsilon()) {
+            // clamp to minimum float fog value
+            // this is a random magic number that doesn't cause the shader to jump to 0
+            // TODO: Investigate, ask Split?
+            attenuationFloat = std::max(attenuationFloat, 0.000061035154435f); // 0.0001f
+        }
+
+        _transitionFogParams->attenuation = attenuationFloat;
     }
 
     auto offset = getPropertyNullable<float>(_track, _track->properties.fogOffset);
