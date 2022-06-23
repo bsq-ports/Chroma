@@ -1,9 +1,9 @@
-#include "lighting/environment_enhancements/GameObjectTrackController.hpp"
+#include "environment_enhancements/GameObjectTrackController.hpp"
 #include "Chroma.hpp"
 #include "utils/ChromaUtils.hpp"
 
-#include "lighting/environment_enhancements/EnvironmentEnhancementManager.hpp"
-#include "lighting/environment_enhancements/ParametricBoxControllerParameters.hpp"
+#include "environment_enhancements/EnvironmentEnhancementManager.hpp"
+#include "environment_enhancements/ParametricBoxControllerParameters.hpp"
 
 #include "tracks/shared/Animation/Animation.h"
 

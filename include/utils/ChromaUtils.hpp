@@ -18,6 +18,7 @@
 #include <string>
 #include <random>
 #include "tracks/shared/Animation/Track.h"
+#include "UnityEngine/Mesh.hpp"
 
 #define GET_FIND_METHOD(mPtr) il2cpp_utils::il2cpp_type_check::MetadataGetter<mPtr>::get()
 
@@ -45,7 +46,7 @@ struct ChromaUtilities {
     }
 
     template<typename T>
-    inline static auto GetColorFromData(T&& val, bool v2) {
+    inline static auto GetColorFromData(T&& val, bool v2 = false) {
         return GetColorFromData(std::forward<T>(val), v2 ? Chroma::NewConstants::V2_COLOR : Chroma::NewConstants::COLOR);
     }
 };
@@ -118,7 +119,11 @@ struct ChromaUtilities {
             }
         }
 
-        return it->value.Get<T>();
+        if constexpr (std::is_same_v<T, std::string> || std::is_same_v<T, std::string_view> || std::is_same_v<T, char const*>) {
+            return it->value.GetString();
+        } else {
+            return it->value.template Get<T>();
+        }
     }
 
     template<typename T>
@@ -140,16 +145,18 @@ struct ChromaUtilities {
                 return std::stof(it->value.GetString());
             }
 
-            if constexpr (std::is_same_v<T, int>) {
+            if constexpr (std::is_same_v<T, int> || std::is_enum_v<T>) {
                 return std::stoi(it->value.GetString());
             }
 
-            if constexpr (std::is_same_v<T, std::string> || std::is_same_v<T, std::string_view> || std::is_same_v<T, char const*>) {
-                return it->value.GetString();
-            }
         }
 
-        return it->value.Get<T>();
+
+        if constexpr (std::is_same_v<T, std::string> || std::is_same_v<T, std::string_view> || std::is_same_v<T, char const*>) {
+            return it->value.GetString();
+        } else {
+            return it->value.template Get<T>();
+        }
     }
 
     template<typename T>
@@ -209,6 +216,38 @@ struct ChromaUtilities {
     template<typename T>
     inline static constexpr std::optional<T*> ptrToOpt(T* t) {
         return t ? std::make_optional<T*>(t) : std::nullopt;
+    }
+
+    /// <summary>
+    /// https://answers.unity.com/questions/1594750/is-there-a-premade-triangle-asset.html
+    /// </summary>
+    static UnityEngine::Mesh* CreateTriangleMesh() {
+        ArrayW<Sombrero::FastVector3> vertices =
+                std::initializer_list<Sombrero::FastVector3>({
+                                                                     {-0.5f, -0.5f, 0},
+                                                                     {0.5f,  -0.5f, 0},
+                                                                     {0.0f,  0.5f,  0}
+                                                             });
+
+        ArrayW<Sombrero::FastVector2> uv =
+                std::initializer_list<Sombrero::FastVector2>({
+                                                                     {0,    0},
+                                                                     {1,    0},
+                                                                     {0.5f, 1}
+                                                             });
+
+        ArrayW<int> triangles = {0, 1, 2};
+
+        UnityEngine::Mesh *mesh = UnityEngine::Mesh::New_ctor();
+        mesh->set_vertices(vertices);
+        mesh->set_uv(uv);
+        mesh->set_triangles(triangles);
+
+
+        mesh->RecalculateBounds();
+        mesh->RecalculateNormals();
+        mesh->RecalculateTangents();
+        return mesh;
     }
 
 //    static bool ColorEquals(Sombrero::FastColor c1, Sombrero::FastColor& c2) {

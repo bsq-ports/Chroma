@@ -1,5 +1,5 @@
 #include "main.hpp"
-#include "lighting/environment_enhancements/EnvironmentEnhancementManager.hpp"
+#include "environment_enhancements/EnvironmentEnhancementManager.hpp"
 
 #include "UnityEngine/Resources.hpp"
 #include "UnityEngine/SceneManagement/Scene.hpp"
@@ -7,10 +7,10 @@
 #include "UnityEngine/SceneManagement/SceneManager.hpp"
 
 #include "utils/ChromaUtils.hpp"
-#include "lighting/environment_enhancements/LegacyEnvironmentRemoval.hpp"
-#include "lighting/environment_enhancements/ComponentInitializer.hpp"
-#include "lighting/environment_enhancements/ParametricBoxControllerParameters.hpp"
-#include "lighting/environment_enhancements/GameObjectTrackController.hpp"
+#include "environment_enhancements/LegacyEnvironmentRemoval.hpp"
+#include "environment_enhancements/ComponentInitializer.hpp"
+#include "environment_enhancements/ParametricBoxControllerParameters.hpp"
+#include "environment_enhancements/GameObjectTrackController.hpp"
 
 #include <sstream>
 #include <concepts>
@@ -33,14 +33,14 @@ Chroma::EnvironmentEnhancementManager::LookupId(std::string_view const id, Chrom
 
 
 
-    auto doLookup = [&ret, &id](std::string const& lookupMethodStr, auto&& predicate) constexpr {
+    auto doLookup = [&ret, &id](auto&& lookupMethodStr, auto&& predicate) constexpr {
         for (auto const &o : _globalGameObjectInfos) {
             // We have a try/catch here so the loop doesn't die
             try {
                 if (predicate(o))
                     ret.emplace_back(o);
             } catch (std::exception &e) {
-                getLogger().error("Failed to match (%s) for lookup (%s) with id (%s)", o.FullID.c_str(), lookupMethodStr.c_str(), id.data());
+                getLogger().error("Failed to match (%s) for lookup (%s) with id (%s)", o.FullID.c_str(), lookupMethodStr, id.data());
                 getLogger().error("Error: %s", e.what());
             }
         }
@@ -99,7 +99,7 @@ Chroma::EnvironmentEnhancementManager::LookupId(std::string_view const id, Chrom
                 return {};
             }
         }
-    } catch (std::exception &e) {
+    } catch (std::exception const& e) {
         getLogger().error("Failed to create match for lookup (%s) with id (%s)", lookupMethodStr.data(), id.data());
         getLogger().error("Error: %s", e.what());
     }
@@ -110,8 +110,8 @@ Chroma::EnvironmentEnhancementManager::LookupId(std::string_view const id, Chrom
     return ret;
 }
 
-std::optional<Sombrero::FastVector3>
-EnvironmentEnhancementManager::GetVectorData(const rapidjson::Value &dynData, const std::string_view name) {
+static std::optional<Sombrero::FastVector3>
+GetVectorData(const rapidjson::Value &dynData, const std::string_view name) {
     auto objectsValIt = dynData.FindMember(name.data());
 
     if (objectsValIt == dynData.MemberEnd())
@@ -124,6 +124,97 @@ EnvironmentEnhancementManager::GetVectorData(const rapidjson::Value &dynData, co
 
     return Sombrero::FastVector3 {objectsVal[0].GetFloat(), objectsVal[1].GetFloat(), objectsVal[2].GetFloat()};
 }
+
+struct TransformData {
+public:
+    std::optional<Sombrero::FastVector3> scale;
+    std::optional<Sombrero::FastVector3> position;
+    std::optional<Sombrero::FastVector3> rotation;
+    std::optional<Sombrero::FastVector3> localPosition;
+    std::optional<Sombrero::FastVector3> localRotation;
+
+    TransformData(TransformData&&) = default;
+
+    TransformData(rapidjson::Value const& customData, bool v2) {
+        scale = GetVectorData(customData, v2 ? NewConstants::V2_SCALE : NewConstants::SCALE);
+        position = GetVectorData(customData, v2 ? NewConstants::V2_POSITION : NewConstants::POSITION);
+        rotation = GetVectorData(customData, v2 ? NewConstants::V2_ROTATION : NewConstants::ROTATION);
+        localPosition = GetVectorData(customData, v2 ? NewConstants::V2_LOCAL_POSITION : NewConstants::LOCAL_POSITION);
+        localRotation = GetVectorData(customData, v2 ? NewConstants::V2_LOCAL_ROTATION : NewConstants::LOCAL_ROTATION);
+    }
+
+    inline void Apply(UnityEngine::Transform* transform, bool leftHanded, bool v2, float noteLinesDistance)
+    {
+        auto position = this->position;
+        auto localPosition = this->localPosition;
+        if (v2)
+        {
+            // ReSharper disable once UseNullPropagation
+            if (position)
+            {
+                position = position.value() * noteLinesDistance;
+            }
+
+            // ReSharper disable once UseNullPropagation
+            if (localPosition)
+            {
+                localPosition = localPosition.value() * noteLinesDistance;
+            }
+        }
+
+        Apply(transform, leftHanded, scale, position, rotation, localPosition, localRotation);
+    }
+
+
+    inline void Apply(UnityEngine::Transform* transform, bool leftHanded)
+    {
+        Apply(transform, leftHanded, scale, position, rotation, localPosition, localRotation);
+    }
+
+private:
+    static void Apply(
+            UnityEngine::Transform* transform,
+    bool leftHanded,
+            std::optional<Sombrero::FastVector3> scale,
+            std::optional<Sombrero::FastVector3> position,
+            std::optional<Sombrero::FastVector3> rotation,
+            std::optional<Sombrero::FastVector3> localPosition,
+            std::optional<Sombrero::FastVector3> localRotation)
+    {
+        // TODO: Mirror
+//        if (leftHanded)
+//        {
+//            scale = scale?.Mirror();
+//            position = position?.Mirror();
+//            rotation = rotation?.Mirror();
+//            localPosition = localPosition?.Mirror();
+//            localRotation = localRotation?.Mirror();
+//        }
+
+        if (scale)
+        {
+            transform->set_localScale(*scale);
+        }
+
+        if (position)
+        {
+            transform->set_position(*position);
+        }
+        else if (localPosition)
+        {
+            transform->set_localPosition(*localPosition);
+        }
+
+        if (rotation)
+        {
+            transform->set_eulerAngles(*rotation);
+        }
+        else if (localRotation)
+        {
+            transform->set_localEulerAngles(*localRotation);
+        }
+    }
+};
 
 void EnvironmentEnhancementManager::GetAllGameObjects() {
     _globalGameObjectInfos.clear();
@@ -140,9 +231,9 @@ void EnvironmentEnhancementManager::GetAllGameObjects() {
         auto sceneNameIl2cpp = gameObject->get_scene().get_name();
         if (!sceneNameIl2cpp) continue;
 
-        std::string sceneName = sceneNameIl2cpp;
+        std::u16string_view sceneName = sceneNameIl2cpp;
 
-        if ((sceneName.find("Environment") != std::string::npos && sceneName.find("Menu") == std::string::npos) || gameObject->GetComponent<GlobalNamespace::TrackLaneRing*>()) {
+        if ((sceneName.find(u"Environment") != std::string::npos && sceneName.find(u"Menu") == std::string::npos) || gameObject->GetComponent<GlobalNamespace::TrackLaneRing*>()) {
             gameObjectsVec.emplace_back(gameObject);
         }
     }
@@ -208,12 +299,15 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
     bool v2 = customBeatmapData->v2orEarlier;
     TracksAD::BeatmapAssociatedData& trackBeatmapAD = TracksAD::getBeatmapAD(customBeatmapData->customData);
     GameObjectTrackController::LeftHanded = trackBeatmapAD.leftHanded;
+    bool leftHanded = trackBeatmapAD.leftHanded;
     GameObjectTrackController::ClearData();
 
     AvoidanceRotation.clear();
     AvoidancePosition.clear();
     RingRotationOffsets.clear();
     ParametricBoxControllerParameters::TransformParameters.clear();
+
+    geometryFactory.reset();
 
     if (customDynWrapper) {
 
@@ -237,66 +331,75 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                 auto& profiler = profileData.emplace_back();
                 profiler.startTimer();
 
-                auto idMember = gameObjectDataVal.FindMember(v2 ? NewConstants::V2_GAMEOBJECT_ID.data() : NewConstants::GAMEOBJECT_ID.data());
-
-                if (idMember == gameObjectDataVal.MemberEnd()) continue;
-
-                std::string_view id = idMember->value.GetString();
-                std::string lookupString = gameObjectDataVal.FindMember(v2 ? NewConstants::V2_LOOKUP_METHOD.data() : NewConstants::LOOKUP_METHOD.data())->value.GetString();
-
-                // Convert string to lower case
-                std::transform(lookupString.begin(), lookupString.end(), lookupString.begin(), ::tolower);
-                LookupMethod lookupMethod = LookupMethod::Exact;
-
-                if (lookupString == "regex") {
-                    lookupMethod = LookupMethod::Regex;
-                } else if (lookupString == "exact") {
-                    lookupMethod = LookupMethod::Exact;
-                } else if (lookupString == "contains") {
-                    lookupMethod = LookupMethod::Contains;
-                }else if (lookupString == "startswith") {
-                    lookupMethod = LookupMethod::StartsWith;
-                }else if (lookupString == "endswith") {
-                    lookupMethod = LookupMethod::EndsWith;
-                }
+                TransformData spawnData(gameObjectDataVal, v2);
 
                 std::optional<int> dupeAmount = getIfExists<int>(gameObjectDataVal, v2 ? NewConstants::V2_DUPLICATION_AMOUNT : NewConstants::DUPLICATION_AMOUNT);
 
                 std::optional<bool> active = getIfExists<bool>(gameObjectDataVal, v2 ? NewConstants::V2_ACTIVE : NewConstants::ACTIVE);
-                auto scale = GetVectorData(gameObjectDataVal, v2 ? NewConstants::V2_SCALE : NewConstants::SCALE);
-                auto position = GetVectorData(gameObjectDataVal, v2 ? NewConstants::V2_POSITION : NewConstants::POSITION);
-                auto rotation = GetVectorData(gameObjectDataVal, v2 ? NewConstants::V2_ROTATION : NewConstants::ROTATION);
-                auto localPosition = GetVectorData(gameObjectDataVal, v2 ? NewConstants::V2_LOCAL_POSITION : NewConstants::LOCAL_POSITION);
-                auto localRotation = GetVectorData(gameObjectDataVal, v2 ? NewConstants::V2_LOCAL_ROTATION : NewConstants::LOCAL_ROTATION);
-
-                if (v2) {
-                    if (position) {
-                        position = *position * noteLinesDistance;
-                    }
-
-                    if (localPosition) {
-                        localPosition = *localPosition * noteLinesDistance;
-                    }
-                }
-
                 auto lightID = getIfExists<int>(gameObjectDataVal, v2 ? NewConstants::V2_LIGHT_ID : NewConstants::LIGHT_ID);
 
-                // Record JSON parse time
-                profiler.mark("Parsing JSON for id " + std::string(id));
+                auto idMember = gameObjectDataVal.FindMember(v2 ? NewConstants::V2_GAMEOBJECT_ID.data() : NewConstants::GAMEOBJECT_ID.data());
+                auto geometryMember = gameObjectDataVal.FindMember(v2 ? NewConstants::V2_GAMEOBJECT_ID.data() : NewConstants::GAMEOBJECT_ID.data());
+                std::vector<ByRef<const GameObjectInfo>> foundObjects;
 
-                std::vector<ByRef<const GameObjectInfo>> const foundObjects(LookupId(id, lookupMethod));
 
-                // Record find object time
-                std::stringstream foundObjectsLog;
-                foundObjectsLog << "Finding objects for id (" << std::to_string(foundObjects.size()) << ") "<< id << " using " << lookupString;
+                if (geometryMember != gameObjectDataVal.MemberEnd()) {
+                    if (idMember != gameObjectDataVal.MemberEnd()) break;
 
-                profiler.mark(foundObjectsLog.str());
+                    auto goInfo = ByRef<const GameObjectInfo>(_globalGameObjectInfos.emplace_back(geometryFactory.Create(geometryMember->value)));
+                    // Record JSON parse time
+                    profiler.mark("Parsing JSON for geometry ");
 
-                if (foundObjects.empty()) {
-                    profiler.mark("No objects found!", false);
-                    profiler.endTimer();
-                    continue;
-                }
+                    foundObjects.emplace_back(goInfo);
+                } else if (idMember != gameObjectDataVal.MemberEnd()){
+                    std::string_view id = idMember->value.GetString();
+                    std::string lookupString = gameObjectDataVal.FindMember(v2 ? NewConstants::V2_LOOKUP_METHOD.data() : NewConstants::LOOKUP_METHOD.data())->value.GetString();
+
+                    // Convert string to lower case
+                    std::transform(lookupString.begin(), lookupString.end(), lookupString.begin(), ::tolower);
+                    LookupMethod lookupMethod = LookupMethod::Exact;
+
+                    // Record JSON parse time
+                    profiler.mark("Parsing JSON for id " + std::string(id));
+
+                    if (lookupString == "regex") {
+                        lookupMethod = LookupMethod::Regex;
+                    } else if (lookupString == "exact") {
+                        lookupMethod = LookupMethod::Exact;
+                    } else if (lookupString == "contains") {
+                        lookupMethod = LookupMethod::Contains;
+                    }else if (lookupString == "startswith") {
+                        lookupMethod = LookupMethod::StartsWith;
+                    }else if (lookupString == "endswith") {
+                        lookupMethod = LookupMethod::EndsWith;
+                    }
+
+                    foundObjects = LookupId(id, lookupMethod);
+
+                    // Record find object time
+                    std::stringstream foundObjectsLog;
+                    foundObjectsLog << "Finding objects for id (" << std::to_string(foundObjects.size()) << ") "<< id << " using " << lookupString;
+
+                    profiler.mark(foundObjectsLog.str());
+
+                    if (foundObjects.empty()) {
+                        profiler.mark("No objects found!", false);
+                        profiler.endTimer();
+                        continue;
+                    }
+
+                    if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {
+                        getLogger().info("ID [\"%s\"] using method [%s] found:", id.data(), lookupString.c_str());
+
+                        for (const auto &o : foundObjects) {
+                            getLogger().info("%s", o.heldRef.FullID.c_str());
+                        }
+
+                        getLogger().info("=====================================");
+                    }
+                } else continue;
+
+
 
                 // Create track if objects are found
                 auto trackNameIt = gameObjectDataVal.FindMember(v2 ? Chroma::NewConstants::V2_TRACK.data() : Chroma::NewConstants::TRACK.data());
@@ -354,7 +457,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                         }
                     }
                     // Record end time
-                    profiler.mark("Duping for id " + lookupString);
+                    profiler.mark("Duping ");
                 } else {
                     if (lightID) {
                         getLogger().error("LightID requested but no duplicated object to apply to.");
@@ -378,25 +481,12 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
 
                     auto transform = gameObject->get_transform();
 
-                    if (scale) {
-                        transform->set_localScale(scale.value());
-                    }
-
-                    if (position) {
-                        transform->set_position(position.value());
-                    }
-
-                    if (rotation) {
-                        transform->set_eulerAngles(rotation.value());
-                    }
-
-                    if (localPosition) {
-                        transform->set_localPosition(localPosition.value());
-                    }
-
-                    if (localRotation) {
-                        transform->set_localEulerAngles(localRotation.value());
-                    }
+                    spawnData.Apply(transform, leftHanded, v2, noteLinesDistance);
+                    auto const& position = spawnData.position;
+                    auto const& localPosition = spawnData.localPosition;
+                    auto const& rotation = spawnData.rotation;
+                    auto const& localRotation = spawnData.localRotation;
+                    auto const& scale = spawnData.scale;
 
                     // Handle TrackLaneRing
                     auto trackLaneRing = gameObject->GetComponent<GlobalNamespace::TrackLaneRing *>();
@@ -427,7 +517,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                         }
                     }
 
-                    GlobalNamespace::BeatmapObjectsAvoidance* beatmapObjectsAvoidance = gameObject->GetComponent<GlobalNamespace::BeatmapObjectsAvoidance*>();
+                    auto* beatmapObjectsAvoidance = gameObject->GetComponent<GlobalNamespace::BeatmapObjectsAvoidance*>();
 
                     if (beatmapObjectsAvoidance) {
                         if (position || localPosition) {
@@ -441,15 +531,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                     GameObjectTrackController::HandleTrackData(gameObject, track, noteLinesDistance, trackLaneRing, parametricBoxController, beatmapObjectsAvoidance, v2);
                 }
 
-                if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {
-                    getLogger().info("ID [\"%s\"] using method [%s] found:", id.data(), lookupString.c_str());
 
-                    for (const auto &o : foundObjects) {
-                        getLogger().info("%s", o.heldRef.FullID.c_str());
-                    }
-
-                    getLogger().info("=====================================");
-                }
 
                 // Record end time
                 profiler.endTimer();

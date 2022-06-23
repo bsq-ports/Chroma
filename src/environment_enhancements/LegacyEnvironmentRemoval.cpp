@@ -1,5 +1,5 @@
 #include "main.hpp"
-#include "lighting/environment_enhancements/LegacyEnvironmentRemoval.hpp"
+#include "environment_enhancements/LegacyEnvironmentRemoval.hpp"
 #include "Chroma.hpp"
 #include "ChromaController.hpp"
 

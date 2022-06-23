@@ -2,6 +2,7 @@
 #include "lighting/ChromaEventData.hpp"
 #include "lighting/LegacyLightHelper.hpp"
 #include "lighting/ChromaGradientController.hpp"
+#include "GlobalNamespace/EnvironmentColorType.hpp"
 
 #include "Tweening/SongTimeTweeningManager.hpp"
 #include "lighting/LightIDTableManager.hpp"
@@ -231,7 +232,7 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, const std::optional<std::v
                 nextSameTypeEvent = static_cast<BasicBeatmapEventData *>(previousEvent->nextSameTypeEventData);
             }
 
-            if (!nextSameTypeEvent || (nextSameTypeEvent->value != 4 && nextSameTypeEvent->value != 8))
+            if (!nextSameTypeEvent || (nextSameTypeEvent->value != 4 && nextSameTypeEvent->value != 8 && nextSameTypeEvent->value != 12))
             {
                 return;
             }
@@ -353,6 +354,23 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, const std::optional<std::v
     }
 }
 
+//constexpr static GlobalNamespace::EnvironmentColorType GetLightColorTypeFromEventDataValue(int beatmapEventValue)
+//{
+//    if (beatmapEventValue == 1 || beatmapEventValue == 2 || beatmapEventValue == 3 || beatmapEventValue == 4 || beatmapEventValue == 0 || beatmapEventValue == -1)
+//    {
+//        return EnvironmentColorType::Color0;
+//    }
+//    if (beatmapEventValue == 5 || beatmapEventValue == 6 || beatmapEventValue == 7 || beatmapEventValue == 8)
+//    {
+//        return EnvironmentColorType::Color1;
+//    }
+//    if (beatmapEventValue == 9 || beatmapEventValue == 10 || beatmapEventValue == 11 || beatmapEventValue == 12)
+//    {
+//        return EnvironmentColorType::ColorW;
+//    }
+//    return EnvironmentColorType::Color0;
+//}
+
 // improve speed, avoid codegen
 constexpr bool ChromaLightSwitchEventEffect::IsColor0(int beatmapEventValue) {
     return beatmapEventValue == 1 || beatmapEventValue == 2 || beatmapEventValue == 3 || beatmapEventValue == 4 || beatmapEventValue == 0 || beatmapEventValue == -1;
@@ -397,5 +415,5 @@ Sombrero::FastColor ChromaLightSwitchEventEffect::GetHighlightColor(int beatmapE
 }
 
 constexpr bool ChromaLightSwitchEventEffect::IsFixedDurationLightSwitch(int beatmapEventValue) {
-    return beatmapEventValue == 2 || beatmapEventValue == 6 || beatmapEventValue == 3 || beatmapEventValue == 7 || beatmapEventValue == -1;
+    return beatmapEventValue == 2 || beatmapEventValue == 6 || beatmapEventValue == 10 || beatmapEventValue == 3 || beatmapEventValue == 7 || beatmapEventValue == 11 || beatmapEventValue == -1;
 }

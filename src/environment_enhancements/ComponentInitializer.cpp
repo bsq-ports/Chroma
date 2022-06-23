@@ -1,6 +1,6 @@
 #include "main.hpp"
-#include "lighting/environment_enhancements/ComponentInitializer.hpp"
-#include "lighting/environment_enhancements/EnvironmentEnhancementManager.hpp"
+#include "environment_enhancements/ComponentInitializer.hpp"
+#include "environment_enhancements/EnvironmentEnhancementManager.hpp"
 #include "colorizer/LightColorizer.hpp"
 #include "hooks/TrackLaneRingsManager.hpp"
 #include "lighting/ChromaRingsRotationEffect.hpp"
@@ -56,6 +56,26 @@ static void constexpr GetComponentAndOriginal(UnityEngine::Transform* root, Unit
 
 GameObjectInfo const&
 Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root, UnityEngine::Transform *original, std::vector<GameObjectInfo>& gameObjectInfos, std::vector<std::shared_ptr<IComponentData>>& componentDatas, std::optional<int>& lightId) {
+    //     GetComponentAndOriginal<LightWithIdMonoBehaviour>(root, original, [&](LightWithIdMonoBehaviour* rootComponent, LightWithIdMonoBehaviour* originalComponent) {
+    //        rootComponent->lightManager = originalComponent->lightManager;
+    //        LightColorizer::NeedToRegister.emplace(reinterpret_cast<ILightWithId*>(rootComponent));
+    //        if (lightId.has_value()) {
+    //            LightColorizer::RequestedIDs[reinterpret_cast<ILightWithId*>(rootComponent)] = *lightId;
+    //        }
+    //    });
+    //
+    //    GetComponentAndOriginal<LightWithIds>(root, original, [&](LightWithIds* rootComponent, LightWithIds* originalComponent) {
+    //        rootComponent->lightManager = originalComponent->lightManager;
+    //        // cross fingers no stripping
+    //        auto lightsWithIdArray = System::Linq::Enumerable::ToArray(rootComponent->lightWithIds);
+    //
+    //        for (auto const& lightIdData : lightsWithIdArray) {
+    //            LightColorizer::NeedToRegister.emplace(reinterpret_cast<ILightWithId*>(lightIdData));
+    //            if (lightId.has_value()) {
+    //                LightColorizer::RequestedIDs[reinterpret_cast<ILightWithId*>(lightIdData)] = *lightId;
+    //            }
+    //        }
+    //    });
     GetComponentAndOriginal<LightWithIdMonoBehaviour>(root, original, [&](LightWithIdMonoBehaviour* rootComponent, LightWithIdMonoBehaviour* originalComponent) constexpr {
         rootComponent->lightManager = originalComponent->lightManager;
         LightColorizer::RegisterLight(rootComponent, lightId);

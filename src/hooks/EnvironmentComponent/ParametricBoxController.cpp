@@ -1,7 +1,7 @@
 #include "Chroma.hpp"
 #include "ChromaController.hpp"
 
-#include "lighting/environment_enhancements/ParametricBoxControllerParameters.hpp"
+#include "environment_enhancements/ParametricBoxControllerParameters.hpp"
 
 #include "colorizer/ObstacleColorizer.hpp"
 #include "GlobalNamespace/ColorManager.hpp"

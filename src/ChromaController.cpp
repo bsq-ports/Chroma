@@ -25,7 +25,7 @@
 #include "colorizer/ParticleColorizer.hpp"
 
 #include "lighting/LegacyLightHelper.hpp"
-#include "lighting/environment_enhancements/EnvironmentEnhancementManager.hpp"
+#include "environment_enhancements/EnvironmentEnhancementManager.hpp"
 #include "lighting/ChromaGradientController.hpp"
 #include "hooks/TrackLaneRingsManager.hpp"
 

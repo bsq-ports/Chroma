@@ -4,7 +4,7 @@
 #include "utils/ChromaUtils.hpp"
 
 #include "hooks/TrackLaneRingsManager.hpp"
-#include "lighting/environment_enhancements/EnvironmentEnhancementManager.hpp"
+#include "environment_enhancements/EnvironmentEnhancementManager.hpp"
 
 #include "GlobalNamespace/TrackLaneRing.hpp"
 

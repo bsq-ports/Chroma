@@ -2,7 +2,7 @@
 #include "Chroma.hpp"
 #include "ChromaController.hpp"
 
-#include "lighting/environment_enhancements/ComponentInitializer.hpp"
+#include "environment_enhancements/ComponentInitializer.hpp"
 #include "hooks/TrackLaneRingsManager.hpp"
 
 #include "GlobalNamespace/TrackLaneRingsManager.hpp"

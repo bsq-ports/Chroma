@@ -35,6 +35,7 @@ public:
           DECLARE_INSTANCE_FIELD(GlobalNamespace::ColorSO*, _originalLightColor1);
           DECLARE_INSTANCE_FIELD(GlobalNamespace::ColorSO*, _originalLightColor0Boost);
           DECLARE_INSTANCE_FIELD(GlobalNamespace::ColorSO*, _originalLightColor1Boost);
+          std::array<Sombrero::FastColor, 4> OriginalColors;
 
           std::unordered_map<GlobalNamespace::ILightWithId *, SafePtr<ChromaIDColorTween>> ColorTweens;
 
