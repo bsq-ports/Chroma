@@ -83,10 +83,6 @@ ShaderType shaderTypeFromString(auto&& str) {
     return Chroma::ShaderType::Standard;
 }
 
-GeometryFactory::GeometryFactory() {
-    reset();
-}
-
 void GeometryFactory::reset() {
     auto tube = Resources::FindObjectsOfTypeAll<TubeBloomPrePassLight*>().FirstOrDefault();
 

@@ -36,8 +36,6 @@ namespace Chroma {
 
     class GeometryFactory {
     public:
-        GeometryFactory();
-
         void reset();
 
         UnityEngine::GameObject * Create(rapidjson::Value const &data);
