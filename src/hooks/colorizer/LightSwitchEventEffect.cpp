@@ -73,13 +73,13 @@ MAKE_HOOK_MATCH(LightSwitchEventEffect_Start,
     self->StartCoroutine(coro);
 }
 
-MAKE_HOOK_MATCH(BeatmapObjectCallbackController_SendBeatmapEventDidTriggerEvent,
+MAKE_HOOK_MATCH(BeatmapCallbacksController_ManualUpdate,
                 &BeatmapCallbacksController::ManualUpdate,
                 void,
                 BeatmapCallbacksController* self, float songTime) {
     // Do nothing if Chroma shouldn't run
     if (!ChromaController::GetChromaLegacy() && !ChromaController::DoChromaHooks()) {
-        return BeatmapObjectCallbackController_SendBeatmapEventDidTriggerEvent(self, songTime);
+        return BeatmapCallbacksController_ManualUpdate(self, songTime);
     }
 
     if (self != beatmapCallbacksController) {
@@ -109,11 +109,11 @@ MAKE_HOOK_MATCH(BeatmapObjectCallbackController_SendBeatmapEventDidTriggerEvent,
         self->callbacksInTimes->get_Item(0)->AddCallback(boostEvents);
     }
 
-    BeatmapObjectCallbackController_SendBeatmapEventDidTriggerEvent(self, songTime);
+    BeatmapCallbacksController_ManualUpdate(self, songTime);
 }
 
 void LightSwitchEventEffectHook(Logger& logger) {
-    INSTALL_HOOK(logger, BeatmapObjectCallbackController_SendBeatmapEventDidTriggerEvent);
+    INSTALL_HOOK(logger, BeatmapCallbacksController_ManualUpdate);
 
     INSTALL_HOOK(logger, LightSwitchEventEffect_Start);
     INSTALL_HOOK(logger, LightSwitchEventEffect_Awake);

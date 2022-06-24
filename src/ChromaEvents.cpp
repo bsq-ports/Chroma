@@ -76,6 +76,7 @@ void ChromaEvents::deserialize(GlobalNamespace::IReadonlyBeatmapData* readOnlyBe
 
 void CustomEventCallback(BeatmapCallbacksController *callbackController,
                          CustomJSONData::CustomEventData *customEventData) {
+    PAPER_IL2CPP_CATCH_HANDLER(
     bool isType = false;
 
     auto typeHash = customEventData->typeHash;
@@ -105,6 +106,7 @@ void CustomEventCallback(BeatmapCallbacksController *callbackController,
         Chroma::ChromaFogController::getInstance()->AssignTrack(ad.track);
         CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Assigned fog controller to track");
     }
+    )
 }
 
 void ChromaEvents::AddEventCallbacks(Logger &logger) {
