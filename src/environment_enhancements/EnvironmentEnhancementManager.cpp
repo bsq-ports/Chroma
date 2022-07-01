@@ -18,6 +18,7 @@
 
 #include "tracks/shared/Animation/PointDefinition.h"
 #include "tracks/shared/AssociatedData.h"
+#include "environment_enhancements/MaterialAnimator.hpp"
 
 using namespace Chroma;
 using namespace ChromaUtils;
@@ -311,7 +312,8 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
 
         rapidjson::Value const& dynData = *customDynWrapper;
 
-        GeometryFactory geometryFactory(MaterialsManager(dynData, trackBeatmapAD, v2));
+        MaterialsManager materialsManager(dynData, trackBeatmapAD, v2);
+        GeometryFactory geometryFactory(materialsManager);
 
         auto environmentData = dynData.FindMember(v2 ? NewConstants::V2_ENVIRONMENT.data() : NewConstants::ENVIRONMENT.data());
 
@@ -553,6 +555,19 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                 getLogger().info("Finished environment enhancements took %lldms", millisElapsed);
 
             }).detach();
+        }
+
+        auto const& materials = materialsManager.GetMaterials();
+        std::vector<MaterialInfo> animatedMaterials;
+        animatedMaterials.reserve(materials.size());
+
+        for (auto const& [s, m] : materials) {
+            if (!m.Track || m.Track->empty()) continue;
+            animatedMaterials.emplace_back(m);
+        }
+
+        if (!animatedMaterials.empty()) {
+            UnityEngine::GameObject::New_ctor("MaterialAnimator")->AddComponent<MaterialAnimator*>()->materials = std::move(animatedMaterials);
         }
     }
     if (v2) {

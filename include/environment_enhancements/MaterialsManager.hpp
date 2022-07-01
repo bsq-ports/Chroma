@@ -41,20 +41,23 @@ namespace Chroma {
     };
 
     struct MaterialsManager {
+        std::unordered_map<std::string, const MaterialInfo> materials;
+        TracksAD::BeatmapAssociatedData& beatmapAD;
+
+
+        const bool v2;
+
+        static UnityEngine::Material* InstantiateSharedMaterial(ShaderType shaderType);
+        MaterialInfo CreateMaterialInfo(rapidjson::Value const& data);
+
+        UnityEngine::Material* GetMaterialTemplate(ShaderType shaderType);
+
+    public:
         MaterialsManager(rapidjson::Value const& customData, TracksAD::BeatmapAssociatedData& beatmapAD, bool v2);
 
         std::optional<ByRef<MaterialInfo const>> GetMaterial(rapidjson::Value const& data);
 
-    private:
-        std::unordered_map<std::string, const MaterialInfo> materials;
-        TracksAD::BeatmapAssociatedData& beatmapAD;
-        const bool v2;
-
-
-        static UnityEngine::Material* InstantiateSharedMaterial(ShaderType shaderType);
-
-        MaterialInfo CreateMaterialInfo(rapidjson::Value const& data);
-        UnityEngine::Material* GetMaterialTemplate(ShaderType shaderType);
+        decltype(MaterialsManager::materials) const& GetMaterials();
     };
 }
 

@@ -170,3 +170,7 @@ UnityEngine::Material *MaterialsManager::GetMaterialTemplate(ShaderType shaderTy
 
     return originalMaterial;
 }
+
+decltype(MaterialsManager::materials) const &MaterialsManager::GetMaterials() {
+    return materials;
+}
