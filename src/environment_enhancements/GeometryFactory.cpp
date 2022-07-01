@@ -52,15 +52,15 @@ void GeometryFactory::reset() {
 
 GameObject * Chroma::GeometryFactory::Create(rapidjson::Value const &data) {
     GeometryType geometryType;
-    auto geometryStr = ChromaUtils::getIfExists<std::string_view>(data, NewConstants::GEOMETRY_TYPE);
-    bool collision = ChromaUtils::getIfExists<bool>(data, NewConstants::COLLISION).value_or(false);
+    auto geometryStr = ChromaUtils::getIfExists<std::string_view>(data, v2 ? NewConstants::V2_GEOMETRY_TYPE : NewConstants::GEOMETRY_TYPE);
+    bool collision = ChromaUtils::getIfExists<bool>(data, v2 ? NewConstants::V2_COLLISION : NewConstants::COLLISION).value_or(false);
 
 
     if (!geometryStr) geometryType = GeometryType::Cube;
     else geometryType = geometryTypeFromString(geometryStr->data());
 
 
-    MaterialInfo const& materialInfo = materialsManager.GetMaterial(data.FindMember(NewConstants::MATERIAL.data())->value).value().heldRef;
+    MaterialInfo const& materialInfo = materialsManager.GetMaterial(data.FindMember(v2 ? NewConstants::V2_MATERIAL.data() : NewConstants::MATERIAL.data())->value).value().heldRef;
 
     ShaderType shaderType = materialInfo.ShaderType;
 
@@ -99,7 +99,7 @@ GameObject * Chroma::GeometryFactory::Create(rapidjson::Value const &data) {
     meshRenderer->set_receiveShadows(false);
 
     // Shared material is usually better performance as far as I know
-    Material* material = (Material *) materialInfo.Material;
+    auto* material = (Material *) materialInfo.Material;
     meshRenderer->set_sharedMaterial(material);
 
     if (geometryType == GeometryType::Triangle)

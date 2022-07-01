@@ -32,9 +32,10 @@ namespace Chroma {
 
     class GeometryFactory {
     public:
-        GeometryFactory(MaterialsManager const& materialsManager) : materialsManager(materialsManager) {}
+        GeometryFactory(MaterialsManager const& materialsManager, bool v2) : materialsManager(materialsManager), v2(v2) {}
 
         MaterialsManager materialsManager;
+        bool v2;
         void reset();
 
 

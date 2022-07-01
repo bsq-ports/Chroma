@@ -313,7 +313,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
         rapidjson::Value const& dynData = *customDynWrapper;
 
         MaterialsManager materialsManager(dynData, trackBeatmapAD, v2);
-        GeometryFactory geometryFactory(materialsManager);
+        GeometryFactory geometryFactory(materialsManager, v2);
 
         auto environmentData = dynData.FindMember(v2 ? NewConstants::V2_ENVIRONMENT.data() : NewConstants::ENVIRONMENT.data());
 
@@ -341,7 +341,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                 auto lightID = getIfExists<int>(gameObjectDataVal, v2 ? NewConstants::V2_LIGHT_ID : NewConstants::LIGHT_ID);
 
                 auto idMember = gameObjectDataVal.FindMember(v2 ? NewConstants::V2_GAMEOBJECT_ID.data() : NewConstants::GAMEOBJECT_ID.data());
-                auto geometryMember = gameObjectDataVal.FindMember(NewConstants::GEOMETRY.data());
+                auto geometryMember = gameObjectDataVal.FindMember(v2 ? NewConstants::V2_GEOMETRY.data() : NewConstants::GEOMETRY.data());
                 std::vector<ByRef<const GameObjectInfo>> foundObjects;
 
 

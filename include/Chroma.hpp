@@ -90,6 +90,14 @@ namespace Chroma {
         inline static constexpr const std::string_view V2_OFFSET = "_offset";
         inline static constexpr const std::string_view V2_HEIGHT_FOG_STARTY = "_startY";
         inline static constexpr const std::string_view V2_HEIGHT_FOG_HEIGHT = "_height";
+        
+        inline static constexpr const std::string_view V2_GEOMETRY = "_geometry";
+        inline static constexpr const std::string_view V2_GEOMETRY_TYPE = "_type";
+        inline static constexpr const std::string_view V2_SHADER_PRESET = "_shader";
+        inline static constexpr const std::string_view V2_SHADER_KEYWORDS = "_shaderKeywords";
+        inline static constexpr const std::string_view V2_COLLISION = "_collision";
+        inline static constexpr const std::string_view V2_MATERIALS = "_materials";
+        inline static constexpr const std::string_view V2_MATERIAL = "_material";
 
         inline static constexpr const std::string_view COLOR = "color";
         inline static constexpr const std::string_view DIRECTION = "direction";

@@ -57,7 +57,7 @@ namespace Chroma {
 
         std::optional<ByRef<MaterialInfo const>> GetMaterial(rapidjson::Value const& data);
 
-        decltype(MaterialsManager::materials) const& GetMaterials();
+        decltype(MaterialsManager::materials) const& GetMaterials() const;
     };
 }
 

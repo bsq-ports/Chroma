@@ -21,7 +21,7 @@ ShaderType shaderTypeFromString(auto&& str) {
 
 Chroma::MaterialsManager::MaterialsManager(rapidjson::Value const &customData,
                                            TracksAD::BeatmapAssociatedData &beatmapAD, bool v2): beatmapAD(beatmapAD), v2(v2) {
-    auto it = customData.FindMember(NewConstants::MATERIALS.data());
+    auto it = customData.FindMember(v2 ? NewConstants::V2_MATERIALS.data() : NewConstants::MATERIALS.data());
 
     // notice no v2 arbitrary gatekeeping? :Kek:
     if (it == customData.MemberEnd()) return;
@@ -96,7 +96,7 @@ UnityEngine::Material *Chroma::MaterialsManager::InstantiateSharedMaterial(Shade
 
 MaterialInfo Chroma::MaterialsManager::CreateMaterialInfo(rapidjson::Value const &data) {
     ArrayW<StringW> shaderKeywords;
-    auto shaderKeywordsIt = data.FindMember(NewConstants::SHADER_KEYWORDS.data());
+    auto shaderKeywordsIt = data.FindMember(v2 ? NewConstants::V2_SHADER_KEYWORDS.data() : NewConstants::SHADER_KEYWORDS.data());
     if (shaderKeywordsIt != data.MemberEnd()) {
         auto arr = shaderKeywordsIt->value.GetArray();
         shaderKeywords = {arr.Size()};
@@ -108,7 +108,7 @@ MaterialInfo Chroma::MaterialsManager::CreateMaterialInfo(rapidjson::Value const
     }
 
     auto color = ChromaUtils::ChromaUtilities::GetColorFromData(data).value_or(Sombrero::FastColor(0,0,0,0));
-    auto shaderTypeStr = ChromaUtils::getIfExists<std::string_view>(data, NewConstants::SHADER_PRESET);
+    auto shaderTypeStr = ChromaUtils::getIfExists<std::string_view>(data, v2 ? NewConstants::V2_SHADER_PRESET : NewConstants::SHADER_PRESET);
     ShaderType shaderType = shaderTypeStr ? shaderTypeFromString(shaderTypeStr->data()) : ShaderType::Standard;
 
     std::optional<std::vector<Track*>> tracks;
@@ -171,6 +171,6 @@ UnityEngine::Material *MaterialsManager::GetMaterialTemplate(ShaderType shaderTy
     return originalMaterial;
 }
 
-decltype(MaterialsManager::materials) const &MaterialsManager::GetMaterials() {
+decltype(MaterialsManager::materials) const &MaterialsManager::GetMaterials() const {
     return materials;
 }
