@@ -11,6 +11,7 @@
 #include "UnityEngine/Material.hpp"
 #include "Zenject/IInstantiator.hpp"
 #include "GlobalNamespace/TubeBloomPrePassLight.hpp"
+#include "MaterialsManager.hpp"
 
 
 namespace Chroma {
@@ -27,16 +28,15 @@ namespace Chroma {
         Triangle
     };
 
-    enum struct ShaderType
-    {
-        Standard,
-        OpaqueLight,
-        TransparentLight
-    };
+
 
     class GeometryFactory {
     public:
+        GeometryFactory(MaterialsManager const& materialsManager) : materialsManager(materialsManager) {}
+
+        MaterialsManager materialsManager;
         void reset();
+
 
         UnityEngine::GameObject * Create(rapidjson::Value const &data);
 
@@ -44,9 +44,8 @@ namespace Chroma {
         std::optional<GlobalNamespace::TubeBloomPrePassLight*> _originalTubeBloomPrePassLight = std::nullopt;
         SafePtr<Zenject::IInstantiator> instantiator;
 
-        static UnityEngine::Material* InstantiateSharedMaterial(ShaderType shaderType);
-        static UnityEngine::Material* GetMaterial(Sombrero::FastColor const& color, ShaderType shaderType, std::optional<std::vector<std::string>> const& keywords);
 
-        static bool IsLightType(ShaderType shaderType);
+
+
     };
 }

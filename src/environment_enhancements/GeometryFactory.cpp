@@ -20,35 +20,6 @@ using namespace Chroma;
 using namespace GlobalNamespace;
 using namespace UnityEngine;
 
-using CacheKey = std::tuple<Sombrero::FastColor, ShaderType, std::optional<std::vector<std::string>>>;
-
-namespace std {
-    template <>
-    struct hash<CacheKey>
-    {
-        size_t operator()(const CacheKey& key) const
-        {
-            std::hash<Sombrero::FastColor> c;
-            std::hash<int> i;
-            std::hash<std::string_view> s;
-
-            auto hash = c(get<0>(key)) ^ i((int) get<1>(key));
-
-            auto strs = get<2>(key);
-            if (strs) {
-                for (auto const &str: *strs) {
-                    hash = hash ^ s(str);
-                }
-            }
-
-            return hash;
-        }
-    };
-}
-
-
-inline static std::unordered_map<CacheKey, SafePtr<UnityEngine::Material>> _cachedMaterials;
-
 GeometryType geometryTypeFromString(auto&& str) {
     if (str == "Sphere") {
         return GeometryType::Sphere;
@@ -70,19 +41,6 @@ GeometryType geometryTypeFromString(auto&& str) {
     return Chroma::GeometryType::Cube;
 }
 
-ShaderType shaderTypeFromString(auto&& str) {
-    if (str == "Standard") {
-        return ShaderType::Standard;
-    } else if (str == "OpaqueLight") {
-        return ShaderType::OpaqueLight;
-    } else if (str == "TransparentLight") {
-        return ShaderType::TransparentLight;
-    }
-
-    getLogger().error("Unknown shader type %s", str);
-    return Chroma::ShaderType::Standard;
-}
-
 void GeometryFactory::reset() {
     auto tube = Resources::FindObjectsOfTypeAll<TubeBloomPrePassLight*>().FirstOrDefault();
 
@@ -93,27 +51,18 @@ void GeometryFactory::reset() {
 }
 
 GameObject * Chroma::GeometryFactory::Create(rapidjson::Value const &data) {
-    auto color = ChromaUtils::ChromaUtilities::GetColorFromData(data).value_or(Sombrero::FastColor(0,0,0,0));
     GeometryType geometryType;
     auto geometryStr = ChromaUtils::getIfExists<std::string_view>(data, NewConstants::GEOMETRY_TYPE);
-    auto shaderTypeStr = ChromaUtils::getIfExists<std::string_view>(data, NewConstants::SHADER_PRESET);
-    ShaderType shaderType = shaderTypeStr ? shaderTypeFromString(shaderTypeStr->data()) : ShaderType::Standard;
     bool collision = ChromaUtils::getIfExists<bool>(data, NewConstants::COLLISION).value_or(false);
 
-    std::optional<std::vector<std::string>> shaderKeywords;
 
     if (!geometryStr) geometryType = GeometryType::Cube;
     else geometryType = geometryTypeFromString(geometryStr->data());
 
-    auto shaderKeywordsIt = data.FindMember(NewConstants::SHADER_KEYWORDS.data());
-    if (shaderKeywordsIt != data.MemberEnd()) {
-        shaderKeywords.emplace();
-        auto arr = shaderKeywordsIt->value.GetArray();
-        shaderKeywords->reserve(arr.Size());
-        for (auto const& o : arr) {
-            shaderKeywords->emplace_back(o.GetString());
-        }
-    }
+
+    MaterialInfo const& materialInfo = materialsManager.GetMaterial(data.FindMember(NewConstants::MATERIAL.data())->value).value().heldRef;
+
+    ShaderType shaderType = materialInfo.ShaderType;
 
     UnityEngine::PrimitiveType primitiveType;
     switch (geometryType) {
@@ -141,7 +90,7 @@ GameObject * Chroma::GeometryFactory::Create(rapidjson::Value const &data) {
     }
 
     UnityEngine::GameObject* go = UnityEngine::GameObject::CreatePrimitive(primitiveType);
-    go->set_name(geometryStr.value_or("") + shaderTypeStr.value_or(""));
+    go->set_name(geometryStr.value_or("") + materialInfo.ShaderTypeStr);
 
     auto* meshRenderer = go->GetComponent<MeshRenderer*>();
 
@@ -150,7 +99,7 @@ GameObject * Chroma::GeometryFactory::Create(rapidjson::Value const &data) {
     meshRenderer->set_receiveShadows(false);
 
     // Shared material is usually better performance as far as I know
-    Material* material = GetMaterial(color, shaderType, shaderKeywords);
+    Material* material = (Material *) materialInfo.Material;
     meshRenderer->set_sharedMaterial(material);
 
     if (geometryType == GeometryType::Triangle)
@@ -214,111 +163,7 @@ GameObject * Chroma::GeometryFactory::Create(rapidjson::Value const &data) {
 
 }
 
-UnityEngine::Material *GeometryFactory::InstantiateSharedMaterial(ShaderType shaderType) {
-    static ConstString opaqueLight("Custom/OpaqueNeonLight");
-    static ConstString transparentLight("Custom/TransparentNeonLight");
-    static ConstString standardBTSCube("Custom/SimpleLit");
-
-    StringW shaderName;
-    ArrayW<StringW> shaderKeywords;
-
-
-
-    MaterialGlobalIlluminationFlags globalIlluminationFlags = IsLightType(shaderType) ? MaterialGlobalIlluminationFlags::EmissiveIsBlack
-                                                                                      : MaterialGlobalIlluminationFlags::RealtimeEmissive;
-
-
-    // Keywords found in RUE PC in BS 1.23
-    switch (shaderType) {
-        default:
-            shaderName = standardBTSCube;
-            shaderKeywords = ArrayW<StringW>(std::initializer_list<StringW>({
-                                                                                    "DIFFUSE", "ENABLE_DIFFUSE",
-                                                                                    "ENABLE_FOG", "ENABLE_HEIGHT_FOG",
-                                                                                    "ENABLE_SPECULAR", "FOG",
-                                                                                    "HEIGHT_FOG",
-                                                                                    "REFLECTION_PROBE_BOX_PROJECTION",
-                                                                                    "SPECULAR",
-                                                                                    "_EMISSION",
-                                                                                    "_ENABLE_FOG_TINT",
-                                                                                    "_RIMLIGHT_NONE", "_ZWRITE_ON",
-                                                                                    "REFLECTION_PROBE", "LIGHT_FALLOFF"
-                                                                            }));
-            break;
-        case ShaderType::OpaqueLight:
-            shaderName = opaqueLight;
-            shaderKeywords = ArrayW<StringW>(std::initializer_list<StringW>({
-                                                                                    "DIFFUSE", "ENABLE_BLUE_NOISE",
-                                                                                    "ENABLE_DIFFUSE",
-                                                                                    "ENABLE_HEIGHT_FOG",
-                                                                                    "ENABLE_LIGHTNING", "USE_COLOR_FOG"
-                                                                            }));
-            break;
-        case ShaderType::TransparentLight:
-            shaderName = transparentLight;
-            shaderKeywords = ArrayW<StringW>(std::initializer_list<StringW>({
-                                                                                    "ENABLE_HEIGHT_FOG",
-                                                                                    "MULTIPLY_COLOR_WITH_ALPHA",
-                                                                                    "_ENABLE_MAIN_EFFECT_WHITE_BOOST"
-                                                                            }));
-            break;
-    }
-
-    auto shader = Shader::Find(shaderName);
-    auto material = Material::New_ctor(shader);
-
-    material->set_globalIlluminationFlags(globalIlluminationFlags);
-    material->set_enableInstancing(true);
-
-    if (shaderKeywords) {
-        material->set_shaderKeywords(shaderKeywords);
-    }
-
-    return material;
-}
-
-UnityEngine::Material *GeometryFactory::GetMaterial(Sombrero::FastColor const &color, ShaderType shaderType,
-                                                    std::optional<std::vector<std::string>> const &keywords) {
-    auto& material = _cachedMaterials[std::make_tuple(color, shaderType, keywords)];
-
-
-    if (material) return (Material *) material;
-
-    static SafePtr<Material> _standardMaterial = InstantiateSharedMaterial(ShaderType::Standard);
-    static SafePtr<Material> _opaqueLightMaterial = InstantiateSharedMaterial(ShaderType::OpaqueLight);
-    static SafePtr<Material> _transparentLightMaterial = InstantiateSharedMaterial(ShaderType::TransparentLight);
-
-
-    Material* originalMaterial;
-    switch (shaderType) {
-        default:
-            originalMaterial = (Material *) _standardMaterial;
-            break;
-        case ShaderType::OpaqueLight:
-            originalMaterial = (Material *) _opaqueLightMaterial;
-            break;
-        case ShaderType::TransparentLight:
-            originalMaterial = (Material *) _transparentLightMaterial;
-            break;
-    }
-
-
-    material = Object::Instantiate(originalMaterial);
-    material->set_color(color);
-    if (keywords)
-    {
-        auto sKeywords = ArrayW<StringW>(keywords->size());
-        for (int i = 0; i < keywords->size(); i++) {
-            sKeywords[i] = (*keywords)[i];
-        }
-        material->set_shaderKeywords(sKeywords);
-    }
-
-    return (Material *) material;
-}
-
-
-bool GeometryFactory::IsLightType(ShaderType shaderType) {
+bool Chroma::IsLightType(ShaderType shaderType) {
     return shaderType == ShaderType::OpaqueLight || shaderType == ShaderType::TransparentLight;;
 }
 

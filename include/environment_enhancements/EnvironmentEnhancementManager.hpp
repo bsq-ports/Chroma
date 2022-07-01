@@ -101,7 +101,6 @@ namespace Chroma {
     class EnvironmentEnhancementManager {
     private:
         inline static std::vector<GameObjectInfo> _globalGameObjectInfos;
-        inline static GeometryFactory geometryFactory;
 
         static std::vector<ByRef<const GameObjectInfo>> LookupId(std::string_view id, LookupMethod lookupMethod);
 

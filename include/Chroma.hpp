@@ -106,6 +106,8 @@ namespace Chroma {
         inline static constexpr const std::string_view ENVIRONMENT = "environment";
         inline static constexpr const std::string_view GAMEOBJECT_ID = "id";
         inline static constexpr const std::string_view GEOMETRY = "geometry";
+        inline static constexpr const std::string_view MATERIAL = "material";
+        inline static constexpr const std::string_view MATERIALS = "materials";
         inline static constexpr const std::string_view GEOMETRY_TYPE = "type";
         inline static constexpr const std::string_view SHADER_PRESET = "shader";
         inline static constexpr const std::string_view SHADER_KEYWORDS = "shaderKeywords";

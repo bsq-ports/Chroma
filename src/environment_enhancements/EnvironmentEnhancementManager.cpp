@@ -307,11 +307,11 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
     RingRotationOffsets.clear();
     ParametricBoxControllerParameters::TransformParameters.clear();
 
-    geometryFactory.reset();
-
     if (customDynWrapper) {
 
         rapidjson::Value const& dynData = *customDynWrapper;
+
+        GeometryFactory geometryFactory(MaterialsManager(dynData, trackBeatmapAD, v2));
 
         auto environmentData = dynData.FindMember(v2 ? NewConstants::V2_ENVIRONMENT.data() : NewConstants::ENVIRONMENT.data());
 
