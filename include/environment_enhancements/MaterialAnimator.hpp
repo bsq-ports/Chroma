@@ -9,6 +9,7 @@
 DECLARE_CLASS_CODEGEN(Chroma, MaterialAnimator, UnityEngine::MonoBehaviour,
 public:
       std::vector<MaterialInfo> materials;
+        uint32_t lastCheckedTime;
 
       DECLARE_INSTANCE_METHOD(void, Update);
 

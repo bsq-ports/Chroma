@@ -62,6 +62,7 @@ private:
 
     // This is retrived from the data map since Unity doesn't copy it.
     GameObjectTrackControllerData const* data;
+    uint32_t lastCheckedTime;
 
     DECLARE_INSTANCE_METHOD(void, Awake);
     DECLARE_INSTANCE_METHOD(void, Update);

@@ -15,8 +15,10 @@ DEFINE_TYPE(Chroma, GameObjectTrackController)
 using namespace Chroma;
 
 template<typename T>
-static constexpr std::optional<T> getPropertyNullable(Track* track, const std::optional<PropertyValue>& prop) {
-    auto ret = Animation::getPropertyNullable<T>(track, prop);
+static constexpr std::optional<T> getPropertyNullable(Track* track, const Property& prop, uint32_t  lastCheckedTime) {
+    if (prop.lastUpdated < lastCheckedTime) return std::nullopt;
+
+    auto ret = Animation::getPropertyNullable<T>(track, prop.value);
 
     if (GameObjectTrackController::LeftHanded) {
         if constexpr(std::is_same_v<T, NEVector::Vector3>) {
@@ -81,11 +83,11 @@ void Chroma::GameObjectTrackController::Update() {
         return;
     }
     const auto& properties = _track->properties;
-    const auto rotation = getPropertyNullable<NEVector::Quaternion>(_track, properties.rotation.value);
-    const auto localRotation = getPropertyNullable<NEVector::Quaternion>(_track, properties.localRotation.value);
-    const auto position = getPropertyNullable<NEVector::Vector3>(_track, properties.position.value);
-    const auto localPosition = getPropertyNullable<NEVector::Vector3>(_track, properties.localPosition.value);
-    const auto scale = getPropertyNullable<NEVector::Vector3>(_track, properties.scale.value);
+    const auto rotation = getPropertyNullable<NEVector::Quaternion>(_track, properties.rotation, lastCheckedTime);
+    const auto localRotation = getPropertyNullable<NEVector::Quaternion>(_track, properties.localRotation, lastCheckedTime);
+    const auto position = getPropertyNullable<NEVector::Vector3>(_track, properties.position, lastCheckedTime);
+    const auto localPosition = getPropertyNullable<NEVector::Vector3>(_track, properties.localPosition, lastCheckedTime);
+    const auto scale = getPropertyNullable<NEVector::Vector3>(_track, properties.scale, lastCheckedTime);
 
     auto transform = get_transform();
 
@@ -205,6 +207,8 @@ void Chroma::GameObjectTrackController::Update() {
         ParametricBoxControllerParameters::SetTransformPosition(_parametricBoxController, transform->get_localPosition());
         ParametricBoxControllerParameters::SetTransformScale(_parametricBoxController, transform->get_localScale());
     }
+
+    lastCheckedTime = getCurrentTime();
 }
 
 void Chroma::GameObjectTrackController::Init(Track *track, float noteLinesDistance,
