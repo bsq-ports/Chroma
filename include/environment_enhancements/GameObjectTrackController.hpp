@@ -64,6 +64,8 @@ private:
     GameObjectTrackControllerData const* data;
     uint32_t lastCheckedTime;
 
+    void UpdateData(bool force);
+
     DECLARE_INSTANCE_METHOD(void, Awake);
     DECLARE_INSTANCE_METHOD(void, Update);
     DECLARE_INSTANCE_METHOD(void, OnTransformParentChanged);

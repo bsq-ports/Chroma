@@ -15,7 +15,7 @@ DEFINE_TYPE(Chroma, GameObjectTrackController)
 using namespace Chroma;
 
 template<typename T>
-static constexpr std::optional<T> getPropertyNullable(Track* track, const Property& prop, uint32_t  lastCheckedTime) {
+static constexpr std::optional<T> getPropertyNullable(Track* track, const Property& prop, uint32_t lastCheckedTime) {
     if (prop.lastUpdated < lastCheckedTime) return std::nullopt;
 
     auto ret = Animation::getPropertyNullable<T>(track, prop.value);
@@ -53,9 +53,14 @@ void GameObjectTrackController::Awake() {
 
 void GameObjectTrackController::OnTransformParentChanged() {
     parent = get_transform()->get_parent();
+    UpdateData(true);
 }
 
-void Chroma::GameObjectTrackController::Update() {
+void GameObjectTrackController::Update() {
+    UpdateData(false);
+}
+
+void Chroma::GameObjectTrackController::UpdateData(bool force) {
     if (!data) {
         auto it = _dataMap.find(id);
 
@@ -82,6 +87,10 @@ void Chroma::GameObjectTrackController::Update() {
         Destroy(this);
         return;
     }
+    if (force) {
+        lastCheckedTime = 0;
+    }
+
     const auto& properties = _track->properties;
     const auto rotation = getPropertyNullable<NEVector::Quaternion>(_track, properties.rotation, lastCheckedTime);
     const auto localRotation = getPropertyNullable<NEVector::Quaternion>(_track, properties.localRotation, lastCheckedTime);
