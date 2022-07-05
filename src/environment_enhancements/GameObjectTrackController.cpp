@@ -16,7 +16,7 @@ using namespace Chroma;
 
 template<typename T>
 static constexpr std::optional<T> getPropertyNullable(Track* track, const Property& prop, uint32_t lastCheckedTime) {
-    if (prop.lastUpdated < lastCheckedTime) return std::nullopt;
+    if (lastCheckedTime != 0 && prop.lastUpdated != 0 && prop.lastUpdated < lastCheckedTime) return std::nullopt;
 
     auto ret = Animation::getPropertyNullable<T>(track, prop.value);
 
@@ -48,11 +48,16 @@ void Chroma::GameObjectTrackController::ClearData() {
 }
 
 void GameObjectTrackController::Awake() {
+//    OnTransformParentChanged();
+}
+
+void GameObjectTrackController::OnEnable() {
     OnTransformParentChanged();
 }
 
 void GameObjectTrackController::OnTransformParentChanged() {
-    parent = get_transform()->get_parent();
+    origin = get_transform();
+    parent = origin->get_parent();
     UpdateData(true);
 }
 
@@ -98,7 +103,7 @@ void Chroma::GameObjectTrackController::UpdateData(bool force) {
     const auto localPosition = getPropertyNullable<NEVector::Vector3>(_track, properties.localPosition, lastCheckedTime);
     const auto scale = getPropertyNullable<NEVector::Vector3>(_track, properties.scale, lastCheckedTime);
 
-    auto transform = get_transform();
+    auto transform = origin;
 
     auto transformParent = parent;
 
@@ -132,7 +137,7 @@ void Chroma::GameObjectTrackController::UpdateData(bool force) {
         }
     }
 
-    if (localRotation)
+    else if (localRotation)
     {
         if (_trackLaneRing)
         {
@@ -182,7 +187,7 @@ void Chroma::GameObjectTrackController::UpdateData(bool force) {
         }
     }
 
-    if (localPosition)
+    else if (localPosition)
     {
         NEVector::Vector3 localPositionValue = localPosition.value();
         if (data->v2) {

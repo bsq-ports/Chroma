@@ -57,16 +57,18 @@ private:
 
     DECLARE_INSTANCE_FIELD(int, id);
     DECLARE_INSTANCE_FIELD(UnityEngine::Transform*, parent);
+    DECLARE_INSTANCE_FIELD(UnityEngine::Transform*, origin);
 
 
 
     // This is retrived from the data map since Unity doesn't copy it.
     GameObjectTrackControllerData const* data;
-    uint32_t lastCheckedTime;
+    uint64_t lastCheckedTime;
 
     void UpdateData(bool force);
 
     DECLARE_INSTANCE_METHOD(void, Awake);
+    DECLARE_INSTANCE_METHOD(void, OnEnable);
     DECLARE_INSTANCE_METHOD(void, Update);
     DECLARE_INSTANCE_METHOD(void, OnTransformParentChanged);
 public:

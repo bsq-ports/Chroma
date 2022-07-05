@@ -61,8 +61,8 @@ LightColorizer::LightColorizer(ChromaLightSwitchEventEffect *lightSwitchEventEff
 
         Lights.emplace_back(light);
 
-        auto object = il2cpp_utils::cast<Il2CppObject>(light);
-        auto monoBehaviour = il2cpp_utils::try_cast<MonoBehaviour>(object);
+        auto object = SafePtr(il2cpp_utils::cast<Il2CppObject>(light));
+        auto monoBehaviour = il2cpp_utils::try_cast<MonoBehaviour>((Il2CppObject*) object);
 
         if (!monoBehaviour) continue;
 
