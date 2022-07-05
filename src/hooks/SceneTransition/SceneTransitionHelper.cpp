@@ -88,6 +88,7 @@ void SceneTransitionHelper::Patch(GlobalNamespace::IDifficultyBeatmap* customBea
             }
         }
     } else {
+        CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Not a custom diff");
         BasicPatch(nullptr, nullptr);
     }
 }
@@ -96,7 +97,6 @@ void SceneTransitionHelper::Patch(GlobalNamespace::IDifficultyBeatmap* customBea
 
 bool SceneTransitionHelper::BasicPatch(GlobalNamespace::IDifficultyBeatmap* customBeatmapDifficultyData, CustomJSONData::v3::CustomBeatmapSaveData* customBeatmapDataCustom) {
     CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Custom diff {} save data {}", fmt::ptr(customBeatmapDifficultyData), fmt::ptr(customBeatmapDataCustom));
-    Paper::Logger::Backtrace(CJDLogger::Logger.tag, 20);
     ChromaController::TutorialMode = false;
 
     bool chromaRequirement = false;
