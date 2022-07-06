@@ -7,6 +7,8 @@
 
 #include "GlobalNamespace/LightWithIdMonoBehaviour.hpp"
 #include "GlobalNamespace/LightWithIds.hpp"
+#include "GlobalNamespace/LightWithIds_LightWithId.hpp"
+#include "GlobalNamespace/ILightWithId.hpp"
 #include "GlobalNamespace/TrackLaneRing.hpp"
 #include "GlobalNamespace/TrackLaneRingsManager.hpp"
 #include "GlobalNamespace/TrackLaneRingsPositionStepEffectSpawner.hpp"
@@ -30,8 +32,13 @@
 #include "System/Collections/Generic/List_1.hpp"
 
 #include "beatsaber-hook/shared/utils/il2cpp-utils.hpp"
+#include "System/Linq/Enumerable.hpp"
+#include "hooks/LightWithIdManager.hpp"
+#include "utils/ChromaUtils.hpp"
 
 #include <functional>
+
+#include "beatsaber-hook/shared/utils/typedefs-disposal.hpp"
 
 
 using namespace GlobalNamespace;
@@ -56,34 +63,19 @@ static void constexpr GetComponentAndOriginal(UnityEngine::Transform* root, Unit
 
 GameObjectInfo const&
 Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root, UnityEngine::Transform *original, std::vector<GameObjectInfo>& gameObjectInfos, std::vector<std::shared_ptr<IComponentData>>& componentDatas, std::optional<int>& lightId) {
-    //     GetComponentAndOriginal<LightWithIdMonoBehaviour>(root, original, [&](LightWithIdMonoBehaviour* rootComponent, LightWithIdMonoBehaviour* originalComponent) {
-    //        rootComponent->lightManager = originalComponent->lightManager;
-    //        LightColorizer::NeedToRegister.emplace(reinterpret_cast<ILightWithId*>(rootComponent));
-    //        if (lightId.has_value()) {
-    //            LightColorizer::RequestedIDs[reinterpret_cast<ILightWithId*>(rootComponent)] = *lightId;
-    //        }
-    //    });
-    //
-    //    GetComponentAndOriginal<LightWithIds>(root, original, [&](LightWithIds* rootComponent, LightWithIds* originalComponent) {
-    //        rootComponent->lightManager = originalComponent->lightManager;
-    //        // cross fingers no stripping
-    //        auto lightsWithIdArray = System::Linq::Enumerable::ToArray(rootComponent->lightWithIds);
-    //
-    //        for (auto const& lightIdData : lightsWithIdArray) {
-    //            LightColorizer::NeedToRegister.emplace(reinterpret_cast<ILightWithId*>(lightIdData));
-    //            if (lightId.has_value()) {
-    //                LightColorizer::RequestedIDs[reinterpret_cast<ILightWithId*>(lightIdData)] = *lightId;
-    //            }
-    //        }
-    //    });
-    GetComponentAndOriginal<LightWithIdMonoBehaviour>(root, original, [&](LightWithIdMonoBehaviour* rootComponent, LightWithIdMonoBehaviour* originalComponent) constexpr {
+     GetComponentAndOriginal<LightWithIdMonoBehaviour>(root, original, [&](LightWithIdMonoBehaviour* rootComponent, LightWithIdMonoBehaviour* originalComponent) {
         rootComponent->lightManager = originalComponent->lightManager;
-        LightColorizer::RegisterLight(rootComponent, lightId);
+        LightIdRegisterer::MarkForTableRegister(rootComponent->i_ILightWithId());
     });
 
-    GetComponentAndOriginal<LightWithIds>(root, original, [&](LightWithIds* rootComponent, LightWithIds* originalComponent) constexpr {
+    GetComponentAndOriginal<LightWithIds>(root, original, [&](LightWithIds* rootComponent, LightWithIds* originalComponent) {
         rootComponent->lightManager = originalComponent->lightManager;
-        LightColorizer::RegisterLight(rootComponent, lightId);
+        // cross fingers no stripping
+        auto lightsWithIdArray = System::Linq::Enumerable::ToArray(rootComponent->lightWithIds);
+
+        for (auto const& lightIdData : lightsWithIdArray) {
+            LightIdRegisterer::MarkForTableRegister(lightIdData->i_ILightWithId());
+        }
     });
 
     GetComponentAndOriginal<TrackLaneRing>(root, original, [&](TrackLaneRing* rootComponent, TrackLaneRing* originalComponent) {
@@ -290,5 +282,76 @@ ComponentInitializer::PostfillComponentsData(UnityEngine::Transform *root, Unity
         auto transform = root->GetChild(i);
         auto index = transform->GetSiblingIndex();
         PostfillComponentsData(transform, original->GetChild(index), componentDatas);
+    }
+}
+
+void ComponentInitializer::InitializeLights(UnityEngine::GameObject *go, rapidjson::Value const &data, bool v2) {
+    std::vector<ILightWithId*> lightWithIds;
+
+    auto someLightWithIds = go->GetComponents<LightWithIds*>();
+    for (auto const& n : someLightWithIds) {
+        if (!n->lightWithIds) continue;
+
+        auto enumerator = n->lightWithIds->GetEnumerator();
+
+        // MEMORY LEAK YAY
+        // TODO: Fix
+        //        auto dispose = bs_hook::Disposable(enumerator->i_IDisposable());
+
+        while (enumerator->i_IEnumerator()->MoveNext()) {
+            auto e = enumerator->get_Current();
+            lightWithIds.emplace_back(e->i_ILightWithId());
+        }
+    }
+
+    auto otherLights = go->GetComponents<LightWithIdMonoBehaviour*>();
+    for (auto const& n : otherLights) {lightWithIds.emplace_back(n->i_ILightWithId());};
+
+    if (lightWithIds.empty()) return;
+
+    auto lightID = ChromaUtils::getIfExists<int>(data, v2 ? NewConstants::V2_LIGHT_ID : NewConstants::LIGHT_ID);
+    auto type = ChromaUtils::getIfExists<int>(data, NewConstants::LIGHT_TYPE);
+
+    if (!type && !lightID) {
+        return;
+    }
+
+    auto SetType = [&](auto&& lightWithId) {
+        if (!type) {
+            return;
+        }
+
+        int lightId = LightColorizer::GetLightColorizer(*type)->_lightSwitchEventEffect->lightsID;
+
+        auto monoBehaviourCast = il2cpp_utils::try_cast<LightWithIdMonoBehaviour>(lightWithId);
+
+        if (monoBehaviourCast) {
+            monoBehaviourCast.value()->_ID = *lightID;
+        } else {
+            auto lightWithIdsCast = il2cpp_utils::try_cast<LightWithIds::LightWithId>(lightWithId);
+
+            if (lightWithIdsCast) {
+                lightWithIdsCast.value()->lightId = lightId;
+            }
+        }
+    };
+
+    auto SetLightID = [&](auto&& lightWithId) {
+        if (lightID) {
+            LightIdRegisterer::SetRequestedId(lightWithId, *lightID);
+        }
+    };
+
+    for (auto const& lightWithId : lightWithIds) {
+        if (lightWithId->get_isRegistered()) {
+            LightIdRegisterer::ForceUnregister(lightWithId);
+            LightIdRegisterer::MarkForTableRegister(lightWithId);
+            SetType(lightWithId);
+            SetLightID(lightWithId);
+            LightIdRegisterer::lightWithIdManager->RegisterLight(lightWithId);
+        } else {
+            SetType(lightWithId);
+            SetLightID(lightWithId);
+        }
     }
 }

@@ -40,12 +40,11 @@ LightColorizer::LightColorizer(ChromaLightSwitchEventEffect *lightSwitchEventEff
 
 
     // AAAAAA PROPAGATION STUFFF
-    System::Collections::Generic::List_1<GlobalNamespace::ILightWithId *> *lightList = lightManager->lights.get(lightSwitchEventEffect->lightsID);
-    ArrayW<ILightWithId *> lightArray = lightList->items;
+    Lights = lightManager->lights.get(lightSwitchEventEffect->lightsID);
 
-
-    Lights = std::vector<ILightWithId *>();
-    Lights.reserve(lightArray.Length());
+    if(!Lights) {
+        Lights = lightManager->lights.get(lightSwitchEventEffect->lightsID) = System::Collections::Generic::List_1<::GlobalNamespace::ILightWithId*>::New_ctor(10);
+    }
 
 
     // Keep track of order
@@ -56,10 +55,8 @@ LightColorizer::LightColorizer(ChromaLightSwitchEventEffect *lightSwitchEventEff
 
     auto managers = UnityEngine::Object::FindObjectsOfType<TrackLaneRingsManager *>();
 
-    for (auto light : lightArray) {
+    for (auto light : Lights) {
         if (light == nullptr) continue;
-
-        Lights.emplace_back(light);
 
         auto object = SafePtr(il2cpp_utils::cast<Il2CppObject>(light));
         auto monoBehaviour = il2cpp_utils::try_cast<MonoBehaviour>((Il2CppObject*) object);
@@ -124,10 +121,8 @@ LightColorizer::LightColorizer(ChromaLightSwitchEventEffect *lightSwitchEventEff
 
 LightColorizer & LightColorizer::New(ChromaLightSwitchEventEffect *lightSwitchEventEffect,
                                      GlobalNamespace::LightWithIdManager *lightManager) {
-    CRASH_UNLESS(!Colorizers.contains(lightSwitchEventEffect->event.value));
-
-    auto& light = Colorizers.try_emplace(lightSwitchEventEffect->event, lightSwitchEventEffect, lightManager).first->second;
-    ColorizersByLightID.try_emplace(lightSwitchEventEffect->lightsID, &light);
+    auto& light = Colorizers.emplace(lightSwitchEventEffect->event, LightColorizer(lightSwitchEventEffect, lightManager)).first->second;
+    ColorizersByLightID[lightSwitchEventEffect->lightsID] = &light;
     return light;
 }
 
@@ -152,39 +147,6 @@ void LightColorizer::GlobalColorize(bool refresh, std::optional<std::vector<Glob
     }
 }
 
-void LightColorizer::RegisterLight(UnityEngine::MonoBehaviour *lightWithId, std::optional<int> lightId) {
-    auto const RegisterLightWithID = [&lightId](ILightWithId* lightToRegister) {
-        int type = lightToRegister->get_lightId();
-        if (type == -1) return;
-        getLogger().debug("Registering light type %i", type);
-        // TODO: Figure out -1 light ids
-        auto lightColorizer = GetLightColorizerLightID(type);
-        auto index = lightColorizer->Lights.size();
-        LightIDTableManager::RegisterIndex(type, index, lightId);
-
-        lightColorizer->_lightSwitchEventEffect->RegisterLight(lightToRegister, type, index);
-        lightColorizer->Lights.emplace_back(lightToRegister);
-    };
-
-    auto monoBehaviourCast = il2cpp_utils::try_cast<LightWithIdMonoBehaviour>(lightWithId);
-
-    if (monoBehaviourCast) {
-        RegisterLightWithID(reinterpret_cast<ILightWithId *>(monoBehaviourCast.value()));
-        return;
-    }
-
-    auto lightWithIdsCast = il2cpp_utils::try_cast<LightWithIds>(lightWithId);
-
-    if (lightWithIdsCast) {
-        auto lightWithIds = *lightWithIdsCast;
-        auto lightsWithIdArray = System::Linq::Enumerable::ToArray(lightWithIds->lightWithIds);
-
-        for (auto const& lightIdData : lightsWithIdArray) {
-            RegisterLightWithID(il2cpp_utils::cast<ILightWithId>(lightIdData));
-        }
-    }
-}
-
 void LightColorizer::Reset() {
     for (int i = 0; i < COLOR_FIELDS; i++)
     {
@@ -193,6 +155,10 @@ void LightColorizer::Reset() {
     Colorizers.clear();
     ColorizersByLightID.clear();
     LightColorChanged.clear();
+    _contracts.clear();
+    _contractsByLightID.clear();
+    _contracts.shrink_to_fit();
+    _contractsByLightID.shrink_to_fit();
 }
 
 void LightColorizer::InitializeSO(ColorSO *&lightColor0, ColorSO *&highlightColor0, ColorSO *&lightColor1,
@@ -239,7 +205,7 @@ std::vector<ILightWithId *> LightColorizer::GetPropagationLightWithIds(const std
     {
         if (lightCount > id)
         {
-            auto const& lights = LightsPropagationGrouped[id];
+            auto const& lights = LightsPropagationGrouped.at(id);
 
             for (auto light : lights) {
                 result.push_back(light);
@@ -250,7 +216,7 @@ std::vector<ILightWithId *> LightColorizer::GetPropagationLightWithIds(const std
     return result;
 }
 
-std::vector<ILightWithId *> LightColorizer::GetLightWithIds(std::vector<int> const &ids) {
+std::vector<ILightWithId *> LightColorizer::GetLightWithIds(std::vector<int> const &ids) const {
     std::vector<ILightWithId*> result;
     result.reserve(ids.size());
 
@@ -265,12 +231,60 @@ std::vector<ILightWithId *> LightColorizer::GetLightWithIds(std::vector<int> con
         {
             result.push_back(lightWithId);
         }
-        else
-        {
-            getLogger().error("Type [%i] does not contain id [%i].", lightId, id);
-        }
     }
 
     return result;
 }
 
+void
+LightColorizer::CreateLightColorizerContractByLightID(int lightId, std::function<void(LightColorizer &)> callback) {
+    auto it = ColorizersByLightID.find(lightId);
+
+    if (it != ColorizersByLightID.end())
+    {
+        callback(*it->second);
+    }
+    else
+    {
+        _contractsByLightID.emplace_back(lightId, callback);
+    }
+}
+
+void LightColorizer::CreateLightColorizerContract(BasicBeatmapEventType type,
+                                                  std::function<void(LightColorizer &)> callback) {
+    auto it = Colorizers.find(type);
+
+    if (it != Colorizers.end())
+    {
+        callback(it->second);
+    }
+    else
+    {
+        _contracts.emplace_back(type, callback);
+    }
+}
+
+void LightColorizer::CompleteContracts(ChromaLightSwitchEventEffect* chromaLightSwitchEventEffect) {
+    // complete open contracts
+    for (auto it = _contracts.begin(); it != _contracts.end(); ) {
+        auto const& [type, callback] = *it;
+        if (type != chromaLightSwitchEventEffect->EventType) {
+            it++;
+            continue;
+        }
+
+        callback(*chromaLightSwitchEventEffect->lightColorizer);
+        it = _contracts.erase(it);
+    }
+
+    for (auto it = _contractsByLightID.begin(); it != _contractsByLightID.end(); ) {
+        auto const& [lightId, callback] = *it;
+        if (lightId != chromaLightSwitchEventEffect->lightsID) {
+            it++;
+            continue;
+        }
+
+        callback(*chromaLightSwitchEventEffect->lightColorizer);
+        it = _contractsByLightID.erase(it);
+    }
+}

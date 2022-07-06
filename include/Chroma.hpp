@@ -104,6 +104,7 @@ namespace Chroma {
         inline static constexpr const std::string_view NOTE_SPAWN_EFFECT = "spawnEffect";
         inline static constexpr const std::string_view LERP_TYPE = "lerpType";
         inline static constexpr const std::string_view LIGHT_ID = "lightID";
+        inline static constexpr const std::string_view LIGHT_TYPE = "type";
         inline static constexpr const std::string_view LOCK_POSITION = "lockRotation";
         inline static constexpr const std::string_view NAME_FILTER = "nameFilter";
         inline static constexpr const std::string_view PROP = "prop";

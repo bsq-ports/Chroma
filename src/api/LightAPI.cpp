@@ -67,7 +67,7 @@ using LightMap = std::vector<GlobalNamespace::ILightWithId *>;
 
 EXPOSE_API(getLightsSafe, LightMap*, GlobalNamespace::LightSwitchEventEffect *lse) {
     auto vectorOrg = LightColorizer::GetLightColorizer(lse->event)->Lights;
-    auto vectorPtr = new LightMap(std::move(vectorOrg));
+    auto vectorPtr = new LightMap(vectorOrg.begin(), vectorOrg.end());
 
     return vectorPtr;
 }

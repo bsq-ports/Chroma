@@ -26,6 +26,9 @@ void LightIDTableManager::SetEnvironment(std::string_view environmentName) {
     if (it == lightIdTable.end()) {
         getLogger().warning("Table not found for %s", environmentName.data());
         activeTable = EnvironmentLightDataT();
+        for (int i = 0; i < 10; i++){
+            activeTable.value()[i] = {};
+        }
     } else {
         getLogger().debug("Set the environment as %s", environmentName.data());
         auto map = it->second;
@@ -49,15 +52,16 @@ void LightIDTableManager::RegisterIndex(int lightId, int index, std::optional<in
         if (dictioanry.empty()) {
             key = 0;
         } else {
-            key = std::max_element(dictioanry.begin(), dictioanry.end())->first + 1;
+            for (auto const& [k, _] : dictioanry) {
+                key = std::max(key, k);
+            }
+
+            key++;
         }
     }
 
-    dictioanry.emplace(key, index);
-    if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue())
-    {
-        getLogger().info("Registered key [%d] to type [%d]", key, lightId);
-    }
+    dictioanry[key] = index;
+    getLogger().info("Registered key [%d] to type [%d]", key, lightId);
 }
 
 void LightIDTableManager::AddEnvironment(InstallEnvironmentFunc environmentData) {
@@ -66,5 +70,25 @@ void LightIDTableManager::AddEnvironment(InstallEnvironmentFunc environmentData)
         lightIdTable.try_emplace(environmentData.first, environmentData.second);
     } else {
         environmentsToInstall.try_emplace(environmentData.first, environmentData.second);
+    }
+}
+
+void LightIDTableManager::UnregisterIndex(int lightID, int index) {
+    if (!activeTable) {
+        return;
+    }
+
+    auto it = activeTable->find(lightID);
+    if (it == activeTable->end()) return;
+
+    auto& map = it->second;
+
+
+    for (auto const [key, n] : map) {
+        if (n == index) {
+            map.erase(key);
+            getLogger().info("Unregistered key [%d] from lightid [%d]", key, lightID);
+            return;
+        }
     }
 }

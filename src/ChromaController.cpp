@@ -30,6 +30,7 @@
 #include "hooks/TrackLaneRingsManager.hpp"
 
 #include "custom-types/shared/coroutine.hpp"
+#include "hooks/LightWithIdManager.hpp"
 
 #include <vector>
 
@@ -99,6 +100,7 @@ void ChromaController::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene 
     getLogger().debug("Clear scene");
 
     if (current && current.IsValid() && current.get_name() == "GameCore") {
+        CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Clearing all data");
         ChromaGradientController::clearInstance();
         TrackLaneRingsManagerHolder::RingManagers.clear();
         TrackLaneRingsManagerHolder::RingManagers.shrink_to_fit(); // Deallocate unnecessary used memory
@@ -108,6 +110,7 @@ void ChromaController::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene 
         NoteColorizer::Reset();
         SaberColorizer::Reset();
         ParticleColorizer::Reset();
+        LightIdRegisterer::Reset();
     }
 }
 

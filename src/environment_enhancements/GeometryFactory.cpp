@@ -15,6 +15,7 @@
 #include "GlobalNamespace/ParametricBoxController.hpp"
 #include "GlobalNamespace/SaberModelContainer.hpp"
 #include "GlobalNamespace/TubeBloomPrePassLightWithId.hpp"
+#include "hooks/LightWithIdManager.hpp"
 
 using namespace Chroma;
 using namespace GlobalNamespace;
@@ -156,6 +157,8 @@ GameObject * Chroma::GeometryFactory::Create(rapidjson::Value const &data) {
 
     auto tubeBloomPrePassLightWithId = instantiator->InstantiateComponent<TubeBloomPrePassLightWithId*>(go);
     tubeBloomPrePassLightWithId->tubeBloomPrePassLight = tubeBloomPrePassLight;
+
+    LightIdRegisterer::MarkForTableRegister(tubeBloomPrePassLightWithId->i_ILightWithId());
 
     go->SetActive(true);
 

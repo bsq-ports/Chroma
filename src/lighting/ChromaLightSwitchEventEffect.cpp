@@ -2,7 +2,9 @@
 #include "lighting/ChromaEventData.hpp"
 #include "lighting/LegacyLightHelper.hpp"
 #include "lighting/ChromaGradientController.hpp"
+
 #include "GlobalNamespace/EnvironmentColorType.hpp"
+#include "GlobalNamespace/ColorManager.hpp"
 
 #include "Tweening/SongTimeTweeningManager.hpp"
 #include "lighting/LightIDTableManager.hpp"
@@ -13,6 +15,25 @@ using namespace GlobalNamespace;
 using namespace UnityEngine;
 
 DEFINE_TYPE(Chroma, ChromaLightSwitchEventEffect);
+
+
+constexpr static GlobalNamespace::EnvironmentColorType GetLightColorTypeFromEventDataValue(int beatmapEventValue)
+{
+    if (beatmapEventValue == 1 || beatmapEventValue == 2 || beatmapEventValue == 3 || beatmapEventValue == 4 || beatmapEventValue == 0 || beatmapEventValue == -1)
+    {
+        return EnvironmentColorType::Color0;
+    }
+    if (beatmapEventValue == 5 || beatmapEventValue == 6 || beatmapEventValue == 7 || beatmapEventValue == 8)
+    {
+        return EnvironmentColorType::Color1;
+    }
+    if (beatmapEventValue == 9 || beatmapEventValue == 10 || beatmapEventValue == 11 || beatmapEventValue == 12)
+    {
+        return EnvironmentColorType::ColorW;
+    }
+    return EnvironmentColorType::Color0;
+}
+
 
 std::unordered_set<ChromaLightSwitchEventEffect*> ChromaLightSwitchEventEffect::livingLightSwitch;
 
@@ -41,14 +62,28 @@ void Chroma::ChromaLightSwitchEventEffect::CopyValues(GlobalNamespace::LightSwit
     _originalLightColor1Boost = lightColor1Boost;
     lightColorizer->InitializeSO(lightColor0, highlightColor0, lightColor1, highlightColor1, lightColor0Boost, highlightColor0Boost, lightColor1Boost, highlightColor1Boost);
 
-    auto const& lights = lightColorizer->Lights;
-    for (int i = 0; i < lights.size(); i++)
-    {
-        RegisterLight(lights[i], (int)event, i);
-    }
+    auto Initialize = [](auto&& so, Sombrero::FastColor& color) {
+        if (auto multi = il2cpp_utils::try_cast<MultipliedColorSO>(so)) {
+            color = multi.value()->multiplierColor;
+        } else {
+            color = Sombrero::FastColor::white();
+        }
+    };
 
-    Sombrero::FastColor color = lightOnStart ? lightColor0->get_color() : static_cast<Sombrero::FastColor>(lightColor0->get_color()).Alpha(offColorIntensity);
-    SetColor(color);
+    Initialize(lightColor0, _lightColor0Mult);
+    Initialize(lightColor1, _lightColor1Mult);
+    Initialize(highlightColor0, _highlightColor0Mult);
+    Initialize(highlightColor1, _highlightColor1Mult);
+    Initialize(lightColor0Boost, _lightColor0BoostMult);
+    Initialize(lightColor1Boost, _lightColor1BoostMult);
+    Initialize(highlightColor0Boost, _highlightColor0BoostMult);
+    Initialize(highlightColor1Boost, _highlightColor1BoostMult);
+
+
+    LightColorizer::CompleteContracts(this);
+
+//    Sombrero::FastColor color = lightOnStart ? lightColor0->get_color() : static_cast<Sombrero::FastColor>(lightColor0->get_color()).Alpha(offColorIntensity);
+//    SetColor(color);
 }
 
 void Chroma::ChromaLightSwitchEventEffect::HandleEvent(GlobalNamespace::BasicBeatmapEventData *beatmapEventData) {
@@ -147,26 +182,6 @@ void Chroma::ChromaLightSwitchEventEffect::OnDestroy() {
     LightColorizer::Colorizers.erase(event);
 }
 
-void Chroma::ChromaLightSwitchEventEffect::RegisterLight(GlobalNamespace::ILightWithId *lightWithId, int type, int id) {
-    using namespace Sombrero;
-    if (!ColorTweens.contains(lightWithId))
-    {
-        auto color = GetNormalColor(0, usingBoostColors);
-        if (!this->lightOnStart) {
-            color = color.Alpha(this->offColorIntensity);
-        }
-
-
-        auto tween = CRASH_UNLESS(ChromaIDColorTween::New_ctor(color, color, lightWithId, lightManager, LightIDTableManager::GetActiveTableValueReverse(this->lightsID, id).value_or(0)));
-        ColorTweens[lightWithId] = tween;
-        tween->ForceOnUpdate();
-    }
-    else
-    {
-        getLogger().error("Attempted to register duplicate ILightWithId.");
-    }
-}
-
 Sombrero::FastColor
 Chroma::ChromaLightSwitchEventEffect::GetOriginalColor(int beatmapEventValue, bool colorBoost) const {
     if (colorBoost)
@@ -239,7 +254,8 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, const std::optional<std::v
 
             float nextFloatValue = nextSameTypeEvent->floatValue;
             int nextValue = nextSameTypeEvent->value;
-            Sombrero::FastColor nextColor = GetOriginalColor(nextValue, boost);
+            EnvironmentColorType nextColorType = GetLightColorTypeFromEventDataValue(nextSameTypeEvent->value);
+            Sombrero::FastColor nextColor;
 
             eventDataIt = ChromaEventDataManager::ChromaEventDatas.find(nextSameTypeEvent);
             if (!nextEventData)
@@ -248,6 +264,27 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, const std::optional<std::v
             std::optional<Sombrero::FastColor> nextColorData = nextEventData ? nextEventData->ColorData : std::nullopt;
             if (nextColorData) {
                 nextColor = nextColorData->Alpha(nextColorData->a * nextColor.a);
+            }
+
+            if (nextColorType != EnvironmentColorType::ColorW && nextColorData) {
+                Sombrero::FastColor multiplierColor;
+                if (usingBoostColors) {
+                    if (nextColorType == EnvironmentColorType::Color1) {
+                        multiplierColor = _highlightColor1BoostMult;
+                    }
+
+                    multiplierColor = _highlightColor0BoostMult;
+                } else {
+                    if (nextColorType == EnvironmentColorType::Color1) {
+                        multiplierColor = _highlightColor1Mult;
+                    }
+
+                    multiplierColor = _highlightColor0Mult;
+                }
+
+                nextColor = nextColorData.value() * multiplierColor;
+            } else {
+                nextColor = GetNormalColor(nextValue, usingBoostColors);
             }
 
             nextColor.a *= nextFloatValue;
@@ -292,8 +329,10 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, const std::optional<std::v
             }
             case 1:
             case 5:
+            case 9:
             case 4:
-            case 8: {
+            case 8:
+            case 12: {
                 if (hard) {
                     tween->Kill();
                 }
@@ -310,7 +349,8 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, const std::optional<std::v
 
 
             case 2:
-            case 6: {
+            case 6:
+            case 10: {
                 Color colorFrom = GetHighlightColor(previousValue, boost);
                 colorFrom.a *= previousFloatValue; // MultAlpha
                 Color colorTo = GetNormalColor(previousValue, boost);
@@ -331,6 +371,7 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, const std::optional<std::v
 
             case 3:
             case 7:
+            case 11:
             case -1: {
                 Color colorFrom = GetHighlightColor(previousValue, boost);
                 colorFrom.a *= previousFloatValue; // MultAlpha
@@ -354,66 +395,83 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, const std::optional<std::v
     }
 }
 
-//constexpr static GlobalNamespace::EnvironmentColorType GetLightColorTypeFromEventDataValue(int beatmapEventValue)
-//{
-//    if (beatmapEventValue == 1 || beatmapEventValue == 2 || beatmapEventValue == 3 || beatmapEventValue == 4 || beatmapEventValue == 0 || beatmapEventValue == -1)
-//    {
-//        return EnvironmentColorType::Color0;
-//    }
-//    if (beatmapEventValue == 5 || beatmapEventValue == 6 || beatmapEventValue == 7 || beatmapEventValue == 8)
-//    {
-//        return EnvironmentColorType::Color1;
-//    }
-//    if (beatmapEventValue == 9 || beatmapEventValue == 10 || beatmapEventValue == 11 || beatmapEventValue == 12)
-//    {
-//        return EnvironmentColorType::ColorW;
-//    }
-//    return EnvironmentColorType::Color0;
-//}
-
 // improve speed, avoid codegen
 constexpr bool ChromaLightSwitchEventEffect::IsColor0(int beatmapEventValue) {
     return beatmapEventValue == 1 || beatmapEventValue == 2 || beatmapEventValue == 3 || beatmapEventValue == 4 || beatmapEventValue == 0 || beatmapEventValue == -1;
 }
 
 Sombrero::FastColor ChromaLightSwitchEventEffect::GetNormalColor(int beatmapEventValue, bool colorBoost) {
-    if (colorBoost)
-    {
-        if (!this->IsColor0(beatmapEventValue))
-        {
-            return this->lightColor1Boost->get_color();
+    switch (GetLightColorTypeFromEventDataValue(beatmapEventValue)) {
+        default: {
+            if (colorBoost) {
+                return lightColorizer->getColor()[2] * _lightColor0BoostMult;
+            }
+            return lightColorizer->getColor()[0] * _lightColor0Mult;
         }
-        return this->lightColor0Boost->get_color();
-    }
-    else
-    {
-        if (!this->IsColor0(beatmapEventValue))
-        {
-            return this->lightColor1->get_color();
+        case EnvironmentColorType::Color1:{
+            if (colorBoost) {
+                return lightColorizer->getColor()[3] * _lightColor1BoostMult;
+            }
+            return lightColorizer->getColor()[1] * _lightColor1Mult;
         }
-        return this->lightColor0->get_color();
+        case EnvironmentColorType::ColorW: {
+            return colorManager->ColorForType(EnvironmentColorType::ColorW, colorBoost);
+        }
     }
 }
 
 Sombrero::FastColor ChromaLightSwitchEventEffect::GetHighlightColor(int beatmapEventValue, bool colorBoost) {
-    if (colorBoost)
-    {
-        if (!this->IsColor0(beatmapEventValue))
-        {
-            return this->highlightColor1Boost->get_color();
+    switch (GetLightColorTypeFromEventDataValue(beatmapEventValue)) {
+        default: {
+            if (colorBoost) {
+                return lightColorizer->getColor()[2] * _highlightColor0BoostMult;
+            }
+            return lightColorizer->getColor()[0] * _highlightColor0Mult;
         }
-        return this->highlightColor0Boost->get_color();
-    }
-    else
-    {
-        if (!this->IsColor0(beatmapEventValue))
-        {
-            return this->highlightColor1->get_color();
+        case EnvironmentColorType::Color1:{
+            if (colorBoost) {
+                return lightColorizer->getColor()[3] * _highlightColor1BoostMult;
+            }
+            return lightColorizer->getColor()[1] * _highlightColor1Mult;
         }
-        return this->highlightColor0->get_color();
+        case EnvironmentColorType::ColorW: {
+            return colorManager->ColorForType(EnvironmentColorType::ColorW, colorBoost);
+        }
     }
 }
 
 constexpr bool ChromaLightSwitchEventEffect::IsFixedDurationLightSwitch(int beatmapEventValue) {
     return beatmapEventValue == 2 || beatmapEventValue == 6 || beatmapEventValue == 10 || beatmapEventValue == 3 || beatmapEventValue == 7 || beatmapEventValue == 11 || beatmapEventValue == -1;
+}
+
+void ChromaLightSwitchEventEffect::UnregisterLight(GlobalNamespace::ILightWithId *lightWithId) {
+    auto it = ColorTweens.find(lightWithId);
+
+    if (it == ColorTweens.end()) return;
+
+    auto tween = it->second;
+
+    tween->Kill();
+    ColorTweens.erase(it);
+}
+
+void ChromaLightSwitchEventEffect::RegisterLight(GlobalNamespace::ILightWithId* lightWithId, int id) {
+    if (!ColorTweens.contains(lightWithId))
+    {
+        Sombrero::FastColor color = GetNormalColor(0, usingBoostColors);
+        if (!lightOnStart)
+        {
+            color = color.Alpha(offColorIntensity);
+        }
+
+        auto tween = ChromaIDColorTween::New_ctor(
+                color,
+                color,
+                lightWithId,
+                lightManager,
+        LightIDTableManager::GetActiveTableValueReverse(lightsID, id).value_or(0));
+
+        ColorTweens[lightWithId] = tween;
+        tween->ForceOnUpdate();
+    }
 }

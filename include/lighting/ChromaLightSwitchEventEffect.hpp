@@ -35,7 +35,16 @@ public:
           DECLARE_INSTANCE_FIELD(GlobalNamespace::ColorSO*, _originalLightColor1);
           DECLARE_INSTANCE_FIELD(GlobalNamespace::ColorSO*, _originalLightColor0Boost);
           DECLARE_INSTANCE_FIELD(GlobalNamespace::ColorSO*, _originalLightColor1Boost);
-          std::array<Sombrero::FastColor, 4> OriginalColors;
+//          std::array<Sombrero::FastColor, 4> OriginalColors;
+
+        Sombrero::FastColor _lightColor0Mult;
+        Sombrero::FastColor _lightColor1Mult;
+        Sombrero::FastColor _highlightColor0Mult;
+        Sombrero::FastColor _highlightColor1Mult;
+        Sombrero::FastColor _lightColor0BoostMult;
+        Sombrero::FastColor _lightColor1BoostMult;
+        Sombrero::FastColor _highlightColor0BoostMult;
+        Sombrero::FastColor _highlightColor1BoostMult;
 
           std::unordered_map<GlobalNamespace::ILightWithId *, SafePtr<ChromaIDColorTween>> ColorTweens;
 
@@ -63,7 +72,9 @@ public:
           void Refresh(bool hard, std::optional<std::vector<GlobalNamespace::ILightWithId*>> const& selectLights, std::optional<GlobalNamespace::BasicBeatmapEventData*> BasicBeatmapEventData = std::nullopt, std::optional<Functions> easing = std::nullopt, std::optional<LerpType> lerpType = std::nullopt);
 
           void CopyValues(LightSwitchEventEffect* lightSwitchEventEffect);
-          void RegisterLight(GlobalNamespace::ILightWithId* lightWithId, int type, int id);
+public:
+          void RegisterLight(GlobalNamespace::ILightWithId* lightWithId, int id);
+          void UnregisterLight(GlobalNamespace::ILightWithId* lightWithId);
           Sombrero::FastColor GetOriginalColor(int beatmapEventValue, bool colorBoost) const;
 
 )

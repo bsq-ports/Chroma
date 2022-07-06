@@ -144,7 +144,7 @@ public:
         localRotation = GetVectorData(customData, v2 ? NewConstants::V2_LOCAL_ROTATION : NewConstants::LOCAL_ROTATION);
     }
 
-    inline void Apply(UnityEngine::Transform* transform, bool leftHanded, bool v2, float noteLinesDistance)
+    inline void Apply(UnityEngine::Transform* transform, bool leftHanded, bool v2, float noteLinesDistance) const
     {
         auto position = this->position;
         auto localPosition = this->localPosition;
@@ -167,7 +167,7 @@ public:
     }
 
 
-    inline void Apply(UnityEngine::Transform* transform, bool leftHanded)
+    inline void Apply(UnityEngine::Transform* transform, bool leftHanded) const
     {
         Apply(transform, leftHanded, scale, position, rotation, localPosition, localRotation);
     }
@@ -530,6 +530,9 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                             AvoidanceRotation[beatmapObjectsAvoidance] = transform->get_localRotation();
                         }
                      }
+
+                    ComponentInitializer::InitializeLights(gameObject, gameObjectDataVal, v2);
+
                     GameObjectTrackController::HandleTrackData(gameObject, track, noteLinesDistance, trackLaneRing, parametricBoxController, beatmapObjectsAvoidance, v2);
                 }
 

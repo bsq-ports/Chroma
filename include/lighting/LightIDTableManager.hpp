@@ -56,20 +56,19 @@ namespace Chroma {
         }
 
         static std::optional<int> GetActiveTableValueReverse(int lightId, int id) {
-            if (activeTable) {
-                auto const& table = activeTable.value();
+            if (!activeTable) return std::nullopt;
+            auto const& table = activeTable.value();
 
-                auto typeTableIt = table.find(lightId);
+            auto typeTableIt = table.find(lightId);
 
-                if (typeTableIt == table.end()) {
-                    return std::nullopt;
-                }
+            if (typeTableIt == table.end()) {
+                return std::nullopt;
+            }
 
-                const auto &typeTable = typeTableIt->second;
-                for (auto const& [key, value] : typeTable) {
-                    if (value == id)
-                        return key;
-                }
+            const auto &typeTable = typeTableIt->second;
+            for (auto const& [key, value] : typeTable) {
+                if (value == id)
+                    return key;
             }
 
             return std::nullopt;
@@ -80,6 +79,7 @@ namespace Chroma {
         static void InitTable();
 
         static void RegisterIndex(int lightId, int index, std::optional<int> requestedKey);
+        static void UnregisterIndex(int lightID, int index);
 
         static void AddEnvironment(InstallEnvironmentFunc environmentData);
     };
