@@ -37,8 +37,6 @@ custom_types::Helpers::Coroutine WaitThenStartLight(LightSwitchEventEffect *inst
     co_yield reinterpret_cast<IEnumerator*>(CRASH_UNLESS(WaitForEndOfFrame::New_ctor()));
 
     IL2CPP_CATCH_HANDLER(
-        auto* newEffect = instance->get_gameObject()->AddComponent<ChromaLightSwitchEventEffect*>();
-        newEffect->CopyValues(instance);
         Object::Destroy(instance);
     )
 
@@ -67,6 +65,9 @@ MAKE_HOOK_MATCH(LightSwitchEventEffect_Start,
     static auto ChromaLightSwitchEventEffectKlass = classof(ChromaLightSwitchEventEffect*);
 
     if (self->klass == ChromaLightSwitchEventEffectKlass) return;
+
+    auto* newEffect = self->get_gameObject()->AddComponent<ChromaLightSwitchEventEffect*>();
+    newEffect->CopyValues(self);
 
     auto coro = custom_types::Helpers::CoroutineHelper::New(WaitThenStartLight(self, self->event));
 

@@ -345,15 +345,9 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                 std::vector<ByRef<const GameObjectInfo>> foundObjects;
 
 
-                if (geometryMember != gameObjectDataVal.MemberEnd()) {
-                    if (idMember != gameObjectDataVal.MemberEnd()) break;
+                if (idMember != gameObjectDataVal.MemberEnd()){
+                    if (geometryMember != gameObjectDataVal.MemberEnd()) continue;
 
-                    auto goInfo = ByRef<const GameObjectInfo>(_globalGameObjectInfos.emplace_back(geometryFactory.Create(geometryMember->value)));
-                    // Record JSON parse time
-                    profiler.mark("Parsing JSON for geometry ");
-
-                    foundObjects.emplace_back(goInfo);
-                } else if (idMember != gameObjectDataVal.MemberEnd()){
                     std::string_view id = idMember->value.GetString();
                     std::string lookupString = gameObjectDataVal.FindMember(v2 ? NewConstants::V2_LOOKUP_METHOD.data() : NewConstants::LOOKUP_METHOD.data())->value.GetString();
 
@@ -382,26 +376,34 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                     std::stringstream foundObjectsLog;
                     foundObjectsLog << "Finding objects for id (" << std::to_string(foundObjects.size()) << ") "<< id << " using " << lookupString;
 
-                    profiler.mark(foundObjectsLog.str());
-
-                    if (foundObjects.empty()) {
-                        profiler.mark("No objects found!", false);
-                        profiler.endTimer();
-                        continue;
-                    }
-
                     if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {
                         getLogger().info("ID [\"%s\"] using method [%s] found:", id.data(), lookupString.c_str());
-
-                        for (const auto &o : foundObjects) {
-                            getLogger().info("%s", o.heldRef.FullID.c_str());
-                        }
-
-                        getLogger().info("=====================================");
                     }
+
+                    profiler.mark(foundObjectsLog.str());
+
+                } else if (geometryMember != gameObjectDataVal.MemberEnd()) {
+                    auto goInfo = ByRef<const GameObjectInfo>(_globalGameObjectInfos.emplace_back(geometryFactory.Create(geometryMember->value)));
+                    // Record JSON parse time
+                    profiler.mark("Parsing JSON for geometry ");
+
+                    foundObjects.emplace_back(goInfo);
                 } else continue;
 
 
+                if (foundObjects.empty()) {
+                    profiler.mark("No objects found!", false);
+                    profiler.endTimer();
+                    continue;
+                }
+
+                if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {
+                    for (const auto &o : foundObjects) {
+                        getLogger().info("%s", o.heldRef.FullID.c_str());
+                    }
+
+                    getLogger().info("=====================================");
+                }
 
                 // Create track if objects are found
                 auto trackNameIt = gameObjectDataVal.FindMember(v2 ? Chroma::NewConstants::V2_TRACK.data() : Chroma::NewConstants::TRACK.data());
@@ -446,14 +448,14 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                                     newGameObject->get_transform(),
                                     gameObject->get_transform(), _globalGameObjectInfos,
                                     componentDatas, lightID);
-                            gameObjectInfos.emplace_back(newGameObjectInfo);
+//                            gameObjectInfos.emplace_back(newGameObjectInfo);
                             // This is not needed as long as InitializeComponents adds to gameObjectInfos
 
-//                            for (auto const& o : _globalGameObjectInfos) {
-//                                if (o.GameObject->Equals(newGameObject)) {
-//                                    gameObjectInfos.emplace_back(o);
-//                                }
-//                            }
+                            for (auto const& o : _globalGameObjectInfos) {
+                                if (o.GameObject->Equals(newGameObject)) {
+                                    gameObjectInfos.emplace_back(o);
+                                }
+                            }
 
 
                         }

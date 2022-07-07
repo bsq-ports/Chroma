@@ -34,6 +34,26 @@ constexpr static GlobalNamespace::EnvironmentColorType GetLightColorTypeFromEven
     return EnvironmentColorType::Color0;
 }
 
+Sombrero::FastColor GetNormalColorOld(ChromaLightSwitchEventEffect* l, int beatmapEventValue, bool colorBoost) {
+    if (colorBoost)
+    {
+        if (!Chroma::ChromaLightSwitchEventEffect::IsColor0(beatmapEventValue))
+        {
+            return l->lightColor1Boost->get_color();
+        }
+        return l->lightColor0Boost->get_color();
+    }
+    else
+    {
+        if (!Chroma::ChromaLightSwitchEventEffect::IsColor0(beatmapEventValue))
+        {
+            return l->lightColor1->get_color();
+        }
+        return l->lightColor0->get_color();
+    }
+}
+
+
 
 std::unordered_set<ChromaLightSwitchEventEffect*> ChromaLightSwitchEventEffect::livingLightSwitch;
 
@@ -46,21 +66,21 @@ void Chroma::ChromaLightSwitchEventEffect::CopyValues(GlobalNamespace::LightSwit
     lightColor1Boost = lightSwitchEventEffect->lightColor1Boost;
     highlightColor0Boost = lightSwitchEventEffect->highlightColor0Boost;
     highlightColor1Boost = lightSwitchEventEffect->highlightColor1Boost;
+
     offColorIntensity = lightSwitchEventEffect->offColorIntensity;
     lightOnStart = lightSwitchEventEffect->lightOnStart;
-    lightsID = lightSwitchEventEffect->lightsID;
-    event = lightSwitchEventEffect->event;
+    this->lightsID = lightSwitchEventEffect->lightsID;
+    this->event = lightSwitchEventEffect->event;
 
     this->lightManager = lightSwitchEventEffect->lightManager;
     this->beatmapCallbacksController = lightSwitchEventEffect->beatmapCallbacksController;
     this->tweeningManager = lightSwitchEventEffect->tweeningManager;
+    this->colorManager = colorManager;
 
-    this->lightColorizer = &LightColorizer::New(this, lightManager);
     _originalLightColor0 = lightColor0;
     _originalLightColor0Boost = lightColor0Boost;
     _originalLightColor1 = lightColor1;
     _originalLightColor1Boost = lightColor1Boost;
-    lightColorizer->InitializeSO(lightColor0, highlightColor0, lightColor1, highlightColor1, lightColor0Boost, highlightColor0Boost, lightColor1Boost, highlightColor1Boost);
 
     auto Initialize = [](auto&& so, Sombrero::FastColor& color) {
         if (auto multi = il2cpp_utils::try_cast<MultipliedColorSO>(so)) {
@@ -80,6 +100,7 @@ void Chroma::ChromaLightSwitchEventEffect::CopyValues(GlobalNamespace::LightSwit
     Initialize(highlightColor1Boost, _highlightColor1BoostMult);
 
 
+    this->lightColorizer = &LightColorizer::New(this, lightManager);
     LightColorizer::CompleteContracts(this);
 
 //    Sombrero::FastColor color = lightOnStart ? lightColor0->get_color() : static_cast<Sombrero::FastColor>(lightColor0->get_color()).Alpha(offColorIntensity);
@@ -87,76 +108,73 @@ void Chroma::ChromaLightSwitchEventEffect::CopyValues(GlobalNamespace::LightSwit
 }
 
 void Chroma::ChromaLightSwitchEventEffect::HandleEvent(GlobalNamespace::BasicBeatmapEventData *beatmapEventData) {
-    if (beatmapEventData->basicBeatmapEventType == event) {
-        std::optional<std::vector<ILightWithId *>> selectLights;
-        std::optional<Functions> easing;
-        std::optional<LerpType> lerpType;
+    if (beatmapEventData->basicBeatmapEventType != event) return;
+    std::optional<std::vector<ILightWithId *>> selectLights;
+    std::optional<Functions> easing;
+    std::optional<LerpType> lerpType;
 
-        // fun fun chroma stuff
+    // fun fun chroma stuff
 
-        static auto contextLogger = getLogger().WithContext(ChromaLogger::ColorLightSwitch);
+    static auto contextLogger = getLogger().WithContext(ChromaLogger::ColorLightSwitch);
 
-        auto chromaIt = ChromaEventDataManager::ChromaEventDatas.find(beatmapEventData);
-
-
-        // Aero thinks legacy was a mistake. I think a Quest port was a bigger mistake.
-        std::optional<Sombrero::FastColor> color;
-
-        if (chromaIt == ChromaEventDataManager::ChromaEventDatas.end()) {
-            color = LegacyLightHelper::GetLegacyColor(beatmapEventData);
-        } else {
-            debugSpamLog(contextLogger, "Color is legacy? %s", color ? "true" : "false");
+    auto chromaIt = ChromaEventDataManager::ChromaEventDatas.find(beatmapEventData);
 
 
-            auto const& chromaData = chromaIt->second;
+    // Aero thinks legacy was a mistake. I think a Quest port was a bigger mistake.
+    std::optional<Sombrero::FastColor> color;
 
-            auto const& lightMember = chromaData.LightID;
-            if (lightMember) {
-                auto const &lightIdData = *lightMember;
-                selectLights = lightColorizer->GetLightWithIds(lightIdData);
-            }
-
-
-
-            // Prop ID is deprecated apparently.  https://github.com/Aeroluna/Chroma/commit/711cb19f7d03a1776a24cef52fd8ef6fd7685a2b#diff-b8fcfff3ebc4ceb7b43d8401d9f50750dc88326d0a87897c5593923e55b23879R41
-            auto const& propMember = chromaData.PropID;
-            if (propMember) {
-                auto const &propIDData = *propMember;
-
-                selectLights = lightColorizer->GetPropagationLightWithIds(propIDData);
-            }
+    if (chromaIt == ChromaEventDataManager::ChromaEventDatas.end()) {
+        color = LegacyLightHelper::GetLegacyColor(beatmapEventData);
+    } else {
+        debugSpamLog(contextLogger, "Color is legacy? %s", color ? "true" : "false");
 
 
-            auto const& gradient = chromaData.GradientObject;
-            if (gradient) {
-                color = ChromaGradientController::AddGradient(gradient.value(), beatmapEventData->basicBeatmapEventType,
-                                                              beatmapEventData->time);
-            }
+        auto const& chromaData = chromaIt->second;
 
-
-            std::optional<Sombrero::FastColor> const &colorData = chromaData.ColorData;
-            if (colorData) {
-                color = colorData;
-                ChromaGradientController::CancelGradient(beatmapEventData->basicBeatmapEventType);
-            }
-
-            easing = chromaData.Easing;
-            lerpType = chromaData.LerpType;
-        }
-
-
-        if (color) {
-            lightColorizer->Colorize(false, {*color, *color, *color, *color});
-        } else if (!ChromaGradientController::IsGradientActive(beatmapEventData->basicBeatmapEventType)) {
-            lightColorizer->Colorize(false,
-                                     {std::nullopt, std::nullopt, std::nullopt, std::nullopt});
+        auto const& lightMember = chromaData.LightID;
+        if (lightMember) {
+            auto const &lightIdData = *lightMember;
+            selectLights = lightColorizer->GetLightWithIds(lightIdData);
         }
 
 
 
+        // Prop ID is deprecated apparently.  https://github.com/Aeroluna/Chroma/commit/711cb19f7d03a1776a24cef52fd8ef6fd7685a2b#diff-b8fcfff3ebc4ceb7b43d8401d9f50750dc88326d0a87897c5593923e55b23879R41
+        auto const& propMember = chromaData.PropID;
+        if (propMember) {
+            auto const &propIDData = *propMember;
 
-        Refresh(true, selectLights, beatmapEventData, easing, lerpType);
+            selectLights = lightColorizer->GetPropagationLightWithIds(propIDData);
+        }
+
+
+        auto const& gradient = chromaData.GradientObject;
+        if (gradient) {
+            color = ChromaGradientController::AddGradient(gradient.value(), beatmapEventData->basicBeatmapEventType,
+                                                          beatmapEventData->time);
+        }
+
+
+        std::optional<Sombrero::FastColor> const &colorData = chromaData.ColorData;
+        if (colorData) {
+            color = colorData;
+            ChromaGradientController::CancelGradient(beatmapEventData->basicBeatmapEventType);
+        }
+
+        easing = chromaData.Easing;
+        lerpType = chromaData.LerpType;
     }
+
+
+    if (color) {
+        lightColorizer->Colorize(false, {*color, *color, *color, *color});
+    } else if (!ChromaGradientController::IsGradientActive(beatmapEventData->basicBeatmapEventType)) {
+        lightColorizer->Colorize(false,
+                                 {std::nullopt, std::nullopt, std::nullopt, std::nullopt});
+    }
+
+
+    Refresh(true, selectLights, beatmapEventData, easing, lerpType);
 }
 
 void ChromaLightSwitchEventEffect::HandleBoostEvent(GlobalNamespace::ColorBoostBeatmapEventData *beatmapEventData) {
@@ -284,7 +302,7 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, const std::optional<std::v
 
                 nextColor = nextColorData.value() * multiplierColor;
             } else {
-                nextColor = GetNormalColor(nextValue, usingBoostColors);
+                nextColor = GetNormalColorOld(this, nextValue, usingBoostColors);
             }
 
             nextColor.a *= nextFloatValue;
@@ -327,6 +345,7 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, const std::optional<std::v
 
                 break;
             }
+
             case 1:
             case 5:
             case 9:

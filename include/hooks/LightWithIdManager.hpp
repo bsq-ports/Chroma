@@ -48,6 +48,7 @@ namespace Chroma {
 
             lights[index] = nullptr; // TODO: handle null
             LightIDTableManager::UnregisterIndex(lightId, index);
+            CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Unregistering!");
             LightColorizer::CreateLightColorizerContractByLightID(lightId, [lightWithId](LightColorizer& n) {n._lightSwitchEventEffect->UnregisterLight(lightWithId);});
             lightWithId->__SetIsUnRegistered();
         }

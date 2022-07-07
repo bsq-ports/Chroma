@@ -64,6 +64,7 @@ MAKE_HOOK_MATCH(LightWithIdManager_RegisterLight, &LightWithIdManager::RegisterL
     // this also colors the light
     LightColorizer::CreateLightColorizerContractByLightID(lightId, [index,lightWithId](LightColorizer& n){n._lightSwitchEventEffect->RegisterLight(lightWithId, index);});
 
+    CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Registering light {}", lightId);
     lights->Add(lightWithId);
 }
 

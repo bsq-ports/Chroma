@@ -39,6 +39,22 @@ LightColorizer::LightColorizer(ChromaLightSwitchEventEffect *lightSwitchEventEff
     static auto contextLogger = getLogger().WithContext(ChromaLogger::LightColorizer);
 
 
+
+    auto Initialize = [this](ColorSO*& colorSO, int index) {
+
+        if (auto mColor = il2cpp_utils::try_cast<MultipliedColorSO>(colorSO)) {
+            auto lightSO = mColor.value()->baseColor;
+            _originalColors[index] = lightSO->color;
+        } else if (auto sColor = il2cpp_utils::try_cast<SimpleColorSO>(colorSO)) {
+            _originalColors[index] = sColor.value()->color;
+        }
+    };
+
+    Initialize(lightSwitchEventEffect->lightColor0, 0);
+    Initialize(lightSwitchEventEffect->lightColor1, 1);
+    Initialize(lightSwitchEventEffect->lightColor0Boost, 2);
+    Initialize(lightSwitchEventEffect->lightColor1Boost, 3);
+
     // AAAAAA PROPAGATION STUFFF
     Lights = lightManager->lights.get(lightSwitchEventEffect->lightsID);
 
@@ -46,6 +62,9 @@ LightColorizer::LightColorizer(ChromaLightSwitchEventEffect *lightSwitchEventEff
         Lights = lightManager->lights.get(lightSwitchEventEffect->lightsID) = System::Collections::Generic::List_1<::GlobalNamespace::ILightWithId*>::New_ctor(10);
     }
 
+    std::vector<std::string> s;
+    for (auto l : Lights) s.emplace_back(std::to_string(l->get_lightId()));
+    CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Lights for light id {} are {}", lightSwitchEventEffect->lightsID, fmt::join(s, ";"));
 
     // Keep track of order
     int index = 0;
@@ -123,6 +142,7 @@ LightColorizer & LightColorizer::New(ChromaLightSwitchEventEffect *lightSwitchEv
                                      GlobalNamespace::LightWithIdManager *lightManager) {
     auto& light = Colorizers.emplace(lightSwitchEventEffect->event, LightColorizer(lightSwitchEventEffect, lightManager)).first->second;
     ColorizersByLightID[lightSwitchEventEffect->lightsID] = &light;
+    CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Created light colorizer on lightid {}", lightSwitchEventEffect->lightsID);
     return light;
 }
 
@@ -165,37 +185,45 @@ void LightColorizer::InitializeSO(ColorSO *&lightColor0, ColorSO *&highlightColo
                                   ColorSO *&highlightColor1, ColorSO *&lightColor0Boost, ColorSO *&highlightColor0Boost,
                                   ColorSO *&lightColor1Boost, ColorSO *&highlightColor1Boost) {
     auto Initialize = [this](ColorSO*& colorSO, int index) {
-        auto lightMultSO = il2cpp_utils::cast<MultipliedColorSO>(colorSO);
 
-        Sombrero::FastColor multiplierColor = lightMultSO->multiplierColor;
-        auto lightSO = lightMultSO->baseColor;
-        _originalColors[index] = lightSO->color;
-
-        SafePtr<MultipliedColorSO> mColorSO(ScriptableObject::CreateInstance<MultipliedColorSO *>());
-        mColorSO->multiplierColor = multiplierColor;
-
-
-        if (!_simpleColorSOs.contains(index)) {
-            SafePtr<SimpleColorSO> sColorSO(ScriptableObject::CreateInstance<SimpleColorSO *>());
-            sColorSO->SetColor(lightSO->color);
-            _simpleColorSOs.emplace(index, sColorSO);
+        if (auto mColor = il2cpp_utils::try_cast<MultipliedColorSO>(colorSO)) {
+            auto lightSO = mColor.value()->baseColor;
+            _originalColors[index] = lightSO->color;
+        } else if (auto sColor = il2cpp_utils::try_cast<SimpleColorSO>(colorSO)) {
+            _originalColors[index] = sColor.value()->color;
         }
 
-        SafePtr<SimpleColorSO> &sColorSO = _simpleColorSOs[index];
-
-        mColorSO->baseColor = (SimpleColorSO *) sColorSO;
-
-        colorSO = (MultipliedColorSO*) mColorSO;
+//        auto lightMultSO = il2cpp_utils::cast<MultipliedColorSO>(colorSO);
+//
+//        Sombrero::FastColor multiplierColor = lightMultSO->multiplierColor;
+//        auto lightSO = lightMultSO->baseColor;
+//        _originalColors[index] = lightSO->color;
+//
+//        SafePtr<MultipliedColorSO> mColorSO(ScriptableObject::CreateInstance<MultipliedColorSO *>());
+//        mColorSO->multiplierColor = multiplierColor;
+//
+//
+//        if (!_simpleColorSOs.contains(index)) {
+//            SafePtr<SimpleColorSO> sColorSO(ScriptableObject::CreateInstance<SimpleColorSO *>());
+//            sColorSO->SetColor(lightSO->color);
+//            _simpleColorSOs.emplace(index, sColorSO);
+//        }
+//
+//        SafePtr<SimpleColorSO> &sColorSO = _simpleColorSOs[index];
+//
+//        mColorSO->baseColor = (SimpleColorSO *) sColorSO;
+//
+//        colorSO = (MultipliedColorSO*) mColorSO;
     };
 
     Initialize(lightColor0, 0);
-    Initialize(highlightColor0, 0);
+//    Initialize(highlightColor0, 0);
     Initialize(lightColor1, 1);
-    Initialize(highlightColor1, 1);
+//    Initialize(highlightColor1, 1);
     Initialize(lightColor0Boost, 2);
-    Initialize(highlightColor0Boost, 2);
+//    Initialize(highlightColor0Boost, 2);
     Initialize(lightColor1Boost, 3);
-    Initialize(highlightColor1Boost, 3);
+//    Initialize(highlightColor1Boost, 3);
 }
 
 std::vector<ILightWithId *> LightColorizer::GetPropagationLightWithIds(const std::vector<int> &ids) {
@@ -242,10 +270,12 @@ LightColorizer::CreateLightColorizerContractByLightID(int lightId, std::function
 
     if (it != ColorizersByLightID.end())
     {
+        CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Light id {} now", lightId);
         callback(*it->second);
     }
     else
     {
+        CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Fulfilling callback for light id {} later", lightId);
         _contractsByLightID.emplace_back(lightId, callback);
     }
 }

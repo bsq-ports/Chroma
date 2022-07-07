@@ -173,6 +173,7 @@ namespace Chroma {
     private:
 
         void SetSOs(LightColorPalette const &colors) {
+            return;
             static auto SetColor = FPtrWrapper<&GlobalNamespace::SimpleColorSO::SetColor>::get();
 
             for (int i = 0; i < colors.size(); i++) {
@@ -182,7 +183,7 @@ namespace Chroma {
             LightColorChanged.invoke(lightId, colors);
         }
 
-        void Refresh(std::optional<std::vector<GlobalNamespace::ILightWithId*>> const& selectLights) {
+        void Refresh(std::optional<std::vector<GlobalNamespace::ILightWithId*>> const& selectLights) const {
             _lightSwitchEventEffect->Refresh(false, selectLights);
         }
 
