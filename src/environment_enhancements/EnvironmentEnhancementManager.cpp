@@ -200,23 +200,21 @@ private:
             transform->set_localScale(*scale);
         }
 
+        if (localPosition)
+        {
+            transform->set_localPosition(*localPosition);
+        }else
         if (position)
         {
             transform->set_position(*position);
         }
-        if (localPosition && (v2 || !position))
-        {
-            transform->set_localPosition(*localPosition);
-        }
 
-        if (rotation)
-        {
-            transform->set_eulerAngles(*rotation);
-        }
-
-        if (localRotation && (v2 || !rotation))
+        if (localRotation)
         {
             transform->set_localEulerAngles(*localRotation);
+        } else if (rotation)
+        {
+            transform->set_eulerAngles(*rotation);
         }
     }
 };

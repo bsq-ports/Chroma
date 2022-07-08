@@ -109,7 +109,21 @@ void Chroma::GameObjectTrackController::UpdateData(bool force) {
 
     bool updateParametricBox = false;
 
-    if (rotation)
+    if (localRotation)
+    {
+        if (_trackLaneRing)
+        {
+            EnvironmentEnhancementManager::RingRotationOffsets[_trackLaneRing] = localRotation.value();
+        }
+        else if (_beatmapObjectsAvoidance)
+        {
+            EnvironmentEnhancementManager::AvoidanceRotation[_beatmapObjectsAvoidance] = localRotation.value();
+        }
+        else
+        {
+            transform->set_localRotation(localRotation.value());
+        }
+    } else if (rotation)
     {
         // Delegate positioning the object to TrackLaneRing
         NEVector::Quaternion finalOffset;
@@ -137,24 +151,27 @@ void Chroma::GameObjectTrackController::UpdateData(bool force) {
         }
     }
 
-    if (localRotation && (data->v2 || !rotation))
+    if (localPosition)
     {
+        NEVector::Vector3 localPositionValue = localPosition.value();
+        if (data->v2) {
+            localPositionValue *= _noteLinesDistance;
+        }
+
         if (_trackLaneRing)
         {
-            EnvironmentEnhancementManager::RingRotationOffsets[_trackLaneRing] = localRotation.value();
+            _trackLaneRing->positionOffset = localPositionValue;
         }
         else if (_beatmapObjectsAvoidance)
         {
-            EnvironmentEnhancementManager::AvoidanceRotation[_beatmapObjectsAvoidance] = localRotation.value();
+            EnvironmentEnhancementManager::AvoidancePosition[_beatmapObjectsAvoidance] = localPositionValue;
         }
         else
         {
-            transform->set_localRotation(localRotation.value());
+            transform->set_localPosition(localPositionValue);
+            updateParametricBox = true;
         }
-    }
-
-
-    if (position)
+    } else if (position)
     {
         Sombrero::FastVector3 positionValue = position.value();
         NEVector::Vector3 finalOffset;
@@ -183,28 +200,6 @@ void Chroma::GameObjectTrackController::UpdateData(bool force) {
         else
         {
             transform->set_position(positionValue);
-            updateParametricBox = true;
-        }
-    }
-
-    if (localPosition && (data->v2 || !position))
-    {
-        NEVector::Vector3 localPositionValue = localPosition.value();
-        if (data->v2) {
-            localPositionValue *= _noteLinesDistance;
-        }
-
-        if (_trackLaneRing)
-        {
-            _trackLaneRing->positionOffset = localPositionValue;
-        }
-        else if (_beatmapObjectsAvoidance)
-        {
-            EnvironmentEnhancementManager::AvoidancePosition[_beatmapObjectsAvoidance] = localPositionValue;
-        }
-        else
-        {
-            transform->set_localPosition(localPositionValue);
             updateParametricBox = true;
         }
     }
