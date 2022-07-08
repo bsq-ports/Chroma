@@ -10,6 +10,7 @@
 std::unordered_map<GlobalNamespace::ILightWithId*, int> Chroma::LightIdRegisterer::RequestedIDs;
 std::unordered_set<GlobalNamespace::ILightWithId*> Chroma::LightIdRegisterer::NeedToRegister;
 GlobalNamespace::LightWithIdManager* Chroma::LightIdRegisterer::lightWithIdManager;
+bool Chroma::LightIdRegisterer::canUnregister = false;
 
 using namespace GlobalNamespace;
 using namespace Chroma;
@@ -64,13 +65,15 @@ MAKE_HOOK_MATCH(LightWithIdManager_RegisterLight, &LightWithIdManager::RegisterL
     // this also colors the light
     LightColorizer::CreateLightColorizerContractByLightID(lightId, [index,lightWithId](LightColorizer& n){n._lightSwitchEventEffect->RegisterLight(lightWithId, index);});
 
-    CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Registering light {}", lightId);
+
     lights->Add(lightWithId);
 }
 
+// This breaks if it doesn't run after Awake
+// PC uses Affinity Patches which run after Awake
 MAKE_HOOK_MATCH(LightWithIdManager_UnregisterLight, &LightWithIdManager::UnregisterLight, void,LightWithIdManager* self, GlobalNamespace::ILightWithId* lightWithId) {
     // Do nothing if Chroma shouldn't run
-    if (!ChromaController::DoChromaHooks()) {
+    if (!ChromaController::DoChromaHooks() || !Chroma::LightIdRegisterer::canUnregister) {
         return LightWithIdManager_UnregisterLight(self, lightWithId);
     }
 

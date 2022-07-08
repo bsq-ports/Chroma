@@ -142,7 +142,6 @@ LightColorizer & LightColorizer::New(ChromaLightSwitchEventEffect *lightSwitchEv
                                      GlobalNamespace::LightWithIdManager *lightManager) {
     auto& light = Colorizers.emplace(lightSwitchEventEffect->event, LightColorizer(lightSwitchEventEffect, lightManager)).first->second;
     ColorizersByLightID[lightSwitchEventEffect->lightsID] = &light;
-    CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Created light colorizer on lightid {}", lightSwitchEventEffect->lightsID);
     return light;
 }
 

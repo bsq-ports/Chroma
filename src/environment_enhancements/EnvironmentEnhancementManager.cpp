@@ -19,6 +19,7 @@
 #include "tracks/shared/Animation/PointDefinition.h"
 #include "tracks/shared/AssociatedData.h"
 #include "environment_enhancements/MaterialAnimator.hpp"
+#include "hooks/LightWithIdManager.hpp"
 
 using namespace Chroma;
 using namespace ChromaUtils;
@@ -221,6 +222,8 @@ private:
 };
 
 void EnvironmentEnhancementManager::GetAllGameObjects() {
+    LightIdRegisterer::canUnregister = true;
+
     _globalGameObjectInfos.clear();
 
     auto gameObjectsAll = UnityEngine::Resources::FindObjectsOfTypeAll<UnityEngine::GameObject*>();

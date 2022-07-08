@@ -15,11 +15,13 @@ namespace Chroma {
         static std::unordered_map<GlobalNamespace::ILightWithId*, int> RequestedIDs;
         static std::unordered_set<GlobalNamespace::ILightWithId*> NeedToRegister;
         static GlobalNamespace::LightWithIdManager* lightWithIdManager;
+        static bool canUnregister;
 
         static void Reset() {
             RequestedIDs.clear();
             NeedToRegister.clear();
             lightWithIdManager = nullptr;
+            canUnregister = false;
         }
 
         static void SetRequestedId(GlobalNamespace::ILightWithId* lightWithId, int id)
@@ -48,7 +50,6 @@ namespace Chroma {
 
             lights[index] = nullptr; // TODO: handle null
             LightIDTableManager::UnregisterIndex(lightId, index);
-            CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Unregistering!");
             LightColorizer::CreateLightColorizerContractByLightID(lightId, [lightWithId](LightColorizer& n) {n._lightSwitchEventEffect->UnregisterLight(lightWithId);});
             lightWithId->__SetIsUnRegistered();
         }
