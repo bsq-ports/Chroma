@@ -39,6 +39,7 @@
 #include <functional>
 
 #include "beatsaber-hook/shared/utils/typedefs-disposal.hpp"
+#include "environment_enhancements/GameObjectTrackController.hpp"
 
 
 using namespace GlobalNamespace;
@@ -61,9 +62,13 @@ static void constexpr GetComponentAndOriginal(UnityEngine::Transform* root, Unit
     }
 }
 
-GameObjectInfo const&
-Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root, UnityEngine::Transform *original, std::vector<GameObjectInfo>& gameObjectInfos, std::vector<std::shared_ptr<IComponentData>>& componentDatas, std::optional<int>& lightId) {
-     GetComponentAndOriginal<LightWithIdMonoBehaviour>(root, original, [&](LightWithIdMonoBehaviour* rootComponent, LightWithIdMonoBehaviour* originalComponent) {
+GameObjectInfo const &
+Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root, UnityEngine::Transform *original,
+                                                   std::vector<GameObjectInfo> &gameObjectInfos,
+                                                   std::vector<std::shared_ptr<IComponentData>> &componentDatas) {
+//    UnityEngine::Object::DestroyImmediate(root->GetComponent<GameObjectTrackController*>());
+
+    GetComponentAndOriginal<LightWithIdMonoBehaviour>(root, original, [&](LightWithIdMonoBehaviour* rootComponent, LightWithIdMonoBehaviour* originalComponent) {
         rootComponent->lightManager = originalComponent->lightManager;
         LightIdRegisterer::MarkForTableRegister(rootComponent->i_ILightWithId());
     });
@@ -226,7 +231,7 @@ Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root,
         auto transform = root->GetChild(i);
 
         int index = transform->GetSiblingIndex();
-        InitializeComponents(transform, original->GetChild(index), gameObjectInfos, componentDatas, lightId);
+        InitializeComponents(transform, original->GetChild(index), gameObjectInfos, componentDatas);
     }
 
     return newGameObject;

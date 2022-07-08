@@ -450,15 +450,15 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                             auto const &newGameObjectInfo = ComponentInitializer::InitializeComponents(
                                     newGameObject->get_transform(),
                                     gameObject->get_transform(), _globalGameObjectInfos,
-                                    componentDatas, lightID);
-//                            gameObjectInfos.emplace_back(newGameObjectInfo);
+                                    componentDatas);
+                            gameObjectInfos.emplace_back(newGameObjectInfo);
                             // This is not needed as long as InitializeComponents adds to gameObjectInfos
 
-                            for (auto const& o : _globalGameObjectInfos) {
-                                if (o.GameObject->Equals(newGameObject)) {
-                                    gameObjectInfos.emplace_back(o);
-                                }
-                            }
+//                            for (auto const& o : _globalGameObjectInfos) {
+//                                if (o.GameObject->Equals(newGameObject)) {
+//                                    gameObjectInfos.emplace_back(o);
+//                                }
+//                            }
 
 
                         }
@@ -472,7 +472,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
 
                     // Better way of doing this?
                     // For some reason, copy constructor is deleted?
-                    gameObjectInfos = std::vector(foundObjects);
+                    gameObjectInfos = std::move(foundObjects);
                 }
 
 
