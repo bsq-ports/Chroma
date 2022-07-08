@@ -137,7 +137,7 @@ void Chroma::GameObjectTrackController::UpdateData(bool force) {
         }
     }
 
-    else if (localRotation)
+    if (localRotation && (data->v2 || !rotation))
     {
         if (_trackLaneRing)
         {
@@ -187,7 +187,7 @@ void Chroma::GameObjectTrackController::UpdateData(bool force) {
         }
     }
 
-    else if (localPosition)
+    if (localPosition && (data->v2 || !position))
     {
         NEVector::Vector3 localPositionValue = localPosition.value();
         if (data->v2) {

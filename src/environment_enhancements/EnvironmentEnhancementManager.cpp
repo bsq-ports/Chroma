@@ -163,13 +163,13 @@ public:
             }
         }
 
-        Apply(transform, leftHanded, scale, position, rotation, localPosition, localRotation);
+        Apply(transform, leftHanded, scale, position, rotation, localPosition, localRotation, v2);
     }
 
 
-    inline void Apply(UnityEngine::Transform* transform, bool leftHanded) const
+    inline void Apply(UnityEngine::Transform* transform, bool leftHanded, bool v2) const
     {
-        Apply(transform, leftHanded, scale, position, rotation, localPosition, localRotation);
+        Apply(transform, leftHanded, scale, position, rotation, localPosition, localRotation, v2);
     }
 
 private:
@@ -180,7 +180,9 @@ private:
             std::optional<Sombrero::FastVector3> position,
             std::optional<Sombrero::FastVector3> rotation,
             std::optional<Sombrero::FastVector3> localPosition,
-            std::optional<Sombrero::FastVector3> localRotation)
+            std::optional<Sombrero::FastVector3> localRotation,
+            bool v2
+            )
     {
         // TODO: Mirror
 //        if (leftHanded)
@@ -201,7 +203,7 @@ private:
         {
             transform->set_position(*position);
         }
-        else if (localPosition)
+        if (localPosition && (v2 || !position))
         {
             transform->set_localPosition(*localPosition);
         }
@@ -210,7 +212,8 @@ private:
         {
             transform->set_eulerAngles(*rotation);
         }
-        else if (localRotation)
+
+        if (localRotation && (v2 || !rotation))
         {
             transform->set_localEulerAngles(*localRotation);
         }
