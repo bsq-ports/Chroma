@@ -17,7 +17,7 @@ using namespace Chroma;
 
 MAKE_HOOK_MATCH(LightWithIdManager_RegisterLight, &LightWithIdManager::RegisterLight, void,LightWithIdManager* self, GlobalNamespace::ILightWithId* lightWithId) {
     // Do nothing if Chroma shouldn't run
-    if (!ChromaController::DoChromaHooks()) {
+    if (!ChromaController::GetChromaLegacy() && !ChromaController::DoChromaHooks()) {
         return LightWithIdManager_RegisterLight(self, lightWithId);
     }
 
