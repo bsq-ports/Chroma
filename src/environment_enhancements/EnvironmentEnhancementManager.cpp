@@ -296,7 +296,7 @@ void EnvironmentEnhancementManager::GetAllGameObjects() {
 }
 
 void
-EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBeatmapData, float noteLinesDistance) {
+EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBeatmapData) {
     getLogger().debug("Custom beat map %p", customBeatmapData);
     getLogger().debug("Custom beat map custom data %p", customBeatmapData->customData);
     auto customDynWrapper = customBeatmapData->customData->value;
@@ -305,6 +305,8 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
     GameObjectTrackController::LeftHanded = trackBeatmapAD.leftHanded;
     bool leftHanded = trackBeatmapAD.leftHanded;
     GameObjectTrackController::ClearData();
+
+    float noteLineDistance = 0.6f;
 
     AvoidanceRotation.clear();
     AvoidancePosition.clear();
@@ -488,7 +490,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
 
                     auto transform = gameObject->get_transform();
 
-                    spawnData.Apply(transform, leftHanded, v2, noteLinesDistance);
+                    spawnData.Apply(transform, leftHanded, v2);
                     auto const& position = spawnData.position;
                     auto const& localPosition = spawnData.localPosition;
                     auto const& rotation = spawnData.rotation;
@@ -538,7 +540,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
 
                     ComponentInitializer::InitializeLights(gameObject, gameObjectDataVal, v2);
 
-                    GameObjectTrackController::HandleTrackData(gameObject, track, noteLinesDistance, trackLaneRing, parametricBoxController, beatmapObjectsAvoidance, v2);
+                    GameObjectTrackController::HandleTrackData(gameObject, track, 0.6f, trackLaneRing, parametricBoxController, beatmapObjectsAvoidance, v2);
                 }
 
 

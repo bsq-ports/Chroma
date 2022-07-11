@@ -79,7 +79,7 @@ void Chroma::GameObjectTrackController::UpdateData(bool force) {
         Destroy(this);
         return;
     }
-    const auto _noteLinesDistance = data->_noteLinesDistance;
+    const auto _noteLinesDistance = 0.6f; // StaticBeatmapObjectSpawnMovementData.kNoteLinesDistance
     const auto _track = data->_track;
     // nullable
     const auto _trackLaneRing = data->_trackLaneRing;

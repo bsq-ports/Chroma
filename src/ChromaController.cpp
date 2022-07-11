@@ -67,8 +67,7 @@ custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(Global
         if (auto customBeatmap = il2cpp_utils::try_cast<CustomJSONData::CustomBeatmapData>(beatmapData)) {
             if (DoChromaHooks() && getChromaConfig().environmentEnhancementsEnabled.GetValue()) {
 
-                EnvironmentEnhancementManager::Init(*customBeatmap,
-                                                    beatmapObjectSpawnController->get_noteLinesDistance());
+                EnvironmentEnhancementManager::Init(*customBeatmap);
 
             }
 
