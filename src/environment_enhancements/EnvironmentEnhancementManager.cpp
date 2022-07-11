@@ -203,8 +203,7 @@ private:
         if (localPosition)
         {
             transform->set_localPosition(*localPosition);
-        }else
-        if (position)
+        }else if (position)
         {
             transform->set_position(*position);
         }

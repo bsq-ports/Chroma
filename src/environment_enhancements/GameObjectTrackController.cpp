@@ -109,6 +109,17 @@ void Chroma::GameObjectTrackController::UpdateData(bool force) {
 
     bool updateParametricBox = false;
 
+    static auto Quaternion_Inverse = il2cpp_utils::il2cpp_type_check::FPtrWrapper<&NEVector::Quaternion::Inverse>::get();
+    static auto Transform_Position = il2cpp_utils::il2cpp_type_check::FPtrWrapper<&UnityEngine::Transform::set_position>::get();
+    static auto Transform_LocalPosition = il2cpp_utils::il2cpp_type_check::FPtrWrapper<&UnityEngine::Transform::set_localPosition>::get();
+    static auto Transform_GetLocalPosition = il2cpp_utils::il2cpp_type_check::FPtrWrapper<&UnityEngine::Transform::get_localPosition>::get();
+    static auto Transform_Rotation = il2cpp_utils::il2cpp_type_check::FPtrWrapper<&UnityEngine::Transform::set_rotation>::get();
+    static auto Transform_GetRotation = il2cpp_utils::il2cpp_type_check::FPtrWrapper<&UnityEngine::Transform::get_rotation>::get();
+    static auto Transform_LocalRotation = il2cpp_utils::il2cpp_type_check::FPtrWrapper<&UnityEngine::Transform::set_localRotation>::get();
+    static auto Transform_Scale = il2cpp_utils::il2cpp_type_check::FPtrWrapper<&UnityEngine::Transform::set_localScale>::get();
+    static auto Transform_GetScale = il2cpp_utils::il2cpp_type_check::FPtrWrapper<&UnityEngine::Transform::get_localScale>::get();
+    static auto Transform_InverseTransformPoint = il2cpp_utils::il2cpp_type_check::FPtrWrapper<static_cast<::UnityEngine::Vector3 (UnityEngine::Transform::*)(::UnityEngine::Vector3)>(&UnityEngine::Transform::InverseTransformPoint)>::get();
+
     if (localRotation)
     {
         if (_trackLaneRing)
@@ -121,16 +132,16 @@ void Chroma::GameObjectTrackController::UpdateData(bool force) {
         }
         else
         {
-            transform->set_localRotation(localRotation.value());
+            Transform_LocalRotation(transform, localRotation.value());
         }
     } else if (rotation)
     {
         // Delegate positioning the object to TrackLaneRing
         NEVector::Quaternion finalOffset;
 
-        if (transformParent)
+        if (transformParent && (_trackLaneRing || _beatmapObjectsAvoidance))
         {
-            finalOffset = NEVector::Quaternion(UnityEngine::Quaternion::Inverse(transformParent->get_rotation())) * rotation.value();
+            finalOffset = NEVector::Quaternion(Quaternion_Inverse(Transform_GetRotation(transformParent))) * rotation.value();
         }
         else
         {
@@ -147,7 +158,7 @@ void Chroma::GameObjectTrackController::UpdateData(bool force) {
         }
         else
         {
-            transform->set_rotation(rotation.value());
+            Transform_Rotation(transform, rotation.value());
         }
     }
 
@@ -168,7 +179,7 @@ void Chroma::GameObjectTrackController::UpdateData(bool force) {
         }
         else
         {
-            transform->set_localPosition(localPositionValue);
+            Transform_LocalPosition(transform, localPositionValue);
             updateParametricBox = true;
         }
     } else if (position)
@@ -182,7 +193,7 @@ void Chroma::GameObjectTrackController::UpdateData(bool force) {
 
         if (transformParent)
         {
-            finalOffset = transformParent->InverseTransformPoint(positionValue);
+            finalOffset = Transform_InverseTransformPoint(transformParent, positionValue);
         }
         else
         {
@@ -199,22 +210,22 @@ void Chroma::GameObjectTrackController::UpdateData(bool force) {
         }
         else
         {
-            transform->set_position(positionValue);
+            Transform_Position(transform, positionValue);
             updateParametricBox = true;
         }
     }
 
     if (scale)
     {
-        transform->set_localScale(scale.value());
+        Transform_Scale(transform, scale.value());
         updateParametricBox = true;
     }
 
     // Handle ParametricBoxController
     if (updateParametricBox && _parametricBoxController)
     {
-        ParametricBoxControllerParameters::SetTransformPosition(_parametricBoxController, transform->get_localPosition());
-        ParametricBoxControllerParameters::SetTransformScale(_parametricBoxController, transform->get_localScale());
+        ParametricBoxControllerParameters::SetTransformPosition(_parametricBoxController, Transform_GetLocalPosition(transform));
+        ParametricBoxControllerParameters::SetTransformScale(_parametricBoxController, Transform_GetScale(transform));
     }
 
     lastCheckedTime = getCurrentTime();
