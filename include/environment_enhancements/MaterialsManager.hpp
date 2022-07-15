@@ -4,9 +4,7 @@
 #include "tracks/shared/Animation/Track.h"
 #include "tracks/shared/AssociatedData.h"
 
-namespace UnityEngine {
-    class Material;
-}
+#include "UnityEngine/Material.hpp"
 
 namespace Chroma {
     enum struct ShaderType
@@ -20,22 +18,16 @@ namespace Chroma {
 
     struct MaterialInfo
     {
-        MaterialInfo(
-                ShaderType shaderType,
-                std::string_view shaderTypeStr,
-                UnityEngine::Material* material,
-                std::optional<std::vector<Track*>> const& track) : ShaderTypeStr(shaderTypeStr)
-        {
-            ShaderType = shaderType;
-            Material = material;
-            if (track)
-            Track = track;
+        MaterialInfo(ShaderType shaderType, std::string_view shaderTypeStr,
+                     SafePtrUnity<UnityEngine::Material> const &material, std::optional<std::vector<Track *>> track)
+                : ShaderType(shaderType), ShaderTypeStr(shaderTypeStr), Material(material), Track(std::move(track)) {
+            CRASH_UNLESS(material.isAlive());
         }
 
         ShaderType ShaderType;
         std::string ShaderTypeStr;
 
-        SafePtr<UnityEngine::Material> Material;
+        SafePtrUnity<UnityEngine::Material> Material;
 
         std::optional<std::vector<Track*>> Track;
     };
@@ -50,12 +42,12 @@ namespace Chroma {
         static UnityEngine::Material* InstantiateSharedMaterial(ShaderType shaderType);
         MaterialInfo CreateMaterialInfo(rapidjson::Value const& data);
 
-        UnityEngine::Material* GetMaterialTemplate(ShaderType shaderType);
+        static UnityEngine::Material* GetMaterialTemplate(ShaderType shaderType);
 
     public:
         MaterialsManager(rapidjson::Value const& customData, TracksAD::BeatmapAssociatedData& beatmapAD, bool v2);
 
-        std::optional<ByRef<MaterialInfo const>> GetMaterial(rapidjson::Value const& data);
+        std::optional<MaterialInfo> GetMaterial(rapidjson::Value const& data);
 
         decltype(MaterialsManager::materials) const& GetMaterials() const;
     };

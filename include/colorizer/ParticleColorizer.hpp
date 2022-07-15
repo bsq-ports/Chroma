@@ -34,9 +34,9 @@ namespace Chroma {
         GlobalNamespace::ParticleSystemEventEffect *_particleSystemEventEffect;
         GlobalNamespace::BasicBeatmapEventType _eventType;
 
-        std::unordered_map<int, SafePtr<GlobalNamespace::SimpleColorSO>> _simpleColorSOs;
-        std::unordered_map<int, SafePtr<GlobalNamespace::MultipliedColorSO>> _multipliedColorSOs;
-        std::unordered_map<int, SafePtr<GlobalNamespace::MultipliedColorSO>> _multipliedHighlightColorSOs;
+        std::unordered_map<int, SafePtrUnity<GlobalNamespace::SimpleColorSO>> _simpleColorSOs;
+        std::unordered_map<int, SafePtrUnity<GlobalNamespace::MultipliedColorSO>> _multipliedColorSOs;
+        std::unordered_map<int, SafePtrUnity<GlobalNamespace::MultipliedColorSO>> _multipliedHighlightColorSOs;
 
         ParticleColorizer(GlobalNamespace::ParticleSystemEventEffect *particleSystemEventEffect,
                           GlobalNamespace::BasicBeatmapEventType BasicBeatmapEventType);

@@ -32,11 +32,10 @@ namespace Chroma {
 
     class GeometryFactory {
     public:
-        GeometryFactory(MaterialsManager& materialsManager, bool v2) : materialsManager(materialsManager), v2(v2) {}
+        GeometryFactory(MaterialsManager& materialsManager, bool v2);
 
         MaterialsManager& materialsManager;
         bool v2;
-        void reset();
 
 
         UnityEngine::GameObject * Create(rapidjson::Value const &data);

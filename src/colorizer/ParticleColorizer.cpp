@@ -126,18 +126,18 @@ void ParticleColorizer::InitializeSO(const std::string& id, int index, bool high
     Sombrero::FastColor multiplierColor = lightMultSO->multiplierColor;
     auto lightSO = lightMultSO->baseColor;
 
-    SafePtr<MultipliedColorSO> mColorSO(ScriptableObject::CreateInstance<MultipliedColorSO*>());
+    SafePtrUnity<MultipliedColorSO> mColorSO(ScriptableObject::CreateInstance<MultipliedColorSO*>());
     mColorSO->multiplierColor = multiplierColor;
 
 
     if (_simpleColorSOs.find(index) == _simpleColorSOs.end())
     {
-        SafePtr<SimpleColorSO> sColorSO(ScriptableObject::CreateInstance<SimpleColorSO*>());
+        SafePtrUnity<SimpleColorSO> sColorSO(ScriptableObject::CreateInstance<SimpleColorSO*>());
         sColorSO->SetColor(lightSO->color);
         _simpleColorSOs.emplace(index, sColorSO);
     }
 
-    SafePtr<SimpleColorSO>& sColorSO = _simpleColorSOs[index];
+    SafePtrUnity<SimpleColorSO>& sColorSO = _simpleColorSOs[index];
 
     mColorSO->baseColor = (SimpleColorSO*) sColorSO;
     MultipliedColorSO* mColorPtr = (MultipliedColorSO*) mColorSO;

@@ -21,28 +21,34 @@ using namespace Chroma;
 using namespace GlobalNamespace;
 using namespace UnityEngine;
 
-GeometryType geometryTypeFromString(auto&& str) {
+GeometryType geometryTypeFromString(std::string_view str) {
+    if (str == "Cube") {
+        return GeometryType::Cube;
+    }
     if (str == "Sphere") {
         return GeometryType::Sphere;
-    } else if (str == "Capsule") {
+    }
+    if (str == "Capsule") {
         return GeometryType::Capsule;
-    } else if (str == "Cylinder") {
+    }
+    if (str == "Cylinder") {
         return GeometryType::Cylinder;
-    } else if (str == "Cube") {
-        return GeometryType::Cube;
-    } else if (str == "Plane") {
+    }
+    if (str == "Plane") {
         return GeometryType::Plane;
-    } else if (str == "Quad") {
+    }
+    if (str == "Quad") {
         return GeometryType::Quad;
-    } else if (str == "Triangle") {
+    }
+    if (str == "Triangle") {
         return GeometryType::Triangle;
     }
 
-    getLogger().error("Unknown geometry type %s", str);
+    getLogger().error("Unknown geometry type %s", str.data());
     return Chroma::GeometryType::Cube;
 }
 
-void GeometryFactory::reset() {
+GeometryFactory::GeometryFactory(MaterialsManager &materialsManager, bool v2) : materialsManager(materialsManager), v2(v2) {
     auto tube = Resources::FindObjectsOfTypeAll<TubeBloomPrePassLight*>().FirstOrDefault();
 
     if (tube) _originalTubeBloomPrePassLight = tube;
@@ -60,8 +66,7 @@ GameObject * Chroma::GeometryFactory::Create(rapidjson::Value const &data) {
     if (!geometryStr) geometryType = GeometryType::Cube;
     else geometryType = geometryTypeFromString(geometryStr->data());
 
-
-    MaterialInfo const& materialInfo = materialsManager.GetMaterial(data.FindMember(v2 ? NewConstants::V2_MATERIAL.data() : NewConstants::MATERIAL.data())->value).value().heldRef;
+    MaterialInfo materialInfo = materialsManager.GetMaterial(data.FindMember(v2 ? NewConstants::V2_MATERIAL.data() : NewConstants::MATERIAL.data())->value).value();
 
     ShaderType shaderType = materialInfo.ShaderType;
 
@@ -83,8 +88,6 @@ GameObject * Chroma::GeometryFactory::Create(rapidjson::Value const &data) {
             primitiveType = UnityEngine::PrimitiveType::Plane;
             break;
         case GeometryType::Quad:
-            primitiveType = UnityEngine::PrimitiveType::Quad;
-            break;
         case GeometryType::Triangle:
             primitiveType = UnityEngine::PrimitiveType::Quad;
             break;
@@ -150,6 +153,7 @@ GameObject * Chroma::GeometryFactory::Create(rapidjson::Value const &data) {
     }
     else
     {
+        CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("[{{nameof(_originalTubeBloomPrePassLight)}}] was null.");
         throw std::runtime_error("[{nameof(_originalTubeBloomPrePassLight)}] was null.");
     }
 

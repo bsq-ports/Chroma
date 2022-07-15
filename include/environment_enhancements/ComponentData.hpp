@@ -17,9 +17,9 @@ namespace Chroma {
     class TrackLaneRingsManagerComponentData : public IComponentData
     {
     public:
-        SafePtr<GlobalNamespace::TrackLaneRingsManager> OldTrackLaneRingsManager;
+        SafePtrUnity<GlobalNamespace::TrackLaneRingsManager> OldTrackLaneRingsManager;
 
-        SafePtr<GlobalNamespace::TrackLaneRingsManager> NewTrackLaneRingsManager;
+        SafePtrUnity<GlobalNamespace::TrackLaneRingsManager> NewTrackLaneRingsManager;
 
         ComponentType getComponentType() override;
     };

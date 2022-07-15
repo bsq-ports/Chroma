@@ -6,16 +6,18 @@
 using namespace Chroma;
 using namespace UnityEngine;
 
-ShaderType shaderTypeFromString(auto&& str) {
+ShaderType shaderTypeFromString(std::string_view str) {
     if (str == "Standard") {
         return ShaderType::Standard;
-    } else if (str == "OpaqueLight") {
+    }
+    if (str == "OpaqueLight") {
         return ShaderType::OpaqueLight;
-    } else if (str == "TransparentLight") {
+    }
+    if (str == "TransparentLight") {
         return ShaderType::TransparentLight;
     }
 
-    getLogger().error("Unknown shader type %s", str);
+    getLogger().error("Unknown shader type %s", str.data());
     return Chroma::ShaderType::Standard;
 }
 
@@ -137,7 +139,7 @@ MaterialInfo Chroma::MaterialsManager::CreateMaterialInfo(rapidjson::Value const
     return MaterialInfo(shaderType, shaderTypeStr.value_or("Standard"), material, tracks);
 }
 
-std::optional<ByRef<MaterialInfo const>> Chroma::MaterialsManager::GetMaterial(rapidjson::Value const &data) {
+std::optional<MaterialInfo> Chroma::MaterialsManager::GetMaterial(rapidjson::Value const &data) {
     if (data.IsString()) {
         auto it = materials.find(data.GetString());
 
@@ -150,10 +152,14 @@ std::optional<ByRef<MaterialInfo const>> Chroma::MaterialsManager::GetMaterial(r
 }
 
 UnityEngine::Material *MaterialsManager::GetMaterialTemplate(ShaderType shaderType) {
-    static SafePtr<Material> _standardMaterial = InstantiateSharedMaterial(ShaderType::Standard);
-    static SafePtr<Material> _opaqueLightMaterial = InstantiateSharedMaterial(ShaderType::OpaqueLight);
-    static SafePtr<Material> _transparentLightMaterial = InstantiateSharedMaterial(ShaderType::TransparentLight);
+    static SafePtrUnity<Material> _standardMaterial;
+    if (!_standardMaterial) _standardMaterial = InstantiateSharedMaterial(ShaderType::Standard);
 
+    static SafePtrUnity<Material> _opaqueLightMaterial;
+    if (!_opaqueLightMaterial) InstantiateSharedMaterial(ShaderType::OpaqueLight);
+
+    static SafePtrUnity<Material> _transparentLightMaterial;
+    if(!_transparentLightMaterial) _transparentLightMaterial = InstantiateSharedMaterial(ShaderType::TransparentLight);
 
     Material *originalMaterial;
     switch (shaderType) {

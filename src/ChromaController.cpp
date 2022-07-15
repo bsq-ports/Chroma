@@ -50,7 +50,7 @@ std::unordered_set<std::string> ChromaController::ModsForcingDoHooks = std::unor
 custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnController *beatmapObjectSpawnController) {
     co_yield reinterpret_cast<enumeratorT>(CRASH_UNLESS(il2cpp_utils::New<UnityEngine::WaitForEndOfFrame *>()));
 
-    IL2CPP_CATCH_HANDLER(
+    PAPER_IL2CPP_CATCH_HANDLER(
     try {
         Chroma::ChromaController::BeatmapObjectSpawnController = beatmapObjectSpawnController;
         auto *coreSetup = il2cpp_utils::cast<BeatmapCallbacksController>(beatmapObjectSpawnController->beatmapCallbacksController);
@@ -67,7 +67,8 @@ custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(Global
         if (auto customBeatmap = il2cpp_utils::try_cast<CustomJSONData::CustomBeatmapData>(beatmapData)) {
             if (DoChromaHooks() && getChromaConfig().environmentEnhancementsEnabled.GetValue()) {
 
-                EnvironmentEnhancementManager::Init(*customBeatmap);
+                EnvironmentEnhancementManager::Init(*customBeatmap,
+                                                    beatmapObjectSpawnController->get_noteLinesDistance());
 
             }
 
@@ -87,7 +88,7 @@ custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(Global
 
     } catch (std::exception &e) {
         getLogger().debug("Chroma controller failed: %s!", e.what());
-        throw e;
+        throw;
     }
     )
 

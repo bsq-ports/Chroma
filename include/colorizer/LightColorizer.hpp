@@ -34,7 +34,7 @@ namespace Chroma {
         std::unordered_map<int, std::optional<Sombrero::FastColor>> _colors;
 
         std::array<Sombrero::FastColor, 4> _originalColors;
-        std::unordered_map<int, SafePtr<GlobalNamespace::SimpleColorSO>> _simpleColorSOs;
+        std::unordered_map<int, SafePtrUnity<GlobalNamespace::SimpleColorSO>> _simpleColorSOs;
 
         LightColorizer(ChromaLightSwitchEventEffect *lightSwitchEventEffect,
                        GlobalNamespace::LightWithIdManager *lightManager);
