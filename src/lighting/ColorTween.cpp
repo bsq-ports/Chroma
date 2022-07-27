@@ -2,17 +2,18 @@
 
 #include "System/Action_1.hpp"
 
-#define MakeDelegate(DelegateType, varName) (il2cpp_utils::MakeDelegate<DelegateType>(classof(DelegateType), varName))
+#include "custom-types/shared/delegate.hpp"
+
 
 DEFINE_TYPE(Chroma, ChromaIDColorTween);
 
 void Chroma::ChromaIDColorTween::ctor(Sombrero::FastColor fromValue, Sombrero::FastColor toValue,
                                       GlobalNamespace::ILightWithId *lightWithId,
                                       GlobalNamespace::LightWithIdManager *lightWithIdManager, int id) {
-    std::function<void(UnityEngine::Color)> SetColor = [this](UnityEngine::Color const& color) {
+    std::function<void(UnityEngine::Color)> SetColor = [this](UnityEngine::Color const& color) constexpr {
         ChromaIDColorTween::SetColor(color);
     };
-    auto SetColorAction = MakeDelegate(System::Action_1<UnityEngine::Color>*, SetColor);
+    auto SetColorAction = custom_types::MakeDelegate<System::Action_1<UnityEngine::Color>*>(SetColor);
 
     Reinit(fromValue, toValue, SetColorAction, 0, GlobalNamespace::EaseType::Linear, 0);
     _lightWithId = lightWithId;
