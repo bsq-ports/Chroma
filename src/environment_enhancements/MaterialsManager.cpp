@@ -60,8 +60,7 @@ UnityEngine::Material *Chroma::MaterialsManager::InstantiateSharedMaterial(Shade
                                                                                     "SPECULAR",
                                                                                     "_EMISSION",
                                                                                     "_ENABLE_FOG_TINT",
-                                                                                    "_RIMLIGHT_NONE", "_ZWRITE_ON",
-                                                                                    "REFLECTION_PROBE", "LIGHT_FALLOFF"
+                                                                                    "_RIMLIGHT_NONE"
                                                                             }));
             break;
         case ShaderType::OpaqueLight:

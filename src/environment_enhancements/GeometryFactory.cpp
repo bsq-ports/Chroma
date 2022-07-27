@@ -95,6 +95,7 @@ GameObject * Chroma::GeometryFactory::Create(rapidjson::Value const &data) {
 
     UnityEngine::GameObject* go = UnityEngine::GameObject::CreatePrimitive(primitiveType);
     go->set_name(geometryStr.value_or("") + materialInfo.ShaderTypeStr);
+    go->set_layer(14);
 
     auto* meshRenderer = go->GetComponent<MeshRenderer*>();
 
