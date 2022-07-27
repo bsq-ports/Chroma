@@ -239,7 +239,9 @@ Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root,
 
 void
 ComponentInitializer::PrefillComponentsData(UnityEngine::Transform *root, std::vector<std::shared_ptr<IComponentData>>& componentDatas) {
+#ifndef BS_1_24
     SkipAwake = true;
+#endif
 
     auto *trackLaneRingsManager = root->GetComponent<GlobalNamespace::TrackLaneRingsManager *>();
     if (trackLaneRingsManager != nullptr) {
@@ -258,7 +260,9 @@ ComponentInitializer::PrefillComponentsData(UnityEngine::Transform *root, std::v
 
 void
 ComponentInitializer::PostfillComponentsData(UnityEngine::Transform *root, UnityEngine::Transform* original, std::vector<std::shared_ptr<IComponentData>> const& componentDatas) {
+#ifndef BS1_24
     SkipAwake = false;
+#endif
 
     auto trackLaneRingsManager = root->GetComponent<GlobalNamespace::TrackLaneRingsManager*>();
     if (trackLaneRingsManager != nullptr)

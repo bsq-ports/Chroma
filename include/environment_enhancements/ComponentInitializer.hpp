@@ -9,7 +9,10 @@ namespace Chroma {
 
     class ComponentInitializer {
     public:
+        // TOOD: REMOVE
+#ifndef BS1_24
         static inline bool SkipAwake;
+#endif
 
         static void PrefillComponentsData(UnityEngine::Transform* root, std::vector<std::shared_ptr<IComponentData>>& componentDatas);
         static void PostfillComponentsData(UnityEngine::Transform* root, UnityEngine::Transform* original, std::vector<std::shared_ptr<IComponentData>> const& componentDatas);
