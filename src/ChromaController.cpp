@@ -26,6 +26,7 @@
 
 #include "lighting/LegacyLightHelper.hpp"
 #include "environment_enhancements/EnvironmentEnhancementManager.hpp"
+#include "environment_enhancements/MaterialsManager.hpp"
 #include "lighting/ChromaGradientController.hpp"
 #include "hooks/TrackLaneRingsManager.hpp"
 
@@ -111,6 +112,7 @@ void ChromaController::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene 
         SaberColorizer::Reset();
         ParticleColorizer::Reset();
         LightIdRegisterer::Reset();
+        MaterialsManager::Reset();
     }
 }
 

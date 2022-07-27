@@ -129,6 +129,7 @@ MaterialInfo Chroma::MaterialsManager::CreateMaterialInfo(rapidjson::Value const
     }
 
     auto material = Object::Instantiate(GetMaterialTemplate(shaderType));
+    createdMaterials.emplace_back(material);
     material->set_color(color);
     if (shaderKeywords) {
         material->set_shaderKeywords(shaderKeywords);

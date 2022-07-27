@@ -6,6 +6,8 @@
 
 #include "UnityEngine/Material.hpp"
 
+#include <unordered_set>
+
 namespace Chroma {
     enum struct ShaderType
     {
@@ -45,6 +47,15 @@ namespace Chroma {
         static UnityEngine::Material* GetMaterialTemplate(ShaderType shaderType);
 
     public:
+        inline static std::vector<SafePtrUnity<UnityEngine::Material>> createdMaterials;
+
+        static void Reset() {
+            for (auto& m : createdMaterials) {
+                UnityEngine::Object::Destroy(const_cast<UnityEngine::Material *>(m.ptr()));
+            }
+            createdMaterials.clear();
+        }
+
         MaterialsManager(rapidjson::Value const& customData, TracksAD::BeatmapAssociatedData& beatmapAD, bool v2);
 
         std::optional<MaterialInfo> GetMaterial(rapidjson::Value const& data);
