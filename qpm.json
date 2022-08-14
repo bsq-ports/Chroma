@@ -117,8 +117,8 @@
       "id": "songloader",
       "versionRange": "^0.10.0",
       "additionalData": {
-        "private": true,
-        "includeQmod": false
+        "includeQmod": false,
+        "private": true
       }
     }
   ],
