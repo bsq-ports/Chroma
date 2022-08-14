@@ -191,6 +191,7 @@ jobs:
 
       - name: Upload QMod to Mod Repo
         uses: BobbyShmurner/mod-uploader@v1.0
+        continue-on-error: true
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           repo-token: ${{ secrets.REPO_TOKEN }}
