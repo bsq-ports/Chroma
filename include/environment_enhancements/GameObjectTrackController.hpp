@@ -24,23 +24,25 @@
 
 namespace Chroma {
     struct GameObjectTrackControllerData {
-        Track *_track;
+        Track * const _track;
 
         // nullable
-        GlobalNamespace::TrackLaneRing * _trackLaneRing;
-        GlobalNamespace::ParametricBoxController * _parametricBoxController;
-        GlobalNamespace::BeatmapObjectsAvoidance * _beatmapObjectsAvoidance;
+        GlobalNamespace::TrackLaneRing * const _trackLaneRing;
+        GlobalNamespace::ParametricBoxController * const _parametricBoxController;
+        GlobalNamespace::BeatmapObjectsAvoidance * const _beatmapObjectsAvoidance;
 
-        float _noteLinesDistance;
+        float const _noteLinesDistance;
+
+        bool const v2;
 
         constexpr GameObjectTrackControllerData(Track *track,
                                                 GlobalNamespace::TrackLaneRing * trackLaneRing,
                                                 GlobalNamespace::ParametricBoxController * parametricBoxController,
                                                 GlobalNamespace::BeatmapObjectsAvoidance * beatmapObjectsAvoidance,
-                                                float noteLinesDistance) : _track(track), _trackLaneRing(trackLaneRing),
+                                                float noteLinesDistance, bool v2) : _track(track), _trackLaneRing(trackLaneRing),
                                                                  _parametricBoxController(parametricBoxController),
                                                                  _beatmapObjectsAvoidance(beatmapObjectsAvoidance),
-                                                                 _noteLinesDistance(noteLinesDistance) {}
+                                                                 _noteLinesDistance(noteLinesDistance), v2(v2) {}
     };
 }
 
@@ -55,27 +57,32 @@ private:
 
     DECLARE_INSTANCE_FIELD(int, id);
     DECLARE_INSTANCE_FIELD(UnityEngine::Transform*, parent);
+    DECLARE_INSTANCE_FIELD(UnityEngine::Transform*, origin);
 
 
 
     // This is retrived from the data map since Unity doesn't copy it.
-    GameObjectTrackControllerData* data;
+    GameObjectTrackControllerData const* data;
+    uint64_t lastCheckedTime;
+
+    void UpdateData(bool force);
 
     DECLARE_INSTANCE_METHOD(void, Awake);
+    DECLARE_INSTANCE_METHOD(void, OnEnable);
     DECLARE_INSTANCE_METHOD(void, Update);
     DECLARE_INSTANCE_METHOD(void, OnTransformParentChanged);
 public:
     inline static bool LeftHanded;
     void Init(Track* track, float noteLinesDistance, GlobalNamespace::TrackLaneRing* trackLaneRing,
                             GlobalNamespace::ParametricBoxController* parametricBoxController,
-                            GlobalNamespace::BeatmapObjectsAvoidance* beatmapObjectsAvoidance);
+                            GlobalNamespace::BeatmapObjectsAvoidance* beatmapObjectsAvoidance, bool v2);
 
     static void HandleTrackData(UnityEngine::GameObject* gameObject,
                                 std::optional<Track*> track,
                                 float noteLinesDistance,
                                 GlobalNamespace::TrackLaneRing* trackLaneRing,
                                 GlobalNamespace::ParametricBoxController* parametricBoxController,
-                                GlobalNamespace::BeatmapObjectsAvoidance* beatmapObjectsAvoidance);
+                                GlobalNamespace::BeatmapObjectsAvoidance* beatmapObjectsAvoidance, bool v2);
 
     static void ClearData();
 

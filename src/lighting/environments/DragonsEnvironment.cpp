@@ -7,11 +7,11 @@ using namespace Chroma;
 EnvironmentLightDataT DragonsEnvironment::getEnvironmentLights() {
     return EnvironmentLightDataT(
         {
-    {0, {
+    {1, {
         {1, 4 },
         {2, 7 },
     }},
-    {1, {
+    {2, {
         {1, 4 },
         {2, 5 },
         {3, 6 },
@@ -75,31 +75,25 @@ EnvironmentLightDataT DragonsEnvironment::getEnvironmentLights() {
         {61, 67 },
         {62, 64 },
     }},
-    {2, {
+    {3, {
         {1, 5 },
         {2, 2 },
         {3, 3 },
         {4, 6 },
         {5, 4 },
     }},
-    {3, {
+    {4, {
         {1, 4 },
         {2, 2 },
         {3, 3 },
         {4, 6 },
         {5, 5 },
     }},
-    {4, {
+    {5, {
         {1, 8 },
         {2, 11 },
         {3, 4 },
         {4, 2 },
-    }},
-    {5, {
-    }},
-    {6, {
-    }},
-    {7, {
     }},
 }
     );

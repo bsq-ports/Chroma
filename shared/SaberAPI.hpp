@@ -4,8 +4,8 @@
 #include "UnityEngine/Color.hpp"
 #include "GlobalNamespace/SaberType.hpp"
 #include "GlobalNamespace/SaberModelContainer.hpp"
-#include "conditional-dependencies/shared/main.hpp"
 #include "utils.hpp"
+#include "conditional-dependencies/shared/main.hpp"
 
 #include <optional>
 #include <functional>

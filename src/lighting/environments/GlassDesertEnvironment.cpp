@@ -7,7 +7,7 @@ using namespace Chroma;
 EnvironmentLightDataT GlassDesertEnvironment::getEnvironmentLights() {
     return EnvironmentLightDataT(
         {
-    {0, {
+    {1, {
         {1, 8 },
         {2, 5 },
         {3, 3 },
@@ -15,7 +15,7 @@ EnvironmentLightDataT GlassDesertEnvironment::getEnvironmentLights() {
         {5, 4 },
         {6, 6 },
     }},
-    {1, {
+    {2, {
         {1, 7 },
         {2, 3 },
         {3, 10 },
@@ -25,7 +25,7 @@ EnvironmentLightDataT GlassDesertEnvironment::getEnvironmentLights() {
         {7, 5 },
         {8, 6 },
     }},
-    {2, {
+    {3, {
         {1, 1 },
         {2, 9 },
         {3, 3 },
@@ -37,7 +37,7 @@ EnvironmentLightDataT GlassDesertEnvironment::getEnvironmentLights() {
         {9, 7 },
         {10, 8 },
     }},
-    {3, {
+    {4, {
         {1, 1 },
         {2, 11 },
         {3, 5 },
@@ -48,14 +48,6 @@ EnvironmentLightDataT GlassDesertEnvironment::getEnvironmentLights() {
         {8, 4 },
         {9, 7 },
         {10, 8 },
-    }},
-    {4, {
-    }},
-    {5, {
-    }},
-    {6, {
-    }},
-    {7, {
     }},
 }
     );

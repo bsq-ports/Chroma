@@ -7,7 +7,7 @@ using namespace Chroma;
 EnvironmentLightDataT MonstercatEnvironment::getEnvironmentLights() {
     return EnvironmentLightDataT(
         {
-    {0, {
+    {1, {
         {1, 5 },
         {2, 9 },
         {3, 11 },
@@ -17,7 +17,7 @@ EnvironmentLightDataT MonstercatEnvironment::getEnvironmentLights() {
         {7, 12 },
         {8, 7 },
     }},
-    {1, {
+    {2, {
         {1, 8 },
         {2, 4 },
         {3, 5 },
@@ -26,21 +26,21 @@ EnvironmentLightDataT MonstercatEnvironment::getEnvironmentLights() {
         {6, 9 },
         {7, 11 },
     }},
-    {2, {
+    {3, {
         {1, 2 },
         {2, 3 },
         {3, 4 },
         {4, 5 },
         {5, 6 },
     }},
-    {3, {
+    {4, {
         {1, 6 },
         {2, 4 },
         {3, 5 },
         {4, 2 },
         {5, 3 },
     }},
-    {4, {
+    {5, {
         {1, -1 },
         {2, 14 },
         {3, 11 },
@@ -55,12 +55,6 @@ EnvironmentLightDataT MonstercatEnvironment::getEnvironmentLights() {
         {12, 20 },
         {13, 6 },
         {14, 4 },
-    }},
-    {5, {
-    }},
-    {6, {
-    }},
-    {7, {
     }},
 }
     );

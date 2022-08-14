@@ -7,7 +7,7 @@
 #include <unordered_map>
 
 #include "UnityEngine/Color.hpp"
-#include "GlobalNamespace/BeatmapEventData.hpp"
+#include "GlobalNamespace/BasicBeatmapEventData.hpp"
 #include "GlobalNamespace/IReadonlyBeatmapData.hpp"
 
 #include "sombrero/shared/ColorUtils.hpp"
@@ -18,8 +18,8 @@ namespace Chroma {
     class ChromaEventData {
     private:
         ChromaEventData(const ChromaEventData&) = default;
-        friend class std::unordered_map<GlobalNamespace::BeatmapEventData *, ChromaEventData>;
-        friend class std::pair<GlobalNamespace::BeatmapEventData *const, Chroma::ChromaEventData>;
+        friend class std::unordered_map<GlobalNamespace::BasicBeatmapEventData *, ChromaEventData>;
+        friend class std::pair<GlobalNamespace::BasicBeatmapEventData *const, Chroma::ChromaEventData>;
 
     public:
         ChromaEventData() = default;
@@ -74,12 +74,12 @@ namespace Chroma {
 
         bool LockPosition;
 
-        std::unordered_map<int, std::pair<GlobalNamespace::BeatmapEventData*, ChromaEventData*>> NextSameTypeEvent;
+        std::unordered_map<int, std::pair<GlobalNamespace::BasicBeatmapEventData*, ChromaEventData*>> NextSameTypeEvent;
     };
 
     class ChromaEventDataManager {
     public:
-        using EventMapType = std::unordered_map<GlobalNamespace::BeatmapEventData *, ChromaEventData>;
+        using EventMapType = std::unordered_map<GlobalNamespace::BasicBeatmapEventData *, ChromaEventData>;
         inline static EventMapType ChromaEventDatas;
 
         static void deserialize(GlobalNamespace::IReadonlyBeatmapData *beatmapData);

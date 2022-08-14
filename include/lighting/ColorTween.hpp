@@ -9,10 +9,10 @@
 
 #include "UnityEngine/Color.hpp"
 
-#include "GlobalNamespace/BeatmapEventType.hpp"
+#include "GlobalNamespace/BasicBeatmapEventType.hpp"
 #include "GlobalNamespace/ILightWithId.hpp"
 #include "GlobalNamespace/LightWithIdManager.hpp"
-#include "GlobalNamespace/BeatmapEventData.hpp"
+#include "GlobalNamespace/BasicBeatmapEventData.hpp"
 #include "Tweening/ColorTween.hpp"
 
 #include "ChromaController.hpp"
@@ -29,7 +29,7 @@ DECLARE_CLASS_CODEGEN(Chroma, ChromaIDColorTween, Tweening::ColorTween,
 public:
                       DECLARE_INSTANCE_FIELD(GlobalNamespace::ILightWithId*, _lightWithId);
                       DECLARE_INSTANCE_FIELD(GlobalNamespace::LightWithIdManager*, _lightWithIdManager);
-                      DECLARE_INSTANCE_FIELD(GlobalNamespace::BeatmapEventData*, PreviousEvent);
+                      DECLARE_INSTANCE_FIELD(GlobalNamespace::BasicBeatmapEventData*, PreviousEvent);
 public:
                       int Id;
                       Functions easing;
@@ -60,10 +60,12 @@ public:
     }
 
     void SetColor(UnityEngine::Color const& color) const {
-        _lightWithIdManager->didChangeSomeColorsThisFrame = true;
-        if (_lightWithId->get_isRegistered()) {
-            _lightWithId->ColorWasSet(color);
+        if (!_lightWithId->get_isRegistered()) {
+            return;
+
         }
+       _lightWithIdManager->didChangeSomeColorsThisFrame = true;
+       _lightWithId->ColorWasSet(color);
     }
 
 )

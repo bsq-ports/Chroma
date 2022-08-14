@@ -1,5 +1,5 @@
 #include "main.hpp"
-#include "lighting/environment_enhancements/LegacyEnvironmentRemoval.hpp"
+#include "environment_enhancements/LegacyEnvironmentRemoval.hpp"
 #include "Chroma.hpp"
 #include "ChromaController.hpp"
 
@@ -18,7 +18,7 @@ void Chroma::LegacyEnvironmentRemoval::Init(CustomJSONData::CustomBeatmapData* c
 
     if (dynDataWrapper) {
         DocumentUTF16& dynData = *dynDataWrapper;
-        auto objectsToKillIt = dynData.FindMember(ENVIRONMENTREMOVAL.c_str());
+        auto objectsToKillIt = dynData.FindMember(Chroma::NewConstants::V2_ENVIRONMENT_REMOVAL.data());
 
         if (objectsToKillIt != dynData.MemberEnd()) {
 

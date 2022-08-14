@@ -7,7 +7,7 @@ using namespace Chroma;
 EnvironmentLightDataT RocketEnvironment::getEnvironmentLights() {
     return EnvironmentLightDataT(
         {
-    {0, {
+    {1, {
         {1, 8 },
         {2, 17 },
         {3, 9 },
@@ -22,13 +22,13 @@ EnvironmentLightDataT RocketEnvironment::getEnvironmentLights() {
         {12, 12 },
         {13, 11 },
     }},
-    {1, {
+    {2, {
         {1, 5 },
         {2, 8 },
         {3, 9 },
         {4, 4 },
     }},
-    {2, {
+    {3, {
         {1, 6 },
         {2, 2 },
         {3, 4 },
@@ -37,7 +37,7 @@ EnvironmentLightDataT RocketEnvironment::getEnvironmentLights() {
         {6, 7 },
         {7, 5 },
     }},
-    {3, {
+    {4, {
         {1, 6 },
         {2, 3 },
         {3, 4 },
@@ -46,7 +46,7 @@ EnvironmentLightDataT RocketEnvironment::getEnvironmentLights() {
         {6, 7 },
         {7, 5 },
     }},
-    {4, {
+    {5, {
         {1, 10 },
         {2, 14 },
         {3, 17 },
@@ -54,12 +54,6 @@ EnvironmentLightDataT RocketEnvironment::getEnvironmentLights() {
         {5, 2 },
         {6, 6 },
         {7, 8 },
-    }},
-    {5, {
-    }},
-    {6, {
-    }},
-    {7, {
     }},
 }
     );

@@ -10,10 +10,11 @@
 
 #include "custom-json-data/shared/CustomBeatmapData.h"
 
-#include "lighting/environment_enhancements/GameObjectInfo.hpp"
+#include "environment_enhancements/GameObjectInfo.hpp"
 
 #include "sombrero/shared/Vector3Utils.hpp"
 #include "sombrero/shared/QuaternionUtils.hpp"
+#include "GeometryFactory.hpp"
 
 namespace Chroma {
     enum class LookupMethod
@@ -101,9 +102,7 @@ namespace Chroma {
     private:
         inline static std::vector<GameObjectInfo> _globalGameObjectInfos;
 
-        static std::vector<ByRef<const GameObjectInfo>> LookupId(const std::string& id, LookupMethod lookupMethod);
-
-        static std::optional<Sombrero::FastVector3> GetVectorData(const rapidjson::Value &dynDataW, std::string_view name);
+        static std::vector<ByRef<const GameObjectInfo>> LookupId(std::string_view id, LookupMethod lookupMethod);
 
         static void GetAllGameObjects();
 

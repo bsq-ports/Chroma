@@ -1,12 +1,12 @@
 #pragma once
 
 #include "UnityEngine/Color.hpp"
-#include "conditional-dependencies/shared/main.hpp"
 #include "utils.hpp"
+#include "conditional-dependencies/shared/main.hpp"
 
 #include "GlobalNamespace/LightSwitchEventEffect.hpp"
 #include "GlobalNamespace/ILightWithId.hpp"
-#include "GlobalNamespace/BeatmapEventType.hpp"
+#include "GlobalNamespace/BasicBeatmapEventType.hpp"
 
 #include <unordered_map>
 #include <optional>
@@ -87,8 +87,8 @@ namespace Chroma {
         /// The LSE Data if it is found, none of the values will be std::nullopt.
         ///
         /// This is a bit slower than usual since it creates a heap struct, then copies to a value struct and finally deletes.
-        static std::optional<LSEData> getLightColorSafe(GlobalNamespace::BeatmapEventType mb) noexcept {
-            static auto function = CondDeps::Find<LSEData*, GlobalNamespace::BeatmapEventType>(CHROMA_ID, "getLightColorSafe");
+        static std::optional<LSEData> getLightColorSafe(GlobalNamespace::BasicBeatmapEventType mb) noexcept {
+            static auto function = CondDeps::Find<LSEData*, GlobalNamespace::BasicBeatmapEventType>(CHROMA_ID, "getLightColorSafe");
 
             if (function) {
 
@@ -110,8 +110,8 @@ namespace Chroma {
         /// Sets the light color if the method was found.
         /// If nullopt, it resets the colors
         /// Returns true if lights existed for the given event type, false otherwise
-        static bool setLightColorSafe(GlobalNamespace::BeatmapEventType mb, bool refresh, std::optional<LSEData> const& color) noexcept {
-            static auto function = CondDeps::Find<bool, GlobalNamespace::BeatmapEventType, bool, std::optional<LSEData>>(CHROMA_ID, "setLightColorSafe");
+        static bool setLightColorSafe(GlobalNamespace::BasicBeatmapEventType mb, bool refresh, std::optional<LSEData> const& color) noexcept {
+            static auto function = CondDeps::Find<bool, GlobalNamespace::BasicBeatmapEventType, bool, std::optional<LSEData>>(CHROMA_ID, "setLightColorSafe");
 
             if (function) {
                 return function.value()(mb, refresh, color);

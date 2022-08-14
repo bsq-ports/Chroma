@@ -7,7 +7,7 @@ using namespace Chroma;
 EnvironmentLightDataT BigMirrorEnvironment::getEnvironmentLights() {
     return EnvironmentLightDataT(
         {
-    {0, {
+    {1, {
         {1, 7 },
         {2, 9 },
         {3, 6 },
@@ -19,7 +19,7 @@ EnvironmentLightDataT BigMirrorEnvironment::getEnvironmentLights() {
         {9, 8 },
         {10, 4 },
     }},
-    {1, {
+    {2, {
         {1, 4 },
         {2, 5 },
         {3, 6 },
@@ -81,7 +81,7 @@ EnvironmentLightDataT BigMirrorEnvironment::getEnvironmentLights() {
         {59, 62 },
         {60, 63 },
     }},
-    {2, {
+    {3, {
         {1, 7 },
         {2, 5 },
         {3, 4 },
@@ -91,7 +91,7 @@ EnvironmentLightDataT BigMirrorEnvironment::getEnvironmentLights() {
         {7, 0 },
         {8, 10 },
     }},
-    {3, {
+    {4, {
         {1, 6 },
         {2, 5 },
         {3, 4 },
@@ -101,7 +101,7 @@ EnvironmentLightDataT BigMirrorEnvironment::getEnvironmentLights() {
         {7, 0 },
         {8, 2 },
     }},
-    {4, {
+    {5, {
         {1, 20 },
         {2, 18 },
         {3, 11 },
@@ -118,12 +118,6 @@ EnvironmentLightDataT BigMirrorEnvironment::getEnvironmentLights() {
         {14, 8 },
         {15, 9 },
         {16, 10 },
-    }},
-    {5, {
-    }},
-    {6, {
-    }},
-    {7, {
     }},
 }
     );

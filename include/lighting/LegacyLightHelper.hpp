@@ -1,7 +1,7 @@
 #pragma once
 
-#include "GlobalNamespace/BeatmapEventType.hpp"
-#include "GlobalNamespace/BeatmapEventData.hpp"
+#include "GlobalNamespace/BasicBeatmapEventType.hpp"
+#include "GlobalNamespace/BasicBeatmapEventData.hpp"
 
 #include "UnityEngine/Color.hpp"
 
@@ -28,10 +28,10 @@ namespace Chroma {
         static ColorMap LegacyColorEvents;
 
         // internal
-        static void Activate(ArrayW<GlobalNamespace::BeatmapEventData*> eventData);
+        static void Activate(std::span<GlobalNamespace::BasicBeatmapEventData*> eventData);
 
         // internal
-        static std::optional<Sombrero::FastColor> GetLegacyColor(GlobalNamespace::BeatmapEventData* beatmapEventData);
+        static std::optional<Sombrero::FastColor> GetLegacyColor(GlobalNamespace::BasicBeatmapEventData* beatmapEventData);
 
     private:
         static constexpr Sombrero::FastColor ColorFromInt(int rgb);

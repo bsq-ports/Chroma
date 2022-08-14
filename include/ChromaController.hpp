@@ -2,7 +2,7 @@
 
 #include "custom-types/shared/coroutine.hpp"
 #include "GlobalNamespace/BeatmapObjectSpawnController.hpp"
-#include "GlobalNamespace/IAudioTimeSource.hpp"
+#include "GlobalNamespace/BeatmapCallbacksController.hpp"
 
 #include "custom-types/shared/types.hpp"
 #include "custom-types/shared/macros.hpp"
@@ -66,7 +66,7 @@ namespace Chroma {
         }
 
         inline static GlobalNamespace::BeatmapObjectSpawnController* BeatmapObjectSpawnController = nullptr;
-        inline static GlobalNamespace::IAudioTimeSource* IAudioTimeSource = nullptr;
+        inline static GlobalNamespace::BeatmapCallbacksController* CallbacksController = nullptr;
 
         // internal
         static void OnActiveSceneChanged(UnityEngine::SceneManagement::Scene current);

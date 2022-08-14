@@ -18,14 +18,14 @@
 #include <string>
 #include <random>
 #include "tracks/shared/Animation/Track.h"
+#include "UnityEngine/Mesh.hpp"
 
 #define GET_FIND_METHOD(mPtr) il2cpp_utils::il2cpp_type_check::MetadataGetter<mPtr>::get()
 
 namespace ChromaUtils {
-class ChromaUtilities {
-public:
-    static std::optional<Sombrero::FastColor>
-    GetColorFromData(rapidjson::Value const &data, const std::string_view member = Chroma::COLOR) {
+struct ChromaUtilities {
+    inline static std::optional<Sombrero::FastColor>
+    GetColorFromData(rapidjson::Value const &data, const std::string_view member) {
         auto const color = data.FindMember(member.data());
 
         if (color == data.MemberEnd() || !color->value.IsArray() || color->value.Empty())
@@ -36,19 +36,24 @@ public:
                                    color->value.Size() > 3 ? color->value[3].GetFloat() : 1);
     }
 
-    inline static std::optional<Sombrero::FastColor> GetColorFromData(std::optional<std::reference_wrapper<rapidjson::Value>> const data,
-                                                                      const std::string_view member = Chroma::COLOR) {
+    inline static std::optional<Sombrero::FastColor> GetColorFromData(std::optional<std::reference_wrapper<const rapidjson::Value>> const data,
+                                                                      const std::string_view member) {
         if (!data) return std::nullopt;
 
         rapidjson::Value const &unwrapped = *data;
 
         return GetColorFromData(unwrapped, member);
     }
+
+    template<typename T>
+    inline static auto GetColorFromData(T&& val, bool v2 = false) {
+        return GetColorFromData(std::forward<T>(val), v2 ? Chroma::NewConstants::V2_COLOR : Chroma::NewConstants::COLOR);
+    }
 };
 
 
-    template<typename T, typename Predicate = std::function<bool(T const&)> >
-    int FindIndex(std::span<T> const& list, Predicate const& predicate, int startIndex = 0, int endIndex = -1) {
+    template<typename List, typename Predicate = std::function<bool(typename List::value_type const&)> >
+    int FindIndex(List const& list, Predicate const& predicate, int startIndex = 0, int endIndex = -1) {
         if (endIndex == -1) endIndex = list.size();
 
         for (int i = startIndex; i < endIndex; i++) {
@@ -114,7 +119,11 @@ public:
             }
         }
 
-        return it->value.Get<T>();
+        if constexpr (std::is_same_v<T, std::string> || std::is_same_v<T, std::string_view> || std::is_same_v<T, char const*>) {
+            return it->value.GetString();
+        } else {
+            return it->value.template Get<T>();
+        }
     }
 
     template<typename T>
@@ -136,30 +145,54 @@ public:
                 return std::stof(it->value.GetString());
             }
 
-            if constexpr (std::is_same_v<T, int>) {
+            if constexpr (std::is_same_v<T, int> || std::is_enum_v<T>) {
                 return std::stoi(it->value.GetString());
             }
 
-            if constexpr (std::is_same_v<T, std::string> || std::is_same_v<T, std::string_view> || std::is_same_v<T, char const*>) {
-                return it->value.GetString();
-            }
         }
 
-        return it->value.Get<T>();
+
+        if constexpr (std::is_same_v<T, std::string> || std::is_same_v<T, std::string_view> || std::is_same_v<T, char const*>) {
+            return it->value.GetString();
+        } else {
+            return it->value.template Get<T>();
+        }
     }
 
     template<typename T>
-    inline static T getIfExists(std::optional<std::reference_wrapper<rapidjson::Value>> val, const std::string_view member, T const& def) {
+    inline static T getIfExists(std::optional<std::reference_wrapper<const rapidjson::Value>> const& val, const std::string_view member, T const& def) {
         if (!val) return def;
 
         return getIfExists<T>(val->get(), member, def);
     }
 
     template<typename T>
-    inline static std::optional<T> getIfExists(std::optional<std::reference_wrapper<rapidjson::Value>> const& val, const std::string_view member) {
+    inline static std::optional<T> getIfExists(std::optional<std::reference_wrapper<const rapidjson::Value>> const& val, const std::string_view member) {
         if (!val) return std::nullopt;
 
         return getIfExists<T>(val->get(), member);
+    }
+
+    template<typename T, typename Value>
+    constexpr static std::optional<T> getIfExists(Value&& rapidValue, std::span<std::string_view> members) {
+        if (!rapidValue) return std::nullopt;
+
+        for (auto member : members) {
+            std::optional<T> val = getIfExists(std::forward<Value>(rapidValue), member);
+
+            if (!val) continue;
+
+            return val;
+        }
+
+        return std::nullopt;
+    }
+
+    template<typename T, typename Value>
+    constexpr static std::optional<T> getIfExists(Value&& rapidValue, std::span<std::string_view> members, T const& def) {
+        auto val = getIfExists<T, Value>(std::forward<Value>(rapidValue), members);
+
+        return val ? val : def;
     }
 
 //    std::optional<float> getIfExistsFloatOpt(std::optional<std::reference_wrapper<rapidjson::Value>> val, const std::string& member) {
@@ -183,6 +216,38 @@ public:
     template<typename T>
     inline static constexpr std::optional<T*> ptrToOpt(T* t) {
         return t ? std::make_optional<T*>(t) : std::nullopt;
+    }
+
+    /// <summary>
+    /// https://answers.unity.com/questions/1594750/is-there-a-premade-triangle-asset.html
+    /// </summary>
+    static UnityEngine::Mesh* CreateTriangleMesh() {
+        ArrayW<Sombrero::FastVector3> vertices =
+                std::initializer_list<Sombrero::FastVector3>({
+                                                                     {-0.5f, -0.5f, 0},
+                                                                     {0.5f,  -0.5f, 0},
+                                                                     {0.0f,  0.5f,  0}
+                                                             });
+
+        ArrayW<Sombrero::FastVector2> uv =
+                std::initializer_list<Sombrero::FastVector2>({
+                                                                     {0,    0},
+                                                                     {1,    0},
+                                                                     {0.5f, 1}
+                                                             });
+
+        ArrayW<int> triangles = {0, 1, 2};
+
+        UnityEngine::Mesh *mesh = UnityEngine::Mesh::New_ctor();
+        mesh->set_vertices(vertices);
+        mesh->set_uv(uv);
+        mesh->set_triangles(triangles);
+
+
+        mesh->RecalculateBounds();
+        mesh->RecalculateNormals();
+        mesh->RecalculateTangents();
+        return mesh;
     }
 
 //    static bool ColorEquals(Sombrero::FastColor c1, Sombrero::FastColor& c2) {

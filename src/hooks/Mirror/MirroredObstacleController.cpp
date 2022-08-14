@@ -8,7 +8,6 @@
 #include "GlobalNamespace/MirroredObstacleController.hpp"
 #include "GlobalNamespace/MultiplayerConnectedPlayerNoteController.hpp"
 #include "GlobalNamespace/TutorialNoteController.hpp"
-#include "GlobalNamespace/MirroredCubeNoteController.hpp"
 #include "GlobalNamespace/SaberBurnMarkArea.hpp"
 
 #include "UnityEngine/ParticleSystem.hpp"

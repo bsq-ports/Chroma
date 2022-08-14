@@ -5,7 +5,7 @@
 
 #include "custom-json-data/shared/CustomBeatmapData.h"
 #include "GlobalNamespace/BeatmapEventData.hpp"
-#include "GlobalNamespace/BeatmapEventType.hpp"
+#include "GlobalNamespace/BasicBeatmapEventType.hpp"
 #include "GlobalNamespace/LightPairRotationEventEffect.hpp"
 #include "GlobalNamespace/LightPairRotationEventEffect_RotationData.hpp"
 #include "UnityEngine/Quaternion.hpp"
@@ -19,14 +19,14 @@ using namespace UnityEngine;
 using namespace Chroma;
 using namespace ChromaUtils;
 
-static BeatmapEventData* LastLightPairRotationEventEffectData;
+static BasicBeatmapEventData* LastLightPairRotationEventEffectData;
 
 MAKE_HOOK_MATCH(
     LightPairRotationEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger,
-    &LightPairRotationEventEffect::HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger,
+    &LightPairRotationEventEffect::HandleBeatmapEvent,
     void,
     LightPairRotationEventEffect* self,
-    BeatmapEventData* beatmapEventData
+    BasicBeatmapEventData* beatmapEventData
 ) {
     // Do nothing if Chroma shouldn't run
     if (!ChromaController::DoChromaHooks()) {
@@ -34,7 +34,7 @@ MAKE_HOOK_MATCH(
         return;
     }
 
-    if (beatmapEventData->type == self->eventL || beatmapEventData->type == self->eventR) {
+    if (beatmapEventData->basicBeatmapEventType == self->eventL || beatmapEventData->basicBeatmapEventType == self->eventR) {
         LastLightPairRotationEventEffectData = beatmapEventData;
     }
 
@@ -77,7 +77,7 @@ MAKE_HOOK_MATCH(
     auto const& chromaData = chromaIt->second;
 
 
-    bool isLeftEvent = beatmapEventData->type == self->eventL;
+    bool isLeftEvent = beatmapEventData->basicBeatmapEventType == self->eventL;
     // rotationData
     LightPairRotationEventEffect::RotationData *customRotationData = isLeftEvent ? self->rotationDataL
                                                                                  : self->rotationDataR;

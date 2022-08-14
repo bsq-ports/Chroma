@@ -8,12 +8,12 @@ using namespace UnityEngine;
 using namespace Sombrero;
 
 Chroma::ParticleColorizer::ParticleColorizer(GlobalNamespace::ParticleSystemEventEffect *particleSystemEventEffect,
-                                             GlobalNamespace::BeatmapEventType beatmapEventType) :
+                                             GlobalNamespace::BasicBeatmapEventType BasicBeatmapEventType) :
                                              _simpleColorSOs(COLOR_FIELDS),
                                              _multipliedColorSOs(COLOR_FIELDS),
                                              _multipliedHighlightColorSOs(COLOR_FIELDS),
                                              _particleSystemEventEffect(particleSystemEventEffect),
-                                             _eventType(beatmapEventType)
+                                             _eventType(BasicBeatmapEventType)
                                              {
     InitializeSO("_lightColor0", 0);
     InitializeSO("_highlightColor0", 0, true);
@@ -26,10 +26,10 @@ Chroma::ParticleColorizer::ParticleColorizer(GlobalNamespace::ParticleSystemEven
 }
 
 std::shared_ptr<ParticleColorizer> ParticleColorizer::New(GlobalNamespace::ParticleSystemEventEffect *particleSystemEventEffect,
-                               GlobalNamespace::BeatmapEventType beatmapEventType) {
-    std::shared_ptr<ParticleColorizer> particleColorizer(new ParticleColorizer(particleSystemEventEffect, beatmapEventType));
+                               GlobalNamespace::BasicBeatmapEventType BasicBeatmapEventType) {
+    std::shared_ptr<ParticleColorizer> particleColorizer(new ParticleColorizer(particleSystemEventEffect, BasicBeatmapEventType));
 
-    GetOrCreateColorizerList(beatmapEventType).emplace(particleColorizer);
+    GetOrCreateColorizerList(BasicBeatmapEventType).emplace(particleColorizer);
     return particleColorizer;
 }
 
@@ -38,7 +38,7 @@ void ParticleColorizer::UnsubscribeEvent() {
 }
 
 std::unordered_set<std::shared_ptr<ParticleColorizer>>&
-ParticleColorizer::GetOrCreateColorizerList(GlobalNamespace::BeatmapEventType eventType) {
+ParticleColorizer::GetOrCreateColorizerList(GlobalNamespace::BasicBeatmapEventType eventType) {
     auto it = Colorizers.find(eventType);
 
     if (it == Colorizers.end()) {
@@ -49,7 +49,7 @@ ParticleColorizer::GetOrCreateColorizerList(GlobalNamespace::BeatmapEventType ev
     return it->second;
 }
 
-void ParticleColorizer::OnLightColorChanged(GlobalNamespace::BeatmapEventType eventType,
+void ParticleColorizer::OnLightColorChanged(GlobalNamespace::BasicBeatmapEventType eventType,
                                             std::array<Sombrero::FastColor, 4> colors) {
     if (eventType == _eventType)
     {
@@ -126,18 +126,18 @@ void ParticleColorizer::InitializeSO(const std::string& id, int index, bool high
     Sombrero::FastColor multiplierColor = lightMultSO->multiplierColor;
     auto lightSO = lightMultSO->baseColor;
 
-    SafePtr<MultipliedColorSO> mColorSO(ScriptableObject::CreateInstance<MultipliedColorSO*>());
+    SafePtrUnity<MultipliedColorSO> mColorSO(ScriptableObject::CreateInstance<MultipliedColorSO*>());
     mColorSO->multiplierColor = multiplierColor;
 
 
     if (_simpleColorSOs.find(index) == _simpleColorSOs.end())
     {
-        SafePtr<SimpleColorSO> sColorSO(ScriptableObject::CreateInstance<SimpleColorSO*>());
+        SafePtrUnity<SimpleColorSO> sColorSO(ScriptableObject::CreateInstance<SimpleColorSO*>());
         sColorSO->SetColor(lightSO->color);
         _simpleColorSOs.emplace(index, sColorSO);
     }
 
-    SafePtr<SimpleColorSO>& sColorSO = _simpleColorSOs[index];
+    SafePtrUnity<SimpleColorSO>& sColorSO = _simpleColorSOs[index];
 
     mColorSO->baseColor = (SimpleColorSO*) sColorSO;
     MultipliedColorSO* mColorPtr = (MultipliedColorSO*) mColorSO;

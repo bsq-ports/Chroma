@@ -38,7 +38,7 @@ void Chroma::ChromaFogController::clearInstance() {
 }
 
 void ChromaFogController::OnDestroy() {
-    bloomFog->transitionFogParams = nullptr;
+    bloomFog->set_transitionFogParams(nullptr);
     Destroy(_transitionFogParams);
     _instance = nullptr;
 }
@@ -55,26 +55,39 @@ void ChromaFogController::Awake() {
     }
 
     _transitionFogParams = ScriptableObject::CreateInstance<BloomFogEnvironmentParams*>();
-    BloomFogEnvironmentParams* defaultParams = bloomFog->get_defaultForParams();
+    BloomFogEnvironmentParams const* defaultParams = bloomFog->get_defaultForParams();
     _transitionFogParams->attenuation = defaultParams->attenuation;
     _transitionFogParams->offset = defaultParams->offset;
     _transitionFogParams->heightFogStartY = defaultParams->heightFogStartY;
     _transitionFogParams->heightFogHeight = defaultParams->heightFogHeight;
-    bloomFog->transitionFogParams = _transitionFogParams;
+    bloomFog->set_transitionFogParams(_transitionFogParams);
 }
 
 void Chroma::ChromaFogController::Update() {
     if (_track == nullptr) {
+        getLogger().error("Track is null");
+        CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Fog track is null!");
         return;
     }
     if (!_transitionFogParams) {
         getLogger().error("ChromaFog TransitionFogParams is null");
+        CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("ChromaFog TransitionFogParams is null!");
         return;
     }
     auto attenuation = getPropertyNullable<float>(_track, _track->properties.attentuation);
     if (attenuation)
     {
-        _transitionFogParams->attenuation = attenuation.value();
+        auto attenuationFloat = attenuation.value();
+
+        // if attenuation is not 0
+        if (attenuationFloat < -std::numeric_limits<float>::epsilon() || attenuationFloat > std::numeric_limits<float>::epsilon()) {
+            // clamp to minimum float fog value
+            // this is a random magic number that doesn't cause the shader to jump to 0
+            // TODO: Investigate, ask Split?
+            attenuationFloat = std::max(attenuationFloat, 0.000061035154435f); // 0.0001f
+        }
+
+        _transitionFogParams->attenuation = attenuationFloat;
     }
 
     auto offset = getPropertyNullable<float>(_track, _track->properties.fogOffset);

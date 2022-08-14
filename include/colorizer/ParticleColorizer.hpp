@@ -16,14 +16,13 @@
 
 #include "GlobalNamespace/LightWithIdMonoBehaviour.hpp"
 #include "GlobalNamespace/LightWithIds.hpp"
-#include "GlobalNamespace/LightWithIds_LightData.hpp"
 #include "GlobalNamespace/TrackLaneRingsManager.hpp"
 #include "GlobalNamespace/TrackLaneRing.hpp"
 #include "GlobalNamespace/ParticleSystemEventEffect.hpp"
 #include "GlobalNamespace/ColorSO.hpp"
 #include "GlobalNamespace/SimpleColorSO.hpp"
 #include "GlobalNamespace/MultipliedColorSO.hpp"
-#include "GlobalNamespace/BeatmapEventType.hpp"
+#include "GlobalNamespace/BasicBeatmapEventType.hpp"
 
 
 namespace Chroma {
@@ -33,24 +32,24 @@ namespace Chroma {
         static const int COLOR_FIELDS = 2;
 
         GlobalNamespace::ParticleSystemEventEffect *_particleSystemEventEffect;
-        GlobalNamespace::BeatmapEventType _eventType;
+        GlobalNamespace::BasicBeatmapEventType _eventType;
 
-        std::unordered_map<int, SafePtr<GlobalNamespace::SimpleColorSO>> _simpleColorSOs;
-        std::unordered_map<int, SafePtr<GlobalNamespace::MultipliedColorSO>> _multipliedColorSOs;
-        std::unordered_map<int, SafePtr<GlobalNamespace::MultipliedColorSO>> _multipliedHighlightColorSOs;
+        std::unordered_map<int, SafePtrUnity<GlobalNamespace::SimpleColorSO>> _simpleColorSOs;
+        std::unordered_map<int, SafePtrUnity<GlobalNamespace::MultipliedColorSO>> _multipliedColorSOs;
+        std::unordered_map<int, SafePtrUnity<GlobalNamespace::MultipliedColorSO>> _multipliedHighlightColorSOs;
 
         ParticleColorizer(GlobalNamespace::ParticleSystemEventEffect *particleSystemEventEffect,
-                          GlobalNamespace::BeatmapEventType beatmapEventType);
+                          GlobalNamespace::BasicBeatmapEventType BasicBeatmapEventType);
 
-        static std::unordered_set<std::shared_ptr<ParticleColorizer>>& GetOrCreateColorizerList(GlobalNamespace::BeatmapEventType eventType);
+        static std::unordered_set<std::shared_ptr<ParticleColorizer>>& GetOrCreateColorizerList(GlobalNamespace::BasicBeatmapEventType eventType);
 
-        void OnLightColorChanged(GlobalNamespace::BeatmapEventType eventType, std::array<Sombrero::FastColor, 4> colors);
+        void OnLightColorChanged(GlobalNamespace::BasicBeatmapEventType eventType, std::array<Sombrero::FastColor, 4> colors);
 
         void InitializeSO(const std::string& id, int index, bool highlight = false);
 
     public:
         static std::shared_ptr<ParticleColorizer> New(GlobalNamespace::ParticleSystemEventEffect *particleSystemEventEffect,
-                                                      GlobalNamespace::BeatmapEventType beatmapEventType);
+                                                      GlobalNamespace::BasicBeatmapEventType BasicBeatmapEventType);
 
         inline static std::unordered_map<int, std::unordered_set<std::shared_ptr<ParticleColorizer>>> Colorizers;
 
@@ -61,8 +60,8 @@ namespace Chroma {
         static void Reset();
 
         // extensions
-        inline static std::unordered_set<std::shared_ptr<ParticleColorizer>>& GetParticleColorizers(GlobalNamespace::BeatmapEventType beatmapEventType) {
-            return Colorizers[beatmapEventType];
+        inline static std::unordered_set<std::shared_ptr<ParticleColorizer>>& GetParticleColorizers(GlobalNamespace::BasicBeatmapEventType BasicBeatmapEventType) {
+            return Colorizers[BasicBeatmapEventType];
         }
     };
 }

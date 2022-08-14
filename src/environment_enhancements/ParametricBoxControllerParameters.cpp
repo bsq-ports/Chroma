@@ -1,4 +1,4 @@
-#include "lighting/environment_enhancements/ParametricBoxControllerParameters.hpp"
+#include "environment_enhancements/ParametricBoxControllerParameters.hpp"
 
 using namespace GlobalNamespace;
 using namespace UnityEngine;

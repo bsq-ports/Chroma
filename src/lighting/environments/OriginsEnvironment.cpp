@@ -7,13 +7,13 @@ using namespace Chroma;
 EnvironmentLightDataT OriginsEnvironment::getEnvironmentLights() {
     return EnvironmentLightDataT(
         {
-    {0, {
+    {1, {
         {1, 1 },
         {2, 3 },
         {3, 2 },
         {4, 4 },
     }},
-    {1, {
+    {2, {
         {1, 4 },
         {2, 5 },
         {3, 6 },
@@ -75,7 +75,7 @@ EnvironmentLightDataT OriginsEnvironment::getEnvironmentLights() {
         {59, 62 },
         {60, 63 },
     }},
-    {2, {
+    {3, {
         {1, 3 },
         {2, 7 },
         {3, 6 },
@@ -83,7 +83,7 @@ EnvironmentLightDataT OriginsEnvironment::getEnvironmentLights() {
         {5, 5 },
         {6, 0 },
     }},
-    {3, {
+    {4, {
         {1, 4 },
         {2, 9 },
         {3, 7 },
@@ -91,15 +91,9 @@ EnvironmentLightDataT OriginsEnvironment::getEnvironmentLights() {
         {5, 6 },
         {6, 0 },
     }},
-    {4, {
+    {5, {
         {1, 4 },
         {2, 2 },
-    }},
-    {5, {
-    }},
-    {6, {
-    }},
-    {7, {
     }},
 }
     );

@@ -1,4 +1,5 @@
 # include some defines automatically made by qpm
+set(ANDROID_USE_LEGACY_TOOLCHAIN_FILE OFF)
 include(qpm_defines.cmake)
 
 # Enable link time optimization
@@ -21,7 +22,6 @@ add_compile_options(-frtti -fexceptions)
 add_compile_options(-O3)
 # compile definitions used
 add_compile_definitions(VERSION=\"${MOD_VERSION}\")
-add_compile_definitions(ID=\"${MOD_ID}\")
 add_compile_definitions(MOD_ID=\"${MOD_ID}\")
 add_compile_definitions(USE_CODEGEN_FIELDS)
 add_compile_definitions(DEBUGB=1) # disable debug logs

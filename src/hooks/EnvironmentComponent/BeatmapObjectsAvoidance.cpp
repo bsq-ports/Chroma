@@ -2,7 +2,7 @@
 
 #include "ChromaController.hpp"
 #include "colorizer/NoteColorizer.hpp"
-#include "lighting/environment_enhancements/EnvironmentEnhancementManager.hpp"
+#include "environment_enhancements/EnvironmentEnhancementManager.hpp"
 
 #include "GlobalNamespace/BeatmapObjectsAvoidance.hpp"
 

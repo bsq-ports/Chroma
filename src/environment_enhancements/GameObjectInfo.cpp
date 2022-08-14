@@ -1,4 +1,4 @@
-#include "lighting/environment_enhancements/GameObjectInfo.hpp"
+#include "environment_enhancements/GameObjectInfo.hpp"
 
 #include "UnityEngine/Transform.hpp"
 #include "UnityEngine/SceneManagement/Scene.hpp"

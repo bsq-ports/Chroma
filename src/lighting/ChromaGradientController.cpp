@@ -20,7 +20,7 @@ using namespace GlobalNamespace;
 using namespace UnityEngine;
 using namespace System::Collections;
 
-//std::unordered_map<GlobalNamespace::BeatmapEventType, ChromaGradientEvent*> Chroma::ChromaGradientController::gradients = std::unordered_map<GlobalNamespace::BeatmapEventType, ChromaGradientEvent*>();
+//std::unordered_map<GlobalNamespace::BasicBeatmapEventType, ChromaGradientEvent*> Chroma::ChromaGradientController::gradients = std::unordered_map<GlobalNamespace::BasicBeatmapEventType, ChromaGradientEvent*>();
 
 Chroma::ChromaGradientController* ChromaGradientController::_instance = nullptr;
 
@@ -50,16 +50,16 @@ void ChromaGradientController::OnDestroy() {
 }
 
 
-bool Chroma::ChromaGradientController::IsGradientActive(GlobalNamespace::BeatmapEventType eventType) {
+bool Chroma::ChromaGradientController::IsGradientActive(GlobalNamespace::BasicBeatmapEventType eventType) {
     return getInstance()->Gradients.contains(eventType);
 }
 
-void ChromaGradientController::CancelGradient(GlobalNamespace::BeatmapEventType eventType) {
+void ChromaGradientController::CancelGradient(GlobalNamespace::BasicBeatmapEventType eventType) {
     getInstance()->Gradients.erase(eventType);
 }
 
 Sombrero::FastColor ChromaGradientController::AddGradient(ChromaEventData::GradientObjectData const& gradientObject,
-                                                         GlobalNamespace::BeatmapEventType id, float time) {
+                                                         GlobalNamespace::BasicBeatmapEventType id, float time) {
     CancelGradient(id);
 
     float duration = gradientObject.Duration;
@@ -74,8 +74,7 @@ Sombrero::FastColor ChromaGradientController::AddGradient(ChromaEventData::Gradi
     bool erased = false;
 
 
-    auto r = newGradientEvent.Interpolate(erased,
-                                          ChromaTimeSourceHelper::getSongTimeChroma(ChromaController::IAudioTimeSource));
+    auto r = newGradientEvent.Interpolate(erased, ChromaController::CallbacksController->songTime);
 
     if (erased)
         getInstance()->Gradients.erase(it.first);
@@ -88,13 +87,13 @@ void Chroma::ChromaGradientController::Update() {
         // Create a map iterator and point to beginning of map
         auto it = Gradients.begin();
 
-        auto songTime = ChromaTimeSourceHelper::getSongTimeChroma(ChromaController::IAudioTimeSource);
+        auto songTime = ChromaController::CallbacksController->songTime;
         // Iterate over the map using Iterator till end.
         while (it != Gradients.end()) {
 
             bool modified = false;
             // Accessing KEY from element pointed by it.
-            BeatmapEventType eventType = it->first;
+            BasicBeatmapEventType eventType = it->first;
 
             // Accessing VALUE from element pointed by it.
             Sombrero::FastColor color = it->second.Interpolate(modified, songTime);

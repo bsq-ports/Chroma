@@ -57,12 +57,15 @@ namespace Chroma {
             return valid ? std::make_optional(total) : std::nullopt;
         }
 
-        static std::optional<Sombrero::FastColor> GetColorOffset(std::optional<PointDefinition *> const &localColor, std::span<Track *> const &tracksOpt,
-                       float const time) {
+        static std::optional<Sombrero::FastColor>
+        GetColorOffset(std::optional<PointDefinition *> const &localColor, std::span<Track *> const &tracksOpt,
+                       float const time, bool &trackUpdated, int lastCheckedTime = 0) {
             std::optional<NEVector::Vector4> pathColor;
 
+            bool last;
+
             if (localColor) {
-                pathColor = localColor.value()->InterpolateVector4(time);
+                pathColor = localColor.value()->InterpolateVector4(time, last);
             } else if (tracksOpt.empty()) {
                 // Early return because no color will be given
                 return std::nullopt;
@@ -82,8 +85,9 @@ namespace Chroma {
                         });
                     }
 
-                    auto trackColor = MultiTrackGetPathColor(tracks, [](Track *track) {
+                    auto trackColor = MultiTrackGetPathColor(tracks, [&lastCheckedTime, &trackUpdated](Track *track) {
                         auto &colorProp = track->properties.color;
+                        if (colorProp.lastUpdated >= lastCheckedTime) trackUpdated = true;
 
                         if (colorProp.value) {
                             return std::make_optional(colorProp.value.value().vector4);
@@ -108,6 +112,7 @@ namespace Chroma {
                     if (colorProp.value) {
                         trackColor = colorProp.value.value().vector4;
                     }
+                    if (colorProp.lastUpdated >= lastCheckedTime) trackUpdated = true;
 
                     colorVector = MultVector4Nullables(trackColor, pathColor);
                 }

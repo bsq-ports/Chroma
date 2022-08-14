@@ -29,6 +29,8 @@ NoteColorizer::NoteColorizer(GlobalNamespace::NoteControllerBase *noteController
 
     auto colorNoteVisuals = _noteController->GetComponent<GlobalNamespace::ColorNoteVisuals*>();
     _colorNoteVisuals = colorNoteVisuals;
+    CRASH_UNLESS(_noteController);
+    CRASH_UNLESS(_colorNoteVisuals);
 
     _materialPropertyBlockControllers = colorNoteVisuals->materialPropertyBlockControllers;
 }
@@ -114,18 +116,16 @@ void NoteColorizer::ColorizeSaber(GlobalNamespace::NoteController *noteControlle
 }
 
 void NoteColorizer::Refresh() {
+    if (!_colorNoteVisuals->get_enabled()) return;
+
     Sombrero::FastColor const& color = getColor();
     if (color == Sombrero::FastColor(_colorNoteVisuals->noteColor))
     {
         return;
     }
 
-    getLogger().debug("Invoking color callback");
-
     NoteColorChanged.invoke(_noteController, color, getColorType());
     if (NoteColorable) return;
-
-    getLogger().debug("Coloring note");
 
     static auto ApplyChanges = FPtrWrapper<&GlobalNamespace::MaterialPropertyBlockController::ApplyChanges>::get();
     static auto SetColor = FPtrWrapper<static_cast<void (UnityEngine::MaterialPropertyBlock::*)(int, UnityEngine::Color)>(&UnityEngine::MaterialPropertyBlock::SetColor)>::get();
@@ -145,8 +145,6 @@ void NoteColorizer::Refresh() {
 
         ApplyChanges(materialPropertyBlockController);
     }
-
-    getLogger().debug("Finished coloring note");
 }
 
 int NoteColorizer::_colorID() {

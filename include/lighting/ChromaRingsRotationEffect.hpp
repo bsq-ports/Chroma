@@ -3,7 +3,7 @@
 #include "UnityEngine/MonoBehaviour.hpp"
 #include "GlobalNamespace/TrackLaneRingsRotationEffect.hpp"
 #include "GlobalNamespace/TrackLaneRingsManager.hpp"
-#include "GlobalNamespace/BeatmapEventType.hpp"
+#include "GlobalNamespace/BasicBeatmapEventType.hpp"
 #include "GlobalNamespace/SimpleColorSO.hpp"
 #include "GlobalNamespace/MultipliedColorSO.hpp"
 #include "GlobalNamespace/TrackLaneRingsManager.hpp"

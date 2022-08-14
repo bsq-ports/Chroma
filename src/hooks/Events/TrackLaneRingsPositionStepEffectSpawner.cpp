@@ -5,14 +5,14 @@
 #include "lighting/ChromaEventData.hpp"
 
 #include "GlobalNamespace/TrackLaneRingsPositionStepEffectSpawner.hpp"
-#include "GlobalNamespace/BeatmapEventData.hpp"
+#include "GlobalNamespace/BasicBeatmapEventData.hpp"
 #include "GlobalNamespace/TrackLaneRingsManager.hpp"
 #include "GlobalNamespace/TrackLaneRing.hpp"
 
 using namespace Chroma;
 using namespace GlobalNamespace;
 
-static float GetPrecisionStep(float const defaultF, GlobalNamespace::BeatmapEventData* beatmapEventData)
+static float GetPrecisionStep(float const defaultF, GlobalNamespace::BasicBeatmapEventData* beatmapEventData)
 {
     auto const& map = ChromaEventDataManager::ChromaEventDatas;
     auto it = map.find(beatmapEventData);
@@ -28,7 +28,7 @@ static float GetPrecisionStep(float const defaultF, GlobalNamespace::BeatmapEven
     return defaultF;
 }
 
-static float GetPrecisionSpeed(float const defaultF, GlobalNamespace::BeatmapEventData* beatmapEventData)
+static float GetPrecisionSpeed(float const defaultF, GlobalNamespace::BasicBeatmapEventData* beatmapEventData)
 {
     auto const& map = ChromaEventDataManager::ChromaEventDatas;
     auto it = map.find(beatmapEventData);
@@ -46,35 +46,29 @@ static float GetPrecisionSpeed(float const defaultF, GlobalNamespace::BeatmapEve
 
 // Aero why do you have to use transpilers for everything damn it? Just rewrite the method
 MAKE_HOOK_MATCH(TrackLaneRingsPositionStepEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger,
-                &TrackLaneRingsPositionStepEffectSpawner::HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger,
+                &TrackLaneRingsPositionStepEffectSpawner::HandleBeatmapEvent,
                 void,
                      GlobalNamespace::TrackLaneRingsPositionStepEffectSpawner* self,
-                     GlobalNamespace::BeatmapEventData* beatmapEventData) {
+                     GlobalNamespace::BasicBeatmapEventData* beatmapEventData) {
     // Essentially, here we cancel the original method. DO NOT call it IF it's a Chroma map
     if (!ChromaController::DoChromaHooks()) {
         TrackLaneRingsPositionStepEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);
         return;
     }
 
-    if (beatmapEventData->type != self->beatmapEventType)
-    {
-        return;
-    }
-    float num = self->prevWasMinStep ? self->maxPositionStep : self->minPositionStep;
+    float num = (beatmapEventData->sameTypeIndex % 2 == 0) ? self->maxPositionStep : self->minPositionStep;
 
     num = GetPrecisionStep(num, beatmapEventData);
 
-    self->prevWasMinStep = !self->prevWasMinStep;
     auto rings = self->trackLaneRingsManager->rings;
-    for (int i = 0; i < rings.Length(); i++)
+    for (int i = 0; i < rings.size(); i++)
     {
         float destPosZ = (float)i * num;
         static auto SetPosition = FPtrWrapper<&GlobalNamespace::TrackLaneRing::SetPosition>::get();
 
         float moveSpeed = GetPrecisionSpeed(self->moveSpeed, beatmapEventData);
-        SetPosition(rings.get(i), destPosZ, moveSpeed);
+        SetPosition(rings[i], destPosZ, moveSpeed);
     }
-
 }
 
 void TrackLaneRingsPositionStepEffectSpawnerHook(Logger& logger) {

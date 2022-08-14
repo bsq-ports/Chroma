@@ -7,12 +7,6 @@ using namespace Chroma;
 EnvironmentLightDataT BillieEnvironment::getEnvironmentLights() {
     return EnvironmentLightDataT(
         {
-    {0, {
-        {1, 9 },
-        {2, 5 },
-        {3, 10 },
-        {4, 16 },
-    }},
     {1, {
         {1, 9 },
         {2, 5 },
@@ -20,6 +14,12 @@ EnvironmentLightDataT BillieEnvironment::getEnvironmentLights() {
         {4, 16 },
     }},
     {2, {
+        {1, 9 },
+        {2, 5 },
+        {3, 10 },
+        {4, 16 },
+    }},
+    {6, {
         {1, 1 },
         {2, 11 },
         {3, 9 },
@@ -32,7 +32,7 @@ EnvironmentLightDataT BillieEnvironment::getEnvironmentLights() {
         {10, 6 },
         {11, 2 },
     }},
-    {3, {
+    {7, {
         {1, 3 },
         {2, 5 },
         {3, 8 },
@@ -45,32 +45,26 @@ EnvironmentLightDataT BillieEnvironment::getEnvironmentLights() {
         {10, 9 },
         {11, 1 },
     }},
-    {4, {
+    {5, {
         {1, 4 },
         {2, 13 },
         {3, 19 },
         {4, 8 },
         {5, 12 },
     }},
-    {5, {
-    }},
-    {6, {
+    {3, {
         {1, 9 },
         {2, 5 },
         {3, 10 },
         {4, 16 },
     }},
-    {7, {
+    {4, {
         {1, 9 },
         {2, 5 },
         {3, 10 },
         {4, 16 },
     }},
     {8, {
-    }},
-    {9, {
-    }},
-    {10, {
         {1, 0 },
         {2, 8 },
         {3, 5 },
@@ -81,7 +75,7 @@ EnvironmentLightDataT BillieEnvironment::getEnvironmentLights() {
         {8, 4 },
         {9, 7 },
     }},
-    {11, {
+    {9, {
         {1, 12 },
         {2, 4 },
         {3, 8 },

@@ -7,20 +7,15 @@ using namespace Chroma;
 EnvironmentLightDataT InterscopeEnvironment::getEnvironmentLights() {
     return EnvironmentLightDataT(
         {
-    {0, {
+    {1, {
         {1, 1 },
         {2, 0 },
         {3, 7 },
     }},
-    {1, {
+    {2, {
         {1, 7 },
         {2, 6 },
         {3, 5 },
-    }},
-    {2, {
-        {1, 1 },
-        {2, 7 },
-        {3, 0 },
     }},
     {3, {
         {1, 1 },
@@ -28,11 +23,14 @@ EnvironmentLightDataT InterscopeEnvironment::getEnvironmentLights() {
         {3, 0 },
     }},
     {4, {
+        {1, 1 },
+        {2, 7 },
+        {3, 0 },
+    }},
+    {5, {
         {1, 4 },
         {2, 10 },
         {3, 3 },
-    }},
-    {5, {
     }},
     {6, {
         {1, 0 },

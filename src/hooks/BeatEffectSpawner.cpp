@@ -27,6 +27,8 @@ MAKE_HOOK_MATCH(BeatEffectSpawner_HandleNoteDidStartJump, &BeatEffectSpawner::Ha
         return;
     }
 
+
+    // TODO: Transpile to force beat effect
     auto it = ChromaObjectDataManager::ChromaObjectDatas.find(noteController->noteData);
 
     if (it != ChromaObjectDataManager::ChromaObjectDatas.end()) {
@@ -54,7 +56,8 @@ MAKE_HOOK_MATCH(BeatEffectSpawner_HandleNoteDidStartJump, &BeatEffectSpawner::Ha
 }
 
 void BeatEffectSpawnerHook(Logger& logger) {
-    INSTALL_HOOK(logger, BeatEffectSpawner_HandleNoteDidStartJump);
+    // TODO: DO TODO ABOVE
+//    INSTALL_HOOK(logger, BeatEffectSpawner_HandleNoteDidStartJump);
 }
 
 ChromaInstallHooks(BeatEffectSpawnerHook)

@@ -1,12 +1,14 @@
 #include "main.hpp"
-#include "lighting/environment_enhancements/ComponentInitializer.hpp"
-#include "lighting/environment_enhancements/EnvironmentEnhancementManager.hpp"
+#include "environment_enhancements/ComponentInitializer.hpp"
+#include "environment_enhancements/EnvironmentEnhancementManager.hpp"
 #include "colorizer/LightColorizer.hpp"
 #include "hooks/TrackLaneRingsManager.hpp"
 #include "lighting/ChromaRingsRotationEffect.hpp"
 
 #include "GlobalNamespace/LightWithIdMonoBehaviour.hpp"
 #include "GlobalNamespace/LightWithIds.hpp"
+#include "GlobalNamespace/LightWithIds_LightWithId.hpp"
+#include "GlobalNamespace/ILightWithId.hpp"
 #include "GlobalNamespace/TrackLaneRing.hpp"
 #include "GlobalNamespace/TrackLaneRingsManager.hpp"
 #include "GlobalNamespace/TrackLaneRingsPositionStepEffectSpawner.hpp"
@@ -30,15 +32,22 @@
 #include "System/Collections/Generic/List_1.hpp"
 
 #include "beatsaber-hook/shared/utils/il2cpp-utils.hpp"
+#include "System/Linq/Enumerable.hpp"
+#include "hooks/LightWithIdManager.hpp"
+#include "utils/ChromaUtils.hpp"
 
 #include <functional>
+
+#include "beatsaber-hook/shared/utils/typedefs-disposal.hpp"
+#include "environment_enhancements/GameObjectTrackController.hpp"
 
 
 using namespace GlobalNamespace;
 using namespace Chroma;
 
-template <typename T>
-static void constexpr GetComponentAndOriginal(UnityEngine::Transform* root, UnityEngine::Transform* original, std::function < void(T*, T*)> const& initializeDelegate) {
+template <typename T, typename F>
+requires(std::is_convertible_v<F, std::function < void(T*, T*)>>)
+static void constexpr GetComponentAndOriginal(UnityEngine::Transform* root, UnityEngine::Transform* original, F&& initializeDelegate) {
     ArrayW<T*> rootComponents = root->GetComponents<T*>();
     ArrayW<T*> originalComponents = original->GetComponents<T*>();
 
@@ -53,16 +62,25 @@ static void constexpr GetComponentAndOriginal(UnityEngine::Transform* root, Unit
     }
 }
 
-GameObjectInfo const&
-Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root, UnityEngine::Transform *original, std::vector<GameObjectInfo>& gameObjectInfos, std::vector<std::shared_ptr<IComponentData>>& componentDatas, std::optional<int>& lightId) {
+GameObjectInfo const &
+Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root, UnityEngine::Transform *original,
+                                                   std::vector<GameObjectInfo> &gameObjectInfos,
+                                                   std::vector<std::shared_ptr<IComponentData>> &componentDatas) {
+//    UnityEngine::Object::DestroyImmediate(root->GetComponent<GameObjectTrackController*>());
+
     GetComponentAndOriginal<LightWithIdMonoBehaviour>(root, original, [&](LightWithIdMonoBehaviour* rootComponent, LightWithIdMonoBehaviour* originalComponent) {
         rootComponent->lightManager = originalComponent->lightManager;
-        LightColorizer::RegisterLight(rootComponent, lightId);
+        LightIdRegisterer::MarkForTableRegister(rootComponent->i_ILightWithId());
     });
 
     GetComponentAndOriginal<LightWithIds>(root, original, [&](LightWithIds* rootComponent, LightWithIds* originalComponent) {
         rootComponent->lightManager = originalComponent->lightManager;
-        LightColorizer::RegisterLight(rootComponent, lightId);
+        // cross fingers no stripping
+        auto lightsWithIdArray = System::Linq::Enumerable::ToArray(rootComponent->lightWithIds);
+
+        for (auto const& lightIdData : lightsWithIdArray) {
+            LightIdRegisterer::MarkForTableRegister(lightIdData->i_ILightWithId());
+        }
     });
 
     GetComponentAndOriginal<TrackLaneRing>(root, original, [&](TrackLaneRing* rootComponent, TrackLaneRing* originalComponent) {
@@ -139,7 +157,7 @@ Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root,
         }
     });
 
-    GetComponentAndOriginal<ChromaRingsRotationEffect>(root, original, [&](ChromaRingsRotationEffect* rootComponent, ChromaRingsRotationEffect* originalComponent) {
+    GetComponentAndOriginal<ChromaRingsRotationEffect>(root, original, [&](ChromaRingsRotationEffect* rootComponent, ChromaRingsRotationEffect* originalComponent)  {
         for (auto const& manager : TrackLaneRingsManagerHolder::RingManagers) {
             std::optional<TrackLaneRingsManagerComponentData*> componentData;
             for (auto const& componentDataC : componentDatas) {
@@ -163,21 +181,22 @@ Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root,
     });
 
 
-    GetComponentAndOriginal<TrackLaneRingsRotationEffectSpawner>(root, original, [&](TrackLaneRingsRotationEffectSpawner* rootComponent, TrackLaneRingsRotationEffectSpawner* originalComponent) {
-        rootComponent->beatmapObjectCallbackController = originalComponent->beatmapObjectCallbackController;
+    GetComponentAndOriginal<TrackLaneRingsRotationEffectSpawner>(root, original, [&](TrackLaneRingsRotationEffectSpawner* rootComponent, TrackLaneRingsRotationEffectSpawner* originalComponent) constexpr {
+        rootComponent->beatmapCallbacksController = originalComponent->beatmapCallbacksController;
         rootComponent->trackLaneRingsRotationEffect = rootComponent->GetComponent<ChromaRingsRotationEffect*>();
     });
 
-    GetComponentAndOriginal<Spectrogram>(root, original, [&](Spectrogram* rootComponent, Spectrogram* originalComponent) {
+    GetComponentAndOriginal<Spectrogram>(root, original, [&](Spectrogram* rootComponent, Spectrogram* originalComponent) constexpr {
         rootComponent->spectrogramData = originalComponent->spectrogramData;
     });
 
-    GetComponentAndOriginal<LightRotationEventEffect>(root, original, [&](LightRotationEventEffect* rootComponent, LightRotationEventEffect* originalComponent) {
-        rootComponent->beatmapObjectCallbackController = originalComponent->beatmapObjectCallbackController;
+    GetComponentAndOriginal<LightRotationEventEffect>(root, original, [&](LightRotationEventEffect* rootComponent, LightRotationEventEffect* originalComponent) constexpr {
+        rootComponent->beatmapCallbacksController = originalComponent->beatmapCallbacksController;
     });
 
-    GetComponentAndOriginal<LightPairRotationEventEffect>(root, original, [&](LightPairRotationEventEffect* rootComponent, LightPairRotationEventEffect* originalComponent) {
-        rootComponent->beatmapObjectCallbackController = originalComponent->beatmapObjectCallbackController;
+    GetComponentAndOriginal<LightPairRotationEventEffect>(root, original, [&](LightPairRotationEventEffect* rootComponent, LightPairRotationEventEffect* originalComponent) constexpr {
+        rootComponent->beatmapCallbacksController = originalComponent->beatmapCallbacksController;
+        rootComponent->audioTimeSource = originalComponent->audioTimeSource;
 
         auto transformL = originalComponent->transformL;
         auto transformR = originalComponent->transformR;
@@ -191,14 +210,14 @@ Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root,
     });
 
 
-    GetComponentAndOriginal<ParticleSystemEventEffect>(root, original, [&](ParticleSystemEventEffect* rootComponent, ParticleSystemEventEffect* originalComponent) {
-        rootComponent->beatmapObjectCallbackController = originalComponent->beatmapObjectCallbackController;
+    GetComponentAndOriginal<ParticleSystemEventEffect>(root, original, [&](ParticleSystemEventEffect* rootComponent, ParticleSystemEventEffect* originalComponent) constexpr {
+        rootComponent->beatmapCallbacksController = originalComponent->beatmapCallbacksController;
         rootComponent->particleSystem = root->GetComponent<UnityEngine::ParticleSystem*>();
 
         rootComponent->set_enabled(true);
     });
 
-    GetComponentAndOriginal<Mirror>(root, original, [&](Mirror* rootComponent, Mirror* originalComponent) {
+    GetComponentAndOriginal<Mirror>(root, original, [&](Mirror* rootComponent, Mirror* originalComponent) constexpr {
         rootComponent->mirrorRenderer = UnityEngine::Object::Instantiate(originalComponent->mirrorRenderer);
         rootComponent->mirrorMaterial = UnityEngine::Object::Instantiate(originalComponent->mirrorMaterial);
     });
@@ -212,7 +231,7 @@ Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root,
         auto transform = root->GetChild(i);
 
         int index = transform->GetSiblingIndex();
-        InitializeComponents(transform, original->GetChild(index), gameObjectInfos, componentDatas, lightId);
+        InitializeComponents(transform, original->GetChild(index), gameObjectInfos, componentDatas);
     }
 
     return newGameObject;
@@ -220,8 +239,6 @@ Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root,
 
 void
 ComponentInitializer::PrefillComponentsData(UnityEngine::Transform *root, std::vector<std::shared_ptr<IComponentData>>& componentDatas) {
-    SkipAwake = true;
-
     auto *trackLaneRingsManager = root->GetComponent<GlobalNamespace::TrackLaneRingsManager *>();
     if (trackLaneRingsManager != nullptr) {
         std::shared_ptr<TrackLaneRingsManagerComponentData> manager = std::make_shared<TrackLaneRingsManagerComponentData>();
@@ -239,8 +256,6 @@ ComponentInitializer::PrefillComponentsData(UnityEngine::Transform *root, std::v
 
 void
 ComponentInitializer::PostfillComponentsData(UnityEngine::Transform *root, UnityEngine::Transform* original, std::vector<std::shared_ptr<IComponentData>> const& componentDatas) {
-    SkipAwake = false;
-
     auto trackLaneRingsManager = root->GetComponent<GlobalNamespace::TrackLaneRingsManager*>();
     if (trackLaneRingsManager != nullptr)
     {
@@ -268,5 +283,76 @@ ComponentInitializer::PostfillComponentsData(UnityEngine::Transform *root, Unity
         auto transform = root->GetChild(i);
         auto index = transform->GetSiblingIndex();
         PostfillComponentsData(transform, original->GetChild(index), componentDatas);
+    }
+}
+
+void ComponentInitializer::InitializeLights(UnityEngine::GameObject *go, rapidjson::Value const &data, bool v2) {
+    std::vector<ILightWithId*> lightWithIds;
+
+    auto someLightWithIds = go->GetComponents<LightWithIds*>();
+    for (auto const& n : someLightWithIds) {
+        if (!n->lightWithIds) continue;
+
+        auto enumerator = n->lightWithIds->GetEnumerator();
+
+        // MEMORY LEAK YAY
+        // TODO: Fix
+        //        auto dispose = bs_hook::Disposable(enumerator->i_IDisposable());
+
+        while (enumerator->i_IEnumerator()->MoveNext()) {
+            auto e = enumerator->get_Current();
+            lightWithIds.emplace_back(e->i_ILightWithId());
+        }
+    }
+
+    auto otherLights = go->GetComponents<LightWithIdMonoBehaviour*>();
+    for (auto const& n : otherLights) {lightWithIds.emplace_back(n->i_ILightWithId());};
+
+    if (lightWithIds.empty()) return;
+
+    auto lightID = ChromaUtils::getIfExists<int>(data, v2 ? NewConstants::V2_LIGHT_ID : NewConstants::LIGHT_ID);
+    auto type = ChromaUtils::getIfExists<int>(data, NewConstants::LIGHT_TYPE);
+
+    if (!type && !lightID) {
+        return;
+    }
+
+    auto SetType = [&](auto&& lightWithId) {
+        if (!type) {
+            return;
+        }
+
+        int lightId = LightColorizer::GetLightColorizer(*type)->_lightSwitchEventEffect->lightsID;
+
+        auto monoBehaviourCast = il2cpp_utils::try_cast<LightWithIdMonoBehaviour>(lightWithId);
+
+        if (monoBehaviourCast) {
+            monoBehaviourCast.value()->_ID = *lightID;
+        } else {
+            auto lightWithIdsCast = il2cpp_utils::try_cast<LightWithIds::LightWithId>(lightWithId);
+
+            if (lightWithIdsCast) {
+                lightWithIdsCast.value()->lightId = lightId;
+            }
+        }
+    };
+
+    auto SetLightID = [&](auto&& lightWithId) {
+        if (lightID) {
+            LightIdRegisterer::SetRequestedId(lightWithId, *lightID);
+        }
+    };
+
+    for (auto const& lightWithId : lightWithIds) {
+        if (lightWithId->get_isRegistered()) {
+            LightIdRegisterer::ForceUnregister(lightWithId);
+            LightIdRegisterer::MarkForTableRegister(lightWithId);
+            SetType(lightWithId);
+            SetLightID(lightWithId);
+            LightIdRegisterer::lightWithIdManager->RegisterLight(lightWithId);
+        } else {
+            SetType(lightWithId);
+            SetLightID(lightWithId);
+        }
     }
 }

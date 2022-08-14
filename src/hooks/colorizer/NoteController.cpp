@@ -49,7 +49,10 @@ MAKE_HOOK_MATCH(
             float elapsedTime = ChromaTimeSourceHelper::getSongTimeChroma(noteJump->audioTimeSyncController) - (self->noteData->time - (jumpDuration * 0.5f));
             float normalTime = elapsedTime / jumpDuration;
 
-            std::optional<Sombrero::FastColor> colorOffset = AnimationHelper::GetColorOffset(pathPointDefinition, tracks, normalTime);
+            [[maybe_unused]] bool updated;
+            std::optional<Sombrero::FastColor> colorOffset = AnimationHelper::GetColorOffset(pathPointDefinition,
+                                                                                             tracks, normalTime,
+                                                                                             updated, 0);
 
             if (colorOffset)
             {

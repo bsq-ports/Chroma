@@ -1,8 +1,9 @@
 #pragma once
 
 #include "modloader/shared/modloader.hpp"
-#include "conditional-dependencies/shared/main.hpp"
 #include "utils.hpp"
+#include "conditional-dependencies/shared/main.hpp"
+
 
 namespace Chroma {
     class CoreAPI {

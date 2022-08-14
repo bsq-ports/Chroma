@@ -5,8 +5,8 @@
 #include "GlobalNamespace/BaseNoteVisuals.hpp"
 #include "GlobalNamespace/BombNoteController.hpp"
 #include "GlobalNamespace/MirroredBombNoteController.hpp"
-#include "GlobalNamespace/ICubeNoteMirrorable.hpp"
-#include "GlobalNamespace/MirroredCubeNoteController.hpp"
+#include "GlobalNamespace/IGameNoteMirrorable.hpp"
+#include "GlobalNamespace/INoteMirrorable.hpp"
 #include "GlobalNamespace/SaberBurnMarkArea.hpp"
 
 #include "colorizer/NoteColorizer.hpp"
@@ -18,9 +18,9 @@ using namespace Chroma;
 using namespace UnityEngine;
 
 template<>
-struct ::il2cpp_utils::il2cpp_type_check::MetadataGetter<&GlobalNamespace::MirroredNoteController_1<ICubeNoteMirrorable*>::UpdatePositionAndRotation> {
+struct ::il2cpp_utils::il2cpp_type_check::MetadataGetter<&GlobalNamespace::MirroredNoteController_1<IGameNoteMirrorable*>::UpdatePositionAndRotation> {
     static const MethodInfo* get() {
-        return il2cpp_utils::FindMethod(classof(GlobalNamespace::MirroredNoteController_1<ICubeNoteMirrorable*>*), "UpdatePositionAndRotation");
+        return il2cpp_utils::FindMethod(classof(GlobalNamespace::MirroredNoteController_1<IGameNoteMirrorable*>*), "UpdatePositionAndRotation");
     }
 };
 
@@ -61,8 +61,8 @@ MAKE_HOOK_MATCH(MirroredNoteController_UpdatePositionAndRotationGeneric,
 
 
 MAKE_HOOK_MATCH(MirroredNoteController_UpdatePositionAndRotationCubeGeneric,
-                &GlobalNamespace::MirroredNoteController_1<ICubeNoteMirrorable*>::UpdatePositionAndRotation,
-                void, MirroredNoteController_1<ICubeNoteMirrorable*>* self) {
+                &GlobalNamespace::MirroredNoteController_1<IGameNoteMirrorable*>::UpdatePositionAndRotation,
+                void, MirroredNoteController_1<IGameNoteMirrorable*>* self) {
     MirroredNoteController_UpdatePositionAndRotationCubeGeneric(self);
 
     // Do nothing if Chroma shouldn't run
@@ -76,7 +76,7 @@ MAKE_HOOK_MATCH(MirroredNoteController_UpdatePositionAndRotationCubeGeneric,
 
 void MirroredNoteControllerHook(Logger& logger) {
     auto iNoteGeneric = classof(GlobalNamespace::MirroredNoteController_1<INoteMirrorable*>*);
-    auto iNoteCubeGeneric = classof(GlobalNamespace::MirroredNoteController_1<ICubeNoteMirrorable*>*);
+    auto iNoteCubeGeneric = classof(GlobalNamespace::MirroredNoteController_1<IGameNoteMirrorable*>*);
 
     INSTALL_HOOK(logger, MirroredNoteController_UpdatePositionAndRotationGeneric);
     INSTALL_HOOK(logger, MirroredNoteController_UpdatePositionAndRotationCubeGeneric);

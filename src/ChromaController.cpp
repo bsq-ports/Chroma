@@ -3,10 +3,8 @@
 
 #include "GlobalNamespace/BeatmapObjectManager.hpp"
 #include "GlobalNamespace/IReadonlyBeatmapData.hpp"
-#include "GlobalNamespace/BeatmapObjectCallbackController.hpp"
-#include "GlobalNamespace/IBeatmapObjectCallbackController.hpp"
+#include "GlobalNamespace/BeatmapCallbacksController.hpp"
 #include "GlobalNamespace/BeatmapLineData.hpp"
-#include "GlobalNamespace/BeatmapObjectType.hpp"
 #include "GlobalNamespace/BeatmapObjectData.hpp"
 #include "GlobalNamespace/Saber.hpp"
 
@@ -18,6 +16,7 @@
 #include "custom-json-data/shared/CustomBeatmapData.h"
 
 #include "main.hpp"
+#include "beatsaber-hook/shared/utils/hooking.hpp"
 #include "colorizer/NoteColorizer.hpp"
 #include "colorizer/SaberColorizer.hpp"
 #include "colorizer/ObstacleColorizer.hpp"
@@ -26,11 +25,13 @@
 #include "colorizer/ParticleColorizer.hpp"
 
 #include "lighting/LegacyLightHelper.hpp"
-#include "lighting/environment_enhancements/EnvironmentEnhancementManager.hpp"
+#include "environment_enhancements/EnvironmentEnhancementManager.hpp"
+#include "environment_enhancements/MaterialsManager.hpp"
 #include "lighting/ChromaGradientController.hpp"
 #include "hooks/TrackLaneRingsManager.hpp"
 
 #include "custom-types/shared/coroutine.hpp"
+#include "hooks/LightWithIdManager.hpp"
 
 #include <vector>
 
@@ -50,10 +51,11 @@ std::unordered_set<std::string> ChromaController::ModsForcingDoHooks = std::unor
 custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnController *beatmapObjectSpawnController) {
     co_yield reinterpret_cast<enumeratorT>(CRASH_UNLESS(il2cpp_utils::New<UnityEngine::WaitForEndOfFrame *>()));
 
+    PAPER_IL2CPP_CATCH_HANDLER(
     try {
         Chroma::ChromaController::BeatmapObjectSpawnController = beatmapObjectSpawnController;
-        BeatmapObjectCallbackController *coreSetup = il2cpp_utils::cast<BeatmapObjectCallbackController>(beatmapObjectSpawnController->beatmapObjectCallbackController);
-        Chroma::ChromaController::IAudioTimeSource = coreSetup->audioTimeSource;
+        auto *coreSetup = il2cpp_utils::cast<BeatmapCallbacksController>(beatmapObjectSpawnController->beatmapCallbacksController);
+        Chroma::ChromaController::CallbacksController = coreSetup;
 
         IReadonlyBeatmapData *beatmapData = coreSetup->beatmapData;
 
@@ -63,30 +65,33 @@ custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(Global
 //            CRASH_UNLESS(beatmapData);
         }
 
-        if (DoChromaHooks() && getChromaConfig().environmentEnhancementsEnabled.GetValue()) {
-            if (auto customBeatmap = il2cpp_utils::try_cast<CustomJSONData::CustomBeatmapData>(beatmapData)) {
+        if (auto customBeatmap = il2cpp_utils::try_cast<CustomJSONData::CustomBeatmapData>(beatmapData)) {
+            if (DoChromaHooks() && getChromaConfig().environmentEnhancementsEnabled.GetValue()) {
+
                 EnvironmentEnhancementManager::Init(*customBeatmap,
                                                     beatmapObjectSpawnController->get_noteLinesDistance());
-            } else {
-                getLogger().debug("Beatmap class %s", il2cpp_utils::ClassStandardName(reinterpret_cast<Il2CppObject*>(beatmapData)->klass).c_str());
-            }
-        }
 
-        if (GetChromaLegacy()) {
-            try {
-                auto list = il2cpp_utils::cast<Generic::List_1<BeatmapEventData *>>(beatmapData->get_beatmapEventsData());
-
-                // please let me kill legacy
-                LegacyLightHelper::Activate(list->items);
-            } catch (const Il2CppException &e) {
-                getLogger().error("Unable to run legacy due to exception?");
             }
+
+            if (GetChromaLegacy()) {
+                try {
+                    auto list = customBeatmap.value()->GetBeatmapItemsCpp<BasicBeatmapEventData*>();
+
+                    // please let me kill legacy
+                    LegacyLightHelper::Activate(list);
+                } catch (const Il2CppException &e) {
+                    getLogger().error("Unable to run legacy due to exception?");
+                }
+            }
+        } else {
+            getLogger().debug("Beatmap class %s", il2cpp_utils::ClassStandardName(reinterpret_cast<Il2CppObject*>(beatmapData)->klass).c_str());
         }
 
     } catch (std::exception &e) {
         getLogger().debug("Chroma controller failed: %s!", e.what());
-        throw e;
+        throw;
     }
+    )
 
     co_return; // Reached end of coroutine
 }
@@ -96,6 +101,7 @@ void ChromaController::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene 
     getLogger().debug("Clear scene");
 
     if (current && current.IsValid() && current.get_name() == "GameCore") {
+        CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Clearing all data");
         ChromaGradientController::clearInstance();
         TrackLaneRingsManagerHolder::RingManagers.clear();
         TrackLaneRingsManagerHolder::RingManagers.shrink_to_fit(); // Deallocate unnecessary used memory
@@ -105,6 +111,8 @@ void ChromaController::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene 
         NoteColorizer::Reset();
         SaberColorizer::Reset();
         ParticleColorizer::Reset();
+        LightIdRegisterer::Reset();
+        MaterialsManager::Reset();
     }
 }
 

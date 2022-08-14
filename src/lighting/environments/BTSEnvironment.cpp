@@ -7,12 +7,12 @@ using namespace Chroma;
 EnvironmentLightDataT BTSEnvironment::getEnvironmentLights() {
     return EnvironmentLightDataT(
         {
-    {0, {
+    {1, {
         {1, 5 },
         {2, 1 },
         {3, 4 },
     }},
-    {1, {
+    {2, {
         {1, 15 },
         {2, 8 },
         {3, 0 },
@@ -34,7 +34,7 @@ EnvironmentLightDataT BTSEnvironment::getEnvironmentLights() {
         {19, 24 },
         {20, 22 },
     }},
-    {2, {
+    {3, {
         {1, 8 },
         {2, 13 },
         {3, 11 },
@@ -63,7 +63,7 @@ EnvironmentLightDataT BTSEnvironment::getEnvironmentLights() {
         {26, 0 },
         {27, 23 },
     }},
-    {3, {
+    {4, {
         {1, 0 },
         {2, 21 },
         {3, 11 },
@@ -92,18 +92,12 @@ EnvironmentLightDataT BTSEnvironment::getEnvironmentLights() {
         {26, 9 },
         {27, 26 },
     }},
-    {4, {
+    {5, {
         {1, 8 },
         {2, 9 },
         {3, 11 },
         {4, 10 },
         {5, 13 },
-    }},
-    {5, {
-    }},
-    {6, {
-    }},
-    {7, {
     }},
 }
     );

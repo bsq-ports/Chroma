@@ -4,7 +4,7 @@
   "info": {
     "name": "Chroma",
     "id": "chroma",
-    "version": "2.5.7",
+    "version": "2.6.0",
     "url": "https://github.com/bsq-ports/Chroma",
     "additionalData": {
       "headersOnly": true,
@@ -31,7 +31,7 @@
     },
     {
       "id": "codegen",
-      "versionRange": "^0.20.0",
+      "versionRange": "^0.25.0",
       "additionalData": {
         "includeQmod": false,
         "private": true
@@ -39,21 +39,21 @@
     },
     {
       "id": "custom-json-data",
-      "versionRange": "^0.16.0",
+      "versionRange": "^0.17.0",
       "additionalData": {
         "private": true
       }
     },
     {
       "id": "config-utils",
-      "versionRange": "^0.7.0",
+      "versionRange": "^0.8.0",
       "additionalData": {
         "private": true
       }
     },
     {
       "id": "questui",
-      "versionRange": "<=0.13.2",
+      "versionRange": "^0.16.0",
       "additionalData": {
         "includeQmod": false,
         "private": true
@@ -71,7 +71,7 @@
     },
     {
       "id": "tracks",
-      "versionRange": "^0.5.1",
+      "versionRange": "^0.6.1",
       "additionalData": {
         "private": true
       }
@@ -107,6 +107,19 @@
       "id": "libil2cpp",
       "versionRange": "^0.2.3",
       "additionalData": {}
+    },
+    {
+      "id": "paper",
+      "versionRange": "^1.0.5",
+      "additionalData": {}
+    },
+    {
+      "id": "songloader",
+      "versionRange": "^0.10.0",
+      "additionalData": {
+        "private": true,
+        "includeQmod": false
+      }
     }
   ],
   "additionalData": {}
