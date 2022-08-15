@@ -32,4 +32,4 @@ void MultiplayerConnectedPlayerInstallerHook(Logger& logger) {
     INSTALL_HOOK(getLogger(), MultiplayerConnectedPlayerInstaller_InstallBindings);
 }
 
-ChromaInstallHooks(MultiplayerConnectedPlayerInstallerHook)
+//ChromaInstallHooks(MultiplayerConnectedPlayerInstallerHook)
