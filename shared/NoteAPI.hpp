@@ -53,10 +53,11 @@ namespace Chroma {
             return std::nullopt;
         }
 
-        /// Gets the note color or null if Chroma method was not found
+        /// Gets the initial note color set by the map or null if Chroma method was not found
+        /// WILL NOT include colors from animated colored notes
         /// If Chroma is not setting the color, it returns std::nullopt
         /// THIS WILL NOT PLAY NICELY WITH MIRRORED NOTE CONTROLLER
-        static std::optional<Sombrero::FastColor> getNoteControllerColorSafe(GlobalNamespace::NoteController* noteController) noexcept {
+        static std::optional<Sombrero::FastColor> getInitialNoteControllerColorSafe(GlobalNamespace::NoteController* noteController) noexcept {
             static auto function = CondDeps::Find<OptColor, GlobalNamespace::NoteController*>(CHROMA_ID, "getNoteControllerColorSafe");
 
             if (function) {
@@ -71,8 +72,26 @@ namespace Chroma {
             return std::nullopt;
         }
 
+        /// Gets the note color or null if Chroma method was not found
+        /// If Chroma is not setting the color, it returns std::nullopt
+        /// THIS WILL NOT PLAY NICELY WITH MIRRORED NOTE CONTROLLER
+        static std::optional<Sombrero::FastColor> getNoteControllerColorSafe(GlobalNamespace::NoteController* noteController) noexcept {
+            static auto function = CondDeps::Find<OptColor, GlobalNamespace::NoteController*>(CHROMA_ID, "getRealtimeNoteControllerColorSafe");
+
+            if (function) {
+                // Returns the color struct
+                auto optColor = function.value()(noteController);
+
+                if (!optColor.isSet) return std::nullopt;
+
+                return optColor.getColor();
+            }
+
+            return std::nullopt;
+        }
+
         /// Sets the note color if the method was found.
-        static void setNoteColorSafe(GlobalNamespace::NoteControllerBase* nc, std::optional<Sombrero::FastColor> color0) noexcept {
+        static void setInitialNoteControllerColorSafe(GlobalNamespace::NoteControllerBase* nc, std::optional<Sombrero::FastColor> color0) noexcept {
             static auto function = CondDeps::Find<void, GlobalNamespace::NoteControllerBase*, std::optional<Sombrero::FastColor>>(CHROMA_ID, "setNoteColorSafe");
 
             if (function) {

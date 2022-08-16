@@ -24,6 +24,15 @@ namespace Chroma {
             if(function) {
                 function.value()(modInfo);
             }
-        }       
+        }
+
+        static bool isChromaRunning() {
+            static auto function = CondDeps::Find<bool>(CHROMA_ID, "isChromaRunning");
+
+            if(function) {
+                return function.value()();
+            }
+            return false;
+        }
     };
 }

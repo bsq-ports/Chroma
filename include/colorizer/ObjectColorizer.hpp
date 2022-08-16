@@ -32,7 +32,7 @@ namespace Chroma {
         Sombrero::FastColor OriginalColor;
 
         // virtual
-        [[nodiscard]] std::optional<Sombrero::FastColor> OriginalColorGetter() {
+        [[nodiscard]] std::optional<Sombrero::FastColor> OriginalColorGetter() const {
             return OriginalColor;
         }
 
@@ -44,7 +44,7 @@ namespace Chroma {
             return _color;
         }
 
-        Sombrero::FastColor getColor() {
+        [[nodiscard]] Sombrero::FastColor getColor() {
             if (_color)
                 return *_color;
 

@@ -9,3 +9,6 @@ EXPOSE_API(addForceEnableChromaHooks, void, ModInfo& modInfo) {
 EXPOSE_API(removeForceEnableChromaHooks, void, ModInfo& modInfo) {
     ChromaController::RemoveForceDoHooks(modInfo);
 }
+EXPOSE_API(isChromaRunning, bool) {
+    return ChromaController::DoChromaHooks();
+}
