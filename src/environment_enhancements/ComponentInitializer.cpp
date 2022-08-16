@@ -259,6 +259,7 @@ ComponentInitializer::PostfillComponentsData(UnityEngine::Transform *root, Unity
     auto trackLaneRingsManager = root->GetComponent<GlobalNamespace::TrackLaneRingsManager*>();
     if (trackLaneRingsManager != nullptr)
     {
+        Chroma::TrackLaneRingsManagerHolder::RingManagers.emplace_back(trackLaneRingsManager);
         auto originalManager = original->GetComponent<TrackLaneRingsManager*>();
 
         for (auto const& componentData : componentDatas) {

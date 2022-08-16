@@ -20,6 +20,7 @@
 #include "tracks/shared/AssociatedData.h"
 #include "environment_enhancements/MaterialAnimator.hpp"
 #include "hooks/LightWithIdManager.hpp"
+#include "hooks/TrackLaneRingsManager.hpp"
 
 using namespace Chroma;
 using namespace ChromaUtils;
@@ -323,6 +324,8 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
 
         if (environmentData != dynData.MemberEnd()) {
             GetAllGameObjects();
+            auto rings = UnityEngine::Resources::FindObjectsOfTypeAll<GlobalNamespace::TrackLaneRingsManager*>();
+            Chroma::TrackLaneRingsManagerHolder::RingManagers = {rings.begin(), rings.end()};
 
 
             std::vector<Profiler> profileData;
