@@ -75,7 +75,7 @@ void Chroma::ChromaLightSwitchEventEffect::CopyValues(GlobalNamespace::LightSwit
     this->lightManager = lightSwitchEventEffect->lightManager;
     this->beatmapCallbacksController = lightSwitchEventEffect->beatmapCallbacksController;
     this->tweeningManager = lightSwitchEventEffect->tweeningManager;
-    this->colorManager = colorManager;
+    this->colorManager = lightSwitchEventEffect->colorManager;
 
     _originalLightColor0 = lightColor0;
     _originalLightColor0Boost = lightColor0Boost;
