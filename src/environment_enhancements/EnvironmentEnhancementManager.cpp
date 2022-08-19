@@ -415,12 +415,21 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                 auto trackNameIt = gameObjectDataVal.FindMember(v2 ? Chroma::NewConstants::V2_TRACK.data() : Chroma::NewConstants::TRACK.data());
 
                 std::optional<std::string> trackName;
-                std::optional<Track*> track;
+                std::vector<Track*> track;
 
                 if (trackNameIt != gameObjectDataVal.MemberEnd()) {
-                    trackName = trackNameIt->value.GetString();
-                    std::string val = *trackName;
-                    track = &(trackBeatmapAD.tracks.try_emplace(val, v2).first->second);
+                    auto const& trackJSON = trackNameIt->value;
+                    if (trackJSON.IsString()) {
+                        trackName = trackJSON.GetString();
+                        std::string val = *trackName;
+                        track = {&(trackBeatmapAD.tracks.try_emplace(val, v2).first->second)};
+                    } else if (trackJSON.IsArray()) {
+                        for (auto const& trackJSONItem : trackJSON.GetArray()) {
+                            trackName = trackJSON.GetString();
+                            std::string val = *trackName;
+                            track.emplace_back(&(trackBeatmapAD.tracks.try_emplace(val, v2).first->second));
+                        }
+                    }
                 }
 
 

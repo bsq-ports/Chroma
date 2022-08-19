@@ -14,8 +14,30 @@ DEFINE_TYPE(Chroma, GameObjectTrackController)
 
 using namespace Chroma;
 
+template<typename T, typename F>
+static std::optional<std::vector<T>> getPropertiesNullable(std::span<Track const*> tracks, F&& propFn, uint32_t lastCheckedTime) {
+    if (tracks.empty()) return std::nullopt;
+
+    std::vector<T> props;
+
+    for (auto t : tracks) {
+        if (!t) continue;
+        auto const& prop = propFn(t->properties);
+
+        if (lastCheckedTime != 0 && prop.lastUpdated != 0 && prop.lastUpdated < lastCheckedTime) continue;
+
+        auto val = Animation::getPropertyNullable<T>(t, prop.value);
+        if (val)
+            props.template emplace_back(*val);
+    }
+
+    if (props.empty()) return std::nullopt;
+
+    return props;
+}
+
 template<typename T>
-static constexpr std::optional<T> getPropertyNullable(Track* track, const Property& prop, uint32_t lastCheckedTime) {
+static constexpr std::optional<T> getPropertyNullable(Track const* track, const Property& prop, uint32_t lastCheckedTime) {
     if (lastCheckedTime != 0 && prop.lastUpdated != 0 && prop.lastUpdated < lastCheckedTime) return std::nullopt;
 
     auto ret = Animation::getPropertyNullable<T>(track, prop.value);
@@ -87,7 +109,7 @@ void Chroma::GameObjectTrackController::UpdateData(bool force) {
     const auto _beatmapObjectsAvoidance = data->_beatmapObjectsAvoidance;
 
 
-    if (!_track){
+    if (_track.empty()){
         getLogger().error("Track is null! Should remove component or just early return? %p %s", this, static_cast<std::string>(get_gameObject()->get_name()).c_str());
         Destroy(this);
         return;
@@ -96,12 +118,47 @@ void Chroma::GameObjectTrackController::UpdateData(bool force) {
         lastCheckedTime = 0;
     }
 
-    const auto& properties = _track->properties;
-    const auto rotation = getPropertyNullable<NEVector::Quaternion>(_track, properties.rotation, lastCheckedTime);
-    const auto localRotation = getPropertyNullable<NEVector::Quaternion>(_track, properties.localRotation, lastCheckedTime);
-    const auto position = getPropertyNullable<NEVector::Vector3>(_track, properties.position, lastCheckedTime);
-    const auto localPosition = getPropertyNullable<NEVector::Vector3>(_track, properties.localPosition, lastCheckedTime);
-    const auto scale = getPropertyNullable<NEVector::Vector3>(_track, properties.scale, lastCheckedTime);
+    std::optional<NEVector::Quaternion> rotation;
+    std::optional<NEVector::Quaternion> localRotation;
+    std::optional<NEVector::Vector3> position;
+    std::optional<NEVector::Vector3> localPosition;
+    std::optional<NEVector::Vector3> scale;
+
+    // I hate this
+    auto tracks = std::span<Track const*>(const_cast<Track const **>(&*_track.begin()), _track.size());
+
+    if (tracks.size() == 1) {
+        auto track = tracks.front();
+        auto properties = track->properties;
+
+        rotation = getPropertyNullable<NEVector::Quaternion>(track, properties.rotation, lastCheckedTime);
+        localRotation = getPropertyNullable<NEVector::Quaternion>(track, properties.localRotation, lastCheckedTime);
+        position = getPropertyNullable<NEVector::Vector3>(track, properties.position, lastCheckedTime);
+        localPosition = getPropertyNullable<NEVector::Vector3>(track, properties.localPosition, lastCheckedTime);
+        scale = getPropertyNullable<NEVector::Vector3>(track, properties.scale, lastCheckedTime);
+
+    } else {
+
+#define combine(target, list, op) \
+        if (list)                          \
+        for (auto const& i : *list) {      \
+            if (!target) target = i;       \
+            else target = *target op i;\
+        }
+
+        auto localRotations = getPropertiesNullable<NEVector::Quaternion>(tracks, [](Properties const& p) {return p.localRotation;}, lastCheckedTime);
+        auto rotations = getPropertiesNullable<NEVector::Quaternion>(tracks, [](Properties const& p) {return p.rotation;}, lastCheckedTime);
+        auto positions = getPropertiesNullable<NEVector::Vector3>(tracks, [](Properties const& p) {return p.position;}, lastCheckedTime);
+        auto localPositions = getPropertiesNullable<NEVector::Vector3>(tracks, [](Properties const& p) {return p.localPosition;}, lastCheckedTime);
+        auto scales = getPropertiesNullable<NEVector::Vector3>(tracks, [](Properties const& p) {return p.scale;}, lastCheckedTime);
+
+        combine(localRotation, localRotations, *);
+        combine(rotation, rotations, *);
+        combine(scale, scales, +);
+        combine(position, positions, +);
+        combine(localPosition, localPositions, +);
+    }
+
 
     auto transform = origin;
 
@@ -231,17 +288,17 @@ void Chroma::GameObjectTrackController::UpdateData(bool force) {
     lastCheckedTime = getCurrentTime();
 }
 
-void Chroma::GameObjectTrackController::Init(Track *track, float noteLinesDistance,
+void Chroma::GameObjectTrackController::Init(std::vector<Track*> track, float noteLinesDistance,
                                              GlobalNamespace::TrackLaneRing * trackLaneRing,
                                              GlobalNamespace::ParametricBoxController * parametricBoxController,
                                              GlobalNamespace::BeatmapObjectsAvoidance * beatmapObjectsAvoidance, bool v2) {
-    CRASH_UNLESS(track);
+    CRASH_UNLESS(!track.empty());
     this->data = &_dataMap.try_emplace(nextId, track, trackLaneRing, parametricBoxController, beatmapObjectsAvoidance, noteLinesDistance, v2).first->second;
     nextId++;
 }
 
 void Chroma::GameObjectTrackController::HandleTrackData(UnityEngine::GameObject *gameObject,
-                                                        std::optional<Track*> track,
+                                                        std::vector<Track*> track,
                                                         float noteLinesDistance,
                                                         GlobalNamespace::TrackLaneRing * trackLaneRing,
                                                         GlobalNamespace::ParametricBoxController * parametricBoxController,
@@ -252,11 +309,12 @@ void Chroma::GameObjectTrackController::HandleTrackData(UnityEngine::GameObject 
         Destroy(existingTrackController);
     }
 
-    if (track)
+    if (!track.empty())
     {
         auto* trackController = gameObject->AddComponent<GameObjectTrackController*>();
-        trackController->Init(track.value(), noteLinesDistance, trackLaneRing, parametricBoxController, beatmapObjectsAvoidance, v2);
+        trackController->Init(track, noteLinesDistance, trackLaneRing, parametricBoxController, beatmapObjectsAvoidance, v2);
 
-        track.value()->AddGameObject(gameObject);
+        for (auto t : track)
+            t->AddGameObject(gameObject);
     }
 }

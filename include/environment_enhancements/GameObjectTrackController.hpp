@@ -24,7 +24,7 @@
 
 namespace Chroma {
     struct GameObjectTrackControllerData {
-        Track * const _track;
+        std::vector<Track*> const _track;
 
         // nullable
         GlobalNamespace::TrackLaneRing * const _trackLaneRing;
@@ -35,7 +35,7 @@ namespace Chroma {
 
         bool const v2;
 
-        constexpr GameObjectTrackControllerData(Track *track,
+        GameObjectTrackControllerData(std::vector<Track*> track,
                                                 GlobalNamespace::TrackLaneRing * trackLaneRing,
                                                 GlobalNamespace::ParametricBoxController * parametricBoxController,
                                                 GlobalNamespace::BeatmapObjectsAvoidance * beatmapObjectsAvoidance,
@@ -73,12 +73,12 @@ private:
     DECLARE_INSTANCE_METHOD(void, OnTransformParentChanged);
 public:
     inline static bool LeftHanded;
-    void Init(Track* track, float noteLinesDistance, GlobalNamespace::TrackLaneRing* trackLaneRing,
+    void Init(std::vector<Track*> track, float noteLinesDistance, GlobalNamespace::TrackLaneRing* trackLaneRing,
                             GlobalNamespace::ParametricBoxController* parametricBoxController,
                             GlobalNamespace::BeatmapObjectsAvoidance* beatmapObjectsAvoidance, bool v2);
 
     static void HandleTrackData(UnityEngine::GameObject* gameObject,
-                                std::optional<Track*> track,
+                                std::vector<Track*> track,
                                 float noteLinesDistance,
                                 GlobalNamespace::TrackLaneRing* trackLaneRing,
                                 GlobalNamespace::ParametricBoxController* parametricBoxController,
