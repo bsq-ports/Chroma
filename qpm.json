@@ -25,7 +25,7 @@
       "id": "custom-types",
       "versionRange": "^0.15.0",
       "additionalData": {
-        "includeQmod": false,
+        "includeQmod": true,
         "private": true
       }
     },
@@ -33,7 +33,7 @@
       "id": "codegen",
       "versionRange": "^0.25.0",
       "additionalData": {
-        "includeQmod": false,
+        "includeQmod": true,
         "private": true
       }
     },
@@ -55,7 +55,7 @@
       "id": "questui",
       "versionRange": "^0.16.0",
       "additionalData": {
-        "includeQmod": false,
+        "includeQmod": true,
         "private": true
       }
     },
@@ -80,7 +80,7 @@
       "id": "pinkcore",
       "versionRange": "*",
       "additionalData": {
-        "includeQmod": false,
+        "includeQmod": true,
         "private": true
       }
     },
@@ -118,7 +118,7 @@
       "versionRange": "^0.10.0",
       "additionalData": {
         "private": true,
-        "includeQmod": false
+        "includeQmod": true
       }
     }
   ],
