@@ -66,7 +66,7 @@ EXPOSE_API(setAllLightingColorsSafe, void, bool refresh, std::optional<LightAPI:
 using LightMap = std::vector<GlobalNamespace::ILightWithId *>;
 
 EXPOSE_API(getLightsSafe, LightMap*, GlobalNamespace::LightSwitchEventEffect *lse) {
-    auto vectorOrg = LightColorizer::GetLightColorizer(lse->event)->Lights;
+    auto vectorOrg = VList<ILightWithId*>(LightColorizer::GetLightColorizer(lse->event)->Lights);
     auto vectorPtr = new LightMap(vectorOrg.begin(), vectorOrg.end());
 
     return vectorPtr;
