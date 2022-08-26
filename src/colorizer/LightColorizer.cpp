@@ -173,13 +173,14 @@ std::vector<ILightWithId *> LightColorizer::GetLightWithIds(std::vector<int> con
     std::vector<ILightWithId*> result;
     result.reserve(ids.size());
 
+    auto maxLightId = Lights->size;
 
     for (int id : ids)
     {
         // Transform
         id = LightIDTableManager::GetActiveTableValue(lightId, id).value_or(id);
 
-        auto lightWithId = id >= 0 && id < Lights.size() ? Lights[id] : nullptr;
+        auto lightWithId = id >= 0 && id < maxLightId ? Lights->items[id] : nullptr;
         if (lightWithId)
         {
             result.push_back(lightWithId);
@@ -190,7 +191,7 @@ std::vector<ILightWithId *> LightColorizer::GetLightWithIds(std::vector<int> con
 }
 
 void
-LightColorizer::CreateLightColorizerContractByLightID(int lightId, std::function<void(LightColorizer &)> callback) {
+LightColorizer::CreateLightColorizerContractByLightID(int lightId, const std::function<void(LightColorizer &)>& callback) {
     auto it = ColorizersByLightID.find(lightId);
 
     if (it != ColorizersByLightID.end())
@@ -206,7 +207,7 @@ LightColorizer::CreateLightColorizerContractByLightID(int lightId, std::function
 }
 
 void LightColorizer::CreateLightColorizerContract(BasicBeatmapEventType type,
-                                                  std::function<void(LightColorizer &)> callback) {
+                                                  const std::function<void(LightColorizer &)>& callback) {
     auto it = Colorizers.find(type);
 
     if (it != Colorizers.end())
@@ -244,7 +245,7 @@ void LightColorizer::CompleteContracts(ChromaLightSwitchEventEffect* chromaLight
     }
 }
 
-std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId *>> LightColorizer::getLightsPropagationGrouped() {
+std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId *>> const & LightColorizer::getLightsPropagationGrouped() {
     if (!LightsPropagationGrouped) {
         return *LightsPropagationGrouped;
     }
@@ -256,7 +257,7 @@ std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId *>> LightColor
 
     auto managers = UnityEngine::Object::FindObjectsOfType<TrackLaneRingsManager *>();
 
-    for (auto light : Lights) {
+    for (auto light : VList<ILightWithId*>(Lights)) {
         if (light == nullptr) continue;
 
         auto object = il2cpp_utils::cast<Il2CppObject>(light);
@@ -318,4 +319,5 @@ std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId *>> LightColor
     debugSpamLog(contextLogger, "Done grouping, size %d", lightsPreGroup.size());
 
     LightsPropagationGrouped = lightsPreGroupFinal;
+    return *LightsPropagationGrouped;
 }

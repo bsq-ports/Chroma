@@ -64,9 +64,10 @@ namespace Chroma {
         inline static std::unordered_map<int, LightColorizer> Colorizers;
         inline static std::unordered_map<int, LightColorizer*> ColorizersByLightID;
 
-        VList<GlobalNamespace::ILightWithId *> Lights{};
+        SafePtr<List<GlobalNamespace::ILightWithId *>> Lights{};
 
-        std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId *>> getLightsPropagationGrouped();
+        [[nodiscard]]
+        std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId *>> const & getLightsPropagationGrouped();
 
 
         [[nodiscard]] LightColorPalette getColor() const {
@@ -126,9 +127,9 @@ namespace Chroma {
             Refresh(selectLights);
         }
 
-        static void CreateLightColorizerContractByLightID(int lightId, std::function<void(LightColorizer&)> callback);
+        static void CreateLightColorizerContractByLightID(int lightId, const std::function<void(LightColorizer&)>& callback);
 
-        static void CreateLightColorizerContract(GlobalNamespace::BasicBeatmapEventType type, std::function<void(LightColorizer&)> callback);
+        static void CreateLightColorizerContract(GlobalNamespace::BasicBeatmapEventType type, const std::function<void(LightColorizer&)>& callback);
 
         static void CompleteContracts(ChromaLightSwitchEventEffect* chromaLightSwitchEventEffect);
 
