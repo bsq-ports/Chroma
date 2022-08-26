@@ -42,7 +42,7 @@ namespace Chroma {
 
     inline static std::vector<std::tuple<int, std::function<void(LightColorizer&)>>> _contracts;
     inline static std::vector<std::tuple<int, std::function<void(LightColorizer&)>>> _contractsByLightID;
-        std::optional<std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId *>>> LightsPropagationGrouped{};
+        std::optional<std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId *>>> LightsPropagationGrouped;
 
     public:
         ChromaLightSwitchEventEffect *_lightSwitchEventEffect;
@@ -64,7 +64,8 @@ namespace Chroma {
         inline static std::unordered_map<int, LightColorizer> Colorizers;
         inline static std::unordered_map<int, LightColorizer*> ColorizersByLightID;
 
-        SafePtr<List<GlobalNamespace::ILightWithId *>> Lights{};
+        SafePtr<List<GlobalNamespace::ILightWithId *>> LightsSafePtr;
+        VList<GlobalNamespace::ILightWithId *> Lights;
 
         [[nodiscard]]
         std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId *>> const & getLightsPropagationGrouped();

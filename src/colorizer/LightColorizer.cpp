@@ -61,6 +61,8 @@ LightColorizer::LightColorizer(ChromaLightSwitchEventEffect *lightSwitchEventEff
     if(!Lights) {
         Lights = lightManager->lights.get(lightSwitchEventEffect->lightsID) = System::Collections::Generic::List_1<::GlobalNamespace::ILightWithId*>::New_ctor(10);
     }
+
+    LightsSafePtr.emplace(Lights.getInner());
 }
 
 LightColorizer & LightColorizer::New(ChromaLightSwitchEventEffect *lightSwitchEventEffect,
@@ -152,7 +154,7 @@ void LightColorizer::InitializeSO(ColorSO *&lightColor0, ColorSO *&highlightColo
 
 std::vector<ILightWithId *> LightColorizer::GetPropagationLightWithIds(const std::vector<int> &ids) {
     std::vector<ILightWithId*> result;
-    auto props = getLightsPropagationGrouped();
+    auto const& props = getLightsPropagationGrouped();
     auto lightCount = props.size();
     for (int id : ids)
     {
@@ -160,9 +162,7 @@ std::vector<ILightWithId *> LightColorizer::GetPropagationLightWithIds(const std
         {
             auto const& lights = props.at(id);
 
-            for (auto light : lights) {
-                result.push_back(light);
-            }
+            std::copy(lights.begin(), lights.end(), std::back_inserter(result));
         }
     }
 
@@ -173,14 +173,14 @@ std::vector<ILightWithId *> LightColorizer::GetLightWithIds(std::vector<int> con
     std::vector<ILightWithId*> result;
     result.reserve(ids.size());
 
-    auto maxLightId = Lights->size;
+    auto maxLightId = Lights.size();
 
     for (int id : ids)
     {
         // Transform
         id = LightIDTableManager::GetActiveTableValue(lightId, id).value_or(id);
 
-        auto lightWithId = id >= 0 && id < maxLightId ? Lights->items[id] : nullptr;
+        auto lightWithId = id >= 0 && id < maxLightId ? Lights[id] : nullptr;
         if (lightWithId)
         {
             result.push_back(lightWithId);
@@ -246,78 +246,48 @@ void LightColorizer::CompleteContracts(ChromaLightSwitchEventEffect* chromaLight
 }
 
 std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId *>> const & LightColorizer::getLightsPropagationGrouped() {
-    if (!LightsPropagationGrouped) {
+    if (LightsPropagationGrouped) {
         return *LightsPropagationGrouped;
     }
     // Keep track of order
-    int index = 0;
-    std::unordered_map<int, int> insertionOrder;
-
     std::unordered_map<int, std::vector<ILightWithId *>> lightsPreGroup;
 
     auto managers = UnityEngine::Object::FindObjectsOfType<TrackLaneRingsManager *>();
 
-    for (auto light : VList<ILightWithId*>(Lights)) {
+    for (auto light : Lights) {
         if (light == nullptr) continue;
 
-        auto object = il2cpp_utils::cast<Il2CppObject>(light);
-        auto monoBehaviour = il2cpp_utils::try_cast<MonoBehaviour>(object);
+        auto monoBehaviour = il2cpp_utils::try_cast<MonoBehaviour>(light);
 
         if (!monoBehaviour) continue;
 
-        int z1 = (int) std::round((double)(*monoBehaviour)->get_transform()->get_position().z);
+        int z = (int) std::round((double)(*monoBehaviour)->get_transform()->get_position().z);
 
         auto ring = (*monoBehaviour)->GetComponentInParent<TrackLaneRing *>();
 
         if (ring) {
-            TrackLaneRingsManager *mngr = nullptr;
-            auto indexR = 0;
+            TrackLaneRingsManager *mngr = managers.FirstOrDefault([&](TrackLaneRingsManager* it) -> bool {
+                return it && std::find(it->rings.begin(), it->rings.end(), ring) != it->rings.end();
+            });
 
-            for (auto m : managers) {
-                if (m) {
-                    indexR = m->rings.IndexOf(ring);
-                    if (indexR >= 0) {
-                        mngr = m;
-                        break;
-                    }
-                }
+            if (mngr) {
+                z = 1000 + mngr->rings.IndexOf(ring);
             }
-
-            if (mngr != nullptr) { z1 = 1000 + indexR; }
         }
 
-        debugSpamLog(contextLogger, "Grouping to %d", z1);
-
-        std::vector<ILightWithId *> list;
-
-        auto it = lightsPreGroup.find(z1);
-        // Not found
-        if (it == lightsPreGroup.end()) {
-            insertionOrder[index] = z1;
-            index++;
-        } else list = it->second;
-
+        auto& list = lightsPreGroup[z];
         list.push_back(light);
-
-        lightsPreGroup.insert_or_assign(it, z1, list);
     }
 
 
-    std::unordered_map<int, std::vector<ILightWithId *>> lightsPreGroupFinal;
+    LightsPropagationGrouped.emplace();
 
     int i = 0;
-
-
-    while (i <= index) {
-        debugSpamLog(contextLogger, "Doing the final grouping, prop id %d", i);
-        int z = insertionOrder[i];
-
-        lightsPreGroupFinal[i] = lightsPreGroup[z];
+    for (auto&& [z, list] : lightsPreGroup) {
+        LightsPropagationGrouped.value()[i] = std::move(list);
         i++;
     }
 
-    debugSpamLog(contextLogger, "Done grouping, size %d", lightsPreGroup.size());
 
-    LightsPropagationGrouped = lightsPreGroupFinal;
     return *LightsPropagationGrouped;
 }
