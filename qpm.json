@@ -4,7 +4,7 @@
   "info": {
     "name": "Chroma",
     "id": "chroma",
-    "version": "2.6.0",
+    "version": "2.6.4",
     "url": "https://github.com/bsq-ports/Chroma",
     "additionalData": {
       "headersOnly": true,
@@ -117,8 +117,8 @@
       "id": "songloader",
       "versionRange": "^0.10.0",
       "additionalData": {
-        "private": true,
-        "includeQmod": true
+        "includeQmod": true,
+        "private": true
       }
     }
   ],
