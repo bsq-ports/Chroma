@@ -8,7 +8,11 @@
     "url": "https://github.com/bsq-ports/Chroma",
     "additionalData": {
       "headersOnly": true,
-      "overrideSoName": "libchroma.so"
+      "soLink": "https://github.com/bsq-ports/Chroma/releases/download/v2.6.4/libchroma.so",
+      "debugSoLink": "https://github.com/bsq-ports/Chroma/releases/download/v2.6.4/debug_libchroma.so",
+      "overrideSoName": "libchroma.so",
+      "modLink": "https://github.com/bsq-ports/Chroma/releases/download/v2.6.4/chroma.qmod",
+      "branchName": "version-v2.6.4"
     }
   },
   "dependencies": [
