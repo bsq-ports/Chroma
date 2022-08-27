@@ -59,7 +59,7 @@ namespace Chroma {
 
         static std::optional<Sombrero::FastColor>
         GetColorOffset(std::optional<PointDefinition *> const &localColor, std::span<Track *> const &tracksOpt,
-                       float const time, bool &trackUpdated, int lastCheckedTime = 0) {
+                       float const time, bool &trackUpdated, uint32_t lastCheckedTime = 0) {
             std::optional<NEVector::Vector4> pathColor;
 
             bool last;

@@ -108,7 +108,7 @@ MaterialInfo Chroma::MaterialsManager::CreateMaterialInfo(rapidjson::Value const
         }
     }
 
-    auto color = ChromaUtils::ChromaUtilities::GetColorFromData(data).value_or(Sombrero::FastColor(0,0,0,0));
+    auto color = ChromaUtils::ChromaUtilities::GetColorFromData(data, v2).value_or(Sombrero::FastColor(0,0,0,0));
     auto shaderTypeStr = ChromaUtils::getIfExists<std::string_view>(data, v2 ? NewConstants::V2_SHADER_PRESET : NewConstants::SHADER_PRESET);
     ShaderType shaderType = shaderTypeStr ? shaderTypeFromString(shaderTypeStr->data()) : ShaderType::Standard;
 
