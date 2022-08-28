@@ -4,6 +4,9 @@ Is based on Chroma PC v2.5.0 as of this time
 
 Colors!
 
+## Background not visible
+Is the background not visible (related to #26)? make sure all the environment effects are turned on (located under `Player Settings`).
+
 ### NOTE: This is a port of Chroma to the Quest, as such, it is in no way associated with Aeroluna. Please do not pester them about bugs, they are not associated with this port.
 
 # TODO:
