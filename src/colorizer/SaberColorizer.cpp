@@ -79,7 +79,7 @@ void SaberColorizer::Reset() {
 }
 
 void SaberColorizer::Refresh() {
-    Sombrero::FastColor const& color = getColor();
+    Sombrero::FastColor const& color = getColor().Alpha(1.0f);
     if (color == Sombrero::FastColor(_lastColor))
     {
         return;
