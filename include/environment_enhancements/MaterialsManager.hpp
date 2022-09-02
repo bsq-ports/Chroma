@@ -51,6 +51,7 @@ namespace Chroma {
 
         static void Reset() {
             for (auto& m : createdMaterials) {
+                if (!m || !m.isAlive()) continue;
                 UnityEngine::Object::Destroy(const_cast<UnityEngine::Material *>(m.ptr()));
             }
             createdMaterials.clear();
