@@ -76,10 +76,16 @@ Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform *root,
     GetComponentAndOriginal<LightWithIds>(root, original, [&](LightWithIds* rootComponent, LightWithIds* originalComponent) {
         rootComponent->lightManager = originalComponent->lightManager;
         // cross fingers no stripping
-        auto lightsWithIdArray = System::Linq::Enumerable::ToArray(rootComponent->lightWithIds);
+        if (rootComponent->lightWithIds) {
+            auto lightsWithIdArray = rootComponent->lightWithIds->GetEnumerator();
 
-        for (auto const& lightIdData : lightsWithIdArray) {
-            LightIdRegisterer::MarkForTableRegister(lightIdData->i_ILightWithId());
+            while (lightsWithIdArray->i_IEnumerator()->MoveNext()) {
+                auto lightIdData = lightsWithIdArray->get_Current();
+                LightIdRegisterer::MarkForTableRegister(lightIdData->i_ILightWithId());
+            }
+
+            // TODO: Handle
+//            lightsWithIdArray->i_IDisposable()->Dispose();
         }
     });
 
