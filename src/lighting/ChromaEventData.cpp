@@ -10,11 +10,11 @@
 using namespace ChromaUtils;
 
 
-void Chroma::ChromaEventDataManager::deserialize(GlobalNamespace::IReadonlyBeatmapData* beatmapData) {
+void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapData *beatmapData) {
     static auto contextLogger = getLogger().WithContext(ChromaLogger::ObjectDataDeserialize);
     ChromaEventDatas.clear();
 
-    auto beatmapDataCast = il2cpp_utils::cast<CustomJSONData::CustomBeatmapData>(beatmapData);
+    auto beatmapDataCast = beatmapData;
     auto beatmapEvents = beatmapDataCast->GetBeatmapItemsCpp<GlobalNamespace::BasicBeatmapEventData*>();
 
 

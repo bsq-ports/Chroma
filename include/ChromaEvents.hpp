@@ -20,7 +20,7 @@ namespace ChromaEvents {
         return eventDataMap[customData];
     }
 
-    void deserialize(GlobalNamespace::IReadonlyBeatmapData* customBeatmapData);
+    void deserialize(CustomJSONData::CustomBeatmapData *readOnlyBeatmap);
 
     void parseEventData(TracksAD::BeatmapAssociatedData &beatmapAD,
                         CustomJSONData::CustomEventData const *customEventData, bool v2);

@@ -35,14 +35,24 @@ MAKE_HOOK_MATCH(BeatmapDataTransformHelper_CreateTransformedBeatmapData,&Beatmap
         return result;
     }
 
+    if (auto customBeatmap = il2cpp_utils::try_cast<CustomJSONData::CustomBeatmapData>(result)) {
+        auto &beatmapAD = TracksAD::getBeatmapAD(customBeatmap.value()->customData);
+
+        if (!beatmapAD.valid) {
+            TracksAD::readBeatmapDataAD(*customBeatmap);
+        }
+
+        ChromaObjectDataManager::deserialize(*customBeatmap);
+        ChromaEventDataManager::deserialize(*customBeatmap);
+        ChromaEvents::deserialize(*customBeatmap);
+    }
+
 //    auto* stackTrace = System::Diagnostics::StackTrace::New_ctor();
 //
 //    getLogger().debug("Frames: %d", stackTrace->frames->Length());
 
 //    if (!stackTrace->GetFrame(2)->GetMethod()->get_Name()->Contains(il2cpp_utils::newcsstr("MultiplayerConnectedPlayerInstaller"))) {
-        ChromaObjectDataManager::deserialize(result);
-        ChromaEventDataManager::deserialize(result);
-        ChromaEvents::deserialize(result);
+
 //    }
 
     return result;

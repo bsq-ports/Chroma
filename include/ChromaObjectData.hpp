@@ -13,6 +13,7 @@
 #include "tracks/shared/Animation/PointDefinition.h"
 
 #include "sombrero/shared/ColorUtils.hpp"
+#include "custom-json-data/shared/CustomBeatmapData.h"
 
 namespace Chroma {
 
@@ -45,7 +46,7 @@ namespace Chroma {
         using ChromaObjectDataType = std::unordered_map<GlobalNamespace::BeatmapObjectData *, ChromaObjectData>;
         inline static ChromaObjectDataType ChromaObjectDatas;
 
-        static void deserialize(GlobalNamespace::IReadonlyBeatmapData *beatmapData);
+        static void deserialize(CustomJSONData::CustomBeatmapData *beatmapData);
     };
 
 }

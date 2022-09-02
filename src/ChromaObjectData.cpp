@@ -13,12 +13,12 @@ using namespace ChromaUtils;
 using namespace GlobalNamespace;
 
 
-void Chroma::ChromaObjectDataManager::deserialize(GlobalNamespace::IReadonlyBeatmapData *beatmapData) {
+void Chroma::ChromaObjectDataManager::deserialize(CustomJSONData::CustomBeatmapData *beatmapData) {
     ChromaObjectDatas.clear();
 
     static auto contextLogger = getLogger().WithContext(ChromaLogger::ObjectDataDeserialize);
 
-    auto beatmapDataCast = il2cpp_utils::cast<CustomJSONData::CustomBeatmapData>(beatmapData);
+    auto beatmapDataCast = beatmapData;
     auto notes = beatmapDataCast->GetBeatmapItemsCpp<NoteData *>();
     auto obstacles = beatmapDataCast->GetBeatmapItemsCpp<ObstacleData *>();
     bool v2 = beatmapDataCast->v2orEarlier;

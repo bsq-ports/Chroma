@@ -55,22 +55,21 @@ void ChromaEvents::parseEventData(TracksAD::BeatmapAssociatedData &beatmapAD,
     if (typeHash == jsonNameHash_ASSIGNFOGTRACK) {}
 }
 
-void ChromaEvents::deserialize(GlobalNamespace::IReadonlyBeatmapData* readOnlyBeatmap) {
-    auto beatmapCast = il2cpp_utils::try_cast<CustomJSONData::CustomBeatmapData>(readOnlyBeatmap);
-    if (beatmapCast) {
-        auto beatmap = *beatmapCast;
-        auto &beatmapAD = TracksAD::getBeatmapAD(beatmap->customData);
+void ChromaEvents::deserialize(CustomJSONData::CustomBeatmapData *readOnlyBeatmap) {
+    auto beatmapCast = readOnlyBeatmap;
 
-        if (!beatmapAD.valid) {
-            TracksAD::readBeatmapDataAD(beatmap);
-        }
+    auto beatmap = beatmapCast;
+    auto &beatmapAD = TracksAD::getBeatmapAD(beatmap->customData);
 
-        // Parse events
-        for (auto const &customEventData: beatmap->GetBeatmapItemsCpp<CustomJSONData::CustomEventData*>()) {
-            if (!customEventData) continue;
+    if (!beatmapAD.valid) {
+        TracksAD::readBeatmapDataAD(beatmap);
+    }
 
-            parseEventData(beatmapAD, customEventData, beatmap->v2orEarlier);
-        }
+    // Parse events
+    for (auto const &customEventData: beatmap->GetBeatmapItemsCpp<CustomJSONData::CustomEventData*>()) {
+        if (!customEventData) continue;
+
+        parseEventData(beatmapAD, customEventData, beatmap->v2orEarlier);
     }
 }
 

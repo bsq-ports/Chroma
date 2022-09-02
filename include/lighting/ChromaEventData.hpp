@@ -13,6 +13,7 @@
 #include "sombrero/shared/ColorUtils.hpp"
 
 #include "lighting/LerpType.hpp"
+#include "custom-json-data/shared/CustomBeatmapData.h"
 
 namespace Chroma {
     class ChromaEventData {
@@ -82,7 +83,7 @@ namespace Chroma {
         using EventMapType = std::unordered_map<GlobalNamespace::BasicBeatmapEventData *, ChromaEventData>;
         inline static EventMapType ChromaEventDatas;
 
-        static void deserialize(GlobalNamespace::IReadonlyBeatmapData *beatmapData);
+        static void deserialize(CustomJSONData::CustomBeatmapData *beatmapData);
     };
 
 
