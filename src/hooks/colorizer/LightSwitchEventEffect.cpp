@@ -36,6 +36,9 @@ BeatmapCallbacksController* beatmapCallbacksController;
 custom_types::Helpers::Coroutine WaitThenStartLight(LightSwitchEventEffect *instance, BasicBeatmapEventType eventType) {
     co_yield reinterpret_cast<IEnumerator*>(CRASH_UNLESS(WaitForEndOfFrame::New_ctor()));
 
+    auto* newEffect = instance->get_gameObject()->AddComponent<ChromaLightSwitchEventEffect*>();
+    newEffect->CopyValues(instance);
+
     IL2CPP_CATCH_HANDLER(
         Object::Destroy(instance);
     )
@@ -46,6 +49,10 @@ custom_types::Helpers::Coroutine WaitThenStartLight(LightSwitchEventEffect *inst
 MAKE_HOOK_MATCH(LightSwitchEventEffect_Awake,
                 &LightSwitchEventEffect::Awake,
                 void, LightSwitchEventEffect* self) {
+    static auto ChromaLightSwitchEventEffectKlass = classof(ChromaLightSwitchEventEffect*);
+
+    if (self->klass == ChromaLightSwitchEventEffectKlass) return;
+
     // Do nothing if Chroma shouldn't run
     if (!ChromaController::GetChromaLegacy() && !ChromaController::DoChromaHooks()) {
         return LightSwitchEventEffect_Awake(self);
@@ -57,17 +64,14 @@ MAKE_HOOK_MATCH(LightSwitchEventEffect_Awake,
 MAKE_HOOK_MATCH(LightSwitchEventEffect_Start,
                 &LightSwitchEventEffect::Start,
                 void, LightSwitchEventEffect* self) {
-    // Do nothing if Chroma shouldn't run
-    if (!ChromaController::GetChromaLegacy() && !ChromaController::DoChromaHooks()) {
-        return LightSwitchEventEffect_Start(self);
-    }
-
     static auto ChromaLightSwitchEventEffectKlass = classof(ChromaLightSwitchEventEffect*);
 
     if (self->klass == ChromaLightSwitchEventEffectKlass) return;
 
-    auto* newEffect = self->get_gameObject()->AddComponent<ChromaLightSwitchEventEffect*>();
-    newEffect->CopyValues(self);
+    // Do nothing if Chroma shouldn't run
+    if (!ChromaController::GetChromaLegacy() && !ChromaController::DoChromaHooks()) {
+        return LightSwitchEventEffect_Start(self);
+    }
 
     auto coro = custom_types::Helpers::CoroutineHelper::New(WaitThenStartLight(self, self->event));
 
