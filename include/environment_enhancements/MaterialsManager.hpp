@@ -36,6 +36,7 @@ namespace Chroma {
 
     struct MaterialsManager {
         std::unordered_map<std::string, const MaterialInfo> materials;
+        std::unordered_map<std::string_view, const MaterialInfo> materialsJSON; // if two materials have the same JSON, they are the same material
         TracksAD::BeatmapAssociatedData& beatmapAD;
 
 

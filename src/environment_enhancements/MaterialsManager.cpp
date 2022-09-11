@@ -145,7 +145,21 @@ std::optional<MaterialInfo> Chroma::MaterialsManager::GetMaterial(rapidjson::Val
 
         if (it != materials.end()) return it->second;
     } else if (data.IsObject()) {
-        return CreateMaterialInfo(data);
+        // mappers generating 10293029843 identical materials
+        rapidjson::StringBuffer s;
+        rapidjson::Writer<rapidjson::StringBuffer> writer(s);
+
+        data.Accept(writer);
+
+        auto jsonStr = data.GetString();
+        auto it = materialsJSON.find(jsonStr);
+        if (it != materialsJSON.end()) {
+            return it->second;
+        }
+
+        auto material = CreateMaterialInfo(data);
+        materialsJSON.emplace(jsonStr, material);
+        return material;
     }
 
     return std::nullopt;
