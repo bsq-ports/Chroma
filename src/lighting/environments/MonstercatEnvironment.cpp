@@ -49,12 +49,13 @@ EnvironmentLightDataT MonstercatEnvironment::getEnvironmentLights() {
         {6, 12 },
         {7, 8 },
         {8, 0 },
-        {9, 19 },
-        {10, 17 },
-        {11, 18 },
-        {12, 20 },
+        {9, 20 },
+        {10, 18 },
+        {11, 19 },
+        {12, 21 },
         {13, 6 },
         {14, 4 },
+        {15, 17 },
     }},
 }
     );
