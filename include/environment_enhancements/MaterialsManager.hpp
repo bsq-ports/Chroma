@@ -13,7 +13,14 @@ namespace Chroma {
     {
         Standard,
         OpaqueLight,
-        TransparentLight
+        TransparentLight,
+        BaseWater,
+        BillieWater,
+        BTSPillar,
+        InterscopeConcrete,
+        InterscopeCar,
+        Obstacle,
+        WaterfallMirror
     };
 
     bool IsLightType(ShaderType shaderType);

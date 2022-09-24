@@ -18,6 +18,10 @@
 #include "questui_components/shared/components/Text.hpp"
 #include "ui/ModifierViewController.hpp"
 
+#include "environment_enhancements/EnvironmentMaterialManager.hpp"
+
+#include "GlobalNamespace/SharedCoroutineStarter.hpp"
+
 using namespace Chroma;
 using namespace QuestUI;
 using namespace QUC;
@@ -117,4 +121,6 @@ extern "C" void load() {
     LightIDTableManager::InitTable();
 
     setChromaEnv();
+
+    GlobalNamespace::SharedCoroutineStarter::get_instance()->StartCoroutine(custom_types::Helpers::CoroutineHelper::New(EnvironmentMaterialManager::Activate()));
 }

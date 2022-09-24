@@ -2,6 +2,7 @@
 #include "Chroma.hpp"
 #include "utils/ChromaUtils.hpp"
 #include "UnityEngine/MaterialGlobalIlluminationFlags.hpp"
+#include "environment_enhancements/EnvironmentMaterialManager.hpp"
 
 using namespace Chroma;
 using namespace UnityEngine;
@@ -37,6 +38,7 @@ UnityEngine::Material *Chroma::MaterialsManager::InstantiateSharedMaterial(Shade
     static ConstString opaqueLight("Custom/OpaqueNeonLight");
     static ConstString transparentLight("Custom/TransparentNeonLight");
     static ConstString standardBTSCube("Custom/SimpleLit");
+    static ConstString water("Custom/WaterLit");
 
     StringW shaderName;
     ArrayW<StringW> shaderKeywords;
@@ -80,6 +82,16 @@ UnityEngine::Material *Chroma::MaterialsManager::InstantiateSharedMaterial(Shade
                                                                                     "_ENABLE_MAIN_EFFECT_WHITE_BOOST"
                                                                             }));
             break;
+            case ShaderType::BaseWater :
+            shaderName = water;
+            shaderKeywords = ArrayW<StringW>(std::initializer_list<StringW>({
+                                                                                    "FOG", "HEIGHT_FOG", "INVERT_RIMLIGHT", "MASK_RED_IS_ALPHA", "NOISE_DITHERING",
+                                                                                    "NORMAL_MAP", "REFLECTION_PROBE", "REFLECTION_PROBE_BOX_PROJECTION", "_DECALBLEND_ALPHABLEND",
+                                                                                    "_DISSOLVEAXIS_LOCALX", "_EMISSIONCOLORTYPE_FLAT", "_EMISSIONTEXTURE_NONE",
+                                                                                    "_RIMLIGHT_NONE", "_ROTATE_UV_NONE", "_VERTEXMODE_NONE", "_WHITEBOOSTTYPE_NONE",
+                                                                                    "_ZWRITE_ON"
+                                                                            }));
+            break;
     }
 
     auto shader = Shader::Find(shaderName);
@@ -87,6 +99,7 @@ UnityEngine::Material *Chroma::MaterialsManager::InstantiateSharedMaterial(Shade
 
     material->set_globalIlluminationFlags(globalIlluminationFlags);
     material->set_enableInstancing(true);
+    material->set_color({0,0,0,0});
 
     if (shaderKeywords) {
         material->set_shaderKeywords(shaderKeywords);
@@ -108,7 +121,7 @@ MaterialInfo Chroma::MaterialsManager::CreateMaterialInfo(rapidjson::Value const
         }
     }
 
-    auto color = ChromaUtils::ChromaUtilities::GetColorFromData(data, v2).value_or(Sombrero::FastColor(0,0,0,0));
+    auto color = ChromaUtils::ChromaUtilities::GetColorFromData(data, v2);
     auto shaderTypeStr = ChromaUtils::getIfExists<std::string_view>(data, v2 ? NewConstants::V2_SHADER_PRESET : NewConstants::SHADER_PRESET);
     ShaderType shaderType = shaderTypeStr ? shaderTypeFromString(shaderTypeStr->data()) : ShaderType::Standard;
 
@@ -130,7 +143,9 @@ MaterialInfo Chroma::MaterialsManager::CreateMaterialInfo(rapidjson::Value const
 
     auto material = Object::Instantiate(GetMaterialTemplate(shaderType));
     createdMaterials.emplace_back(material);
-    material->set_color(color);
+    if (color) {
+        material->set_color(*color);
+    }
     if (shaderKeywords) {
         material->set_shaderKeywords(shaderKeywords);
     }
@@ -175,16 +190,22 @@ UnityEngine::Material *MaterialsManager::GetMaterialTemplate(ShaderType shaderTy
     static SafePtrUnity<Material> _transparentLightMaterial;
     if(!_transparentLightMaterial) _transparentLightMaterial = InstantiateSharedMaterial(ShaderType::TransparentLight);
 
+    static SafePtrUnity<Material> _baseWaterMaterial;
+    if(!_baseWaterMaterial) _baseWaterMaterial = InstantiateSharedMaterial(ShaderType::BaseWater);
+
     Material *originalMaterial;
     switch (shaderType) {
         default:
-            originalMaterial = (Material *) _standardMaterial;
+            originalMaterial = EnvironmentMaterialManager::getMaterial(shaderType).value_or((Material *) _standardMaterial);
             break;
         case ShaderType::OpaqueLight:
             originalMaterial = (Material *) _opaqueLightMaterial;
             break;
         case ShaderType::TransparentLight:
             originalMaterial = (Material *) _transparentLightMaterial;
+            break;
+        case ShaderType::BaseWater:
+            originalMaterial = (Material *) _baseWaterMaterial;
             break;
     }
 

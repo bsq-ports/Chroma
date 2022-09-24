@@ -172,7 +172,7 @@ GameObject * Chroma::GeometryFactory::Create(rapidjson::Value const &data) {
 }
 
 bool Chroma::IsLightType(ShaderType shaderType) {
-    return shaderType == ShaderType::OpaqueLight || shaderType == ShaderType::TransparentLight;;
+    return shaderType == ShaderType::OpaqueLight || shaderType == ShaderType::TransparentLight || shaderType == ShaderType::BillieWater;
 }
 
 
