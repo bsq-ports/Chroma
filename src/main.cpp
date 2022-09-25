@@ -126,6 +126,6 @@ extern "C" void load() {
 
     QuestUI::MainThreadScheduler::Schedule([]() {
         GlobalNamespace::SharedCoroutineStarter::
-            get_instance()->StartCoroutine(custom_types::Helpers::CoroutineHelper::New(EnvironmentMaterialManager::Activate)));
+            get_instance()->StartCoroutine(custom_types::Helpers::CoroutineHelper::New(EnvironmentMaterialManager::Activate));
     });
 }
