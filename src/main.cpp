@@ -22,6 +22,8 @@
 
 #include "GlobalNamespace/SharedCoroutineStarter.hpp"
 
+#include "questui/shared/CustomTypes/Components/MainThreadScheduler.hpp"
+
 using namespace Chroma;
 using namespace QuestUI;
 using namespace QUC;
@@ -122,5 +124,9 @@ extern "C" void load() {
 
     setChromaEnv();
 
-    GlobalNamespace::SharedCoroutineStarter::get_instance()->StartCoroutine(custom_types::Helpers::CoroutineHelper::New(EnvironmentMaterialManager::Activate()));
+    QuestUI::MainThreadScheduler::Schedule([]() {
+        GlobalNamespace::SharedCoroutineStarter::
+            get_instance()->StartCoroutine(custom_types::Helpers::CoroutineHelper::New(EnvironmentMaterialManager::Activate()));
+    });
+
 }
