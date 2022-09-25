@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ChromaController.hpp"
+
 #include "GlobalNamespace/NoteControllerBase.hpp"
 
 #include "colorizer/NoteColorizer.hpp"

@@ -1,11 +1,6 @@
 #include "Chroma.hpp"
 
 #include "UnityEngine/Shader.hpp"
-#include "UnityEngine/MaterialPropertyBlock.hpp"
-
-#include "GlobalNamespace/MaterialPropertyBlockController.hpp"
-#include "GlobalNamespace/ParametricBoxFrameController.hpp"
-#include "GlobalNamespace/ParametricBoxFakeGlowController.hpp"
 #include "GlobalNamespace/StretchableObstacle.hpp"
 #include "GlobalNamespace/ColorManager.hpp"
 
