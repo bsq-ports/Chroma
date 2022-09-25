@@ -123,9 +123,4 @@ extern "C" void load() {
     LightIDTableManager::InitTable();
 
     setChromaEnv();
-
-    QuestUI::MainThreadScheduler::Schedule([]() {
-        GlobalNamespace::SharedCoroutineStarter::
-            get_instance()->StartCoroutine(custom_types::Helpers::CoroutineHelper::New(EnvironmentMaterialManager::Activate));
-    });
 }
