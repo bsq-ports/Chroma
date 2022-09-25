@@ -3,8 +3,13 @@
 custom_types::Helpers::Coroutine Chroma::EnvironmentMaterialManager::Activate() {
     using namespace Sombrero::Linq::Functional;
 
-    co_yield nullptr;
-    co_yield nullptr;
+    CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Waiting to scene load");
+
+    for (int i = 0; i < 90 * 2; i++) {
+        co_yield nullptr;
+    }
+
+    CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Beginning scene load");
 
     auto Load = [](std::string_view environmentName) {
         CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Loading environment [{}].", environmentName);
