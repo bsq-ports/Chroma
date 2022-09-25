@@ -6,7 +6,6 @@
 
 #include <unordered_map>
 
-#include "UnityEngine/Color.hpp"
 #include "GlobalNamespace/BasicBeatmapEventData.hpp"
 #include "GlobalNamespace/IReadonlyBeatmapData.hpp"
 

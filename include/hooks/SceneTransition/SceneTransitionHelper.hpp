@@ -1,8 +1,6 @@
 #pragma once
 
 #include "GlobalNamespace/IDifficultyBeatmap.hpp"
-#include "GlobalNamespace/BeatmapLevelSO.hpp"
-#include "GlobalNamespace/BeatmapLevelSO_DifficultyBeatmap.hpp"
 #include "GlobalNamespace/OverrideEnvironmentSettings.hpp"
 #include "custom-json-data/shared/CustomBeatmapData.h"
 #include "custom-json-data/shared/CustomBeatmapSaveDatav3.h"

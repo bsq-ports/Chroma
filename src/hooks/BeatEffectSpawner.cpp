@@ -6,10 +6,6 @@
 #include "GlobalNamespace/ColorExtensions.hpp"
 #include "hooks/colorizer/Note/ColorManager.hpp"
 #include "GlobalNamespace/BeatEffectSpawner.hpp"
-#include "GlobalNamespace/BeatmapObjectSpawnController.hpp"
-#include "GlobalNamespace/NoteController.hpp"
-#include "GlobalNamespace/MultiplayerConnectedPlayerNoteController.hpp"
-#include "GlobalNamespace/TutorialNoteController.hpp"
 
 #include "custom-json-data/shared/CustomBeatmapData.h"
 

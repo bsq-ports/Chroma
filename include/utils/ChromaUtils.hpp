@@ -1,24 +1,21 @@
 #pragma once
 
 
-#include "main.hpp"
+#include "Chroma.hpp"
 
 #include "sombrero/shared/RandomUtils.hpp"
 #include "sombrero/shared/ColorUtils.hpp"
 #include "sombrero/shared/Vector3Utils.hpp"
 #include "sombrero/shared/QuaternionUtils.hpp"
 
-#include "UnityEngine/Color.hpp"
-#include "UnityEngine/Transform.hpp"
-#include "UnityEngine/Vector3.hpp"
-#include "UnityEngine/Quaternion.hpp"
-#include "Chroma.hpp"
-
 #include <optional>
 #include <string>
 #include <random>
+
 #include "tracks/shared/Animation/Track.h"
+
 #include "UnityEngine/Mesh.hpp"
+#include "UnityEngine/Transform.hpp"
 
 #define GET_FIND_METHOD(mPtr) il2cpp_utils::il2cpp_type_check::MetadataGetter<mPtr>::get()
 

@@ -2,13 +2,9 @@
 
 #include "main.hpp"
 #include "ChromaHooks.hpp"
-#include "UnityEngine/Color.hpp"
-#include <optional>
-#include "GlobalNamespace/ILightWithId.hpp"
-#include "UnityEngine/Quaternion.hpp"
 #include "tracks/shared/AssociatedData.h"
-#include <vector>
-#include <string>
+
+#include <string_view>
 
 #define GET_FIND_METHOD(mPtr) il2cpp_utils::il2cpp_type_check::MetadataGetter<mPtr>::get()
 

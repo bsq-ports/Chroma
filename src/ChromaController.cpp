@@ -1,22 +1,18 @@
-#include "Chroma.hpp"
+#include "main.hpp"
+#include "ChromaConfig.hpp"
 #include "ChromaController.hpp"
 
 #include "GlobalNamespace/BeatmapObjectManager.hpp"
 #include "GlobalNamespace/IReadonlyBeatmapData.hpp"
-#include "GlobalNamespace/BeatmapCallbacksController.hpp"
-#include "GlobalNamespace/BeatmapLineData.hpp"
-#include "GlobalNamespace/BeatmapObjectData.hpp"
-#include "GlobalNamespace/Saber.hpp"
+#include "UnityEngine/WaitForEndOfFrame.hpp"
 
-#include "UnityEngine/Resources.hpp"
-#include "UnityEngine/GameObject.hpp"
+#include "custom-types/shared/coroutine.hpp"
 
-#include "System/Action.hpp"
-#include "ChromaConfig.hpp"
+
+#include "beatsaber-hook/shared/utils/hooking.hpp"
+
 #include "custom-json-data/shared/CustomBeatmapData.h"
 
-#include "main.hpp"
-#include "beatsaber-hook/shared/utils/hooking.hpp"
 #include "colorizer/NoteColorizer.hpp"
 #include "colorizer/SaberColorizer.hpp"
 #include "colorizer/ObstacleColorizer.hpp"
@@ -29,9 +25,8 @@
 #include "environment_enhancements/MaterialsManager.hpp"
 #include "lighting/ChromaGradientController.hpp"
 #include "hooks/TrackLaneRingsManager.hpp"
-
-#include "custom-types/shared/coroutine.hpp"
 #include "hooks/LightWithIdManager.hpp"
+
 
 #include <vector>
 

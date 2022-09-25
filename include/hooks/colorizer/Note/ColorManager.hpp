@@ -2,10 +2,7 @@
 
 #include "GlobalNamespace/NoteControllerBase.hpp"
 
-#include "UnityEngine/Color.hpp"
-
 #include "colorizer/NoteColorizer.hpp"
-#include "ChromaController.hpp"
 
 #include <optional>
 

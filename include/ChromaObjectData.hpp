@@ -4,10 +4,7 @@
 
 #include <unordered_map>
 
-#include "UnityEngine/Color.hpp"
 #include "GlobalNamespace/BeatmapObjectData.hpp"
-#include "GlobalNamespace/BeatmapEventData.hpp"
-#include "GlobalNamespace/IReadonlyBeatmapData.hpp"
 
 #include "tracks/shared/Animation/Track.h"
 #include "tracks/shared/Animation/PointDefinition.h"
@@ -16,12 +13,6 @@
 #include "custom-json-data/shared/CustomBeatmapData.h"
 
 namespace Chroma {
-
-    enum class ObjectDataType {
-        Note,
-        Object,
-        Noodle
-    };
 
     class ChromaObjectData {
     private:

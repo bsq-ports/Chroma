@@ -4,28 +4,29 @@
   "id": "chroma",
   "author": "Aeroluna",
   "porter": "FernTheDev, nyamimi~",
-  "version": "2.5.7-q5",
+  "version": "2.6.0",
   "packageId": "com.beatgames.beatsaber",
-  "packageVersion": "1.19.1",
+  "packageVersion": "1.24.0",
   "description": "Colors!",
   "coverImage": "cover.png",
   "dependencies": [
     {
-      "version": "^0.5.1",
+      "version": "^0.6.1",
       "id": "tracks",
-      "downloadIfMissing": "https://github.com/StackDoubleFlow/Tracks/releases/download/v0.5.1/tracks.qmod"
+      "downloadIfMissing": "https://github.com/StackDoubleFlow/Tracks/releases/download/v0.6.1/tracks.qmod"
     },
     {
-      "version": "^0.16.0",
-      "id": "custom-json-data",
-      "downloadIfMissing": "https://github.com/StackDoubleFlow/CustomJSONData/releases/download/v0.16.0/custom-json-data.qmod"
+      "version": "^1.0.5",
+      "id": "paper",
+      "downloadIfMissing": "https://github.com/Fernthedev/paperlog/releases/download/v1.2.8/paperlog.qmod"
     }
   ],
   "modFiles": [
     "libchroma.so"
   ],
   "libraryFiles": [
-    "libbeatsaber-hook_3_6_8.so"
+    "libcustom-json-data.so",
+    "libbeatsaber-hook_3_10_0.so"
   ],
   "fileCopies": [],
   "copyExtensions": []

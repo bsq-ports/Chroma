@@ -1,19 +1,13 @@
 #pragma once
 
-#include "custom-types/shared/coroutine.hpp"
-#include "GlobalNamespace/BeatmapObjectSpawnController.hpp"
-#include "GlobalNamespace/BeatmapCallbacksController.hpp"
-
-#include "custom-types/shared/types.hpp"
-#include "custom-types/shared/macros.hpp"
-
-#include "System/Collections/Generic/IEnumerator_1.hpp"
-
-#include "UnityEngine/WaitForEndOfFrame.hpp"
-#include "UnityEngine/SceneManagement/Scene.hpp"
-
-#include "main.hpp"
+#include "ChromaConfig.hpp"
 #include "utils/XoshiroCpp.hpp"
+
+#include "custom-types/shared/coroutine.hpp"
+#include "beatsaber-hook/shared/config/rapidjson-utils.hpp"
+
+#include "GlobalNamespace/BeatmapObjectSpawnController.hpp"
+#include "UnityEngine/SceneManagement/Scene.hpp"
 
 #include <random>
 
