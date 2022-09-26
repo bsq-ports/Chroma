@@ -10,7 +10,7 @@
 #include "environment_enhancements/LegacyEnvironmentRemoval.hpp"
 #include "environment_enhancements/ComponentInitializer.hpp"
 #include "environment_enhancements/ParametricBoxControllerParameters.hpp"
-#include "environment_enhancements/GameObjectTrackController.hpp"
+#include "tracks/shared/Animation/GameObjectTrackController.hpp"
 
 #include <sstream>
 #include <concepts>
@@ -25,6 +25,7 @@
 using namespace Chroma;
 using namespace ChromaUtils;
 using namespace UnityEngine::SceneManagement;
+using namespace Tracks;
 
 using ChromaRegex = boost::regex;
 
@@ -508,49 +509,66 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                     auto const& scale = spawnData.scale;
 
                     // Handle TrackLaneRing
-                    auto trackLaneRing = gameObject->GetComponent<GlobalNamespace::TrackLaneRing *>();
+                    auto trackLaneRing = gameObject->GetComponentInChildren<GlobalNamespace::TrackLaneRing *>();
                     if (trackLaneRing != nullptr) {
                         if (position || localPosition) {
-                            trackLaneRing->positionOffset = transform->get_localPosition();
+                            trackLaneRing->positionOffset = trackLaneRing->get_transform()->get_localPosition();
                             trackLaneRing->posZ = 0;
                         }
 
                         if (rotation || localRotation) {
-                            RingRotationOffsets[trackLaneRing] = transform->get_localRotation();
+                            RingRotationOffsets[trackLaneRing] = trackLaneRing->get_transform()->get_localRotation();
                             trackLaneRing->rotZ = 0;
                         }
                     }
 
                     // Handle ParametricBoxController
-                    auto parametricBoxController = gameObject->GetComponent<GlobalNamespace::ParametricBoxController*>();
+                    auto parametricBoxController = gameObject->GetComponentInChildren<GlobalNamespace::ParametricBoxController*>();
                     if (parametricBoxController != nullptr)
                     {
                         if (position || localPosition)
                         {
-                            ParametricBoxControllerParameters::SetTransformPosition(parametricBoxController, transform->get_localPosition());
+                            ParametricBoxControllerParameters::SetTransformPosition(parametricBoxController, parametricBoxController->get_transform()->get_localPosition());
                         }
 
                         if (scale)
                         {
-                            ParametricBoxControllerParameters::SetTransformScale(parametricBoxController, transform->get_localScale());
+                            ParametricBoxControllerParameters::SetTransformScale(parametricBoxController, parametricBoxController->get_transform()->get_localScale());
                         }
                     }
 
-                    auto* beatmapObjectsAvoidance = gameObject->GetComponent<GlobalNamespace::BeatmapObjectsAvoidance*>();
+                    auto* beatmapObjectsAvoidance = gameObject->GetComponentInChildren<GlobalNamespace::BeatmapObjectsAvoidance*>();
 
                     if (beatmapObjectsAvoidance) {
                         if (position || localPosition) {
-                            AvoidancePosition[beatmapObjectsAvoidance] = transform->get_localPosition();
+                            AvoidancePosition[beatmapObjectsAvoidance] = beatmapObjectsAvoidance->get_transform()->get_localPosition();
                         }
 
                         if (rotation || localRotation) {
-                            AvoidanceRotation[beatmapObjectsAvoidance] = transform->get_localRotation();
+                            AvoidanceRotation[beatmapObjectsAvoidance] = beatmapObjectsAvoidance->get_transform()->get_localRotation();
                         }
                      }
 
                     ComponentInitializer::InitializeLights(gameObject, gameObjectDataVal, v2);
 
-                    GameObjectTrackController::HandleTrackData(gameObject, track, noteLinesDistance, trackLaneRing, parametricBoxController, beatmapObjectsAvoidance, v2);
+                    auto controller = GameObjectTrackController::HandleTrackData(gameObject, track, noteLinesDistance, v2).value_or(nullptr);
+
+                    if (controller) {
+                        auto& controllerData = controller->getTrackControllerData();
+
+                        if (trackLaneRing) {
+                            controllerData.RotationUpdate += [=]() { RingRotationOffsets[trackLaneRing] = trackLaneRing->transform->get_localRotation(); };
+                            controllerData.PositionUpdate += [=]() { trackLaneRing->positionOffset = trackLaneRing->transform->get_localPosition(); };
+                        } else if (parametricBoxController) {
+                            auto parametricBoxControllerTransform = parametricBoxController->get_transform();
+                            controllerData.ScaleUpdate += [=]() { ParametricBoxControllerParameters::SetTransformScale(parametricBoxController, parametricBoxControllerTransform->get_localScale()); };
+                            controllerData.PositionUpdate += [=]() { ParametricBoxControllerParameters::SetTransformPosition(parametricBoxController, parametricBoxControllerTransform->get_localPosition()); };
+                        } else if (beatmapObjectsAvoidance) {
+                            controllerData.RotationUpdate += [=]() { AvoidanceRotation[beatmapObjectsAvoidance] = beatmapObjectsAvoidance->transform->get_localRotation(); };
+                            controllerData.PositionUpdate += [=]() { AvoidancePosition[beatmapObjectsAvoidance] = beatmapObjectsAvoidance->transform->get_localPosition(); };
+                        }
+
+                    }
                 }
 
 

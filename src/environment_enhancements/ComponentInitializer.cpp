@@ -39,8 +39,6 @@
 #include <functional>
 
 #include "beatsaber-hook/shared/utils/typedefs-disposal.hpp"
-#include "environment_enhancements/GameObjectTrackController.hpp"
-
 
 using namespace GlobalNamespace;
 using namespace Chroma;
