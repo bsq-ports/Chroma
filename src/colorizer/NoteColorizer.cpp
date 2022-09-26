@@ -118,7 +118,7 @@ void NoteColorizer::ColorizeSaber(GlobalNamespace::NoteController *noteControlle
 void NoteColorizer::Refresh() {
     if (!_colorNoteVisuals->get_enabled()) return;
 
-    Sombrero::FastColor const& color = getColor();
+    Sombrero::FastColor const& color = getColor().Alpha(_colorNoteVisuals->noteColor.a);
     if (color == Sombrero::FastColor(_colorNoteVisuals->noteColor))
     {
         return;
