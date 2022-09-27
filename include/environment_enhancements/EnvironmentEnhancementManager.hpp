@@ -113,7 +113,7 @@ namespace Chroma {
         inline static std::unordered_map<GlobalNamespace::BeatmapObjectsAvoidance*, Sombrero::FastVector3> AvoidancePosition;
         inline static std::unordered_map<GlobalNamespace::BeatmapObjectsAvoidance*, Sombrero::FastQuaternion> AvoidanceRotation;
 
-        static void Init(CustomJSONData::CustomBeatmapData* customBeatmapData, float noteLinesDistance);
+        static void Init(CustomJSONData::CustomBeatmapData *customBeatmapData);
 
 
     };

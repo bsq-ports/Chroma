@@ -166,13 +166,13 @@ public:
             }
         }
 
-        Apply(transform, leftHanded, scale, position, rotation, localPosition, localRotation, v2);
+        Apply(transform, leftHanded, scale, position, rotation, localPosition, localRotation);
     }
 
 
-    inline void Apply(UnityEngine::Transform* transform, bool leftHanded, bool v2) const
+    inline void Apply(UnityEngine::Transform* transform, bool leftHanded) const
     {
-        Apply(transform, leftHanded, scale, position, rotation, localPosition, localRotation, v2);
+        Apply(transform, leftHanded, scale, position, rotation, localPosition, localRotation);
     }
 
 private:
@@ -183,8 +183,7 @@ private:
             std::optional<Sombrero::FastVector3> position,
             std::optional<Sombrero::FastVector3> rotation,
             std::optional<Sombrero::FastVector3> localPosition,
-            std::optional<Sombrero::FastVector3> localRotation,
-            bool v2
+            std::optional<Sombrero::FastVector3> localRotation
             )
     {
         // TODO: Mirror
@@ -298,7 +297,8 @@ void EnvironmentEnhancementManager::GetAllGameObjects() {
 }
 
 void
-EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBeatmapData, float noteLinesDistance) {
+EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBeatmapData) {
+    float noteLinesDistance = 0.6f;
     getLogger().debug("Custom beat map %p", customBeatmapData);
     getLogger().debug("Custom beat map custom data %p", customBeatmapData->customData);
     auto customDynWrapper = customBeatmapData->customData->value;
