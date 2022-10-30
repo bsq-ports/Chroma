@@ -115,8 +115,9 @@ bool SceneTransitionHelper::BasicPatch(GlobalNamespace::IDifficultyBeatmap* cust
 
             getLogger().debug("Level custom data value: %s", dynData ? "true" : "false");
 
-            if (dynData) {
+            if (dynData && dynData->get().IsObject()) {
                 ValueUTF16 const &rapidjsonData = *dynData;
+
 
                 // Copy this since it gets freed later on.
                 DocumentUTF16 doc;
