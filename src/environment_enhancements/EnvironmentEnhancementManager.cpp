@@ -156,13 +156,13 @@ public:
             // ReSharper disable once UseNullPropagation
             if (position)
             {
-                position = position.value() * noteLinesDistance;
+                *position *= noteLinesDistance;
             }
 
             // ReSharper disable once UseNullPropagation
             if (localPosition)
             {
-                localPosition = localPosition.value() * noteLinesDistance;
+                *localPosition *=  noteLinesDistance;
             }
         }
 
@@ -303,10 +303,10 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
     getLogger().debug("Custom beat map custom data %p", customBeatmapData->customData);
     auto customDynWrapper = customBeatmapData->customData->value;
     bool v2 = customBeatmapData->v2orEarlier;
+    CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Is environment v2 {}", v2);
     TracksAD::BeatmapAssociatedData& trackBeatmapAD = TracksAD::getBeatmapAD(customBeatmapData->customData);
     GameObjectTrackController::LeftHanded = trackBeatmapAD.leftHanded;
     bool leftHanded = trackBeatmapAD.leftHanded;
-    GameObjectTrackController::ClearData();
 
     AvoidanceRotation.clear();
     AvoidancePosition.clear();
@@ -415,20 +415,20 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                 // Create track if objects are found
                 auto trackNameIt = gameObjectDataVal.FindMember(v2 ? Chroma::NewConstants::V2_TRACK.data() : Chroma::NewConstants::TRACK.data());
 
-                std::optional<std::string> trackName;
+                std::optional<std::string_view> trackName;
                 std::vector<Track*> track;
 
                 if (trackNameIt != gameObjectDataVal.MemberEnd()) {
                     auto const& trackJSON = trackNameIt->value;
                     if (trackJSON.IsString()) {
                         trackName = trackJSON.GetString();
-                        std::string val = *trackName;
-                        track = {&(trackBeatmapAD.tracks.try_emplace(val, v2).first->second)};
+                        std::string_view val = *trackName;
+                        track = {trackBeatmapAD.getTrack(val)};
                     } else if (trackJSON.IsArray()) {
                         for (auto const& trackJSONItem : trackJSON.GetArray()) {
                             trackName = trackJSON.GetString();
-                            std::string val = *trackName;
-                            track.emplace_back(&(trackBeatmapAD.tracks.try_emplace(val, v2).first->second));
+                            std::string_view val = *trackName;
+                            track.emplace_back(trackBeatmapAD.getTrack(val));
                         }
                     }
                 }
@@ -581,7 +581,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
             auto finish = std::chrono::high_resolution_clock::now();
             auto millisElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(finish - startAll).count();
 
-            std::thread([profileData = move(profileData), millisElapsed]{
+            std::thread([profileData = std::move(profileData), millisElapsed]{
                 // Log all objects
                 for (auto const& profile : profileData) {
                     profile.printMarks();

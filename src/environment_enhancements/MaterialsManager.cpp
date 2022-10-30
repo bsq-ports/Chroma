@@ -8,15 +8,18 @@ using namespace Chroma;
 using namespace UnityEngine;
 
 ShaderType shaderTypeFromString(std::string_view str) {
-    if (str == "Standard") {
-        return ShaderType::Standard;
-    }
-    if (str == "OpaqueLight") {
-        return ShaderType::OpaqueLight;
-    }
-    if (str == "TransparentLight") {
-        return ShaderType::TransparentLight;
-    }
+#define READ_ENUM(m) \
+    if (str == #m) return ShaderType::m; \
+
+    READ_ENUM(Standard)
+    READ_ENUM(OpaqueLight)
+    READ_ENUM(TransparentLight)
+    READ_ENUM(BaseWater)
+    READ_ENUM(BillieWater)
+    READ_ENUM(BTSPillar)
+    READ_ENUM(InterscopeConcrete)
+    READ_ENUM(InterscopeCar)
+    READ_ENUM(WaterfallMirror)
 
     getLogger().error("Unknown shader type %s", str.data());
     return Chroma::ShaderType::Standard;
@@ -127,7 +130,7 @@ MaterialInfo Chroma::MaterialsManager::CreateMaterialInfo(rapidjson::Value const
 
     std::optional<std::vector<Track*>> tracks;
 
-    auto tracksIt = data.FindMember(NewConstants::TRACK.data());
+    auto tracksIt = data.FindMember(v2 ? NewConstants::V2_TRACK.data() : NewConstants::TRACK.data());
     if (tracksIt != data.MemberEnd()) {
         auto size = tracksIt->value.IsString() ? 1 : tracksIt->value.Size();
         tracks.emplace().reserve(size);
@@ -166,7 +169,7 @@ std::optional<MaterialInfo> Chroma::MaterialsManager::GetMaterial(rapidjson::Val
 
         data.Accept(writer);
 
-        auto jsonStr = data.GetString();
+        auto jsonStr = s.GetString();
         auto it = materialsJSON.find(jsonStr);
         if (it != materialsJSON.end()) {
             return it->second;
@@ -214,4 +217,12 @@ UnityEngine::Material *MaterialsManager::GetMaterialTemplate(ShaderType shaderTy
 
 decltype(MaterialsManager::materials) const &MaterialsManager::GetMaterials() const {
     return materials;
+}
+
+void MaterialsManager::Reset() {
+    for (auto& m : createdMaterials) {
+        if (!m || !m.isAlive()) continue;
+        UnityEngine::Object::Destroy(const_cast<UnityEngine::Material *>(m.ptr()));
+    }
+    createdMaterials.clear();
 }
