@@ -2,6 +2,7 @@
 
 #include <unordered_map>
 #include "colorizer/SliderColorizer.hpp"
+#include "colorizer/NoteColorizer.hpp"
 #include "ChromaController.hpp"
 #include "utils/ChromaUtils.hpp"
 #include "ChromaObjectData.hpp"
@@ -60,7 +61,7 @@ GlobalNamespace::ColorType SliderColorizer::getColorType() {
 }
 
 std::optional<Sombrero::FastColor> SliderColorizer::GlobalColorGetter() {
-    return GlobalColor[(int) getColorType()];
+    return NoteColorizer::GlobalColor[(int) getColorType()];
 }
 
 std::optional<Sombrero::FastColor> SliderColorizer::OriginalColorGetter() {

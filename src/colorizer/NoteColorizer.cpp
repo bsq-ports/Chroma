@@ -11,6 +11,7 @@
 
 #include <unordered_map>
 #include "colorizer/NoteColorizer.hpp"
+#include "colorizer/SliderColorizer.hpp"
 #include "colorizer/SaberColorizer.hpp"
 #include "ChromaController.hpp"
 #include "utils/ChromaUtils.hpp"
@@ -92,6 +93,9 @@ void NoteColorizer::GlobalColorize(std::optional<Sombrero::FastColor> const& col
     GlobalColor[(int)colorType] = color;
     for (auto& [_, colorizer] : Colorizers)
     {
+        colorizer.Refresh();
+    }
+    for (auto& [_, colorizer] : SliderColorizer::Colorizers) {
         colorizer.Refresh();
     }
 }
