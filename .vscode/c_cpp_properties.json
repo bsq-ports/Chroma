@@ -1,23 +1,25 @@
 {
   "configurations": [
     {
-      "defines": [
-        "VERSION=\"0.1.0\"",
-        "__GNUC__",
-        "__aarch64__",
-      ],
+      "defines": ["__GNUC__", "__aarch64__", "USE_CODEGEN_FIELDS"],
       "includePath": [
-        "${workspaceFolder}/**",
-        "${workspaceFolder}/shared",
+        "${workspaceFolder}/extern/includes/libil2cpp/il2cpp/libil2cpp",
+        "${workspaceFolder}/extern/includes",
+        "${workspaceFolder}/extern/includes/codegen",
         "${workspaceFolder}/include",
-        "${workspaceFolder}/extern/**",
-        "${workspaceFolder}/extern/libil2cpp/il2cpp/libil2cpp",
-        "C:\\Users\\user\\AppData\\Local\\Android\\Sdk\\ndk\\22.0.7026061\\**"
+        "${workspaceFolder}/shared",
+        "${workspaceFolder}",
+        "${workspaceFolder}/**",
+        "${env:ANDROID_NDK_HOME}/sources/**",
+        "${default}",
+        "${env:ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/aarch64-linux-android",
+        "${env:ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include"
       ],
       "name": "Quest",
       "cStandard": "c11",
       "cppStandard": "c++20",
-      "intelliSenseMode": "clang-x64"
+      "intelliSenseMode": "linux-clang-arm64",
+      "compileCommands": "${workspaceFolder}/build/compile_commands.json"
     }
   ],
   "version": 4
