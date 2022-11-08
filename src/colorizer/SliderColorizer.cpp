@@ -69,8 +69,6 @@ std::optional<Sombrero::FastColor> SliderColorizer::OriginalColorGetter() {
 }
 
 void SliderColorizer::Reset() {
-    GlobalColor[0] = std::nullopt;
-    GlobalColor[1] = std::nullopt;
     Colorizers.clear();
     SliderColorChanged.clear();
 }

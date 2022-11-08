@@ -30,7 +30,7 @@ MAKE_HOOK_MATCH(SliderController_Update, &SliderController::ManualUpdate, void,
   }
 
   auto chromaData =
-      ChromaObjectDataManager::ChromaObjectDatas.find(self->noteData);
+      ChromaObjectDataManager::ChromaObjectDatas.find(self->sliderData);
   if (chromaData != ChromaObjectDataManager::ChromaObjectDatas.end()) {
     auto const &tracks = chromaData->second.Tracks;
     auto pathPointDefinition = chromaData->second.LocalPathColor;
