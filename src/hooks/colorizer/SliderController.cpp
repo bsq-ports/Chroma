@@ -39,8 +39,7 @@ MAKE_HOOK_MATCH(SliderController_Init, &SliderController::Init, void,
     return;
   }
 
-  auto chromaData =
-      ChromaObjectDataManager::ChromaObjectDatas.find(self->noteData);
+  auto chromaData = ChromaObjectDataManager::ChromaObjectDatas.find(self->sliderData);
   if (chromaData != ChromaObjectDataManager::ChromaObjectDatas.end()) {
     auto const &color = chromaData->second.Color;
 
