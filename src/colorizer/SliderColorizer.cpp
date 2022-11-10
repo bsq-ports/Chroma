@@ -27,29 +27,6 @@ SliderColorizer* SliderColorizer::New(GlobalNamespace::SliderController *sliderC
     return &Colorizers.try_emplace(sliderControllerBase, sliderControllerBase).first->second;
 }
 
-std::array<Sombrero::FastColor, 2> SliderColorizer::getOriginalColors() {
-    if (!_originalColors) {
-        ColorManager *colorManager = _sliderController->colorManager;
-        if (colorManager) {
-            _originalColors =
-                    {
-                            colorManager->ColorForType(ColorType::ColorA),
-                            colorManager->ColorForType(ColorType::ColorB),
-                    };
-        } else {
-            getLogger().warning("_colorManager was null, defaulting to red/blue");
-            _originalColors =
-                    {
-                            Sombrero::FastColor(0.784f, 0.078f, 0.078f),
-                            Sombrero::FastColor(0, 0.463f, 0.823f),
-                    };
-        }
-    }
-
-
-    return *_originalColors;
-}
-
 GlobalNamespace::ColorType SliderColorizer::getColorType() {
     if (_sliderController && _sliderController->sliderData) {
         auto sliderData = _sliderController->sliderData;
@@ -65,7 +42,7 @@ std::optional<Sombrero::FastColor> SliderColorizer::GlobalColorGetter() {
 }
 
 std::optional<Sombrero::FastColor> SliderColorizer::OriginalColorGetter() {
-    return getOriginalColors()[(int) getColorType()];
+    return _sliderController->colorManager->ColorForType(getColorType());
 }
 
 void SliderColorizer::Reset() {

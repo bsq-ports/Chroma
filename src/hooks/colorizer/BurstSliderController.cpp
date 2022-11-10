@@ -26,6 +26,32 @@ using namespace Chroma;
 using namespace ChromaUtils;
 
 MAKE_HOOK_MATCH(
+        BurstSliderGameNoteController_Awake, &BurstSliderGameNoteController::Awake,
+        void, BurstSliderGameNoteController *self) {
+    BurstSliderGameNoteController_Awake(self);
+
+    if (!ChromaController::DoChromaHooks() ||
+        !ChromaController::DoColorizerSabers()) {
+        return;
+    }
+
+    NoteColorizer::New(self);
+}
+
+MAKE_HOOK_MATCH(
+        BurstSliderGameNoteController_OnDestroy, &BurstSliderGameNoteController::OnDestroy,
+        void, BurstSliderGameNoteController *self) {
+    BurstSliderGameNoteController_OnDestroy(self);
+
+    if (!ChromaController::DoChromaHooks() ||
+        !ChromaController::DoColorizerSabers()) {
+        return;
+    }
+
+    NoteColorizer::Colorizers.erase(self);
+}
+
+MAKE_HOOK_MATCH(
     BurstSliderGameNoteController_Init, &BurstSliderGameNoteController::Init,
     void, BurstSliderGameNoteController *self,
     ::GlobalNamespace::NoteData *noteData, float worldRotation,
@@ -56,6 +82,8 @@ MAKE_HOOK_MATCH(
 }
 void BurstSliderControllerHook(Logger &logger) {
   INSTALL_HOOK(getLogger(), BurstSliderGameNoteController_Init);
+  INSTALL_HOOK(getLogger(), BurstSliderGameNoteController_Awake);
+  INSTALL_HOOK(getLogger(), BurstSliderGameNoteController_OnDestroy);
 }
 
 ChromaInstallHooks(BurstSliderControllerHook)

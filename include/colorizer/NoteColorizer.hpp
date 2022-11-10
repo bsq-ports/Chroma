@@ -37,7 +37,6 @@ namespace Chroma {
 
         GlobalNamespace::ColorNoteVisuals* _colorNoteVisuals;
         ArrayW<GlobalNamespace::MaterialPropertyBlockController*> _materialPropertyBlockControllers;
-        std::optional<std::array<Sombrero::FastColor, 2>> _originalColors;
 
         NoteColorizer(GlobalNamespace::NoteControllerBase* noteController);
 
@@ -55,7 +54,6 @@ namespace Chroma {
         inline static UnorderedEventCallback<GlobalNamespace::NoteControllerBase*, Sombrero::FastColor const&, GlobalNamespace::ColorType> NoteColorChanged;
         inline static std::unordered_map<GlobalNamespace::NoteControllerBase const*, NoteColorizer> Colorizers;
         inline static std::array<std::optional<Sombrero::FastColor>, 2> GlobalColor = {std::nullopt, std::nullopt};
-        std::array<Sombrero::FastColor, 2> getOriginalColors();
         GlobalNamespace::ColorType getColorType();
 
         friend class std::pair<GlobalNamespace::NoteControllerBase const*, NoteColorizer>;

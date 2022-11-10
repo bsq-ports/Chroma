@@ -20,6 +20,7 @@ void Chroma::ChromaObjectDataManager::deserialize(CustomJSONData::CustomBeatmapD
 
     auto beatmapDataCast = beatmapData;
     auto notes = beatmapDataCast->GetBeatmapItemsCpp<NoteData *>();
+    auto sliders = beatmapDataCast->GetBeatmapItemsCpp<SliderData *>();
     auto obstacles = beatmapDataCast->GetBeatmapItemsCpp<ObstacleData *>();
     bool v2 = beatmapDataCast->v2orEarlier;
 
@@ -116,4 +117,5 @@ void Chroma::ChromaObjectDataManager::deserialize(CustomJSONData::CustomBeatmapD
 
     doForObjects(notes);
     doForObjects(obstacles);
+    doForObjects(sliders);
 }

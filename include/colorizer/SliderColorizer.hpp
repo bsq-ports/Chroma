@@ -26,7 +26,6 @@ namespace Chroma {
         friend class NoteColorizer;
 
         GlobalNamespace::SliderController* _sliderController;
-        std::optional<std::array<Sombrero::FastColor, 2>> _originalColors;
 
         SliderColorizer(GlobalNamespace::SliderController* sliderController);
 
@@ -43,7 +42,6 @@ namespace Chroma {
         inline static bool SliderColorable = false;
         inline static UnorderedEventCallback<GlobalNamespace::SliderController*, Sombrero::FastColor const&, GlobalNamespace::ColorType> SliderColorChanged;
         inline static std::unordered_map<GlobalNamespace::SliderController const*, SliderColorizer> Colorizers;
-        std::array<Sombrero::FastColor, 2> getOriginalColors();
         GlobalNamespace::ColorType getColorType();
 
         friend class std::pair<GlobalNamespace::SliderController const*, SliderColorizer>;
