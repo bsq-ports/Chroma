@@ -92,36 +92,6 @@ struct ChromaUtilities {
         return -1;
     }
 
-    template<typename T>
-    static T getIfExists(rapidjson::Value const& val, std::string_view member, T const& def) {
-        if (!val.IsObject() || val.Empty() || val.IsNull()) return def;
-
-        auto it = val.FindMember(member.data());
-        if (it == val.MemberEnd()) return def;
-
-        if (it->value.IsNull())
-            return def;
-
-        if (it->value.IsString()) {
-            if constexpr (std::is_same_v<T, bool>) {
-                return std::string(it->value.GetString()) == "true";
-            }
-
-            if constexpr (std::is_same_v<T, float>) {
-                return std::stof(it->value.GetString());
-            }
-
-            if constexpr (std::is_same_v<T, int> || std::is_enum_v<T>) {
-                return std::stoi(it->value.GetString());
-            }
-        }
-
-        if constexpr (std::is_same_v<T, std::string> || std::is_same_v<T, std::string_view> || std::is_same_v<T, char const*>) {
-            return it->value.GetString();
-        } else {
-            return it->value.template Get<T>();
-        }
-    }
 
     template<typename T>
     static std::optional<T> getIfExists(rapidjson::Value const& val, std::string_view member) {
@@ -151,9 +121,19 @@ struct ChromaUtilities {
 
         if constexpr (std::is_same_v<T, std::string> || std::is_same_v<T, std::string_view> || std::is_same_v<T, char const*>) {
             return it->value.GetString();
+        } else if constexpr (std::is_same_v<T, rapidjson::Value> || std::is_same_v<T, rapidjson::Value::Object> || std::is_same_v<T, rapidjson::Value::ConstObject>) {
+            return it->value.GetObject();
         } else {
             return it->value.template Get<T>();
         }
+    }
+
+    template<typename T>
+    static T getIfExists(rapidjson::Value const& val, std::string_view member, T const& def) {
+        auto opt = getIfExists<T>(val, member);
+        if (!opt) return def;
+
+        return *opt;
     }
 
     template<typename T>

@@ -549,7 +549,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                         }
                      }
 
-                    ComponentInitializer::InitializeLights(gameObject, gameObjectDataVal, v2);
+                    ComponentInitializer::InitializeCustomComponents(gameObject, gameObjectDataVal, v2);
 
                     auto controller = GameObjectTrackController::HandleTrackData(gameObject, track, noteLinesDistance, v2).value_or(nullptr);
 

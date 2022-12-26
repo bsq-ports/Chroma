@@ -126,6 +126,13 @@ namespace Chroma {
         inline static constexpr const std::string_view OFFSET = "offset";
         inline static constexpr const std::string_view HEIGHT_FOG_STARTY = "startY";
         inline static constexpr const std::string_view HEIGHT_FOG_HEIGHT = "height";
+
+
+        inline static constexpr const std::string_view LIGHT_WITH_ID = "ILightWithId";
+        inline static constexpr const std::string_view BLOOM_FOG_ENVIRONMENT = "BloomFogEnvironment";
+        inline static constexpr const std::string_view TUBE_BLOOM_PRE_PASS_LIGHT = "TubeBloomPrePassLight";
+        inline static constexpr const std::string_view COLOR_ALPHA_MULTIPLIER = "colorAlphaMultiplier";
+        inline static constexpr const std::string_view BLOOM_FOG_INTENSITY_MULTIPLIER = "bloomFogIntensityMultiplier";
     }
 
     namespace OldConstants {

@@ -196,6 +196,8 @@ UnityEngine::Material *MaterialsManager::GetMaterialTemplate(ShaderType shaderTy
     static SafePtrUnity<Material> _baseWaterMaterial;
     if(!_baseWaterMaterial) _baseWaterMaterial = InstantiateSharedMaterial(ShaderType::BaseWater);
 
+    CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Material templates {} {} {} {}", _standardMaterial.isAlive(), _opaqueLightMaterial.isAlive(), _transparentLightMaterial.isAlive(), _baseWaterMaterial.isAlive());
+
     Material *originalMaterial;
     switch (shaderType) {
         default:
