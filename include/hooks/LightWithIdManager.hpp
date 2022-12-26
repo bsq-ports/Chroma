@@ -37,7 +37,7 @@ namespace Chroma {
         static void ForceUnregister(GlobalNamespace::ILightWithId* lightWithId)
         {
             int lightId = lightWithId->get_lightId();
-            auto lights = VList(lightWithIdManager->lights[lightId]);
+            auto lights = VList(lightWithIdManager->lights.get(lightId));
             int index = -1;
 
             for (auto i = 0; i < lights.size(); i++) {

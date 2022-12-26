@@ -37,14 +37,16 @@ MAKE_HOOK_MATCH(LightWithIdManager_RegisterLight, &LightWithIdManager::RegisterL
         return;
     }
 
-    auto& lights = self->lights[lightId];
+    // [] does not bound check, use get()
+    auto& lights = self->lights.get(lightId);
     if (lights == nullptr) {
         lights = System::Collections::Generic::List_1<::GlobalNamespace::ILightWithId*>::New_ctor(10);
     }
 
     lightWithId->__SetIsRegistered();
 
-    if (lights->Contains(lightWithId)) {
+    auto lightWithIdIt = std::find(lights->items.begin(), lights->items.end(), lightWithId);
+    if (lightWithIdIt != lights->items.end()) {
         return;
     }
 
@@ -113,7 +115,7 @@ MAKE_HOOK_MATCH(LightWithIdManager_SetColorForId, &LightWithIdManager::SetColorF
 
     self->colors[lightId] = {color, true};
     self->didChangeSomeColorsThisFrame = true;
-    auto list = VList(self->lights[lightId]);
+    auto list = VList(self->lights.get(lightId));
     if (list == nullptr)
     {
         return;

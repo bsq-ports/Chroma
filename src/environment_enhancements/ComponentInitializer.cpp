@@ -4,6 +4,7 @@
 #include "colorizer/LightColorizer.hpp"
 #include "hooks/TrackLaneRingsManager.hpp"
 #include "lighting/ChromaRingsRotationEffect.hpp"
+#include "lighting/ChromaFogController.hpp"
 
 #include "GlobalNamespace/LightWithIdMonoBehaviour.hpp"
 #include "GlobalNamespace/LightWithIds.hpp"
@@ -296,29 +297,27 @@ ComponentInitializer::PostfillComponentsData(UnityEngine::Transform *root, Unity
     }
 }
 
-static void InitializeTubeBloomPrePassLightFogs(rapidjson::Value const &data, std::span<UnityEngine::Component*> comps, bool v2) {
-    if (v2) return;
-    auto const &tubeBloomPrePassLightJSON = ChromaUtils::getIfExists<rapidjson::Value::ConstObject>(data,
+static void InitializeTubeBloomPrePassLights(rapidjson::Value const &data, std::span<UnityEngine::Component *> comps) {
+    auto tubeBloomPrePassLightJSON = ChromaUtils::getIfExists<rapidjson::Value::ConstObject>(data,
                                                                                                     Chroma::NewConstants::TUBE_BLOOM_PRE_PASS_LIGHT);
-
-    auto SetColorAlphaMultiplier = [](TubeBloomPrePassLight* tubeBloomPrePassLight, float value)
-    {
-        tubeBloomPrePassLight->colorAlphaMultiplier = value;
-        tubeBloomPrePassLight->MarkDirty();
-    };
-
     if (!tubeBloomPrePassLightJSON) return;
 
-    auto tubeBloomPrePassLights = comps | Where([](auto const &c) {
-        return il2cpp_utils::AssignableFrom<TubeBloomPrePassLight *>(c->klass);
-    }) | Select([](auto const &c) {
-        return reinterpret_cast<TubeBloomPrePassLight *>(c);
-    });
+
 
     auto colorAlphaMultiplier = ChromaUtils::getIfExists<float>(*tubeBloomPrePassLightJSON, Chroma::NewConstants::COLOR_ALPHA_MULTIPLIER);
     auto bloomFogIntensityMultiplier = ChromaUtils::getIfExists<float>(*tubeBloomPrePassLightJSON, Chroma::NewConstants::BLOOM_FOG_INTENSITY_MULTIPLIER);
 
-    for (auto const& tubeBloomPrePassLight : tubeBloomPrePassLights) {
+    auto SetColorAlphaMultiplier = [](TubeBloomPrePassLight* tubeBloomPrePassLight, float value)
+    constexpr {
+        tubeBloomPrePassLight->colorAlphaMultiplier = value;
+        tubeBloomPrePassLight->MarkDirty();
+    };
+
+    for (auto const& comp : comps) {
+        auto tubeCast = il2cpp_utils::try_cast<TubeBloomPrePassLight>(comp);
+        if (!tubeCast) continue;
+        auto tubeBloomPrePassLight = *tubeCast;
+
         if (colorAlphaMultiplier) {
             SetColorAlphaMultiplier(tubeBloomPrePassLight, *colorAlphaMultiplier);
         }
@@ -328,18 +327,10 @@ static void InitializeTubeBloomPrePassLightFogs(rapidjson::Value const &data, st
     }
 }
 
-static void InitializeFog(rapidjson::Value const &data, std::span<UnityEngine::Component*> comps, bool v2) {
-    if (v2) return;
-    auto const& bloomJSON = ChromaUtils::getIfExists<rapidjson::Value::ConstObject>(data, Chroma::NewConstants::BLOOM_FOG_ENVIRONMENT);
+static void InitializeFog(rapidjson::Value const &data, std::span<UnityEngine::Component *> comps) {
+    auto bloomJSON = ChromaUtils::getIfExists<rapidjson::Value::ConstObject>(data, Chroma::NewConstants::BLOOM_FOG_ENVIRONMENT);
 
     if (!bloomJSON) return;
-
-    auto fogs = comps | Where([](auto const& c) {
-        return il2cpp_utils::AssignableFrom<BloomFogEnvironment*>(c->klass);
-    }) | Select([](auto const& c) {
-        return reinterpret_cast<BloomFogEnvironment*>(c);
-    });
-
 
 
     auto attenuation = ChromaUtils::getIfExists<float>(*bloomJSON, Chroma::NewConstants::ATTENUATION);
@@ -347,10 +338,15 @@ static void InitializeFog(rapidjson::Value const &data, std::span<UnityEngine::C
     auto startY = ChromaUtils::getIfExists<float>(*bloomJSON, Chroma::NewConstants::HEIGHT_FOG_STARTY);
     auto height = ChromaUtils::getIfExists<float>(*bloomJSON, Chroma::NewConstants::HEIGHT_FOG_HEIGHT);
 
-    for (auto fog : fogs) {
+    for (auto comp : comps) {
+        auto fogCast = il2cpp_utils::try_cast<BloomFogEnvironment>(comp);
+        if (!fogCast) continue;
+
+        auto fog = *fogCast;
+
         auto params = fog->fogParams;
         if (attenuation) {
-            params->attenuation = *attenuation;
+            params->attenuation = Chroma::fogAttenuationFix(*attenuation);
         }
         if (offset) {
             params->offset = *offset;
@@ -365,7 +361,7 @@ static void InitializeFog(rapidjson::Value const &data, std::span<UnityEngine::C
 }
 
 static void InitializeLights(rapidjson::Value const &data, std::span<UnityEngine::Component*> comps, bool v2) {
-    auto const& lightDataJSON = ChromaUtils::getIfExists<rapidjson::Value::ConstObject>(data, Chroma::NewConstants::LIGHT_WITH_ID);
+    auto lightDataJSON = ChromaUtils::getIfExists<rapidjson::Value::ConstObject>(data, Chroma::NewConstants::LIGHT_WITH_ID);
     if (!v2 && !lightDataJSON) return;
 
     /// JSON
@@ -385,59 +381,51 @@ static void InitializeLights(rapidjson::Value const &data, std::span<UnityEngine
     /// GRAB ALL LIGHT IDS
     std::vector<ILightWithId*> lightWithIds;
 
-    auto someLightWithIds = comps | Where([](auto const& c) {
-        return il2cpp_utils::AssignableFrom<LightWithIds*>(c->klass);
-    }) | Select([](auto const& c) {
-        return reinterpret_cast<LightWithIds*>(c);
-    });
+    for (auto const& comp : comps) {
+        if (!comp) continue;
 
-    for (auto const& n : someLightWithIds) {
-        if (!n->lightWithIds) continue;
+        if (auto castedLights = il2cpp_utils::try_cast<LightWithIds>(comp)) {
+            if (!castedLights.value()->lightWithIds) continue;
 
-        auto enumerator = n->lightWithIds->GetEnumerator();
+            auto enumerator = castedLights.value()->lightWithIds->GetEnumerator();
 
-        // MEMORY LEAK YAY
-        // TODO: Fix
-        //        auto dispose = bs_hook::Disposable(enumerator->i_IDisposable());
+            // MEMORY LEAK YAY
+            // TODO: Fix
+            //        auto dispose = bs_hook::Disposable(enumerator->i_IDisposable());
 
-        while (enumerator->i_IEnumerator()->MoveNext()) {
-            auto e = enumerator->get_Current();
-            lightWithIds.emplace_back(e->i_ILightWithId());
+            while (enumerator->i_IEnumerator()->MoveNext()) {
+                auto e = enumerator->get_Current();
+                lightWithIds.emplace_back(e->i_ILightWithId());
+            }
+        } else if (auto castedMonoLight = il2cpp_utils::try_cast<LightWithIdMonoBehaviour>(comp)) {
+            lightWithIds.emplace_back(castedMonoLight.value()->i_ILightWithId());
         }
     }
-
-    auto otherLights = comps | Where([](auto const& c) {
-        return il2cpp_utils::AssignableFrom<LightWithIdMonoBehaviour*>(c->klass);
-    }) | Select([](auto const& c) {
-        return reinterpret_cast<LightWithIdMonoBehaviour*>(c);
-    });
-    for (auto const& n : otherLights) {lightWithIds.emplace_back(n->i_ILightWithId());};
 
     if (lightWithIds.empty()) return;
 
     /// DO THE STUFF
-
-    auto SetType = [&](auto&& lightWithId) {
+    auto SetType = [&](auto&& lightWithId) constexpr {
         if (!type) {
             return;
         }
 
-        int lightId = LightColorizer::GetLightColorizer(*type)->_lightSwitchEventEffect->lightsID;
+        int psuedoLightId = LightColorizer::GetLightColorizer(*type)->_lightSwitchEventEffect->lightsID;
 
         auto monoBehaviourCast = il2cpp_utils::try_cast<LightWithIdMonoBehaviour>(lightWithId);
 
         if (monoBehaviourCast) {
-            monoBehaviourCast.value()->_ID = *lightID;
+            monoBehaviourCast.value()->_ID = psuedoLightId;
         } else {
             auto lightWithIdsCast = il2cpp_utils::try_cast<LightWithIds::LightWithId>(lightWithId);
 
             if (lightWithIdsCast) {
-                lightWithIdsCast.value()->lightId = lightId;
+                lightWithIdsCast.value()->lightId = psuedoLightId;
             }
         }
     };
 
-    auto SetLightID = [&](auto&& lightWithId) {
+    auto SetLightID = [&](auto&& lightWithId) constexpr {
         if (lightID) {
             LightIdRegisterer::SetRequestedId(lightWithId, *lightID);
         }
@@ -461,8 +449,30 @@ static void InitializeLights(rapidjson::Value const &data, std::span<UnityEngine
 
 
 void ComponentInitializer::InitializeCustomComponents(UnityEngine::GameObject *go, const rapidjson::Value &data, bool v2) {
-    auto comps = go->GetComponentsInChildren<UnityEngine::Component*>(true);
-    InitializeLights(data, comps.ref_to(), v2);
-    InitializeFog(data, comps.ref_to(), v2);
-    InitializeTubeBloomPrePassLightFogs(data, comps.ref_to(), v2);
+    auto componentData = ChromaUtils::getIfExists<rapidjson::Value::ConstObject>(data,
+                                                                                 Chroma::NewConstants::COMPONENTS);
+    if (!v2 && !componentData) return;
+
+    auto comps = go->GetComponentsInChildren<UnityEngine::Component *>(false);
+    SafePtr<Array<UnityEngine::Component*>> arr((Array<UnityEngine::Component*>*) comps);
+
+
+    auto compsFiltered = comps | Where([](auto c) constexpr {
+        return c && c->klass;
+    }) | ToVector();
+
+//    auto compsProtect = compsFiltered | Select([](auto &&c) constexpr {
+//        return SafePtrUnity(c);
+//    }) | ToVector();
+
+    if (v2) {
+        InitializeLights(data, compsFiltered, v2);
+        return;
+    } else if (!componentData) {
+        return;
+    }
+
+    InitializeLights(*componentData, compsFiltered, v2);
+    InitializeFog(*componentData, compsFiltered);
+    InitializeTubeBloomPrePassLights(*componentData, compsFiltered);
 }

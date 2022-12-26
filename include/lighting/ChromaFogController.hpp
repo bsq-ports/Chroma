@@ -14,6 +14,21 @@
 #include "tracks/shared/Animation/Easings.h"
 #include "main.hpp"
 
+namespace Chroma {
+    constexpr float fogAttenuationFix(float attenuation) {
+        // if attenuation is not 0
+        if (attenuation < -std::numeric_limits<float>::epsilon() ||
+            attenuation > std::numeric_limits<float>::epsilon()) {
+            // clamp to minimum float fog value
+            // this is a random magic number that doesn't cause the shader to jump to 0
+            // TODO: Investigate, ask Split?
+            return std::max(attenuation, 0.000061035154435f); // 0.0001f
+        }
+
+        return attenuation;
+    }
+}
+
 DECLARE_CLASS_CODEGEN(Chroma, ChromaFogController, UnityEngine::MonoBehaviour,
     private:
         static Chroma::ChromaFogController* _instance;
