@@ -188,7 +188,7 @@ UnityEngine::Material *MaterialsManager::GetMaterialTemplate(ShaderType shaderTy
     if (!_standardMaterial) _standardMaterial = InstantiateSharedMaterial(ShaderType::Standard);
 
     static SafePtrUnity<Material> _opaqueLightMaterial;
-    if (!_opaqueLightMaterial) InstantiateSharedMaterial(ShaderType::OpaqueLight);
+    if (!_opaqueLightMaterial) _opaqueLightMaterial = InstantiateSharedMaterial(ShaderType::OpaqueLight);
 
     static SafePtrUnity<Material> _transparentLightMaterial;
     if(!_transparentLightMaterial) _transparentLightMaterial = InstantiateSharedMaterial(ShaderType::TransparentLight);
