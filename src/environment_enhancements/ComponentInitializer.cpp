@@ -453,7 +453,7 @@ void ComponentInitializer::InitializeCustomComponents(UnityEngine::GameObject *g
                                                                                  Chroma::NewConstants::COMPONENTS);
     if (!v2 && !componentData) return;
 
-    auto comps = go->GetComponentsInChildren<UnityEngine::Component *>(false);
+    auto comps = go->GetComponentsInChildren<UnityEngine::Component *>(true);
     SafePtr<Array<UnityEngine::Component*>> arr((Array<UnityEngine::Component*>*) comps);
 
 

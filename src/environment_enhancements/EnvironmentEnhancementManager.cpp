@@ -139,18 +139,13 @@ public:
 
     TransformData(TransformData&&) = default;
 
-    TransformData(rapidjson::Value const& customData, bool v2) {
+    TransformData(rapidjson::Value const& customData, bool v2, float noteLinesDistance) {
         scale = GetVectorData(customData, v2 ? NewConstants::V2_SCALE : NewConstants::SCALE);
         position = GetVectorData(customData, v2 ? NewConstants::V2_POSITION : NewConstants::POSITION);
         rotation = GetVectorData(customData, v2 ? NewConstants::V2_ROTATION : NewConstants::ROTATION);
         localPosition = GetVectorData(customData, v2 ? NewConstants::V2_LOCAL_POSITION : NewConstants::LOCAL_POSITION);
         localRotation = GetVectorData(customData, v2 ? NewConstants::V2_LOCAL_ROTATION : NewConstants::LOCAL_ROTATION);
-    }
 
-    inline void Apply(UnityEngine::Transform* transform, bool leftHanded, bool v2, float noteLinesDistance) const
-    {
-        auto position = this->position;
-        auto localPosition = this->localPosition;
         if (v2)
         {
             // ReSharper disable once UseNullPropagation
@@ -165,10 +160,7 @@ public:
                 *localPosition *=  noteLinesDistance;
             }
         }
-
-        Apply(transform, leftHanded, scale, position, rotation, localPosition, localRotation);
     }
-
 
     inline void Apply(UnityEngine::Transform* transform, bool leftHanded) const
     {
@@ -317,13 +309,14 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
 
         rapidjson::Value const& dynData = *customDynWrapper;
 
-        MaterialsManager materialsManager(dynData, trackBeatmapAD, v2);
-        GeometryFactory geometryFactory(materialsManager, v2);
 
         auto environmentData = dynData.FindMember(v2 ? NewConstants::V2_ENVIRONMENT.data() : NewConstants::ENVIRONMENT.data());
 
 
         if (environmentData != dynData.MemberEnd()) {
+            MaterialsManager materialsManager(dynData, trackBeatmapAD, v2);
+            GeometryFactory geometryFactory(materialsManager, v2);
+
             GetAllGameObjects();
             auto rings = UnityEngine::Resources::FindObjectsOfTypeAll<GlobalNamespace::TrackLaneRingsManager*>();
             Chroma::TrackLaneRingsManagerHolder::RingManagers = {rings.begin(), rings.end()};
@@ -344,10 +337,16 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                 auto geometryMember = gameObjectDataVal.FindMember(v2 ? NewConstants::V2_GEOMETRY.data() : NewConstants::GEOMETRY.data());
                 std::vector<ByRef<const GameObjectInfo>> foundObjects;
 
+                if (idMember == gameObjectDataVal.MemberEnd() && geometryMember == gameObjectDataVal.MemberEnd()) {
+                    CJDLogger::Logger.fmtLog<Paper::LogLevel::ERR>("Missing geometry or lookup, skipping");
+                    continue;
+                }
+                if (idMember != gameObjectDataVal.MemberEnd() && geometryMember != gameObjectDataVal.MemberEnd()){
+                    CJDLogger::Logger.fmtLog<Paper::LogLevel::ERR>("Can't use both lookup and geometry, skipping");
+                    continue;
+                }
 
                 if (idMember != gameObjectDataVal.MemberEnd()){
-                    if (geometryMember != gameObjectDataVal.MemberEnd()) continue;
-
                     std::string_view id = idMember->value.GetString();
                     std::string lookupString = gameObjectDataVal.FindMember(v2 ? NewConstants::V2_LOOKUP_METHOD.data() : NewConstants::LOOKUP_METHOD.data())->value.GetString();
 
@@ -382,13 +381,15 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
 
                     profiler.mark(foundObjectsLog.str());
 
-                } else if (geometryMember != gameObjectDataVal.MemberEnd()) {
+                }
+
+                if (geometryMember != gameObjectDataVal.MemberEnd()) {
                     auto goInfo = ByRef<const GameObjectInfo>(_globalGameObjectInfos.emplace_back(geometryFactory.Create(geometryMember->value)));
                     // Record JSON parse time
                     profiler.mark("Parsing JSON for geometry ");
 
                     foundObjects.emplace_back(goInfo);
-                } else continue;
+                }
 
 
                 if (foundObjects.empty()) {
@@ -405,12 +406,10 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                     getLogger().info("=====================================");
                 }
 
-                TransformData spawnData(gameObjectDataVal, v2);
+                TransformData spawnData(gameObjectDataVal, v2, noteLinesDistance);
 
                 std::optional<int> dupeAmount = getIfExists<int>(gameObjectDataVal, v2 ? NewConstants::V2_DUPLICATION_AMOUNT : NewConstants::DUPLICATION_AMOUNT);
-
                 std::optional<bool> active = getIfExists<bool>(gameObjectDataVal, v2 ? NewConstants::V2_ACTIVE : NewConstants::ACTIVE);
-                auto lightID = getIfExists<int>(gameObjectDataVal, v2 ? NewConstants::V2_LIGHT_ID : NewConstants::LIGHT_ID);
 
                 // Create track if objects are found
                 auto trackNameIt = gameObjectDataVal.FindMember(v2 ? Chroma::NewConstants::V2_TRACK.data() : Chroma::NewConstants::TRACK.data());
@@ -479,9 +478,6 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                     // Record end time
                     profiler.mark("Duping ");
                 } else {
-                    if (lightID) {
-                        getLogger().error("LightID requested but no duplicated object to apply to.");
-                    }
 
                     // Better way of doing this?
                     // For some reason, copy constructor is deleted?
@@ -501,12 +497,16 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
 
                     auto transform = gameObject->get_transform();
 
-                    spawnData.Apply(transform, leftHanded, v2, noteLinesDistance);
+                    spawnData.Apply(transform, leftHanded);
                     auto const& position = spawnData.position;
                     auto const& localPosition = spawnData.localPosition;
                     auto const& rotation = spawnData.rotation;
                     auto const& localRotation = spawnData.localRotation;
                     auto const& scale = spawnData.scale;
+
+                    if (position) {
+                        CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Setting position to go {} to {} {} {}", gameObject->get_name().operator std::string(), position->x, position->y, position->z);
+                    }
 
                     // Handle TrackLaneRing
                     auto trackLaneRing = gameObject->GetComponentInChildren<GlobalNamespace::TrackLaneRing *>();
@@ -553,22 +553,21 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
 
                     auto controller = GameObjectTrackController::HandleTrackData(gameObject, track, noteLinesDistance, v2).value_or(nullptr);
 
-                    if (controller) {
-                        auto& controllerData = controller->getTrackControllerData();
+                    if (!controller) continue;
+                    auto& controllerData = controller->getTrackControllerData();
 
-                        if (trackLaneRing) {
-                            controllerData.RotationUpdate += [=]() { RingRotationOffsets[trackLaneRing] = trackLaneRing->transform->get_localRotation(); };
-                            controllerData.PositionUpdate += [=]() { trackLaneRing->positionOffset = trackLaneRing->transform->get_localPosition(); };
-                        } else if (parametricBoxController) {
-                            auto parametricBoxControllerTransform = parametricBoxController->get_transform();
-                            controllerData.ScaleUpdate += [=]() { ParametricBoxControllerParameters::SetTransformScale(parametricBoxController, parametricBoxControllerTransform->get_localScale()); };
-                            controllerData.PositionUpdate += [=]() { ParametricBoxControllerParameters::SetTransformPosition(parametricBoxController, parametricBoxControllerTransform->get_localPosition()); };
-                        } else if (beatmapObjectsAvoidance) {
-                            controllerData.RotationUpdate += [=]() { AvoidanceRotation[beatmapObjectsAvoidance] = beatmapObjectsAvoidance->transform->get_localRotation(); };
-                            controllerData.PositionUpdate += [=]() { AvoidancePosition[beatmapObjectsAvoidance] = beatmapObjectsAvoidance->transform->get_localPosition(); };
-                        }
-
+                    if (trackLaneRing) {
+                        controllerData.RotationUpdate += [=]() { RingRotationOffsets[trackLaneRing] = trackLaneRing->transform->get_localRotation(); };
+                        controllerData.PositionUpdate += [=]() { trackLaneRing->positionOffset = trackLaneRing->transform->get_localPosition(); };
+                    } else if (parametricBoxController) {
+                        auto parametricBoxControllerTransform = parametricBoxController->get_transform();
+                        controllerData.ScaleUpdate += [=]() { ParametricBoxControllerParameters::SetTransformScale(parametricBoxController, parametricBoxControllerTransform->get_localScale()); };
+                        controllerData.PositionUpdate += [=]() { ParametricBoxControllerParameters::SetTransformPosition(parametricBoxController, parametricBoxControllerTransform->get_localPosition()); };
+                    } else if (beatmapObjectsAvoidance) {
+                        controllerData.RotationUpdate += [=]() { AvoidanceRotation[beatmapObjectsAvoidance] = beatmapObjectsAvoidance->transform->get_localRotation(); };
+                        controllerData.PositionUpdate += [=]() { AvoidancePosition[beatmapObjectsAvoidance] = beatmapObjectsAvoidance->transform->get_localPosition(); };
                     }
+
                 }
 
 
@@ -593,20 +592,22 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
                 getLogger().info("Finished environment enhancements took %lldms", millisElapsed);
 
             }).detach();
+
+            ///  Handle materials
+            auto const& materials = materialsManager.GetMaterials();
+            std::vector<MaterialInfo> animatedMaterials;
+            animatedMaterials.reserve(materials.size());
+
+            for (auto const& [s, m] : materials) {
+                if (!m.Track || m.Track->empty()) continue;
+                animatedMaterials.emplace_back(m);
+            }
+
+            if (!animatedMaterials.empty()) {
+                UnityEngine::GameObject::New_ctor("MaterialAnimator")->AddComponent<MaterialAnimator*>()->materials = std::move(animatedMaterials);
+            }
         }
 
-        auto const& materials = materialsManager.GetMaterials();
-        std::vector<MaterialInfo> animatedMaterials;
-        animatedMaterials.reserve(materials.size());
-
-        for (auto const& [s, m] : materials) {
-            if (!m.Track || m.Track->empty()) continue;
-            animatedMaterials.emplace_back(m);
-        }
-
-        if (!animatedMaterials.empty()) {
-            UnityEngine::GameObject::New_ctor("MaterialAnimator")->AddComponent<MaterialAnimator*>()->materials = std::move(animatedMaterials);
-        }
     }
     if (v2) {
         LegacyEnvironmentRemoval::Init(customBeatmapData);
