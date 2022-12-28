@@ -48,9 +48,7 @@ MAKE_HOOK_MATCH(NoteController_Init, &NoteController::Init, void,
   if (chromaData != ChromaObjectDataManager::ChromaObjectDatas.end()) {
     auto const &color = chromaData->second.Color;
 
-    if (color) {
-      NoteColorizer::ColorizeNote(self, *color);
-    }
+    NoteColorizer::ColorizeNote(self, color);
   }
 }
 
@@ -95,6 +93,7 @@ MAKE_HOOK_MATCH(NoteController_Update, &NoteController::ManualUpdate, void,
 }
 
 void NoteControllerHook(Logger &logger) {
+  INSTALL_HOOK(getLogger(), NoteController_Init);
   INSTALL_HOOK(getLogger(), NoteController_Update);
 }
 

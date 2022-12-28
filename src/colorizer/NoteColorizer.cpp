@@ -44,15 +44,10 @@ NoteColorizer* NoteColorizer::New(GlobalNamespace::NoteControllerBase *noteContr
 }
 
 GlobalNamespace::ColorType NoteColorizer::getColorType() {
-    auto gameNoteControllerCast = il2cpp_utils::try_cast<GameNoteController>(_noteController);
-    if (gameNoteControllerCast)
+    auto noteData = _noteController->get_noteData();
+    if (noteData)
     {
-        GameNoteController* gameNoteController = *gameNoteControllerCast;
-        auto noteData = gameNoteController->noteData;
-        if (noteData)
-        {
-            return noteData->colorType;
-        }
+        return noteData->colorType;
     }
 
     return ColorType::ColorA;
@@ -84,14 +79,14 @@ void NoteColorizer::Reset() {
     NoteColorChanged.clear();
 }
 
-void NoteColorizer::ColorizeSaber(GlobalNamespace::NoteController *noteController, NoteCutInfo &noteCutInfo) {
+void NoteColorizer::ColorizeSaber(GlobalNamespace::NoteController *noteController, const NoteCutInfo &noteCutInfo) {
     if (ChromaController::DoColorizerSabers())
     {
         auto noteData = noteController->noteData;
         SaberType saberType = noteCutInfo.saberType;
         if ((int)noteData->colorType == (int)saberType)
         {
-            SaberColorizer::GlobalColorize(saberType, GetNoteColorizer(noteController)->getColor());
+            SaberColorizer::ColorizeSaber(saberType, GetNoteColorizer(noteController)->getColor());
         }
     }
 }

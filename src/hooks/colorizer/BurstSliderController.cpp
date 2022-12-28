@@ -75,9 +75,7 @@ MAKE_HOOK_MATCH(
   if (chromaData != ChromaObjectDataManager::ChromaObjectDatas.end()) {
     auto const &color = chromaData->second.Color;
 
-    if (color) {
-      NoteColorizer::ColorizeNote(self, *color);
-    }
+    NoteColorizer::ColorizeNote(self, color);
   }
 }
 void BurstSliderControllerHook(Logger &logger) {
