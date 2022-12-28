@@ -65,7 +65,7 @@ namespace Chroma {
 
         static void Reset();
 
-        static void ColorizeSaber(GlobalNamespace::NoteController* noteController, GlobalNamespace::NoteCutInfo& noteCutInfo);
+        static void ColorizeSaber(GlobalNamespace::NoteController* noteController, const GlobalNamespace::NoteCutInfo &noteCutInfo);
 
         // extensions
         inline static NoteColorizer* GetNoteColorizer(GlobalNamespace::NoteControllerBase* noteController) {

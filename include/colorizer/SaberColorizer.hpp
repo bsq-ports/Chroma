@@ -77,6 +77,12 @@ namespace Chroma {
         static void RemoveColorizer(GlobalNamespace::SaberModelController* saberModelController);
         static SaberColorizer& GetColorizer(GlobalNamespace::SaberModelController* saberModelController);
 
+        inline static void ColorizeSaber(GlobalNamespace::SaberType saberType, std::optional<Sombrero::FastColor> const& color) {
+            for (auto const& colorizer : GetColorizerList(saberType)) {
+                colorizer->Colorize(color);
+            }
+        }
+
         inline static void ColorizeSaber(GlobalNamespace::SaberModelController* saberModelController, std::optional<Sombrero::FastColor> const& color) {
             GetColorizer(saberModelController).Colorize(color);
         }
