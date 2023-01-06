@@ -23,7 +23,7 @@
     },
     {
       "id": "custom-types",
-      "versionRange": "^0.15.0",
+      "versionRange": "^0.15.22",
       "additionalData": {
         "includeQmod": true,
         "private": true
@@ -31,7 +31,7 @@
     },
     {
       "id": "codegen",
-      "versionRange": "^0.28.0",
+      "versionRange": "^0.32.0",
       "additionalData": {
         "includeQmod": true,
         "private": true
@@ -53,7 +53,7 @@
     },
     {
       "id": "questui",
-      "versionRange": "^0.17.0",
+      "versionRange": "^0.17.10",
       "additionalData": {
         "includeQmod": true,
         "private": true
@@ -66,7 +66,7 @@
     },
     {
       "id": "sombrero",
-      "versionRange": "^0.1.26",
+      "versionRange": "^0.1.37",
       "additionalData": {}
     },
     {
@@ -110,7 +110,7 @@
     },
     {
       "id": "paper",
-      "versionRange": "^1.0.5",
+      "versionRange": "^1.2.9",
       "additionalData": {}
     },
     {
