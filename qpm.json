@@ -5,7 +5,7 @@
     "name": "Chroma",
     "id": "chroma",
     "version": "2.6.0",
-    "url": "https://github.com/bsq-ports/Chroma",
+    "url": "https://github.com/Nde08/Chroma",
     "additionalData": {
       "headersOnly": true,
       "overrideSoName": "libchroma.so"
