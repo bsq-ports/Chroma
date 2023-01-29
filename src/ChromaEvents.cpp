@@ -66,7 +66,7 @@ void ChromaEvents::deserialize(CustomJSONData::CustomBeatmapData *readOnlyBeatma
     }
 
     // Parse events
-    for (auto const &customEventData: beatmap->GetBeatmapItemsCpp<CustomJSONData::CustomEventData*>()) {
+    for (auto const &customEventData: beatmap->customEventDatas) {
         if (!customEventData) continue;
 
         parseEventData(beatmapAD, customEventData, beatmap->v2orEarlier);

@@ -23,21 +23,24 @@ using namespace Chroma;
 
 MAKE_HOOK_MATCH(StandardLevelScenesTransitionSetupDataSO_Init,
                 &StandardLevelScenesTransitionSetupDataSO::Init,
-                void,StandardLevelScenesTransitionSetupDataSO* self, StringW gameMode,
-                ::GlobalNamespace::IDifficultyBeatmap* difficultyBeatmap, ::GlobalNamespace::IPreviewBeatmapLevel* previewBeatmapLevel,
-                ::GlobalNamespace::OverrideEnvironmentSettings* overrideEnvironmentSettings, ::GlobalNamespace::ColorScheme* overrideColorScheme,
-                ::GlobalNamespace::GameplayModifiers* gameplayModifiers, ::GlobalNamespace::PlayerSpecificSettings* playerSpecificSettings,
-                ::GlobalNamespace::PracticeSettings* practiceSettings, ::StringW backButtonText,
-                bool useTestNoteCutSoundEffects, bool startPaused) {
+                void, StandardLevelScenesTransitionSetupDataSO *self, StringW gameMode,
+                ::GlobalNamespace::IDifficultyBeatmap *difficultyBeatmap,
+                ::GlobalNamespace::IPreviewBeatmapLevel *previewBeatmapLevel,
+                ::GlobalNamespace::OverrideEnvironmentSettings *overrideEnvironmentSettings,
+                ::GlobalNamespace::ColorScheme *overrideColorScheme,
+                ::GlobalNamespace::GameplayModifiers *gameplayModifiers,
+                ::GlobalNamespace::PlayerSpecificSettings *playerSpecificSettings,
+                ::GlobalNamespace::PracticeSettings *practiceSettings, ::StringW backButtonText,
+                bool useTestNoteCutSoundEffects, bool startPaused, BeatmapDataCache *cache) {
     auto settings = overrideEnvironmentSettings;
     SceneTransitionHelper::Patch(difficultyBeatmap, settings);
     StandardLevelScenesTransitionSetupDataSO_Init(self, gameMode, difficultyBeatmap, previewBeatmapLevel, settings,
                                                   overrideColorScheme, gameplayModifiers,
                                                   playerSpecificSettings, practiceSettings, backButtonText,
-                                                  useTestNoteCutSoundEffects, startPaused);
+                                                  useTestNoteCutSoundEffects, startPaused, cache);
 }
 
-void StandardLevelScenesTransitionSetupDataSOHook(Logger& logger) {
+void StandardLevelScenesTransitionSetupDataSOHook(Logger &logger) {
     INSTALL_HOOK(logger, StandardLevelScenesTransitionSetupDataSO_Init);
 }
 

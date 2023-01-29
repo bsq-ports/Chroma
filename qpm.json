@@ -14,7 +14,7 @@
   "dependencies": [
     {
       "id": "beatsaber-hook",
-      "versionRange": "=3.14.0",
+      "versionRange": "^3.14.0",
       "additionalData": {
         "extraFiles": [
           "src/inline-hook"
@@ -31,7 +31,7 @@
     },
     {
       "id": "codegen",
-      "versionRange": "^0.28.0",
+      "versionRange": "^0.32.0",
       "additionalData": {
         "includeQmod": true,
         "private": true
@@ -39,7 +39,7 @@
     },
     {
       "id": "custom-json-data",
-      "versionRange": "^0.18.0",
+      "versionRange": "^0.19.0",
       "additionalData": {
         "private": true
       }
@@ -71,7 +71,7 @@
     },
     {
       "id": "tracks",
-      "versionRange": "^0.7.0",
+      "versionRange": "^0.8.0",
       "additionalData": {
         "private": true
       }

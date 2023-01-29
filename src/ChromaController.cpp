@@ -69,7 +69,7 @@ custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(Global
 
             if (GetChromaLegacy()) {
                 try {
-                    auto list = customBeatmap.value()->GetBeatmapItemsCpp<BasicBeatmapEventData*>();
+                    auto list = customBeatmap.value()->GetBeatmapItemsCpp<BasicBeatmapEventData*>(BeatmapDataItem::BeatmapDataItemType::BeatmapEvent);
 
                     // please let me kill legacy
                     LegacyLightHelper::Activate(list);

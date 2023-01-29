@@ -19,9 +19,6 @@ void Chroma::ChromaObjectDataManager::deserialize(CustomJSONData::CustomBeatmapD
     static auto contextLogger = getLogger().WithContext(ChromaLogger::ObjectDataDeserialize);
 
     auto beatmapDataCast = beatmapData;
-    auto notes = beatmapDataCast->GetBeatmapItemsCpp<NoteData *>();
-    auto sliders = beatmapDataCast->GetBeatmapItemsCpp<SliderData *>();
-    auto obstacles = beatmapDataCast->GetBeatmapItemsCpp<ObstacleData *>();
     bool v2 = beatmapDataCast->v2orEarlier;
 
 
@@ -34,43 +31,41 @@ void Chroma::ChromaObjectDataManager::deserialize(CustomJSONData::CustomBeatmapD
     static auto CustomObstacleDataKlass = classof(CustomJSONData::CustomObstacleData *);
     static auto CustomWaypointDataKlass = classof(CustomJSONData::CustomWaypointData *);
 
-    auto doForObjects = [&](auto&& objects) constexpr {
+    for (auto beatmapObjectData: beatmapData->beatmapObjectDatas) {
+        if (!beatmapObjectData) continue;
 
-        for (auto beatmapObjectData: objects) {
-            if (!beatmapObjectData) continue;
+        ChromaObjectData chromaObjectData;
 
-            ChromaObjectData chromaObjectData;
+        CustomJSONData::JSONWrapper *objectDynData;
 
-            CustomJSONData::JSONWrapper *objectDynData;
+        if (ASSIGNMENT_CHECK(CustomNoteDataKlass, beatmapObjectData->klass)) {
+            debugSpamLog(contextLogger, "Custom note %s",
+                         il2cpp_utils::ClassStandardName(beatmapObjectData->klass).c_str());
+            auto *customNoteData = reinterpret_cast<CustomJSONData::CustomNoteData *>(beatmapObjectData);
 
-            if (ASSIGNMENT_CHECK(CustomNoteDataKlass, beatmapObjectData->klass)) {
-                debugSpamLog(contextLogger, "Custom note %s",
-                             il2cpp_utils::ClassStandardName(beatmapObjectData->klass).c_str());
-                auto *customNoteData = reinterpret_cast<CustomJSONData::CustomNoteData *>(beatmapObjectData);
+            objectDynData = customNoteData->customData;
 
-                objectDynData = customNoteData->customData;
+            chromaObjectData.Color = ChromaUtilities::GetColorFromData(objectDynData->value, v2);
+            chromaObjectData.DisableSpawnEffect = getIfExists<bool>(objectDynData->value,
+                                                                    NewConstants::NOTE_SPAWN_EFFECT).value_or(
+                    !getIfExists<bool>(objectDynData->value, NewConstants::V2_DISABLE_SPAWN_EFFECT).value_or(true));
+        } else if (ASSIGNMENT_CHECK(CustomSliderDataKlass, beatmapObjectData->klass)) {
+            debugSpamLog(contextLogger, "Custom note %s",
+                         il2cpp_utils::ClassStandardName(beatmapObjectData->klass).c_str());
+            auto *customNoteData = reinterpret_cast<CustomJSONData::CustomSliderData *>(beatmapObjectData);
 
-                chromaObjectData.Color = ChromaUtilities::GetColorFromData(objectDynData->value, v2);
-                chromaObjectData.DisableSpawnEffect = getIfExists<bool>(objectDynData->value,
-                                                                        NewConstants::NOTE_SPAWN_EFFECT).value_or(
-                        !getIfExists<bool>(objectDynData->value, NewConstants::V2_DISABLE_SPAWN_EFFECT).value_or(true));
-            } else if (ASSIGNMENT_CHECK(CustomSliderDataKlass, beatmapObjectData->klass)) {
-                debugSpamLog(contextLogger, "Custom note %s",
-                             il2cpp_utils::ClassStandardName(beatmapObjectData->klass).c_str());
-                auto *customNoteData = reinterpret_cast<CustomJSONData::CustomSliderData *>(beatmapObjectData);
+            objectDynData = customNoteData->customData;
 
-                objectDynData = customNoteData->customData;
+            chromaObjectData.Color = ChromaUtilities::GetColorFromData(objectDynData->value, v2);
+            chromaObjectData.DisableSpawnEffect = getIfExists<bool>(objectDynData->value,
+                                                                    NewConstants::NOTE_SPAWN_EFFECT).value_or(
+                    !getIfExists<bool>(objectDynData->value, NewConstants::V2_DISABLE_SPAWN_EFFECT).value_or(true));
+        } else if (ASSIGNMENT_CHECK(CustomObstacleDataKlass, beatmapObjectData->klass)) {
+            auto *customObstacleData = reinterpret_cast<CustomJSONData::CustomObstacleData *>(beatmapObjectData);
 
-                chromaObjectData.Color = ChromaUtilities::GetColorFromData(objectDynData->value, v2);
-                chromaObjectData.DisableSpawnEffect = getIfExists<bool>(objectDynData->value,
-                                                                        NewConstants::NOTE_SPAWN_EFFECT).value_or(
-                        !getIfExists<bool>(objectDynData->value, NewConstants::V2_DISABLE_SPAWN_EFFECT).value_or(true));
-            } else if (ASSIGNMENT_CHECK(CustomObstacleDataKlass, beatmapObjectData->klass)) {
-                auto *customObstacleData = reinterpret_cast<CustomJSONData::CustomObstacleData *>(beatmapObjectData);
-
-                objectDynData = customObstacleData->customData;
-                chromaObjectData.Color = ChromaUtilities::GetColorFromData(objectDynData->value, v2);
-            }
+            objectDynData = customObstacleData->customData;
+            chromaObjectData.Color = ChromaUtilities::GetColorFromData(objectDynData->value, v2);
+        }
 //                else if (false && ASSIGNMENT_CHECK(CustomWaypointDataKlass,beatmapObjectData->klass)) {
 //                    debugSpamLog(contextLogger, "Custom waypoint");
 //                    auto *customBeatmapEvent = il2cpp_utils::cast<CustomJSONData::CustomWaypointData>(beatmapObjectData);
@@ -87,35 +82,31 @@ void Chroma::ChromaObjectDataManager::deserialize(CustomJSONData::CustomBeatmapD
 //
 //                    chromaObjectData = data;
 //                }
-            else continue;
+        else continue;
 
 
-            if (objectDynData->value) {
-                rapidjson::Value const &customData = *objectDynData->value;
-                auto const& animationObjectDyn = customData.FindMember(
-                        v2 ? Chroma::NewConstants::V2_ANIMATION.data() : Chroma::NewConstants::ANIMATION.data());
-                if (animationObjectDyn != customData.MemberEnd()) {
-                    PointDefinition *anonPointDef = nullptr;
-                    PointDefinition *localColor = Animation::TryGetPointData(beatmapAD, anonPointDef,
-                                                                             animationObjectDyn->value,
-                                                                             v2 ? Chroma::NewConstants::V2_COLOR
-                                                                                : Chroma::NewConstants::COLOR);
+        if (objectDynData->value) {
+            rapidjson::Value const &customData = *objectDynData->value;
+            auto const &animationObjectDyn = customData.FindMember(
+                    v2 ? Chroma::NewConstants::V2_ANIMATION.data() : Chroma::NewConstants::ANIMATION.data());
+            if (animationObjectDyn != customData.MemberEnd()) {
+                PointDefinition *anonPointDef = nullptr;
+                PointDefinition *localColor = Animation::TryGetPointData(beatmapAD, anonPointDef,
+                                                                         animationObjectDyn->value,
+                                                                         v2 ? Chroma::NewConstants::V2_COLOR
+                                                                            : Chroma::NewConstants::COLOR);
 
-                    if (anonPointDef) {
-                        beatmapAD.anonPointDefinitions.emplace(anonPointDef);
-                    }
-
-                    chromaObjectData.LocalPathColor = localColor ? std::make_optional(localColor) : std::nullopt;
+                if (anonPointDef) {
+                    beatmapAD.anonPointDefinitions.emplace(anonPointDef);
                 }
+
+                chromaObjectData.LocalPathColor = localColor ? std::make_optional(localColor) : std::nullopt;
             }
-            auto const& tracks = TracksAD::getAD(objectDynData).tracks;
-            chromaObjectData.Tracks = tracks;
-
-            ChromaObjectDatas.try_emplace(beatmapObjectData, chromaObjectData);
         }
-    };
+        auto const &tracks = TracksAD::getAD(objectDynData).tracks;
+        chromaObjectData.Tracks = tracks;
 
-    doForObjects(notes);
-    doForObjects(obstacles);
-    doForObjects(sliders);
+        ChromaObjectDatas.try_emplace(beatmapObjectData, chromaObjectData);
+    }
+
 }
