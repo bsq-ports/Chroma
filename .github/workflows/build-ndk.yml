@@ -48,6 +48,7 @@ jobs:
         run: |
           cd ${GITHUB_WORKSPACE}
           qpm-rust s build
+          qpm-rust restore
           qpm-rust qmod build
 
 
