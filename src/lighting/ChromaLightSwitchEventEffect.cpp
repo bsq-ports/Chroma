@@ -257,7 +257,7 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, const std::optional<std::v
             if (eventData && eventData->NextSameTypeEvent.contains(tween->Id))
             {
                 auto [anextSameTypeEvent, anextEventData] = eventData->NextSameTypeEvent.at(tween->Id);
-                nextSameTypeEvent = anextSameTypeEvent;
+                nextSameTypeEvent = il2cpp_utils::try_cast<BasicBeatmapEventData>(anextSameTypeEvent).value_or(nullptr);
                 nextEventData = anextEventData;
             }
             else
