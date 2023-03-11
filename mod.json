@@ -21,9 +21,19 @@
       "downloadIfMissing": "https://github.com/sc2ad/BeatSaber-Quest-Codegen/releases/download/v0.33.0/Codegen.qmod"
     },
     {
+      "version": "^0.19.3",
+      "id": "custom-json-data",
+      "downloadIfMissing": "https://github.com/StackDoubleFlow/CustomJSONData/releases/download/v0.19.3/custom-json-data.qmod"
+    },
+    {
       "version": "^0.17.0",
       "id": "questui",
       "downloadIfMissing": "https://github.com/darknight1050/QuestUI/releases/download/v0.17.11/QuestUI.qmod"
+    },
+    {
+      "version": "^0.8.1",
+      "id": "tracks",
+      "downloadIfMissing": "https://github.com/StackDoubleFlow/Tracks/releases/download/v0.8.1/tracks"
     },
     {
       "version": "*",
@@ -45,8 +55,6 @@
     "libchroma.so"
   ],
   "libraryFiles": [
-    "libtracks.so",
-    "libcustom-json-data.so",
     "libbeatsaber-hook_3_14_0.so"
   ],
   "fileCopies": [],
