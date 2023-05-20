@@ -252,17 +252,20 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, const std::optional<std::v
             auto eventDataIt = ChromaEventDataManager::ChromaEventDatas.find(previousEvent);
             auto const* eventData = eventDataIt != ChromaEventDataManager::ChromaEventDatas.end() ? &eventDataIt->second : nullptr;
 
-            BasicBeatmapEventData* nextSameTypeEvent;
+            auto const& nextSameTypesDict = eventData ? &eventData->NextSameTypeEvent : nullptr;
+
+            BasicBeatmapEventData* nextSameTypeEvent = nullptr;
             ChromaEventData* nextEventData = nullptr;
-            if (eventData && eventData->NextSameTypeEvent.contains(tween->Id))
-            {
-                auto [anextSameTypeEvent, anextEventData] = eventData->NextSameTypeEvent.at(tween->Id);
-                nextSameTypeEvent = il2cpp_utils::try_cast<BasicBeatmapEventData>(anextSameTypeEvent).value_or(nullptr);
-                nextEventData = anextEventData;
-            }
-            else
+            if (!nextSameTypesDict)
             {
                 nextSameTypeEvent = static_cast<BasicBeatmapEventData *>(previousEvent->nextSameTypeEventData);
+            }
+            else if (nextSameTypesDict->contains(tween->Id))
+            {
+                auto [anextSameTypeEvent, anextEventData] = nextSameTypesDict->at(tween->Id);
+                nextSameTypeEvent = il2cpp_utils::try_cast<BasicBeatmapEventData>(anextSameTypeEvent).value_or(nullptr);
+                // optimization, grab early
+                nextEventData = anextEventData;
             }
 
             if (!nextSameTypeEvent || (nextSameTypeEvent->value != 4 && nextSameTypeEvent->value != 8 && nextSameTypeEvent->value != 12))

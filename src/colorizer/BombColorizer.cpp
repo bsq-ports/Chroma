@@ -25,7 +25,7 @@ BombColorizer::ColorizerMap BombColorizer::Colorizers = BombColorizer::Colorizer
 void BombColorizer::Refresh() {
     Sombrero::FastColor const& color = getColor();
 
-    UnityEngine::Material* bombMaterial = _bombRenderer->get_material();
+    auto bombMaterial = _materialPropertyBlockController->materialPropertyBlock;
     if (color == static_cast<Sombrero::FastColor>(bombMaterial->GetColor(_simpleColor()))) {
         return;
     }
@@ -35,13 +35,18 @@ void BombColorizer::Refresh() {
     if (BombColorable) return;
 
     bombMaterial->SetColor(_simpleColor(), color);
+    bombMaterial->SetColor(_color(), color);
+    _materialPropertyBlockController->ApplyChanges();
 }
 
 BombColorizer::BombColorizer(GlobalNamespace::NoteControllerBase *noteController) :
-    _bombRenderer(noteController->get_gameObject()->GetComponentInChildren<Renderer*>()),
+    _materialPropertyBlockController(noteController->GetComponent<GlobalNamespace::MaterialPropertyBlockController*>()),
     noteController(noteController)
 {
-    OriginalColor = _bombRenderer->get_material()->GetColor(_simpleColor());
+    OriginalColor = noteController->GetComponentInChildren<Renderer*>()->get_material()->GetColor(_simpleColor());
+    auto materialPropertyBlock = _materialPropertyBlockController->materialPropertyBlock;
+    materialPropertyBlock->SetColor(_simpleColor(), OriginalColor);
+    materialPropertyBlock->SetColor(_color(), OriginalColor);
 }
 
 std::optional<Sombrero::FastColor> BombColorizer::getGlobalColor() {
@@ -72,6 +77,12 @@ void BombColorizer::Reset() {
 
 int BombColorizer::_simpleColor() {
     static int colorID = UnityEngine::Shader::PropertyToID("_SimpleColor");
+
+    return colorID;
+}
+
+int BombColorizer::_color() {
+    static int colorID = UnityEngine::Shader::PropertyToID("_Color");
 
     return colorID;
 }

@@ -62,6 +62,12 @@ custom_types::Helpers::Coroutine ChromaController::DelayedStartEnumerator(Global
 
         if (auto customBeatmap = il2cpp_utils::try_cast<CustomJSONData::CustomBeatmapData>(beatmapData)) {
             if (DoChromaHooks() && getChromaConfig().environmentEnhancementsEnabled.GetValue()) {
+                // seriously what the fuck beat games
+                // GradientBackground permanently yeeted because it looks awful and can ruin multi-colored chroma maps
+                UnityEngine::GameObject* gradientBackground = GameObject::Find("/Environment/GradientBackground");
+                if (gradientBackground) {
+                    gradientBackground->SetActive(false);
+                }
 
                 EnvironmentEnhancementManager::Init(*customBeatmap);
 

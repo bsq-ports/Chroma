@@ -255,12 +255,12 @@ void EnvironmentEnhancementManager::GetAllGameObjects() {
 
         _globalGameObjectInfos.emplace_back(gameObject);
 
-        // seriously what the fuck beat games
-        // GradientBackground permanently yeeted because it looks awful and can ruin multi-colored chroma maps
-        if (gameObject->get_name() == "GradientBackground")
-        {
-            gameObject->SetActive(false);
-        }
+//        // seriously what the fuck beat games
+//        // GradientBackground permanently yeeted because it looks awful and can ruin multi-colored chroma maps
+//        if (gameObject->get_name() == "GradientBackground")
+//        {
+//            gameObject->SetActive(false);
+//        }
     }
 
     // Shrink if necessary

@@ -54,7 +54,13 @@ GlobalNamespace::ColorType NoteColorizer::getColorType() {
 }
 
 std::optional<Sombrero::FastColor> NoteColorizer::GlobalColorGetter() {
-    return GlobalColor[(int) getColorType()];
+    auto colorType = getColorType();
+
+    if (colorType == ColorType::None) {
+        return std::nullopt;
+    }
+
+    return GlobalColor[(int) colorType];
 }
 
 std::optional<Sombrero::FastColor> NoteColorizer::OriginalColorGetter() {

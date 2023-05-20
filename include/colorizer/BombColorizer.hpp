@@ -4,6 +4,7 @@
 
 #include "UnityEngine/Renderer.hpp"
 #include "UnityEngine/MonoBehaviour.hpp"
+#include "GlobalNamespace/MaterialPropertyBlockController.hpp"
 #include "GlobalNamespace/BombNoteController.hpp"
 #include "GlobalNamespace/NoteControllerBase.hpp"
 #include "UnityEngine/Material.hpp"
@@ -17,7 +18,9 @@
      class BombColorizer : public ObjectColorizer<BombColorizer> {
      private:
          friend class ObjectColorizer<BombColorizer>;
-         UnityEngine::Renderer *_bombRenderer;
+         static int _color();
+         GlobalNamespace::MaterialPropertyBlockController* _materialPropertyBlockController;
+
          GlobalNamespace::NoteControllerBase *noteController;
 
          static int _simpleColor();
