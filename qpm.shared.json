@@ -5,7 +5,7 @@
     "info": {
       "name": "Chroma",
       "id": "chroma",
-      "version": "2.6.0",
+      "version": "2.8.1",
       "url": "https://github.com/bsq-ports/Chroma",
       "additionalData": {
         "headersOnly": true,
@@ -199,16 +199,16 @@
     {
       "dependency": {
         "id": "pinkcore",
-        "versionRange": "=1.8.9",
+        "versionRange": "=1.8.10",
         "additionalData": {
-          "soLink": "https://github.com/BSMGPink/PinkCore/releases/download/v1.8.9/libpinkcore.so",
-          "debugSoLink": "https://github.com/BSMGPink/PinkCore/releases/download/v1.8.9/debug_libpinkcore.so",
+          "soLink": "https://github.com/BSMGPink/PinkCore/releases/download/v1.8.10/libpinkcore.so",
+          "debugSoLink": "https://github.com/BSMGPink/PinkCore/releases/download/v1.8.10/debug_libpinkcore.so",
           "overrideSoName": "libpinkcore.so",
-          "modLink": "https://github.com/BSMGPink/PinkCore/releases/download/v1.8.9/PinkCore.qmod",
-          "branchName": "version-v1.8.9"
+          "modLink": "https://github.com/BSMGPink/PinkCore/releases/download/v1.8.10/PinkCore.qmod",
+          "branchName": "version-v1.8.10"
         }
       },
-      "version": "1.8.9"
+      "version": "1.8.10"
     },
     {
       "dependency": {
@@ -230,13 +230,13 @@
     {
       "dependency": {
         "id": "questui",
-        "versionRange": "=0.17.11",
+        "versionRange": "=0.17.12",
         "additionalData": {
-          "soLink": "https://github.com/darknight1050/QuestUI/releases/download/v0.17.11/libquestui.so",
-          "debugSoLink": "https://github.com/darknight1050/QuestUI/releases/download/v0.17.11/debug_libquestui.so",
+          "soLink": "https://github.com/darknight1050/QuestUI/releases/download/v0.17.12/libquestui.so",
+          "debugSoLink": "https://github.com/darknight1050/QuestUI/releases/download/v0.17.12/debug_libquestui.so",
           "overrideSoName": "libquestui.so",
-          "modLink": "https://github.com/darknight1050/QuestUI/releases/download/v0.17.11/QuestUI.qmod",
-          "branchName": "version-v0.17.11",
+          "modLink": "https://github.com/darknight1050/QuestUI/releases/download/v0.17.12/QuestUI.qmod",
+          "branchName": "version-v0.17.12",
           "compileOptions": {
             "systemIncludes": [
               "shared/cppcodec"
@@ -244,21 +244,17 @@
           }
         }
       },
-      "version": "0.17.11"
+      "version": "0.17.12"
     },
     {
       "dependency": {
         "id": "paper",
-        "versionRange": "=1.2.9",
+        "versionRange": "=1.2.14",
         "additionalData": {
-          "soLink": "https://github.com/Fernthedev/paperlog/releases/download/v1.2.9/libpaperlog.so",
-          "debugSoLink": "https://github.com/Fernthedev/paperlog/releases/download/v1.2.9/debug_libpaperlog.so",
-          "overrideSoName": "libpaperlog.so",
-          "modLink": "https://github.com/Fernthedev/paperlog/releases/download/v1.2.9/paperlog.qmod",
-          "branchName": "version-v1.2.9"
+          "overrideSoName": "libpaperlog.so"
         }
       },
-      "version": "1.2.9"
+      "version": "1.2.14"
     },
     {
       "dependency": {
@@ -319,16 +315,16 @@
     {
       "dependency": {
         "id": "custom-types",
-        "versionRange": "=0.15.23",
+        "versionRange": "=0.15.24",
         "additionalData": {
-          "soLink": "https://github.com/sc2ad/Il2CppQuestTypePatching/releases/download/v0.15.23/libcustom-types.so",
-          "debugSoLink": "https://github.com/sc2ad/Il2CppQuestTypePatching/releases/download/v0.15.23/debug_libcustom-types.so",
+          "soLink": "https://github.com/sc2ad/Il2CppQuestTypePatching/releases/download/v0.15.24/libcustom-types.so",
+          "debugSoLink": "https://github.com/sc2ad/Il2CppQuestTypePatching/releases/download/v0.15.24/debug_libcustom-types.so",
           "overrideSoName": "libcustom-types.so",
-          "modLink": "https://github.com/sc2ad/Il2CppQuestTypePatching/releases/download/v0.15.23/CustomTypes.qmod",
-          "branchName": "version-v0.15.23"
+          "modLink": "https://github.com/sc2ad/Il2CppQuestTypePatching/releases/download/v0.15.24/CustomTypes.qmod",
+          "branchName": "version-v0.15.24"
         }
       },
-      "version": "0.15.23"
+      "version": "0.15.24"
     },
     {
       "dependency": {
@@ -358,10 +354,10 @@
     {
       "dependency": {
         "id": "fmt",
-        "versionRange": "=9.0.0",
+        "versionRange": "=10.0.0",
         "additionalData": {
           "headersOnly": true,
-          "branchName": "version-v9.0.0",
+          "branchName": "version/v10_0_0",
           "compileOptions": {
             "systemIncludes": [
               "fmt/include/"
@@ -372,7 +368,7 @@
           }
         }
       },
-      "version": "9.0.0"
+      "version": "10.0.0"
     }
   ]
 }

@@ -27,10 +27,13 @@ MAKE_HOOK_MATCH(ColorTween_GetColor,
         return ColorTween_GetColor(self, t);
     }
 
-    static auto ColorTweenKlass = classof(ChromaIDColorTween*);
 
-    if (self && self->klass == ColorTweenKlass) {
-        return reinterpret_cast<ChromaIDColorTween*>(self)->GetColor(t);
+    // discriminator set in ColorTween.makeTween()
+    if (self && self->easeType == Chroma::Tween::ChromaTweenDiscriminator) {
+        // Set in ChromaLightSwitchEventEffect
+        // fast access
+        Chroma::Tween::ChromaColorTweenData const& tweenData = *reinterpret_cast<Chroma::Tween::ChromaColorTweenData*>(self->onStart);
+        return tweenData.GetColor(t);
     }
 
     return ColorTween_GetColor(self, t);

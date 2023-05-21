@@ -1,11 +1,8 @@
 #pragma once
-#include <vector>
-#include <string>
-#include <optional>
-#include <unordered_map>
 
-#include "custom-types/shared/types.hpp"
-#include "custom-types/shared/macros.hpp"
+#include <string>
+
+#include "custom-types/shared/delegate.hpp"
 
 #include "UnityEngine/Color.hpp"
 
@@ -13,60 +10,98 @@
 #include "GlobalNamespace/ILightWithId.hpp"
 #include "GlobalNamespace/LightWithIdManager.hpp"
 #include "GlobalNamespace/BasicBeatmapEventData.hpp"
+#include "System/Action_1.hpp"
 #include "Tweening/ColorTween.hpp"
 
 #include "ChromaController.hpp"
+#include "lighting/ColorTween.hpp"
 #include "LerpType.hpp"
 
 #include "sombrero/shared/ColorUtils.hpp"
 #include "sombrero/shared/HSBColor.hpp"
 #include "tracks/shared/Animation/Easings.h"
+#include "custom-json-data/shared/CJDLogger.h"
 #include "main.hpp"
 
 
-DECLARE_CLASS_CODEGEN(Chroma, ChromaIDColorTween, Tweening::ColorTween,
+namespace Chroma::Tween {
 
-public:
-                      DECLARE_INSTANCE_FIELD(GlobalNamespace::ILightWithId*, _lightWithId);
-                      DECLARE_INSTANCE_FIELD(GlobalNamespace::LightWithIdManager*, _lightWithIdManager);
-                      DECLARE_INSTANCE_FIELD(GlobalNamespace::BasicBeatmapEventData*, PreviousEvent);
-public:
-                      int Id;
-                      Functions easing;
-                      LerpType lerpType;
-    DECLARE_SIMPLE_DTOR();
+    constexpr auto ChromaTweenDiscriminator = 521912; // random number
 
-    DECLARE_CTOR(ctor, Sombrero::FastColor fromValue, Sombrero::FastColor toValue, GlobalNamespace::ILightWithId* lightWithId, GlobalNamespace::LightWithIdManager* lightWithIdManager, int id);
+    struct ChromaColorTweenData {
+        int id;
+        Functions easing;
+        Chroma::LerpType lerpType;
+        GlobalNamespace::BasicBeatmapEventData* PreviousEvent;
+        SafePtr<Tweening::ColorTween> tween;
+        SafePtr<GlobalNamespace::ILightWithId> lightWithId;
 
-public:
-    Sombrero::FastColor GetColor(float time) {
-      time = Easings::Interpolate(time, easing);
-      switch (lerpType) {
-          case LerpType::RGB:
-            return Sombrero::FastColor::LerpUnclamped(fromValue, toValue, time);
+        ChromaColorTweenData(int id, Functions easing, LerpType lerpType,
+                             GlobalNamespace::BasicBeatmapEventData *previousEvent,
+                             const SafePtr<Tweening::ColorTween> &tween,
+                             const SafePtr<GlobalNamespace::ILightWithId> &lightWithId) : id(id), easing(easing),
+                                                                                            lerpType(lerpType),
+                                                                                            PreviousEvent(
+                                                                                                    previousEvent),
+                                                                                            tween(tween),
+                                                                                            lightWithId(lightWithId) {}
 
-          case LerpType::HSV:
-              float fromH, fromS, fromV;
-              float toH, toS, toV;
-              Sombrero::FastColor::RGBToHSV(fromValue, fromH, fromS, fromV);
-              Sombrero::FastColor::RGBToHSV(toValue, toH, toS, toV);
+        [[nodiscard]]
+        Sombrero::FastColor GetColor(float time) const {
+            auto const &fromValue = tween->fromValue;
+            auto const &toValue = tween->toValue;
 
-              return Sombrero::FastColor::HSVToRGB(std::lerp(fromH, toH, time), std::lerp(fromS, toS, time), std::lerp(fromV, toV, time)).Alpha(std::lerp(fromValue.a, toValue.a, time));
-          default: {
-              getLogger().debug("Lerp not valid for id %i using lerp %i", Id, lerpType);
-              throw std::runtime_error("Lerp not valid");
-          }
-      }
-    }
+            time = Easings::Interpolate(time, easing);
+            switch (lerpType) {
+                case Chroma::LerpType::RGB:
+                    return Sombrero::FastColor::LerpUnclamped(fromValue, toValue, time);
 
-    void SetColor(UnityEngine::Color const& color) const {
-        if (!_lightWithId->get_isRegistered()) {
+                case Chroma::LerpType::HSV:
+                    float fromH, fromS, fromV;
+                    float toH, toS, toV;
+                    Sombrero::FastColor::RGBToHSV(fromValue, fromH, fromS, fromV);
+                    Sombrero::FastColor::RGBToHSV(toValue, toH, toS, toV);
+
+                    return Sombrero::FastColor::HSVToRGB(std::lerp(fromH, toH, time), std::lerp(fromS, toS, time),
+                                                         std::lerp(fromV, toV, time)).Alpha(
+                            std::lerp(fromValue.a, toValue.a, time));
+                default: {
+                    CJDLogger::Logger.fmtThrowError("Lerp not valid for id {} using lerp {}", id, (int) lerpType);
+                    throw std::runtime_error("Lerp not valid");
+                }
+            }
+        }
+
+
+    };
+
+    static void SetColor(GlobalNamespace::ILightWithId *lightWithId,
+                         GlobalNamespace::LightWithIdManager *lightWithIdManager,
+                         UnityEngine::Color const& color) {
+        if (!lightWithId->get_isRegistered()) {
             return;
 
         }
-       _lightWithIdManager->didChangeSomeColorsThisFrame = true;
-       _lightWithId->ColorWasSet(color);
+        lightWithIdManager->didChangeSomeColorsThisFrame = true;
+        lightWithId->ColorWasSet(color);
     }
 
-)
 
+    static Tweening::ColorTween *makeTween(Sombrero::FastColor const &fromValue, Sombrero::FastColor const &toValue,
+                                    GlobalNamespace::ILightWithId *lightWithId,
+                                    GlobalNamespace::LightWithIdManager *lightWithIdManager) {
+        auto tween = Tweening::ColorTween::New_ctor();
+
+        std::function<void(UnityEngine::Color)> SetColorFn = [=](UnityEngine::Color const &color) constexpr {
+            SetColor(lightWithId, lightWithIdManager, color);
+        };
+        auto SetColorAction = custom_types::MakeDelegate<System::Action_1<UnityEngine::Color> *>(SetColorFn);
+
+
+        // it's okay to use random numbers for ease, they will default to easeLinear
+        // thanks beatgames
+        tween->Init(fromValue, toValue, SetColorAction, 0, ChromaTweenDiscriminator, 0);
+
+        return tween;
+    }
+}
