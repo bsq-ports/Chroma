@@ -136,10 +136,10 @@ MaterialInfo Chroma::MaterialsManager::CreateMaterialInfo(rapidjson::Value const
         tracks.emplace().reserve(size);
 
         if (tracksIt->value.IsString()) {
-            tracks.value().emplace_back(&(beatmapAD.tracks.try_emplace(tracksIt->value.GetString(), v2).first->second));
+            tracks.value().emplace_back(beatmapAD.getTrack(tracksIt->value.GetString()));
         } else if (tracksIt->value.IsArray()) {
             for (auto const& it : tracksIt->value.GetArray()) {
-                tracks.value().emplace_back(&(beatmapAD.tracks.try_emplace(it.GetString(), v2).first->second));
+                tracks.value().emplace_back(beatmapAD.getTrack(it.GetString()));
             }
         }
     }

@@ -48,7 +48,7 @@ void ChromaEvents::parseEventData(TracksAD::BeatmapAssociatedData &beatmapAD,
     }
 
     std::string trackName(trackIt->value.GetString());
-    Track *track = &beatmapAD.tracks.try_emplace(trackName, v2).first->second;
+    Track *track = beatmapAD.getTrack(trackName);
 
     eventAD.track = track;
 
