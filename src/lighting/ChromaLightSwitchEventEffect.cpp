@@ -17,6 +17,7 @@ using namespace UnityEngine;
 DEFINE_TYPE(Chroma, ChromaLightSwitchEventEffect);
 
 std::unordered_set<ChromaLightSwitchEventEffect*> ChromaLightSwitchEventEffect::livingLightSwitch;
+std::unordered_map<Tweening::ColorTween *, Tween::ChromaColorTweenData*> ChromaLightSwitchEventEffect::ColorTweensMapping;
 
 constexpr static GlobalNamespace::EnvironmentColorType GetLightColorTypeFromEventDataValue(int beatmapEventValue)
 {
@@ -234,6 +235,8 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, const std::optional<std::v
     bool boost = usingBoostColors;
     for (auto const& tweenData : selectTweens) {
         auto const& tween = tweenData->tween;
+        CRASH_UNLESS(tween.isHandleValid());
+        CRASH_UNLESS(tween.ptr());
         BasicBeatmapEventData* previousEvent;
         if (hard) {
             tweenData->PreviousEvent = beatmapEventData.value();
@@ -473,36 +476,35 @@ void ChromaLightSwitchEventEffect::UnregisterLight(GlobalNamespace::ILightWithId
 
     if (it == ColorTweens.end()) return;
 
-    auto tweenData = it->second;
+    auto& tweenData = it->second;
+
+    ColorTweensMapping.erase(tweenData.tween.ptr());
 
     tweenData.tween->Kill();
     ColorTweens.erase(it);
 }
 
 void ChromaLightSwitchEventEffect::RegisterLight(GlobalNamespace::ILightWithId* lightWithId, int id) {
-    if (!ColorTweens.contains(lightWithId))
+    if (ColorTweens.contains(lightWithId))
+        return;
+
+
+    Sombrero::FastColor color = GetNormalColor(0, usingBoostColors);
+    if (!lightOnStart)
     {
-        Sombrero::FastColor color = GetNormalColor(0, usingBoostColors);
-        if (!lightOnStart)
-        {
-            color = color.Alpha(offColorIntensity);
-        }
-
-        auto tableId = LightIDTableManager::GetActiveTableValueReverse(lightsID, id).value_or(0);
-        auto tween = Chroma::Tween::makeTween(
-                color,
-                color,
-                lightWithId,
-                lightManager
-        );
-        Chroma::Tween::ChromaColorTweenData tweenData(tableId, Functions::easeLinear, LerpType::RGB, 0, tween, lightWithId);
-
-        auto it = ColorTweens.emplace(lightWithId, std::move(tweenData));
-
-        // give access to ColorTween hook with fast performance
-        // super unsafe but I'm lazy
-        tween->onStart = reinterpret_cast<System::Action *>(&it.second);
-
-        tween->ForceOnUpdate();
+        color = color.Alpha(offColorIntensity);
     }
+
+    auto tableId = LightIDTableManager::GetActiveTableValueReverse(lightsID, id).value_or(0);
+    auto tween = Chroma::Tween::makeTween(
+            color,
+            color,
+            lightWithId,
+            lightManager
+    );
+
+    auto it = ColorTweens.try_emplace(lightWithId, tableId, tween, lightWithId);
+    ColorTweensMapping[tween] = &it.first->second;
+
+    tween->ForceOnUpdate();
 }

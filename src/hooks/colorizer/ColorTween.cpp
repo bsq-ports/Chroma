@@ -8,6 +8,7 @@
 
 #include "Tweening/ColorTween.hpp"
 
+#include "lighting/ChromaLightSwitchEventEffect.hpp"
 #include "lighting/ColorTween.hpp"
 
 using namespace Chroma;
@@ -32,7 +33,7 @@ MAKE_HOOK_MATCH(ColorTween_GetColor,
     if (self && self->easeType == Chroma::Tween::ChromaTweenDiscriminator) {
         // Set in ChromaLightSwitchEventEffect
         // fast access
-        Chroma::Tween::ChromaColorTweenData const& tweenData = *reinterpret_cast<Chroma::Tween::ChromaColorTweenData*>(self->onStart);
+        Chroma::Tween::ChromaColorTweenData const& tweenData = *Chroma::ChromaLightSwitchEventEffect::ColorTweensMapping[self];
         return tweenData.GetColor(t);
     }
 

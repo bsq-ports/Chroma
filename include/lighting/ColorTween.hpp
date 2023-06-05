@@ -29,22 +29,19 @@ namespace Chroma::Tween {
     constexpr auto ChromaTweenDiscriminator = 521912; // random number
 
     struct ChromaColorTweenData {
+        Functions easing = Functions::easeLinear;
+        Chroma::LerpType lerpType = LerpType::RGB;
+        GlobalNamespace::BasicBeatmapEventData *PreviousEvent = nullptr;
+
         int id;
-        Functions easing;
-        Chroma::LerpType lerpType;
-        GlobalNamespace::BasicBeatmapEventData* PreviousEvent;
         SafePtr<Tweening::ColorTween> tween;
         SafePtr<GlobalNamespace::ILightWithId> lightWithId;
 
-        ChromaColorTweenData(int id, Functions easing, LerpType lerpType,
-                             GlobalNamespace::BasicBeatmapEventData *previousEvent,
+        ChromaColorTweenData(int id,
                              const SafePtr<Tweening::ColorTween> &tween,
-                             const SafePtr<GlobalNamespace::ILightWithId> &lightWithId) : id(id), easing(easing),
-                                                                                            lerpType(lerpType),
-                                                                                            PreviousEvent(
-                                                                                                    previousEvent),
-                                                                                            tween(tween),
-                                                                                            lightWithId(lightWithId) {}
+                             const SafePtr<GlobalNamespace::ILightWithId> &lightWithId) : id(id),
+                                                                                          tween(tween),
+                                                                                          lightWithId(lightWithId) {}
 
         [[nodiscard]]
         Sombrero::FastColor GetColor(float time) const {
@@ -77,7 +74,7 @@ namespace Chroma::Tween {
 
     static void SetColor(GlobalNamespace::ILightWithId *lightWithId,
                          GlobalNamespace::LightWithIdManager *lightWithIdManager,
-                         UnityEngine::Color const& color) {
+                         UnityEngine::Color const &color) {
         if (!lightWithId->get_isRegistered()) {
             return;
 
@@ -88,8 +85,8 @@ namespace Chroma::Tween {
 
 
     static Tweening::ColorTween *makeTween(Sombrero::FastColor const &fromValue, Sombrero::FastColor const &toValue,
-                                    GlobalNamespace::ILightWithId *lightWithId,
-                                    GlobalNamespace::LightWithIdManager *lightWithIdManager) {
+                                           GlobalNamespace::ILightWithId *lightWithId,
+                                           GlobalNamespace::LightWithIdManager *lightWithIdManager) {
         auto tween = Tweening::ColorTween::New_ctor();
 
         std::function<void(UnityEngine::Color)> SetColorFn = [=](UnityEngine::Color const &color) constexpr {

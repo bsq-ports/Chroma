@@ -47,6 +47,7 @@ public:
         Sombrero::FastColor _highlightColor1BoostMult;
 
           std::unordered_map<GlobalNamespace::ILightWithId *, Tween::ChromaColorTweenData> ColorTweens;
+          static std::unordered_map<Tweening::ColorTween *, Tween::ChromaColorTweenData*> ColorTweensMapping;
 
           GlobalNamespace::BasicBeatmapEventType EventType;
 

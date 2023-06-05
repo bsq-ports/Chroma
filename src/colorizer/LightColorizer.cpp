@@ -101,10 +101,9 @@ void LightColorizer::Reset() {
     Colorizers.clear();
     ColorizersByLightID.clear();
     LightColorChanged.clear();
+    Chroma::ChromaLightSwitchEventEffect::ColorTweensMapping.clear();
     _contracts.clear();
     _contractsByLightID.clear();
-    _contracts.shrink_to_fit();
-    _contractsByLightID.shrink_to_fit();
 }
 
 void LightColorizer::InitializeSO(ColorSO *&lightColor0, ColorSO *&highlightColor0, ColorSO *&lightColor1,
