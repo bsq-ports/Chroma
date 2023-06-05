@@ -25,12 +25,9 @@ BombColorizer::ColorizerMap BombColorizer::Colorizers = BombColorizer::Colorizer
 void BombColorizer::Refresh() {
     Sombrero::FastColor const& color = getColor();
 
-    if (!_materialPropertyBlockController) {
-        _materialPropertyBlockController = CRASH_UNLESS(noteController->GetComponent<GlobalNamespace::MaterialPropertyBlockController*>());
-    }
     // getter here causes the null value to instantiate
     // which then allows later use through field
-    auto bombMaterial = _materialPropertyBlockController->get_materialPropertyBlock();
+    auto bombMaterial = _materialPropertyBlockController->materialPropertyBlock;
     if (color == static_cast<Sombrero::FastColor>(bombMaterial->GetColor(_simpleColor()))) {
         return;
     }
@@ -46,14 +43,15 @@ void BombColorizer::Refresh() {
 
 BombColorizer::BombColorizer(GlobalNamespace::NoteControllerBase *noteController) :
         noteController(noteController),
-        _materialPropertyBlockController(noteController->GetComponent<GlobalNamespace::MaterialPropertyBlockController*>())
+        _materialPropertyBlockController(noteController->GetComponentInChildren<GlobalNamespace::MaterialPropertyBlockController*>())
 {
+
     OriginalColor = noteController->GetComponentInChildren<Renderer*>()->get_material()->GetColor(_simpleColor());
     // getter here causes the null value to instantiate
     // which then allows later use through field
-//    auto materialPropertyBlock = _materialPropertyBlockController->get_materialPropertyBlock();
-//    materialPropertyBlock->SetColor(_simpleColor(), OriginalColor);
-//    materialPropertyBlock->SetColor(_color(), OriginalColor);
+    auto materialPropertyBlock = _materialPropertyBlockController->get_materialPropertyBlock();
+    materialPropertyBlock->SetColor(_simpleColor(), OriginalColor);
+    materialPropertyBlock->SetColor(_color(), OriginalColor);
 }
 
 std::optional<Sombrero::FastColor> BombColorizer::getGlobalColor() {
