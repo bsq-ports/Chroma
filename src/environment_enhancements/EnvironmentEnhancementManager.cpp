@@ -293,7 +293,7 @@ EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData *customBea
     float noteLinesDistance = 0.6f;
     getLogger().debug("Custom beat map %p", customBeatmapData);
     getLogger().debug("Custom beat map custom data %p", customBeatmapData->customData);
-    auto customDynWrapper = customBeatmapData->customData->value;
+    auto const& customDynWrapper = customBeatmapData->customData->value;
     bool v2 = customBeatmapData->v2orEarlier;
     CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Is environment v2 {}", v2);
     TracksAD::BeatmapAssociatedData& trackBeatmapAD = TracksAD::getBeatmapAD(customBeatmapData->customData);
