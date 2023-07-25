@@ -95,13 +95,13 @@ void CustomEventCallback(BeatmapCallbacksController *callbackController,
 
     // fail safe, idek why this needs to be done smh
     // CJD you bugger
+    auto *customBeatmapData = (CustomJSONData::CustomBeatmapData *)callbackController->beatmapData;
     if (!ad.parsed) {
-        auto *customBeatmapData = (CustomJSONData::CustomBeatmapData *)callbackController->beatmapData;
         TracksAD::BeatmapAssociatedData &beatmapAD = TracksAD::getBeatmapAD(customBeatmapData->customData);
         ChromaEvents::parseEventData(beatmapAD, customEventData, customBeatmapData->v2orEarlier);
     }
 
-    if (typeHash == jsonNameHash_ASSIGNFOGTRACK) {
+    if (typeHash == jsonNameHash_ASSIGNFOGTRACK && customBeatmapData->v2orEarlier) {
         Chroma::ChromaFogController::getInstance()->AssignTrack(ad.track);
         CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Assigned fog controller to track");
     }
