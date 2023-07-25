@@ -12,33 +12,32 @@
 using namespace GlobalNamespace;
 using namespace Chroma;
 
-MAKE_HOOK_MATCH(ColorNoteVisuals_HandleNoteControllerDidInit,
-                &ColorNoteVisuals::HandleNoteControllerDidInit,
-                void, ColorNoteVisuals* self, NoteControllerBase* noteController) {
-    ColorNoteVisuals_HandleNoteControllerDidInit(self, noteController); // This calls the original method
+MAKE_HOOK_MATCH(ColorNoteVisuals_HandleNoteControllerDidInit, &ColorNoteVisuals::HandleNoteControllerDidInit, void,
+                ColorNoteVisuals* self, NoteControllerBase* noteController) {
+  ColorNoteVisuals_HandleNoteControllerDidInit(self, noteController); // This calls the original method
 
-    // Do nothing if Chroma shouldn't run
-    if (!ChromaController::DoChromaHooks()) {
-        return;
+  // Do nothing if Chroma shouldn't run
+  if (!ChromaController::DoChromaHooks()) {
+    return;
+  }
+
+  auto NoteControllerCast = il2cpp_utils::try_cast<NoteController>(noteController);
+
+  if (NoteControllerCast) {
+    auto it = ChromaObjectDataManager::ChromaObjectDatas.find(NoteControllerCast.value()->noteData);
+
+    if (it != ChromaObjectDataManager::ChromaObjectDatas.end()) {
+      auto const& chromaData = it->second;
+
+      std::optional<Sombrero::FastColor> const& color = chromaData.Color;
+
+      NoteColorizer::ColorizeNote(noteController, color);
     }
-
-    auto NoteControllerCast = il2cpp_utils::try_cast<NoteController>(noteController);
-
-    if (NoteControllerCast) {
-        auto it = ChromaObjectDataManager::ChromaObjectDatas.find(NoteControllerCast.value()->noteData);
-
-        if (it != ChromaObjectDataManager::ChromaObjectDatas.end()) {
-            auto const& chromaData = it->second;
-
-            std::optional<Sombrero::FastColor> const& color = chromaData.Color;
-
-            NoteColorizer::ColorizeNote(noteController, color);
-        }
-    }
+  }
 }
 
 void ColorNoteVisualsHook(Logger& logger) {
-    INSTALL_HOOK(logger, ColorNoteVisuals_HandleNoteControllerDidInit);
+  INSTALL_HOOK(logger, ColorNoteVisuals_HandleNoteControllerDidInit);
 }
 
 ChromaInstallHooks(ColorNoteVisualsHook)

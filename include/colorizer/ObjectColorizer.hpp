@@ -9,59 +9,57 @@
 #include "questui_components/shared/concepts.hpp"
 
 namespace Chroma {
-    template <typename T>
-    concept ObjectColorizerMethods = requires(T t, std::optional<Sombrero::FastColor> const& color) {
-        t.Colorize(color);
-        {t.getColor()} -> QUC::IsQUCConvertible<Sombrero::FastColor>;
-        {t.getSelfColor()} -> QUC::IsQUCConvertible<std::optional<Sombrero::FastColor>>;
-    };
+template <typename T>
+concept ObjectColorizerMethods = requires(T t, std::optional<Sombrero::FastColor> const& color) {
+  t.Colorize(color);
+  { t.getColor() } -> QUC::IsQUCConvertible<Sombrero::FastColor>;
+  { t.getSelfColor() } -> QUC::IsQUCConvertible<std::optional<Sombrero::FastColor>>;
+};
 
-    template <typename T>
-    concept ObjectColorizerInternalMethods = ObjectColorizerMethods<T> && requires(T t) {
-        t.Refresh();
-        {t.GlobalColorGetter()} -> QUC::IsQUCConvertible<std::optional<Sombrero::FastColor>>;
-        {t.OriginalColorGetter()} -> QUC::IsQUCConvertible<std::optional<Sombrero::FastColor>>;
-        {t.OriginalColor} -> QUC::IsQUCConvertible<std::optional<Sombrero::FastColor>>;
-    };
+template <typename T>
+concept ObjectColorizerInternalMethods = ObjectColorizerMethods<T> && requires(T t) {
+  t.Refresh();
+  { t.GlobalColorGetter() } -> QUC::IsQUCConvertible<std::optional<Sombrero::FastColor>>;
+  { t.OriginalColorGetter() } -> QUC::IsQUCConvertible<std::optional<Sombrero::FastColor>>;
+  { t.OriginalColor } -> QUC::IsQUCConvertible<std::optional<Sombrero::FastColor>>;
+};
 
-    template <typename T>
-    class ObjectColorizer {
-    private:
-        std::optional<Sombrero::FastColor> _color;
-    protected:
-        Sombrero::FastColor OriginalColor;
+template <typename T> class ObjectColorizer {
+private:
+  std::optional<Sombrero::FastColor> _color;
 
-        // virtual
-        [[nodiscard]] std::optional<Sombrero::FastColor> OriginalColorGetter() const {
-            return OriginalColor;
-        }
+protected:
+  Sombrero::FastColor OriginalColor;
 
-        // abstract void Refresh()
-        // abstract std::optional<Sombrero::FastColor> GlobalColorGetter()
+  // virtual
+  [[nodiscard]] std::optional<Sombrero::FastColor> OriginalColorGetter() const {
+    return OriginalColor;
+  }
 
-    public:
-        [[nodiscard]] std::optional<Sombrero::FastColor> getSelfColor() const {
-            return _color;
-        }
+  // abstract void Refresh()
+  // abstract std::optional<Sombrero::FastColor> GlobalColorGetter()
 
-        [[nodiscard]] Sombrero::FastColor getColor() {
-            if (_color)
-                return *_color;
+public:
+  [[nodiscard]] std::optional<Sombrero::FastColor> getSelfColor() const {
+    return _color;
+  }
 
-            auto globalColor = static_cast<T*>(this)->GlobalColorGetter();
-            if (globalColor)
-                return *globalColor;
+  [[nodiscard]] Sombrero::FastColor getColor() {
+    if (_color) return *_color;
 
-            // Throw an exception here intentionally or CRASH?
-            return *static_cast<T*>(this)->OriginalColorGetter();
-        }
+    auto globalColor = static_cast<T*>(this)->GlobalColorGetter();
+    if (globalColor) return *globalColor;
 
-        void Colorize(std::optional<Sombrero::FastColor> const& color) {
-            _color = color;
-            static_cast<T*>(this)->Refresh();
-        }
+    // Throw an exception here intentionally or CRASH?
+    return *static_cast<T*>(this)->OriginalColorGetter();
+  }
 
-        virtual ~ObjectColorizer() = default;
-    };
+  void Colorize(std::optional<Sombrero::FastColor> const& color) {
+    _color = color;
+    static_cast<T*>(this)->Refresh();
+  }
 
-}
+  virtual ~ObjectColorizer() = default;
+};
+
+} // namespace Chroma

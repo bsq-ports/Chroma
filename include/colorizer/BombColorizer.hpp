@@ -14,56 +14,57 @@
 #include "custom-types/shared/types.hpp"
 #include "custom-types/shared/macros.hpp"
 
- namespace Chroma {
-     class BombColorizer : public ObjectColorizer<BombColorizer> {
-     private:
-         friend class ObjectColorizer<BombColorizer>;
-         static int _color();
-         GlobalNamespace::MaterialPropertyBlockController* _materialPropertyBlockController;
+namespace Chroma {
+class BombColorizer : public ObjectColorizer<BombColorizer> {
+private:
+  friend class ObjectColorizer<BombColorizer>;
+  static int _color();
+  GlobalNamespace::MaterialPropertyBlockController* _materialPropertyBlockController;
 
-         GlobalNamespace::NoteControllerBase *noteController;
+  GlobalNamespace::NoteControllerBase* noteController;
 
-         static int _simpleColor();
+  static int _simpleColor();
 
-         inline static std::optional<Sombrero::FastColor> GlobalColor;
+  inline static std::optional<Sombrero::FastColor> GlobalColor;
 
-         explicit BombColorizer(GlobalNamespace::NoteControllerBase *noteController);
-     protected:
-         void Refresh();
+  explicit BombColorizer(GlobalNamespace::NoteControllerBase* noteController);
 
-         std::optional<Sombrero::FastColor> GlobalColorGetter();
+protected:
+  void Refresh();
 
-     public:
-         inline static bool BombColorable = false;
-         inline static UnorderedEventCallback<GlobalNamespace::NoteControllerBase*, Sombrero::FastColor const&> BombColorChanged;
+  std::optional<Sombrero::FastColor> GlobalColorGetter();
 
-         BombColorizer(BombColorizer const&) = delete;
-         friend class std::pair<GlobalNamespace::NoteControllerBase const*, BombColorizer>;
-         friend class std::pair<const GlobalNamespace::NoteControllerBase *const, BombColorizer>;
+public:
+  inline static bool BombColorable = false;
+  inline static UnorderedEventCallback<GlobalNamespace::NoteControllerBase*, Sombrero::FastColor const&>
+      BombColorChanged;
 
-         static BombColorizer& New(GlobalNamespace::NoteControllerBase* noteController);
+  BombColorizer(BombColorizer const&) = delete;
+  friend class std::pair<GlobalNamespace::NoteControllerBase const*, BombColorizer>;
+  friend class std::pair<GlobalNamespace::NoteControllerBase const* const, BombColorizer>;
 
-         using ColorizerMap = std::unordered_map<GlobalNamespace::NoteControllerBase const*, BombColorizer>;
-         static ColorizerMap Colorizers;
+  static BombColorizer& New(GlobalNamespace::NoteControllerBase* noteController);
 
-         static std::optional<Sombrero::FastColor> getGlobalColor();
+  using ColorizerMap = std::unordered_map<GlobalNamespace::NoteControllerBase const*, BombColorizer>;
+  static ColorizerMap Colorizers;
 
-         static void GlobalColorize(std::optional<Sombrero::FastColor> const& color);
+  static std::optional<Sombrero::FastColor> getGlobalColor();
 
-         static void Reset();
+  static void GlobalColorize(std::optional<Sombrero::FastColor> const& color);
 
-         // extensions
-         inline static BombColorizer* GetBombColorizer(GlobalNamespace::NoteControllerBase* noteController) {
-             auto it = Colorizers.find(noteController);
-             if (it == Colorizers.end())
-                 return nullptr;
+  static void Reset();
 
-             return &it->second;
-         }
+  // extensions
+  inline static BombColorizer* GetBombColorizer(GlobalNamespace::NoteControllerBase* noteController) {
+    auto it = Colorizers.find(noteController);
+    if (it == Colorizers.end()) return nullptr;
 
-         inline static void ColorizeBomb(GlobalNamespace::NoteControllerBase* noteController, std::optional<Sombrero::FastColor> const& color) {
-             GetBombColorizer(noteController)->Colorize(color);
-         }
-     };
- }
+    return &it->second;
+  }
 
+  inline static void ColorizeBomb(GlobalNamespace::NoteControllerBase* noteController,
+                                  std::optional<Sombrero::FastColor> const& color) {
+    GetBombColorizer(noteController)->Colorize(color);
+  }
+};
+} // namespace Chroma

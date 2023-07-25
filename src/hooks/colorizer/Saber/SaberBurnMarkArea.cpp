@@ -19,63 +19,59 @@ using namespace GlobalNamespace;
 using namespace Chroma;
 using namespace UnityEngine;
 
-std::array<LineRenderer*, 2> _lineRenderers = {nullptr, nullptr};
+std::array<LineRenderer*, 2> _lineRenderers = { nullptr, nullptr };
 
 int saberBurnMarkCount = 0;
 
-void OnSaberColorChanged_SaberBurnMarkArea(int saberType, GlobalNamespace::SaberModelController* saberModelController, Color const& color)
-{
-    float h;
-    float s;
-    float _;
+void OnSaberColorChanged_SaberBurnMarkArea(int saberType, GlobalNamespace::SaberModelController* saberModelController,
+                                           Color const& color) {
+  float h;
+  float s;
+  float _;
 
-    Sombrero::FastColor::RGBToHSV(color, h, s, _);
-    Sombrero::FastColor effectColor = Sombrero::FastColor::HSVToRGB(h, s, 1);
-    int intType = saberType;
-    _lineRenderers[intType]->set_startColor(effectColor);
-    _lineRenderers[intType]->set_endColor(effectColor);
+  Sombrero::FastColor::RGBToHSV(color, h, s, _);
+  Sombrero::FastColor effectColor = Sombrero::FastColor::HSVToRGB(h, s, 1);
+  int intType = saberType;
+  _lineRenderers[intType]->set_startColor(effectColor);
+  _lineRenderers[intType]->set_endColor(effectColor);
 }
 
-MAKE_HOOK_MATCH(SaberBurnMarkArea_Start,
-                &SaberBurnMarkArea::Start,
-                void, SaberBurnMarkArea* self) {
-    SaberBurnMarkArea_Start(self);
+MAKE_HOOK_MATCH(SaberBurnMarkArea_Start, &SaberBurnMarkArea::Start, void, SaberBurnMarkArea* self) {
+  SaberBurnMarkArea_Start(self);
 
-    // Do nothing if Chroma shouldn't run
-    if (!ChromaController::DoChromaHooks() || !self) {
-        return;
-    }
+  // Do nothing if Chroma shouldn't run
+  if (!ChromaController::DoChromaHooks() || !self) {
+    return;
+  }
 
-    if (self->lineRenderers && self->lineRenderers.Length() >= 2) {
-        _lineRenderers[0] = self->lineRenderers.get(0);
-        _lineRenderers[1] = self->lineRenderers.get(1);
-    }
+  if (self->lineRenderers && self->lineRenderers.Length() >= 2) {
+    _lineRenderers[0] = self->lineRenderers.get(0);
+    _lineRenderers[1] = self->lineRenderers.get(1);
+  }
 
-    if (saberBurnMarkCount == 0) {
-        SaberColorizer::SaberColorChanged += &OnSaberColorChanged_SaberBurnMarkArea;
-    }
-    saberBurnMarkCount++;
+  if (saberBurnMarkCount == 0) {
+    SaberColorizer::SaberColorChanged += &OnSaberColorChanged_SaberBurnMarkArea;
+  }
+  saberBurnMarkCount++;
 }
 
-MAKE_HOOK_MATCH(SaberBurnMarkArea_OnDestroy,
-                &SaberBurnMarkArea::OnDestroy,
-                void, SaberBurnMarkArea* self) {
-    SaberBurnMarkArea_OnDestroy(self);
-    // Do nothing if Chroma shouldn't run
-    if (!ChromaController::DoChromaHooks()) {
-        return;
-    }
+MAKE_HOOK_MATCH(SaberBurnMarkArea_OnDestroy, &SaberBurnMarkArea::OnDestroy, void, SaberBurnMarkArea* self) {
+  SaberBurnMarkArea_OnDestroy(self);
+  // Do nothing if Chroma shouldn't run
+  if (!ChromaController::DoChromaHooks()) {
+    return;
+  }
 
-    saberBurnMarkCount--;
+  saberBurnMarkCount--;
 
-    if (saberBurnMarkCount == 0) {
-        SaberColorizer::SaberColorChanged -= &OnSaberColorChanged_SaberBurnMarkArea;
-    }
+  if (saberBurnMarkCount == 0) {
+    SaberColorizer::SaberColorChanged -= &OnSaberColorChanged_SaberBurnMarkArea;
+  }
 }
 
 void SaberBurnMarkAreaHook(Logger& logger) {
-    INSTALL_HOOK(logger, SaberBurnMarkArea_Start);
-    INSTALL_HOOK(logger, SaberBurnMarkArea_OnDestroy);
+  INSTALL_HOOK(logger, SaberBurnMarkArea_Start);
+  INSTALL_HOOK(logger, SaberBurnMarkArea_OnDestroy);
 }
 
 ChromaInstallHooks(SaberBurnMarkAreaHook)

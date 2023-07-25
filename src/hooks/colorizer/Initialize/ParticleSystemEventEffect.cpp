@@ -5,7 +5,6 @@
 #include "colorizer/Monobehaviours/ChromaParticleEventController.hpp"
 #include "utils/ChromaUtils.hpp"
 
-
 #include "custom-json-data/shared/CustomBeatmapData.h"
 #include "GlobalNamespace/ParticleSystemEventEffect.hpp"
 #include "GlobalNamespace/ColorManager.hpp"
@@ -18,10 +17,6 @@
 
 #include <experimental/coroutine>
 
-
-
-
-
 using namespace CustomJSONData;
 using namespace GlobalNamespace;
 using namespace Chroma;
@@ -29,63 +24,52 @@ using namespace ChromaUtils;
 using namespace custom_types::Helpers;
 
 Coroutine WaitThenStartParticle(ParticleSystemEventEffect* instance, BasicBeatmapEventType eventType) {
-    co_yield reinterpret_cast<enumeratorT>(UnityEngine::WaitForEndOfFrame::New_ctor());
-    IL2CPP_CATCH_HANDLER(
-        instance->get_gameObject()->AddComponent<ChromaParticleEventController*>()->Init(instance, eventType);
-    )
+  co_yield reinterpret_cast<enumeratorT>(UnityEngine::WaitForEndOfFrame::New_ctor());
+  IL2CPP_CATCH_HANDLER(
+      instance->get_gameObject()->AddComponent<ChromaParticleEventController*>()->Init(instance, eventType);)
 }
 
-MAKE_HOOK_MATCH(
-        ParticleSystemEventEffect_Start,
-        &ParticleSystemEventEffect::Start,
-        void,
-        ParticleSystemEventEffect* self
-) {
-    ParticleSystemEventEffect_Start(self);
+MAKE_HOOK_MATCH(ParticleSystemEventEffect_Start, &ParticleSystemEventEffect::Start, void,
+                ParticleSystemEventEffect* self) {
+  ParticleSystemEventEffect_Start(self);
 
-    // Do nothing if Chroma shouldn't run
-    if (!ChromaController::DoChromaHooks()) {
-        return;
-    }
+  // Do nothing if Chroma shouldn't run
+  if (!ChromaController::DoChromaHooks()) {
+    return;
+  }
 
-    // If duplicated, clean up before duping
-    auto oldController = self->GetComponent<ChromaParticleEventController*>();
-    if (oldController)
-    {
-        UnityEngine::Object::Destroy(oldController);
-    }
+  // If duplicated, clean up before duping
+  auto oldController = self->GetComponent<ChromaParticleEventController*>();
+  if (oldController) {
+    UnityEngine::Object::Destroy(oldController);
+  }
 
-    auto coro = custom_types::Helpers::CoroutineHelper::New(WaitThenStartParticle(self, self->colorEvent));
+  auto coro = custom_types::Helpers::CoroutineHelper::New(WaitThenStartParticle(self, self->colorEvent));
 
-    self->StartCoroutine(coro);
+  self->StartCoroutine(coro);
 }
 
-MAKE_HOOK_MATCH(
-        ParticleSystemEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger,
-        &ParticleSystemEventEffect::HandleBeatmapEvent,
-        void,
-        ParticleSystemEventEffect* self,
-        BasicBeatmapEventData* beatmapEventData
-) {
-    // Do nothing if Chroma shouldn't run
-    if (!ChromaController::DoChromaHooks()) {
-        ParticleSystemEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);
-        return;
-    }
-
-    if (beatmapEventData->basicBeatmapEventType == self->colorEvent)
-    {
-        for (auto& colorizer : ParticleColorizer::GetParticleColorizers(self->colorEvent)) {
-            colorizer->PreviousValue = beatmapEventData->value;
-        }
-    }
-
+MAKE_HOOK_MATCH(ParticleSystemEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger,
+                &ParticleSystemEventEffect::HandleBeatmapEvent, void, ParticleSystemEventEffect* self,
+                BasicBeatmapEventData* beatmapEventData) {
+  // Do nothing if Chroma shouldn't run
+  if (!ChromaController::DoChromaHooks()) {
     ParticleSystemEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);
+    return;
+  }
+
+  if (beatmapEventData->basicBeatmapEventType == self->colorEvent) {
+    for (auto& colorizer : ParticleColorizer::GetParticleColorizers(self->colorEvent)) {
+      colorizer->PreviousValue = beatmapEventData->value;
+    }
+  }
+
+  ParticleSystemEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);
 }
 
 void ParticleSystemEventEffectHook(Logger& logger) {
-    INSTALL_HOOK(logger, ParticleSystemEventEffect_Start);
-    INSTALL_HOOK(logger, ParticleSystemEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger);
+  INSTALL_HOOK(logger, ParticleSystemEventEffect_Start);
+  INSTALL_HOOK(logger, ParticleSystemEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger);
 }
 
 ChromaInstallHooks(ParticleSystemEventEffectHook)

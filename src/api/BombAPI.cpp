@@ -16,59 +16,57 @@ using namespace Sombrero;
 
 // TODO: unsure of this
 EXPOSE_API(getBombColorSafe, OptColor) {
-    auto optional = BombColorizer::getGlobalColor();
+  auto optional = BombColorizer::getGlobalColor();
 
-    Sombrero::FastColor color;
+  Sombrero::FastColor color;
 
-    if (optional) {
+  if (optional) {
 
-        color = optional.value();
+    color = optional.value();
 
-        return OptColorFromColor(color);
-    } else {
-        return OptColorNull;
-    }
+    return OptColorFromColor(color);
+  } else {
+    return OptColorNull;
+  }
 }
 
 EXPOSE_API(getBombNoteControllerOverrideColorSafe, OptColor, BombNoteController* BombNoteController) {
-    auto cnv = BombColorizer::GetBombColorizer(BombNoteController);
+  auto cnv = BombColorizer::GetBombColorizer(BombNoteController);
 
-    if (!cnv) return OptColor();
+  if (!cnv) return OptColor();
 
-    auto color = cnv->getColor();
+  auto color = cnv->getColor();
 
-    return OptColorFromColor(color);
+  return OptColorFromColor(color);
 }
 
 EXPOSE_API(getBombNoteControllerColorSafe, OptColor, BombNoteController* BombNoteController) {
-    auto it = ChromaObjectDataManager::ChromaObjectDatas.find(BombNoteController->noteData);
+  auto it = ChromaObjectDataManager::ChromaObjectDatas.find(BombNoteController->noteData);
 
-    if (it == ChromaObjectDataManager::ChromaObjectDatas.end())
-        return OptColorNull;
+  if (it == ChromaObjectDataManager::ChromaObjectDatas.end()) return OptColorNull;
 
-    auto color = it->second.Color;
+  auto color = it->second.Color;
 
-    if (!color)
-        return OptColorNull;
+  if (!color) return OptColorNull;
 
-    return OptColorFromColor(color.value());
+  return OptColorFromColor(color.value());
 }
 
 EXPOSE_API(setBombColorSafe, void, BombNoteController* nc, std::optional<Sombrero::FastColor> color0) {
-    BombColorizer::ColorizeBomb(nc, color0);
+  BombColorizer::ColorizeBomb(nc, color0);
 }
 
 EXPOSE_API(setGlobalBombColorSafe, void, std::optional<Sombrero::FastColor> color0) {
-    BombColorizer::GlobalColorize(color0);
+  BombColorizer::GlobalColorize(color0);
 }
 
 EXPOSE_API(setBombColorable, void, bool colorable) {
-    BombColorizer::BombColorable = colorable;
+  BombColorizer::BombColorable = colorable;
 }
 
 EXPOSE_API(isBombColorable, bool) {
-    return BombColorizer::BombColorable;
+  return BombColorizer::BombColorable;
 }
-EXPOSE_API(getBombChangedColorCallbackSafe, BombAPI::BombCallback *) {
-    return &BombColorizer::BombColorChanged;
+EXPOSE_API(getBombChangedColorCallbackSafe, BombAPI::BombCallback*) {
+  return &BombColorizer::BombColorChanged;
 }

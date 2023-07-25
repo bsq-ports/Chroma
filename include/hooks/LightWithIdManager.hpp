@@ -11,47 +11,45 @@
 #include "lighting/LightIDTableManager.hpp"
 
 namespace Chroma {
-    struct LightIdRegisterer {
-        static std::unordered_map<GlobalNamespace::ILightWithId*, int> RequestedIDs;
-        static std::unordered_set<GlobalNamespace::ILightWithId*> NeedToRegister;
-        static GlobalNamespace::LightWithIdManager* lightWithIdManager;
-        static bool canUnregister;
+struct LightIdRegisterer {
+  static std::unordered_map<GlobalNamespace::ILightWithId*, int> RequestedIDs;
+  static std::unordered_set<GlobalNamespace::ILightWithId*> NeedToRegister;
+  static GlobalNamespace::LightWithIdManager* lightWithIdManager;
+  static bool canUnregister;
 
-        static void Reset() {
-            RequestedIDs.clear();
-            NeedToRegister.clear();
-            lightWithIdManager = nullptr;
-            canUnregister = false;
-        }
+  static void Reset() {
+    RequestedIDs.clear();
+    NeedToRegister.clear();
+    lightWithIdManager = nullptr;
+    canUnregister = false;
+  }
 
-        static void SetRequestedId(GlobalNamespace::ILightWithId* lightWithId, int id)
-        {
-            RequestedIDs[lightWithId] = id;
-        }
+  static void SetRequestedId(GlobalNamespace::ILightWithId* lightWithId, int id) {
+    RequestedIDs[lightWithId] = id;
+  }
 
-        static void MarkForTableRegister(GlobalNamespace::ILightWithId* lightWithId)
-        {
-            NeedToRegister.emplace(lightWithId);
-        }
+  static void MarkForTableRegister(GlobalNamespace::ILightWithId* lightWithId) {
+    NeedToRegister.emplace(lightWithId);
+  }
 
-        static void ForceUnregister(GlobalNamespace::ILightWithId* lightWithId)
-        {
-            int lightId = lightWithId->get_lightId();
-            auto lights = VList(lightWithIdManager->lights.get(lightId));
-            int index = -1;
+  static void ForceUnregister(GlobalNamespace::ILightWithId* lightWithId) {
+    int lightId = lightWithId->get_lightId();
+    auto lights = VList(lightWithIdManager->lights.get(lightId));
+    int index = -1;
 
-            for (auto i = 0; i < lights.size(); i++) {
-                auto const& n = lights[i];
-                if (n == lightWithId) {
-                    index = i;
-                    break;
-                }
-            }
+    for (auto i = 0; i < lights.size(); i++) {
+      auto const& n = lights[i];
+      if (n == lightWithId) {
+        index = i;
+        break;
+      }
+    }
 
-            lights[index] = nullptr; // TODO: handle null
-            LightIDTableManager::UnregisterIndex(lightId, index);
-            LightColorizer::CreateLightColorizerContractByLightID(lightId, [lightWithId](LightColorizer& n) {n._lightSwitchEventEffect->UnregisterLight(lightWithId);});
-            lightWithId->__SetIsUnRegistered();
-        }
-    };
-}
+    lights[index] = nullptr; // TODO: handle null
+    LightIDTableManager::UnregisterIndex(lightId, index);
+    LightColorizer::CreateLightColorizerContractByLightID(
+        lightId, [lightWithId](LightColorizer& n) { n._lightSwitchEventEffect->UnregisterLight(lightWithId); });
+    lightWithId->__SetIsUnRegistered();
+  }
+};
+} // namespace Chroma

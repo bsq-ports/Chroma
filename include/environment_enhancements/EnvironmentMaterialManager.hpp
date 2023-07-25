@@ -10,15 +10,12 @@
 #include "UnityEngine/Resources.hpp"
 
 namespace Chroma {
-    struct EnvironmentMaterialManager {
+struct EnvironmentMaterialManager {
 
-        inline static std::unordered_map<ShaderType, SafePtrUnity<UnityEngine::Material>> EnvironmentMaterials;
+  inline static std::unordered_map<ShaderType, SafePtrUnity<UnityEngine::Material>> EnvironmentMaterials;
 
-        static std::optional<UnityEngine::Material*> getMaterial(ShaderType shaderType);
+  static std::optional<UnityEngine::Material*> getMaterial(ShaderType shaderType);
 
-        static custom_types::Helpers::Coroutine Activate();
-
-    };
-}
-
-
+  static custom_types::Helpers::Coroutine Activate();
+};
+} // namespace Chroma

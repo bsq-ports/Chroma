@@ -15,54 +15,49 @@
 using namespace GlobalNamespace;
 using namespace Chroma;
 
-bool IsBombType(NoteControllerBase* noteController)
-{
-    static std::unordered_set<Il2CppClass*> bombTypes = {
-            classof(BombNoteController*),
-            classof(MultiplayerConnectedPlayerBombNoteController*),
-            classof(MirroredBombNoteController*),
-    };
+bool IsBombType(NoteControllerBase* noteController) {
+  static std::unordered_set<Il2CppClass*> bombTypes = {
+    classof(BombNoteController*),
+    classof(MultiplayerConnectedPlayerBombNoteController*),
+    classof(MirroredBombNoteController*),
+  };
 
-    return bombTypes.contains(noteController->klass);
+  return bombTypes.contains(noteController->klass);
 }
 
-MAKE_HOOK_MATCH(BaseNoteVisuals_Awake,
-                &BaseNoteVisuals::Awake,
-                void, BaseNoteVisuals* self) {
-    // Do nothing if Chroma shouldn't run
-    if (!ChromaController::DoChromaHooks()) {
-        BaseNoteVisuals_Awake(self);
-        return;
-    }
-
-    if (IsBombType(self->noteController)) {
-        BombColorizer::New(self->noteController);
-    } else {
-        NoteColorizer::New(self->noteController);
-    }
-
+MAKE_HOOK_MATCH(BaseNoteVisuals_Awake, &BaseNoteVisuals::Awake, void, BaseNoteVisuals* self) {
+  // Do nothing if Chroma shouldn't run
+  if (!ChromaController::DoChromaHooks()) {
     BaseNoteVisuals_Awake(self);
+    return;
+  }
+
+  if (IsBombType(self->noteController)) {
+    BombColorizer::New(self->noteController);
+  } else {
+    NoteColorizer::New(self->noteController);
+  }
+
+  BaseNoteVisuals_Awake(self);
 }
 
-MAKE_HOOK_MATCH(BaseNoteVisuals_OnDestroy,
-                &BaseNoteVisuals::OnDestroy,
-                void, BaseNoteVisuals* self) {
-    BaseNoteVisuals_OnDestroy(self);
-    // Do nothing if Chroma shouldn't run
-    if (!ChromaController::DoChromaHooks()) {
-        return;
-    }
+MAKE_HOOK_MATCH(BaseNoteVisuals_OnDestroy, &BaseNoteVisuals::OnDestroy, void, BaseNoteVisuals* self) {
+  BaseNoteVisuals_OnDestroy(self);
+  // Do nothing if Chroma shouldn't run
+  if (!ChromaController::DoChromaHooks()) {
+    return;
+  }
 
-    if (IsBombType(self->noteController)) {
-        BombColorizer::Colorizers.erase(self->noteController);
-    } else {
-        NoteColorizer::Colorizers.erase(self->noteController);
-    }
+  if (IsBombType(self->noteController)) {
+    BombColorizer::Colorizers.erase(self->noteController);
+  } else {
+    NoteColorizer::Colorizers.erase(self->noteController);
+  }
 }
 
 void BaseNoteVisualsHook(Logger& logger) {
-    INSTALL_HOOK(logger, BaseNoteVisuals_Awake);
-    INSTALL_HOOK(logger, BaseNoteVisuals_OnDestroy);
+  INSTALL_HOOK(logger, BaseNoteVisuals_Awake);
+  INSTALL_HOOK(logger, BaseNoteVisuals_OnDestroy);
 }
 
 ChromaInstallHooks(BaseNoteVisualsHook)

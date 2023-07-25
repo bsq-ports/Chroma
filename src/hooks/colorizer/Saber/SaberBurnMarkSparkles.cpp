@@ -23,55 +23,55 @@ using namespace UnityEngine;
 
 int subCount = 0;
 
-std::array<ParticleSystem*, 2> _burnMarksPS = {nullptr, nullptr};
+std::array<ParticleSystem*, 2> _burnMarksPS = { nullptr, nullptr };
 
-void OnSaberColorChanged(int saberType, GlobalNamespace::SaberModelController* saberModelController, Color const& color)
-{
-    float h;
-    float s;
-    float _;
+void OnSaberColorChanged(int saberType, GlobalNamespace::SaberModelController* saberModelController,
+                         Color const& color) {
+  float h;
+  float s;
+  float _;
 
-    Sombrero::FastColor::RGBToHSV(color, h, s, _);
-    Sombrero::FastColor effectColor = Sombrero::FastColor::HSVToRGB(h, s, 1);
-    ParticleSystem::MainModule main = _burnMarksPS[(int)saberType]->get_main();
-    main.set_startColor(effectColor);
+  Sombrero::FastColor::RGBToHSV(color, h, s, _);
+  Sombrero::FastColor effectColor = Sombrero::FastColor::HSVToRGB(h, s, 1);
+  ParticleSystem::MainModule main = _burnMarksPS[(int)saberType]->get_main();
+  main.set_startColor(effectColor);
 }
 
 MAKE_HOOK_MATCH(SaberBurnMarkSparkles_Start, &SaberBurnMarkSparkles::Start, void, SaberBurnMarkSparkles* self) {
-    SaberBurnMarkSparkles_Start(self);
+  SaberBurnMarkSparkles_Start(self);
 
-    // Do nothing if Chroma shouldn't run
-    if (!ChromaController::DoChromaHooks() || !self) {
-        return;
-    }
-    if (self->burnMarksPS && self->burnMarksPS.Length() >= 2) {
-        _burnMarksPS[0] = self->burnMarksPS.get(0);
-        _burnMarksPS[1] = self->burnMarksPS.get(1);
-    }
+  // Do nothing if Chroma shouldn't run
+  if (!ChromaController::DoChromaHooks() || !self) {
+    return;
+  }
+  if (self->burnMarksPS && self->burnMarksPS.Length() >= 2) {
+    _burnMarksPS[0] = self->burnMarksPS.get(0);
+    _burnMarksPS[1] = self->burnMarksPS.get(1);
+  }
 
-    if (subCount == 0) {
-        SaberColorizer::SaberColorChanged += &OnSaberColorChanged;
-    }
-    subCount++;
+  if (subCount == 0) {
+    SaberColorizer::SaberColorChanged += &OnSaberColorChanged;
+  }
+  subCount++;
 }
 
-MAKE_HOOK_MATCH(SaberBurnMarkSparkles_OnDestroy, &SaberBurnMarkSparkles::OnDestroy,void, SaberBurnMarkSparkles* self) {
-    SaberBurnMarkSparkles_OnDestroy(self);
-    // Do nothing if Chroma shouldn't run
-    if (!ChromaController::DoChromaHooks()) {
-        return;
-    }
+MAKE_HOOK_MATCH(SaberBurnMarkSparkles_OnDestroy, &SaberBurnMarkSparkles::OnDestroy, void, SaberBurnMarkSparkles* self) {
+  SaberBurnMarkSparkles_OnDestroy(self);
+  // Do nothing if Chroma shouldn't run
+  if (!ChromaController::DoChromaHooks()) {
+    return;
+  }
 
-    subCount--;
+  subCount--;
 
-    if (subCount == 0) {
-        SaberColorizer::SaberColorChanged -= &OnSaberColorChanged;
-    }
+  if (subCount == 0) {
+    SaberColorizer::SaberColorChanged -= &OnSaberColorChanged;
+  }
 }
 
 void SaberBurnMarkSparklesHook(Logger& logger) {
-    INSTALL_HOOK(logger, SaberBurnMarkSparkles_Start);
-    INSTALL_HOOK(logger, SaberBurnMarkSparkles_OnDestroy);
+  INSTALL_HOOK(logger, SaberBurnMarkSparkles_Start);
+  INSTALL_HOOK(logger, SaberBurnMarkSparkles_OnDestroy);
 }
 
 ChromaInstallHooks(SaberBurnMarkSparklesHook)

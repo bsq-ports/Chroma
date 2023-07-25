@@ -15,99 +15,94 @@
 using namespace GlobalNamespace;
 using namespace NEVector;
 
-void ChromaEvents::parseEventData(TracksAD::BeatmapAssociatedData &beatmapAD,
-                                  CustomJSONData::CustomEventData const *customEventData, bool v2) {
-    bool isType = false;
+void ChromaEvents::parseEventData(TracksAD::BeatmapAssociatedData& beatmapAD,
+                                  CustomJSONData::CustomEventData const* customEventData, bool v2) {
+  bool isType = false;
 
-    auto typeHash = customEventData->typeHash;
+  auto typeHash = customEventData->typeHash;
 
-#define TYPE_GET(jsonName, varName)                                \
-    static auto jsonNameHash_##varName = std::hash<std::string_view>()(jsonName); \
-    if (!isType && typeHash == (jsonNameHash_##varName))                      \
-        isType = true;
+#define TYPE_GET(jsonName, varName)                                                                                    \
+  static auto jsonNameHash_##varName = std::hash<std::string_view>()(jsonName);                                        \
+  if (!isType && typeHash == (jsonNameHash_##varName)) isType = true;
 
-    TYPE_GET(Chroma::OldConstants::ASSIGNFOGTRACK, ASSIGNFOGTRACK)
+  TYPE_GET(Chroma::OldConstants::ASSIGNFOGTRACK, ASSIGNFOGTRACK)
 
-    if (!isType) {
-        return;
-    }
+  if (!isType) {
+    return;
+  }
 
-    rapidjson::Value const& eventData = *customEventData->data;
-    auto& eventAD = getEventAD(customEventData);
+  rapidjson::Value const& eventData = *customEventData->data;
+  auto& eventAD = getEventAD(customEventData);
 
-    if (eventAD.parsed)
-        return;
+  if (eventAD.parsed) return;
 
-    eventAD.parsed = true;
+  eventAD.parsed = true;
 
-    auto trackIt = eventData.FindMember((v2 ? Chroma::NewConstants::V2_TRACK : Chroma::NewConstants::TRACK).data());
+  auto trackIt = eventData.FindMember((v2 ? Chroma::NewConstants::V2_TRACK : Chroma::NewConstants::TRACK).data());
 
-    if (trackIt == eventData.MemberEnd() || trackIt->value.IsNull() || !trackIt->value.IsString()) {
-        getLogger().debug("Track data is missing for Chroma custom event %f", customEventData->time);
-        return;
-    }
+  if (trackIt == eventData.MemberEnd() || trackIt->value.IsNull() || !trackIt->value.IsString()) {
+    getLogger().debug("Track data is missing for Chroma custom event %f", customEventData->time);
+    return;
+  }
 
-    std::string trackName(trackIt->value.GetString());
-    Track *track = beatmapAD.getTrack(trackName);
+  std::string trackName(trackIt->value.GetString());
+  Track* track = beatmapAD.getTrack(trackName);
 
-    eventAD.track = track;
+  eventAD.track = track;
 
-    if (typeHash == jsonNameHash_ASSIGNFOGTRACK) {}
+  if (typeHash == jsonNameHash_ASSIGNFOGTRACK) {
+  }
 }
 
-void ChromaEvents::deserialize(CustomJSONData::CustomBeatmapData *readOnlyBeatmap) {
-    auto beatmapCast = readOnlyBeatmap;
+void ChromaEvents::deserialize(CustomJSONData::CustomBeatmapData* readOnlyBeatmap) {
+  auto beatmapCast = readOnlyBeatmap;
 
-    auto beatmap = beatmapCast;
-    auto &beatmapAD = TracksAD::getBeatmapAD(beatmap->customData);
+  auto beatmap = beatmapCast;
+  auto& beatmapAD = TracksAD::getBeatmapAD(beatmap->customData);
 
-    if (!beatmapAD.valid) {
-        TracksAD::readBeatmapDataAD(beatmap);
-    }
+  if (!beatmapAD.valid) {
+    TracksAD::readBeatmapDataAD(beatmap);
+  }
 
-    // Parse events
-    for (auto const &customEventData: beatmap->customEventDatas) {
-        if (!customEventData) continue;
+  // Parse events
+  for (auto const& customEventData : beatmap->customEventDatas) {
+    if (!customEventData) continue;
 
-        parseEventData(beatmapAD, customEventData, beatmap->v2orEarlier);
-    }
+    parseEventData(beatmapAD, customEventData, beatmap->v2orEarlier);
+  }
 }
 
-void CustomEventCallback(BeatmapCallbacksController *callbackController,
-                         CustomJSONData::CustomEventData *customEventData) {
-    PAPER_IL2CPP_CATCH_HANDLER(
-    bool isType = false;
+void CustomEventCallback(BeatmapCallbacksController* callbackController,
+                         CustomJSONData::CustomEventData* customEventData) {
+  PAPER_IL2CPP_CATCH_HANDLER(
+      bool isType = false;
 
-    auto typeHash = customEventData->typeHash;
+      auto typeHash = customEventData->typeHash;
 
-#define TYPE_GET(jsonName, varName)                                \
-    static auto jsonNameHash_##varName = std::hash<std::string_view>()(jsonName); \
-    if (!isType && typeHash == (jsonNameHash_##varName))                      \
-        isType = true;
+#define TYPE_GET(jsonName, varName)                                                                                    \
+  static auto jsonNameHash_##varName = std::hash<std::string_view>()(jsonName);                                        \
+  if (!isType && typeHash == (jsonNameHash_##varName)) isType = true;
 
-    TYPE_GET(Chroma::OldConstants::ASSIGNFOGTRACK, ASSIGNFOGTRACK)
+      TYPE_GET(Chroma::OldConstants::ASSIGNFOGTRACK, ASSIGNFOGTRACK)
 
-    if (!isType) {
-        return;
-    }
+          if (!isType) { return; }
 
-    auto const &ad = ChromaEvents::getEventAD(customEventData);
+      auto const& ad = ChromaEvents::getEventAD(customEventData);
 
-    // fail safe, idek why this needs to be done smh
-    // CJD you bugger
-    auto *customBeatmapData = (CustomJSONData::CustomBeatmapData *)callbackController->beatmapData;
-    if (!ad.parsed) {
-        TracksAD::BeatmapAssociatedData &beatmapAD = TracksAD::getBeatmapAD(customBeatmapData->customData);
+      // fail safe, idek why this needs to be done smh
+      // CJD you bugger
+      auto* customBeatmapData = (CustomJSONData::CustomBeatmapData*)callbackController->beatmapData;
+      if (!ad.parsed) {
+        TracksAD::BeatmapAssociatedData& beatmapAD = TracksAD::getBeatmapAD(customBeatmapData->customData);
         ChromaEvents::parseEventData(beatmapAD, customEventData, customBeatmapData->v2orEarlier);
-    }
+      }
 
-    if (typeHash == jsonNameHash_ASSIGNFOGTRACK && customBeatmapData->v2orEarlier) {
+      if (typeHash == jsonNameHash_ASSIGNFOGTRACK && customBeatmapData->v2orEarlier) {
         Chroma::ChromaFogController::getInstance()->AssignTrack(ad.track);
         CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Assigned fog controller to track");
-    }
-    )
+      })
 }
 
-void ChromaEvents::AddEventCallbacks(Logger &logger) {
-    CustomJSONData::CustomEventCallbacks::AddCustomEventCallback(&CustomEventCallback);
+void ChromaEvents::AddEventCallbacks(Logger& logger) {
+  CustomJSONData::CustomEventCallbacks::AddCustomEventCallback(&CustomEventCallback);
 }

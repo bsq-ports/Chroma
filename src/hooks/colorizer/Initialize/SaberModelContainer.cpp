@@ -16,23 +16,19 @@ using namespace UnityEngine;
 using namespace System::Collections;
 using namespace custom_types::Helpers;
 
+MAKE_HOOK_MATCH(SaberModelContainer_Start, &SaberModelContainer::Start, void, SaberModelContainer* self) {
+  SaberModelContainer_Start(self);
 
-MAKE_HOOK_MATCH(SaberModelContainer_Start,
-                &SaberModelContainer::Start,
-                void, SaberModelContainer* self) {
-    SaberModelContainer_Start(self);
+  // Do nothing if Chroma shouldn't run
+  if (!ChromaController::DoChromaHooks()) {
+    return;
+  }
 
-    // Do nothing if Chroma shouldn't run
-    if (!ChromaController::DoChromaHooks()) {
-        return;
-    }
-
-    self->get_gameObject()->AddComponent<ChromaSaberController*>()->Init(self->saber);
+  self->get_gameObject()->AddComponent<ChromaSaberController*>()->Init(self->saber);
 }
 
-
 void SaberModelContainerHook(Logger& logger) {
-    INSTALL_HOOK(logger, SaberModelContainer_Start);
+  INSTALL_HOOK(logger, SaberModelContainer_Start);
 }
 
 ChromaInstallHooks(SaberModelContainerHook)

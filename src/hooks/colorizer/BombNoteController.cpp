@@ -12,36 +12,26 @@ using namespace GlobalNamespace;
 using namespace Chroma;
 using namespace ChromaUtils;
 
-MAKE_HOOK_MATCH(
-    BombNoteController_Init,
-    &BombNoteController::Init,
-    void,
-    BombNoteController* self,
-    NoteData* noteData,
-    float worldRotation,
-    UnityEngine::Vector3 moveStartPos,
-    UnityEngine::Vector3 moveEndPos,
-    UnityEngine::Vector3 jumpEndPos,
-    float moveDuration,
-    float jumpDuration,
-    float jumpGravity
-) {
-    BombNoteController_Init(self, noteData, worldRotation, moveStartPos, moveEndPos, jumpEndPos, moveDuration, jumpDuration, jumpGravity);
-    // Do nothing if Chroma shouldn't run
-    if (!ChromaController::DoChromaHooks()) {
-        return;
-    }
+MAKE_HOOK_MATCH(BombNoteController_Init, &BombNoteController::Init, void, BombNoteController* self, NoteData* noteData,
+                float worldRotation, UnityEngine::Vector3 moveStartPos, UnityEngine::Vector3 moveEndPos,
+                UnityEngine::Vector3 jumpEndPos, float moveDuration, float jumpDuration, float jumpGravity) {
+  BombNoteController_Init(self, noteData, worldRotation, moveStartPos, moveEndPos, jumpEndPos, moveDuration,
+                          jumpDuration, jumpGravity);
+  // Do nothing if Chroma shouldn't run
+  if (!ChromaController::DoChromaHooks()) {
+    return;
+  }
 
-    auto chromaData = ChromaObjectDataManager::ChromaObjectDatas.find(noteData);
-    if (chromaData != ChromaObjectDataManager::ChromaObjectDatas.end()) {
-        auto const& color = chromaData->second.Color;
+  auto chromaData = ChromaObjectDataManager::ChromaObjectDatas.find(noteData);
+  if (chromaData != ChromaObjectDataManager::ChromaObjectDatas.end()) {
+    auto const& color = chromaData->second.Color;
 
-        BombColorizer::ColorizeBomb(self, color);
-    }
+    BombColorizer::ColorizeBomb(self, color);
+  }
 }
 
 void BombNoteControllerHook(Logger& logger) {
-    INSTALL_HOOK(logger, BombNoteController_Init);
+  INSTALL_HOOK(logger, BombNoteController_Init);
 }
 
 ChromaInstallHooks(BombNoteControllerHook)

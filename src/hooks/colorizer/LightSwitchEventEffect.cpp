@@ -32,96 +32,87 @@ using namespace custom_types::Helpers;
 
 BeatmapCallbacksController* beatmapCallbacksController;
 
+custom_types::Helpers::Coroutine WaitThenStartLight(LightSwitchEventEffect* instance, BasicBeatmapEventType eventType) {
+  co_yield reinterpret_cast<IEnumerator*>(CRASH_UNLESS(WaitForEndOfFrame::New_ctor()));
 
-custom_types::Helpers::Coroutine WaitThenStartLight(LightSwitchEventEffect *instance, BasicBeatmapEventType eventType) {
-    co_yield reinterpret_cast<IEnumerator*>(CRASH_UNLESS(WaitForEndOfFrame::New_ctor()));
+  auto* newEffect = instance->get_gameObject()->AddComponent<ChromaLightSwitchEventEffect*>();
+  newEffect->CopyValues(instance);
 
-    auto* newEffect = instance->get_gameObject()->AddComponent<ChromaLightSwitchEventEffect*>();
-    newEffect->CopyValues(instance);
+  IL2CPP_CATCH_HANDLER(Object::Destroy(instance);)
 
-    IL2CPP_CATCH_HANDLER(
-        Object::Destroy(instance);
-    )
-
-    co_return;
+  co_return;
 }
 
-MAKE_HOOK_MATCH(LightSwitchEventEffect_Awake,
-                &LightSwitchEventEffect::Awake,
-                void, LightSwitchEventEffect* self) {
-    static auto ChromaLightSwitchEventEffectKlass = classof(ChromaLightSwitchEventEffect*);
+MAKE_HOOK_MATCH(LightSwitchEventEffect_Awake, &LightSwitchEventEffect::Awake, void, LightSwitchEventEffect* self) {
+  static auto ChromaLightSwitchEventEffectKlass = classof(ChromaLightSwitchEventEffect*);
 
-    if (self->klass == ChromaLightSwitchEventEffectKlass) return;
+  if (self->klass == ChromaLightSwitchEventEffectKlass) return;
 
-    // Do nothing if Chroma shouldn't run
-    if (!ChromaController::GetChromaLegacy() && !ChromaController::DoChromaHooks()) {
-        return LightSwitchEventEffect_Awake(self);
-    }
+  // Do nothing if Chroma shouldn't run
+  if (!ChromaController::GetChromaLegacy() && !ChromaController::DoChromaHooks()) {
+    return LightSwitchEventEffect_Awake(self);
+  }
 
-    // override method to do nothing
+  // override method to do nothing
 }
 
-MAKE_HOOK_MATCH(LightSwitchEventEffect_Start,
-                &LightSwitchEventEffect::Start,
-                void, LightSwitchEventEffect* self) {
-    static auto ChromaLightSwitchEventEffectKlass = classof(ChromaLightSwitchEventEffect*);
+MAKE_HOOK_MATCH(LightSwitchEventEffect_Start, &LightSwitchEventEffect::Start, void, LightSwitchEventEffect* self) {
+  static auto ChromaLightSwitchEventEffectKlass = classof(ChromaLightSwitchEventEffect*);
 
-    if (self->klass == ChromaLightSwitchEventEffectKlass) return;
+  if (self->klass == ChromaLightSwitchEventEffectKlass) return;
 
-    // Do nothing if Chroma shouldn't run
-    if (!ChromaController::GetChromaLegacy() && !ChromaController::DoChromaHooks()) {
-        return LightSwitchEventEffect_Start(self);
-    }
+  // Do nothing if Chroma shouldn't run
+  if (!ChromaController::GetChromaLegacy() && !ChromaController::DoChromaHooks()) {
+    return LightSwitchEventEffect_Start(self);
+  }
 
-    auto coro = custom_types::Helpers::CoroutineHelper::New(WaitThenStartLight(self, self->event));
+  auto coro = custom_types::Helpers::CoroutineHelper::New(WaitThenStartLight(self, self->event));
 
-    self->StartCoroutine(coro);
+  self->StartCoroutine(coro);
 }
 
-MAKE_HOOK_MATCH(BeatmapCallbacksController_ManualUpdate,
-                &BeatmapCallbacksController::ManualUpdate,
-                void,
+MAKE_HOOK_MATCH(BeatmapCallbacksController_ManualUpdate, &BeatmapCallbacksController::ManualUpdate, void,
                 BeatmapCallbacksController* self, float songTime) {
-    // Do nothing if Chroma shouldn't run
-    if (!ChromaController::GetChromaLegacy() && !ChromaController::DoChromaHooks()) {
-        return BeatmapCallbacksController_ManualUpdate(self, songTime);
-    }
+  // Do nothing if Chroma shouldn't run
+  if (!ChromaController::GetChromaLegacy() && !ChromaController::DoChromaHooks()) {
+    return BeatmapCallbacksController_ManualUpdate(self, songTime);
+  }
 
-    if (self != beatmapCallbacksController) {
-        beatmapCallbacksController = self;
+  if (self != beatmapCallbacksController) {
+    beatmapCallbacksController = self;
 
-        // I don't want to deal with delegates
+    // I don't want to deal with delegates
 
-        auto basicEvents = CustomJSONData::CustomBeatmapDataCallbackWrapper::New_ctor();
-        basicEvents->controller = self;
-        basicEvents->BasicBeatmapEventType = csTypeOf(BasicBeatmapEventData*);
-        basicEvents->redirectEvent = [](auto* controller, BeatmapDataItem* item) {
-            for (auto const& _lightSwitchEventEffect :ChromaLightSwitchEventEffect::livingLightSwitch) {
-                _lightSwitchEventEffect->HandleEvent(static_cast<BasicBeatmapEventData *>(item));
-            }
-        };
+    auto basicEvents = CustomJSONData::CustomBeatmapDataCallbackWrapper::New_ctor();
+    basicEvents->controller = self;
+    basicEvents->BasicBeatmapEventType = csTypeOf(BasicBeatmapEventData*);
+    basicEvents->redirectEvent = [](auto* controller, BeatmapDataItem* item) {
+      for (auto const& _lightSwitchEventEffect : ChromaLightSwitchEventEffect::livingLightSwitch) {
+        _lightSwitchEventEffect->HandleEvent(static_cast<BasicBeatmapEventData*>(item));
+      }
+    };
 
-        auto boostEvents = CustomJSONData::CustomBeatmapDataCallbackWrapper::New_ctor();
-        boostEvents->controller = self;
-        boostEvents->BasicBeatmapEventType = csTypeOf(ColorBoostBeatmapEventData*);
-        boostEvents->redirectEvent = [](auto* controller, BeatmapDataItem* item) {
-            for (auto const& _lightSwitchEventEffect :ChromaLightSwitchEventEffect::livingLightSwitch) {
-                _lightSwitchEventEffect->HandleBoostEvent(static_cast<ColorBoostBeatmapEventData *>(item));
-            }
-        };
+    auto boostEvents = CustomJSONData::CustomBeatmapDataCallbackWrapper::New_ctor();
+    boostEvents->controller = self;
+    boostEvents->BasicBeatmapEventType = csTypeOf(ColorBoostBeatmapEventData*);
+    boostEvents->redirectEvent = [](auto* controller, BeatmapDataItem* item) {
+      for (auto const& _lightSwitchEventEffect : ChromaLightSwitchEventEffect::livingLightSwitch) {
+        _lightSwitchEventEffect->HandleBoostEvent(static_cast<ColorBoostBeatmapEventData*>(item));
+      }
+    };
 
-        self->callbacksInTimes->get_Item(0)->AddCallback(basicEvents);
-        self->callbacksInTimes->get_Item(0)->AddCallback(boostEvents);
-    }
+    self->callbacksInTimes->get_Item(0)->AddCallback(basicEvents);
+    self->callbacksInTimes->get_Item(0)->AddCallback(boostEvents);
+  }
 
-    BeatmapCallbacksController_ManualUpdate(self, songTime);
+  BeatmapCallbacksController_ManualUpdate(self, songTime);
 }
 
 void LightSwitchEventEffectHook(Logger& logger) {
-    INSTALL_HOOK(logger, BeatmapCallbacksController_ManualUpdate);
+  INSTALL_HOOK(logger, BeatmapCallbacksController_ManualUpdate);
 
-    INSTALL_HOOK(logger, LightSwitchEventEffect_Start);
-    INSTALL_HOOK(logger, LightSwitchEventEffect_Awake);
+  INSTALL_HOOK(logger, LightSwitchEventEffect_Start);
+  INSTALL_HOOK(logger, LightSwitchEventEffect_Awake);
 }
 
 ChromaInstallHooks(LightSwitchEventEffectHook)

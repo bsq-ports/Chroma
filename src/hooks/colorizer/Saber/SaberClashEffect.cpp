@@ -23,20 +23,18 @@ using namespace GlobalNamespace;
 using namespace Chroma;
 using namespace UnityEngine;
 
-
-
-
 MAKE_HOOK_MATCH(SaberClashEffect_Start, &SaberClashEffect::Start, void, SaberClashEffect* self) {
-    SaberClashEffect_Start(self);
+  SaberClashEffect_Start(self);
 
-    // Do nothing if Chroma shouldn't run
-    if (!ChromaController::DoChromaHooks()) {
-        return;
-    }
+  // Do nothing if Chroma shouldn't run
+  if (!ChromaController::DoChromaHooks()) {
+    return;
+  }
 
-    self->get_gameObject()->AddComponent<ChromaClashEffectController*>()->Init(self->sparkleParticleSystem, self->glowParticleSystem, self->colorManager);
+  self->get_gameObject()->AddComponent<ChromaClashEffectController*>()->Init(
+      self->sparkleParticleSystem, self->glowParticleSystem, self->colorManager);
 }
 
 void SaberClashEffect() {
-    INSTALL_HOOK(getLogger(), SaberClashEffect_Start);
+  INSTALL_HOOK(getLogger(), SaberClashEffect_Start);
 }

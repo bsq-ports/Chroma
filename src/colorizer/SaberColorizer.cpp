@@ -37,152 +37,147 @@ using namespace custom_types::Helpers;
 using namespace Chroma;
 using namespace Sombrero;
 
-SaberColorizer::SaberColorizer(GlobalNamespace::Saber *saber, SaberModelController* saberModelController) {
-    _saberType = saber->get_saberType();
+SaberColorizer::SaberColorizer(GlobalNamespace::Saber* saber, SaberModelController* saberModelController) {
+  _saberType = saber->get_saberType();
 
-    _saberModelController = saberModelController;
+  _saberModelController = saberModelController;
 
-    _saberTrail = _saberModelController->saberTrail;
-    _trailTintColor = _saberModelController->initData->trailTintColor;
-    _saberLight = _saberModelController->saberLight;
+  _saberTrail = _saberModelController->saberTrail;
+  _trailTintColor = _saberModelController->initData->trailTintColor;
+  _saberLight = _saberModelController->saberLight;
 
-
-    _lastColor = _saberModelController->colorManager->ColorForSaberType(_saberType);
-    OriginalColor = _lastColor;
-
+  _lastColor = _saberModelController->colorManager->ColorForSaberType(_saberType);
+  OriginalColor = _lastColor;
 }
 
-SaberColorizer& SaberColorizer::New(GlobalNamespace::Saber *saber) {
-    auto saberModelController = saber->get_gameObject()->GetComponentInChildren<SaberModelController *>(true);
+SaberColorizer& SaberColorizer::New(GlobalNamespace::Saber* saber) {
+  auto saberModelController = saber->get_gameObject()->GetComponentInChildren<SaberModelController*>(true);
 
-    return Colorizers.try_emplace(saberModelController, saber, saberModelController).first->second;
+  return Colorizers.try_emplace(saberModelController, saber, saberModelController).first->second;
 }
 
 std::optional<Sombrero::FastColor> SaberColorizer::GlobalColorGetter() {
-    return GlobalColor[(int) _saberType];
+  return GlobalColor[(int)_saberType];
 }
 
-void SaberColorizer::GlobalColorize(GlobalNamespace::SaberType saberType, std::optional<Sombrero::FastColor> const& color) {
-    GlobalColor[(int) saberType] = color;
-    for (auto &c : GetColorizerList(saberType)) {
-        c->Refresh();
-    }
+void SaberColorizer::GlobalColorize(GlobalNamespace::SaberType saberType,
+                                    std::optional<Sombrero::FastColor> const& color) {
+  GlobalColor[(int)saberType] = color;
+  for (auto& c : GetColorizerList(saberType)) {
+    c->Refresh();
+  }
 }
 
 void SaberColorizer::Reset() {
-    GlobalColor[0] = std::nullopt;
-    GlobalColor[1] = std::nullopt;
-    Colorizers.clear();
+  GlobalColor[0] = std::nullopt;
+  GlobalColor[1] = std::nullopt;
+  Colorizers.clear();
 
-    SaberColorChanged.clear();
-    ColorableModels.clear();
+  SaberColorChanged.clear();
+  ColorableModels.clear();
 }
 
 void SaberColorizer::Refresh() {
-    Sombrero::FastColor const& color = getColor().Alpha(1.0f);
-    if (color == Sombrero::FastColor(_lastColor))
-    {
-        return;
-    }
+  Sombrero::FastColor const& color = getColor().Alpha(1.0f);
+  if (color == Sombrero::FastColor(_lastColor)) {
+    return;
+  }
 
+  static auto SetColor =
+      FPtrWrapper<static_cast<void (UnityEngine::MaterialPropertyBlock::*)(StringW, UnityEngine::Color)>(
+          &UnityEngine::MaterialPropertyBlock::SetColor)>::get();
+  static auto SetPropertyBlock =
+      FPtrWrapper<static_cast<void (UnityEngine::Renderer::*)(UnityEngine::MaterialPropertyBlock*)>(
+          &UnityEngine::Renderer::SetPropertyBlock)>::get();
+  static auto Refresh = FPtrWrapper<&Parametric3SliceSpriteController::Refresh>::get();
 
-    static auto SetColor = FPtrWrapper<static_cast<void (UnityEngine::MaterialPropertyBlock::*)(StringW, UnityEngine::Color)>(&UnityEngine::MaterialPropertyBlock::SetColor)>::get();
-    static auto SetPropertyBlock = FPtrWrapper<static_cast<void (UnityEngine::Renderer::*)(UnityEngine::MaterialPropertyBlock*)>(&UnityEngine::Renderer::SetPropertyBlock)>::get();
-    static auto Refresh = FPtrWrapper<&Parametric3SliceSpriteController::Refresh>::get();
+  _lastColor = color;
+  if (!IsColorable(_saberModelController)) {
+    auto _setSaberGlowColors = _saberModelController->setSaberGlowColors;
+    auto _setSaberFakeGlowColors = _saberModelController->setSaberFakeGlowColors;
 
-    _lastColor = color;
-    if (!IsColorable(_saberModelController))
-    {
-        auto _setSaberGlowColors = _saberModelController->setSaberGlowColors;
-        auto _setSaberFakeGlowColors = _saberModelController->setSaberFakeGlowColors;
+    auto saberTrail = _saberTrail;
+    saberTrail->color = (color * _trailTintColor).Linear();
 
-        auto saberTrail = _saberTrail;
-        saberTrail->color = (color * _trailTintColor).Linear();
+    if (_setSaberGlowColors) {
+      for (auto setSaberGlowColor : _setSaberGlowColors) {
+        if (!setSaberGlowColor) continue;
 
-        if (_setSaberGlowColors) {
-            for (auto setSaberGlowColor : _setSaberGlowColors) {
-                if (!setSaberGlowColor)
-                    continue;
-
-                MaterialPropertyBlock* materialPropertyBlock = setSaberGlowColor->materialPropertyBlock;
-                if (!materialPropertyBlock) {
-                    setSaberGlowColor->materialPropertyBlock = MaterialPropertyBlock::New_ctor();
-                    materialPropertyBlock = setSaberGlowColor->materialPropertyBlock;
-                }
-
-                auto propertyTintColorPairs = setSaberGlowColor->propertyTintColorPairs;
-
-                if (propertyTintColorPairs) {
-                    for (auto &propertyTintColorPair : propertyTintColorPairs) {
-                        if (propertyTintColorPair)
-                            SetColor(materialPropertyBlock, propertyTintColorPair->property, color * Sombrero::FastColor(propertyTintColorPair->tintColor));
-                    }
-                }
-
-                if (setSaberGlowColor->meshRenderer)
-                    SetPropertyBlock(setSaberGlowColor->meshRenderer, materialPropertyBlock);
-            }
+        MaterialPropertyBlock* materialPropertyBlock = setSaberGlowColor->materialPropertyBlock;
+        if (!materialPropertyBlock) {
+          setSaberGlowColor->materialPropertyBlock = MaterialPropertyBlock::New_ctor();
+          materialPropertyBlock = setSaberGlowColor->materialPropertyBlock;
         }
 
-        if (_setSaberFakeGlowColors) {
-            for (auto setSaberFakeGlowColor : _setSaberFakeGlowColors) {
-                if (!setSaberFakeGlowColor) continue;
+        auto propertyTintColorPairs = setSaberGlowColor->propertyTintColorPairs;
 
-                auto parametric3SliceSprite = setSaberFakeGlowColor->parametric3SliceSprite;
-                parametric3SliceSprite->color = color * setSaberFakeGlowColor->tintColor;
-                Refresh(parametric3SliceSprite);
-            }
+        if (propertyTintColorPairs) {
+          for (auto& propertyTintColorPair : propertyTintColorPairs) {
+            if (propertyTintColorPair)
+              SetColor(materialPropertyBlock, propertyTintColorPair->property,
+                       color * Sombrero::FastColor(propertyTintColorPair->tintColor));
+          }
         }
 
-        if (_saberLight)
-        {
-            _saberLight->color = color;
-        }
-    }
-    else
-    {
-        ColorColorable(color);
+        if (setSaberGlowColor->meshRenderer) SetPropertyBlock(setSaberGlowColor->meshRenderer, materialPropertyBlock);
+      }
     }
 
-    SaberColorChanged.invoke(_saberType, _saberModelController, color);
+    if (_setSaberFakeGlowColors) {
+      for (auto setSaberFakeGlowColor : _setSaberFakeGlowColors) {
+        if (!setSaberFakeGlowColor) continue;
+
+        auto parametric3SliceSprite = setSaberFakeGlowColor->parametric3SliceSprite;
+        parametric3SliceSprite->color = color * setSaberFakeGlowColor->tintColor;
+        Refresh(parametric3SliceSprite);
+      }
+    }
+
+    if (_saberLight) {
+      _saberLight->color = color;
+    }
+  } else {
+    ColorColorable(color);
+  }
+
+  SaberColorChanged.invoke(_saberType, _saberModelController, color);
 }
 
-SaberColorizer &
-SaberColorizer::GetColorizer(GlobalNamespace::SaberModelController *saberModelController) {
-    return Colorizers.at(saberModelController);
+SaberColorizer& SaberColorizer::GetColorizer(GlobalNamespace::SaberModelController* saberModelController) {
+  return Colorizers.at(saberModelController);
 }
 
-void SaberColorizer::RemoveColorizer(GlobalNamespace::SaberModelController *saberModelController) {
-    Colorizers.erase(saberModelController);
+void SaberColorizer::RemoveColorizer(GlobalNamespace::SaberModelController* saberModelController) {
+  Colorizers.erase(saberModelController);
 }
 
 std::unordered_set<SaberColorizer*> SaberColorizer::GetColorizerList(GlobalNamespace::SaberType saberType) {
-    std::unordered_set<SaberColorizer*> colorizers;
+  std::unordered_set<SaberColorizer*> colorizers;
 
-    for (auto& [_, colorizer]  : Colorizers) {
-        if (colorizer._saberType.value == saberType.value) {
-            colorizers.emplace(&colorizer);
-        }
+  for (auto& [_, colorizer] : Colorizers) {
+    if (colorizer._saberType.value == saberType.value) {
+      colorizers.emplace(&colorizer);
     }
+  }
 
-    return colorizers;
+  return colorizers;
 }
 
 void SaberColorizer::ColorColorable(Sombrero::FastColor const& color) {
-    // Nothing here I guess
+  // Nothing here I guess
 }
 
-void SaberColorizer::SetColorable(GlobalNamespace::SaberModelController *saberModelController, bool colorable) {
-    if (colorable)
-        ColorableModels.emplace(saberModelController);
-    else
-        ColorableModels.erase(saberModelController);
+void SaberColorizer::SetColorable(GlobalNamespace::SaberModelController* saberModelController, bool colorable) {
+  if (colorable)
+    ColorableModels.emplace(saberModelController);
+  else
+    ColorableModels.erase(saberModelController);
 }
 
-bool SaberColorizer::IsColorable(GlobalNamespace::SaberModelController *saberModelController) {
-    return ColorableModels.contains(saberModelController);
+bool SaberColorizer::IsColorable(GlobalNamespace::SaberModelController* saberModelController) {
+  return ColorableModels.contains(saberModelController);
 }
 
-SaberModelController *SaberColorizer::getSaberModelController() const {
-    return _saberModelController;
+SaberModelController* SaberColorizer::getSaberModelController() const {
+  return _saberModelController;
 }

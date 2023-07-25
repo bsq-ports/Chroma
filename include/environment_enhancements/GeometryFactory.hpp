@@ -13,39 +13,21 @@
 #include "GlobalNamespace/TubeBloomPrePassLight.hpp"
 #include "MaterialsManager.hpp"
 
-
 namespace Chroma {
 
+enum struct GeometryType { Sphere, Capsule, Cylinder, Cube, Plane, Quad, Triangle };
 
-    enum struct GeometryType
-    {
-        Sphere,
-        Capsule,
-        Cylinder,
-        Cube,
-        Plane,
-        Quad,
-        Triangle
-    };
+class GeometryFactory {
+public:
+  GeometryFactory(MaterialsManager& materialsManager, bool v2);
 
+  MaterialsManager& materialsManager;
+  bool v2;
 
+  UnityEngine::GameObject* Create(rapidjson::Value const& data);
 
-    class GeometryFactory {
-    public:
-        GeometryFactory(MaterialsManager& materialsManager, bool v2);
-
-        MaterialsManager& materialsManager;
-        bool v2;
-
-
-        UnityEngine::GameObject * Create(rapidjson::Value const &data);
-
-    private:
-        std::optional<GlobalNamespace::TubeBloomPrePassLight*> _originalTubeBloomPrePassLight = std::nullopt;
-        SafePtr<Zenject::IInstantiator> instantiator;
-
-
-
-
-    };
-}
+private:
+  std::optional<GlobalNamespace::TubeBloomPrePassLight*> _originalTubeBloomPrePassLight = std::nullopt;
+  SafePtr<Zenject::IInstantiator> instantiator;
+};
+} // namespace Chroma

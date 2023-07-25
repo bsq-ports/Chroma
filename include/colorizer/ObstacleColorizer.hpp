@@ -23,99 +23,96 @@
 #include "custom-types/shared/types.hpp"
 #include "custom-types/shared/macros.hpp"
 
-
 namespace Chroma {
-    class ObstacleColorizer : public ObjectColorizer<ObstacleColorizer> {
-    private:
-        friend class ObjectColorizer<ObstacleColorizer>;
+class ObstacleColorizer : public ObjectColorizer<ObstacleColorizer> {
+private:
+  friend class ObjectColorizer<ObstacleColorizer>;
 
-        static int _tintColorID();
-        static int _addColorID();
+  static int _tintColorID();
+  static int _addColorID();
 
-        GlobalNamespace::ParametricBoxFrameController *_obstacleFrame;
-        GlobalNamespace::ParametricBoxFakeGlowController *_obstacleFakeGlow;
-        float _addColorMultiplier;
-        float _obstacleCoreLerpToWhiteFactor;
-        ArrayW<GlobalNamespace::MaterialPropertyBlockController *> _materialPropertyBlockControllers;
-        GlobalNamespace::ObstacleControllerBase * obstacleController;
+  GlobalNamespace::ParametricBoxFrameController* _obstacleFrame;
+  GlobalNamespace::ParametricBoxFakeGlowController* _obstacleFakeGlow;
+  float _addColorMultiplier;
+  float _obstacleCoreLerpToWhiteFactor;
+  ArrayW<GlobalNamespace::MaterialPropertyBlockController*> _materialPropertyBlockControllers;
+  GlobalNamespace::ObstacleControllerBase* obstacleController;
 
+  explicit ObstacleColorizer(GlobalNamespace::ObstacleControllerBase* obstacleController);
 
-        explicit ObstacleColorizer(GlobalNamespace::ObstacleControllerBase *obstacleController);
+protected:
+  static std::optional<Sombrero::FastColor> GlobalColorGetter() {
+    return GlobalColor;
+  }
 
-    protected:
-        static std::optional<Sombrero::FastColor> GlobalColorGetter() {
-            return GlobalColor;
-        }
+  void Refresh() {
+    Sombrero::FastColor const& color = getColor();
+    if (color == Sombrero::FastColor(_obstacleFrame->color)) {
+      return;
+    }
 
-        void Refresh() {
-            Sombrero::FastColor const &color = getColor();
-            if (color == Sombrero::FastColor(_obstacleFrame->color)) {
-                return;
-            }
+    ObstacleColorChanged.invoke(obstacleController, color);
 
-            ObstacleColorChanged.invoke(obstacleController, color);
+    // We do not handle coloring in obstacle colorable
+    if (ObstacleColorable) return;
 
-            // We do not handle coloring in obstacle colorable
-            if (ObstacleColorable) return;
+    _obstacleFrame->color = color;
+    static auto Refresh = FPtrWrapper<&GlobalNamespace::ParametricBoxFakeGlowController::Refresh>::get();
+    _obstacleFrame->Refresh();
+    if (_obstacleFakeGlow) {
+      _obstacleFakeGlow->color = color;
+      Refresh(_obstacleFakeGlow);
+    }
 
-            _obstacleFrame->color = color;
-            static auto Refresh = FPtrWrapper<&GlobalNamespace::ParametricBoxFakeGlowController::Refresh>::get();
-            _obstacleFrame->Refresh();
-            if (_obstacleFakeGlow) {
-                _obstacleFakeGlow->color = color;
-                Refresh(_obstacleFakeGlow);
-            }
+    Sombrero::FastColor value = color * _addColorMultiplier;
+    value.a = 0.0f;
+    static auto ApplyChanges = FPtrWrapper<&GlobalNamespace::MaterialPropertyBlockController::ApplyChanges>::get();
+    static auto SetColor =
+        FPtrWrapper<static_cast<void (UnityEngine::MaterialPropertyBlock::*)(int, UnityEngine::Color)>(
+            &UnityEngine::MaterialPropertyBlock::SetColor)>::get();
 
-            Sombrero::FastColor value = color * _addColorMultiplier;
-            value.a = 0.0f;
-            static auto ApplyChanges = FPtrWrapper<&GlobalNamespace::MaterialPropertyBlockController::ApplyChanges>::get();
-            static auto SetColor = FPtrWrapper<static_cast<void (UnityEngine::MaterialPropertyBlock::*)(int,
-                                                                                                        UnityEngine::Color)>(&UnityEngine::MaterialPropertyBlock::SetColor)>::get();
+    for (auto& materialPropertyBlockController : _materialPropertyBlockControllers) {
+      if (!materialPropertyBlockController->materialPropertyBlock) {
+        continue;
+      }
 
-            for (auto &materialPropertyBlockController: _materialPropertyBlockControllers) {
-                if(!materialPropertyBlockController->materialPropertyBlock) {
-                    continue;
-                }
-                
-                Sombrero::FastColor white = Sombrero::FastColor::white();
-                SetColor(materialPropertyBlockController->materialPropertyBlock, _addColorID(), value);
-                SetColor(materialPropertyBlockController->materialPropertyBlock, _tintColorID(),
-                         Sombrero::FastColor::Lerp(color, white, _obstacleCoreLerpToWhiteFactor));
-                ApplyChanges(materialPropertyBlockController);
-            }
-        }
+      Sombrero::FastColor white = Sombrero::FastColor::white();
+      SetColor(materialPropertyBlockController->materialPropertyBlock, _addColorID(), value);
+      SetColor(materialPropertyBlockController->materialPropertyBlock, _tintColorID(),
+               Sombrero::FastColor::Lerp(color, white, _obstacleCoreLerpToWhiteFactor));
+      ApplyChanges(materialPropertyBlockController);
+    }
+  }
 
+public:
+  inline static bool ObstacleColorable = false;
+  inline static UnorderedEventCallback<GlobalNamespace::ObstacleControllerBase*, Sombrero::FastColor const&>
+      ObstacleColorChanged;
 
-    public:
-        inline static bool ObstacleColorable = false;
-        inline static UnorderedEventCallback<GlobalNamespace::ObstacleControllerBase*, Sombrero::FastColor const&> ObstacleColorChanged;
+  ObstacleColorizer(ObstacleColorizer const&) = delete;
+  friend class std::pair<GlobalNamespace::ObstacleControllerBase const*, ObstacleColorizer>;
+  friend class std::pair<GlobalNamespace::ObstacleControllerBase const* const, Chroma::ObstacleColorizer>;
 
-        ObstacleColorizer(ObstacleColorizer const&) = delete;
-        friend class std::pair<GlobalNamespace::ObstacleControllerBase const*, ObstacleColorizer>;
-        friend class std::pair<const GlobalNamespace::ObstacleControllerBase *const, Chroma::ObstacleColorizer>;
+  static ObstacleColorizer& New(GlobalNamespace::ObstacleControllerBase* obstacleController);
 
-        static ObstacleColorizer& New(GlobalNamespace::ObstacleControllerBase *obstacleController);
+  inline static std::unordered_map<GlobalNamespace::ObstacleControllerBase const*, ObstacleColorizer> Colorizers;
+  inline static std::optional<Sombrero::FastColor> GlobalColor;
 
-        inline static std::unordered_map<GlobalNamespace::ObstacleControllerBase const*, ObstacleColorizer> Colorizers;
-        inline static std::optional<Sombrero::FastColor> GlobalColor;
+  static void GlobalColorize(std::optional<Sombrero::FastColor> const& color);
 
-        static void GlobalColorize(std::optional<Sombrero::FastColor> const &color);
+  static void Reset();
 
-        static void Reset();
+  // extensions
+  inline static ObstacleColorizer* GetObstacleColorizer(GlobalNamespace::ObstacleControllerBase* obstacleController) {
+    auto it = Colorizers.find(obstacleController);
+    if (it == Colorizers.end()) return nullptr;
 
-        // extensions
-        inline static ObstacleColorizer*
-        GetObstacleColorizer(GlobalNamespace::ObstacleControllerBase *obstacleController) {
-            auto it = Colorizers.find(obstacleController);
-            if (it == Colorizers.end())
-                return nullptr;
+    return &it->second;
+  }
 
-            return &it->second;
-        }
-
-        inline static void ColorizeObstacle(GlobalNamespace::ObstacleControllerBase *obstacleControllerBase,
-                                            std::optional<Sombrero::FastColor> const &color) {
-            CRASH_UNLESS(GetObstacleColorizer(obstacleControllerBase))->Colorize(color);
-        }
-    };
-}
+  inline static void ColorizeObstacle(GlobalNamespace::ObstacleControllerBase* obstacleControllerBase,
+                                      std::optional<Sombrero::FastColor> const& color) {
+    CRASH_UNLESS(GetObstacleColorizer(obstacleControllerBase))->Colorize(color);
+  }
+};
+} // namespace Chroma

@@ -7,7 +7,6 @@
 
 #include "custom-json-data/shared/CustomBeatmapData.h"
 
-
 #include "custom-types/shared/types.hpp"
 #include "custom-types/shared/macros.hpp"
 #include "custom-types/shared/register.hpp"
@@ -27,34 +26,30 @@ using namespace UnityEngine;
 using namespace System::Collections;
 using namespace custom_types::Helpers;
 
-MAKE_HOOK_MATCH(ObstacleDissolve_Awake,
-                &ObstacleDissolve::Awake,
-                void, ObstacleDissolve* self) {
-    ObstacleDissolve_Awake(self);
+MAKE_HOOK_MATCH(ObstacleDissolve_Awake, &ObstacleDissolve::Awake, void, ObstacleDissolve* self) {
+  ObstacleDissolve_Awake(self);
 
-    // Do nothing if Chroma shouldn't run
-    if (!ChromaController::DoChromaHooks()) {
-        return;
-    }
-    ObstacleColorizer::New(self->obstacleController);
+  // Do nothing if Chroma shouldn't run
+  if (!ChromaController::DoChromaHooks()) {
+    return;
+  }
+  ObstacleColorizer::New(self->obstacleController);
 }
 
-MAKE_HOOK_MATCH(ObstacleDissolve_OnDestroy,
-                &ObstacleDissolve::OnDestroy,
-                void, ObstacleDissolve* self) {
-    ObstacleDissolve_OnDestroy(self);
+MAKE_HOOK_MATCH(ObstacleDissolve_OnDestroy, &ObstacleDissolve::OnDestroy, void, ObstacleDissolve* self) {
+  ObstacleDissolve_OnDestroy(self);
 
-    // Do nothing if Chroma shouldn't run
-    if (!ChromaController::DoChromaHooks()) {
-        return;
-    }
+  // Do nothing if Chroma shouldn't run
+  if (!ChromaController::DoChromaHooks()) {
+    return;
+  }
 
-    ObstacleColorizer::Colorizers.erase(self->obstacleController);
+  ObstacleColorizer::Colorizers.erase(self->obstacleController);
 }
 
 void ObstacleDissolveHook(Logger& logger) {
-    INSTALL_HOOK(logger, ObstacleDissolve_Awake);
-    INSTALL_HOOK(logger, ObstacleDissolve_OnDestroy);
+  INSTALL_HOOK(logger, ObstacleDissolve_Awake);
+  INSTALL_HOOK(logger, ObstacleDissolve_OnDestroy);
 }
 
 ChromaInstallHooks(ObstacleDissolveHook)

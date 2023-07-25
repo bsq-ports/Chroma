@@ -18,21 +18,24 @@ using namespace GlobalNamespace;
 using namespace UnityEngine;
 using namespace Chroma;
 
-MAKE_HOOK_MATCH(NoteCutEffectSpawner_SpawnNoteCutEffect,
-                &NoteCutCoreEffectsSpawner::SpawnNoteCutEffect,
-                void,NoteCutCoreEffectsSpawner* self, ByRef<GlobalNamespace::NoteCutInfo> noteCutInfo, GlobalNamespace::NoteController* noteController, int sparkleParticlesCount, int explosionParticlesCount) {
-    // Do nothing if Chroma shouldn't run
-    if (!ChromaController::DoChromaHooks()) {
-        NoteCutEffectSpawner_SpawnNoteCutEffect(self, noteCutInfo, noteController, sparkleParticlesCount, explosionParticlesCount);
-        return;
-    }
-    ColorManagerColorForType::EnableColorOverride(noteController);
-    NoteCutEffectSpawner_SpawnNoteCutEffect(self, noteCutInfo, noteController, sparkleParticlesCount, explosionParticlesCount);
-    ColorManagerColorForType::DisableColorOverride();
+MAKE_HOOK_MATCH(NoteCutEffectSpawner_SpawnNoteCutEffect, &NoteCutCoreEffectsSpawner::SpawnNoteCutEffect, void,
+                NoteCutCoreEffectsSpawner* self, ByRef<GlobalNamespace::NoteCutInfo> noteCutInfo,
+                GlobalNamespace::NoteController* noteController, int sparkleParticlesCount,
+                int explosionParticlesCount) {
+  // Do nothing if Chroma shouldn't run
+  if (!ChromaController::DoChromaHooks()) {
+    NoteCutEffectSpawner_SpawnNoteCutEffect(self, noteCutInfo, noteController, sparkleParticlesCount,
+                                            explosionParticlesCount);
+    return;
+  }
+  ColorManagerColorForType::EnableColorOverride(noteController);
+  NoteCutEffectSpawner_SpawnNoteCutEffect(self, noteCutInfo, noteController, sparkleParticlesCount,
+                                          explosionParticlesCount);
+  ColorManagerColorForType::DisableColorOverride();
 }
 
 void NoteCutEffectSpawnerHook(Logger& logger) {
-    INSTALL_HOOK(getLogger(), NoteCutEffectSpawner_SpawnNoteCutEffect);
+  INSTALL_HOOK(getLogger(), NoteCutEffectSpawner_SpawnNoteCutEffect);
 }
 
 ChromaInstallHooks(NoteCutEffectSpawnerHook)

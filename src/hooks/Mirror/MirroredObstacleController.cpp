@@ -21,26 +21,23 @@ using namespace GlobalNamespace;
 using namespace Chroma;
 using namespace UnityEngine;
 
-
 MAKE_HOOK_MATCH(MirroredObstacleController_UpdatePositionAndRotation,
-                &MirroredObstacleController::UpdatePositionAndRotation,
-                void, MirroredObstacleController* self) {
-    MirroredObstacleController_UpdatePositionAndRotation(self);
+                &MirroredObstacleController::UpdatePositionAndRotation, void, MirroredObstacleController* self) {
+  MirroredObstacleController_UpdatePositionAndRotation(self);
 
-    // Do nothing if Chroma shouldn't run
-    if (!ChromaController::DoChromaHooks()) {
-        return;
-    }
+  // Do nothing if Chroma shouldn't run
+  if (!ChromaController::DoChromaHooks()) {
+    return;
+  }
 
-    if (!self->followedObstacle)
-        return;
+  if (!self->followedObstacle) return;
 
-    ObstacleColorizer::ColorizeObstacle(self, ObstacleColorizer::GetObstacleColorizer(self->followedObstacle)->getColor());
+  ObstacleColorizer::ColorizeObstacle(self,
+                                      ObstacleColorizer::GetObstacleColorizer(self->followedObstacle)->getColor());
 }
 
-
 void MirroredObstacleControllerHook(Logger& logger) {
-    INSTALL_HOOK(logger, MirroredObstacleController_UpdatePositionAndRotation);
+  INSTALL_HOOK(logger, MirroredObstacleController_UpdatePositionAndRotation);
 }
 
 ChromaInstallHooks(MirroredObstacleControllerHook)

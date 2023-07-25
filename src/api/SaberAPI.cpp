@@ -11,71 +11,66 @@ using namespace GlobalNamespace;
 using namespace UnityEngine;
 using namespace Sombrero;
 
-
-
 EXPOSE_API(getGlobalSaberColorSafe, OptColor, int saberType) {
-    CRASH_UNLESS(saberType >= SaberType::SaberA && saberType <= SaberType::SaberB);
+  CRASH_UNLESS(saberType >= SaberType::SaberA && saberType <= SaberType::SaberB);
 
-    auto optional = SaberColorizer::GlobalColor[saberType];
+  auto optional = SaberColorizer::GlobalColor[saberType];
 
-    Sombrero::FastColor color;
+  Sombrero::FastColor color;
 
-    if (optional) {
+  if (optional) {
 
-        color = optional.value();
+    color = optional.value();
 
-        return OptColorFromColor(color);
-    } else {
-        return OptColorNull;
-    }
+    return OptColorFromColor(color);
+  } else {
+    return OptColorNull;
+  }
 }
 
 EXPOSE_API(setGlobalSaberColorSafe, void, int saberType, std::optional<Sombrero::FastColor> color) {
-    SaberColorizer::GlobalColorize(saberType, color);
+  SaberColorizer::GlobalColorize(saberType, color);
 }
 
 EXPOSE_API(getSaberColorSafe, OptColor, GlobalNamespace::SaberModelController* saberModelController) {
-    auto& colorizer = SaberColorizer::GetColorizer(saberModelController);
+  auto& colorizer = SaberColorizer::GetColorizer(saberModelController);
 
-    auto optional = colorizer.getSelfColor();
+  auto optional = colorizer.getSelfColor();
 
-    Sombrero::FastColor color;
+  Sombrero::FastColor color;
 
-    if (optional) {
-        color = optional.value();
-        return OptColorFromColor(color);
-    } else {
-        return OptColorNull;
-    }
+  if (optional) {
+    color = optional.value();
+    return OptColorFromColor(color);
+  } else {
+    return OptColorNull;
+  }
 }
 
-EXPOSE_API(setSaberColorSafe, void, GlobalNamespace::SaberModelController* saberModelController, std::optional<Sombrero::FastColor> color) {
-    SaberColorizer::ColorizeSaber(saberModelController, color);
+EXPOSE_API(setSaberColorSafe, void, GlobalNamespace::SaberModelController* saberModelController,
+           std::optional<Sombrero::FastColor> color) {
+  SaberColorizer::ColorizeSaber(saberModelController, color);
 }
 
 EXPOSE_API(getGlobalSabersColorSafe, SaberAPI::ColorOptPair) {
-    auto colorA = SaberColorizer::GlobalColor[SaberType::SaberA];
-    auto colorB = SaberColorizer::GlobalColor[SaberType::SaberB];
+  auto colorA = SaberColorizer::GlobalColor[SaberType::SaberA];
+  auto colorB = SaberColorizer::GlobalColor[SaberType::SaberB];
 
-    return SaberAPI::ColorOptPair {OptColorFromColor(colorA), OptColorFromColor(colorB)};
+  return SaberAPI::ColorOptPair{ OptColorFromColor(colorA), OptColorFromColor(colorB) };
 }
-
-
 
 EXPOSE_API(getSaberChangedColorCallbackSafe, SaberAPI::SaberCallback*) {
-    return &SaberColorizer::SaberColorChanged;
+  return &SaberColorizer::SaberColorChanged;
 }
 
-
-
-EXPOSE_API(registerSaberCallbackSafe, void, const SaberAPI:: SaberCallbackFunc& callback) {
-    SaberColorizer::SaberColorChanged += callback;
+EXPOSE_API(registerSaberCallbackSafe, void, SaberAPI::SaberCallbackFunc const& callback) {
+  SaberColorizer::SaberColorChanged += callback;
 }
 
 EXPOSE_API(setSaberColorable, void, GlobalNamespace::SaberModelController* saberModelController, bool colorable) {
-    SaberColorizer::SetColorable(saberModelController, colorable);
+  SaberColorizer::SetColorable(saberModelController, colorable);
 }
 
 EXPOSE_API(isSaberColorable, bool, GlobalNamespace::SaberModelController* saberModelController) {
-    return SaberColorizer::IsColorable(saberModelController);
+  return SaberColorizer::IsColorable(saberModelController);
 }

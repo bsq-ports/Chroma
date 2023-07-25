@@ -23,19 +23,19 @@ using namespace GlobalNamespace;
 using namespace UnityEngine;
 
 MAKE_HOOK_MATCH(ColorManager_ColorForType,
-                  static_cast<::UnityEngine::Color (GlobalNamespace::ColorManager::*)(::GlobalNamespace::ColorType)>(&GlobalNamespace::ColorManager::ColorForType),
-                  Color, ColorManager* self, GlobalNamespace::ColorType type) {
-    // Do nothing if Chroma shouldn't run
-    if (!ChromaController::DoChromaHooks() || !ColorManagerColorForType::_noteColorOverride) {
-        return ColorManager_ColorForType(self, type);
-    }
+                static_cast<::UnityEngine::Color (GlobalNamespace::ColorManager::*)(::GlobalNamespace::ColorType)>(
+                    &GlobalNamespace::ColorManager::ColorForType),
+                Color, ColorManager* self, GlobalNamespace::ColorType type) {
+  // Do nothing if Chroma shouldn't run
+  if (!ChromaController::DoChromaHooks() || !ColorManagerColorForType::_noteColorOverride) {
+    return ColorManager_ColorForType(self, type);
+  }
 
-    return *ColorManagerColorForType::_noteColorOverride;
+  return *ColorManagerColorForType::_noteColorOverride;
 }
 
-
 void ColorManagerHook(Logger& logger) {
-    INSTALL_HOOK(logger, ColorManager_ColorForType);
+  INSTALL_HOOK(logger, ColorManager_ColorForType);
 }
 
 ChromaInstallHooks(ColorManagerHook)

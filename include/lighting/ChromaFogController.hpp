@@ -15,40 +15,35 @@
 #include "main.hpp"
 
 namespace Chroma {
-    constexpr float fogAttenuationFix(float attenuation) {
-        // if attenuation is not 0
-        if (attenuation < -std::numeric_limits<float>::epsilon() ||
-            attenuation > std::numeric_limits<float>::epsilon()) {
-            // clamp to minimum float fog value
-            // this is a random magic number that doesn't cause the shader to jump to 0
-            // TODO: Investigate, ask Split?
-            return std::max(attenuation, 0.000061035154435f); // 0.0001f
-        }
+constexpr float fogAttenuationFix(float attenuation) {
+  // if attenuation is not 0
+  if (attenuation < -std::numeric_limits<float>::epsilon() || attenuation > std::numeric_limits<float>::epsilon()) {
+    // clamp to minimum float fog value
+    // this is a random magic number that doesn't cause the shader to jump to 0
+    // TODO: Investigate, ask Split?
+    return std::max(attenuation, 0.000061035154435f); // 0.0001f
+  }
 
-        return attenuation;
-    }
+  return attenuation;
 }
+} // namespace Chroma
 
-DECLARE_CLASS_CODEGEN(Chroma, ChromaFogController, UnityEngine::MonoBehaviour,
-    private:
-        static Chroma::ChromaFogController* _instance;
+DECLARE_CLASS_CODEGEN(Chroma, ChromaFogController, UnityEngine::MonoBehaviour, private
+                      : static Chroma::ChromaFogController* _instance;
 
-        Track* _track;
+                      Track * _track;
 
-        // nullable
-        DECLARE_INSTANCE_FIELD(GlobalNamespace::BloomFogSO*, bloomFog);
-        DECLARE_INSTANCE_FIELD(GlobalNamespace::BloomFogEnvironmentParams*, _transitionFogParams);
+                      // nullable
+                      DECLARE_INSTANCE_FIELD(GlobalNamespace::BloomFogSO*, bloomFog);
+                      DECLARE_INSTANCE_FIELD(GlobalNamespace::BloomFogEnvironmentParams*, _transitionFogParams);
 
-    public:
-        DECLARE_DEFAULT_CTOR();
-        DECLARE_INSTANCE_METHOD(void, Awake);
-        DECLARE_INSTANCE_METHOD(void, Update);
-        DECLARE_INSTANCE_METHOD(void, OnDestroy);
+                      public
+                      : DECLARE_DEFAULT_CTOR();
+                      DECLARE_INSTANCE_METHOD(void, Awake); DECLARE_INSTANCE_METHOD(void, Update);
+                      DECLARE_INSTANCE_METHOD(void, OnDestroy);
 
-        DECLARE_STATIC_METHOD(Chroma::ChromaFogController*, getInstance);
-        DECLARE_STATIC_METHOD(void, clearInstance);
-        DECLARE_SIMPLE_DTOR();
+                      DECLARE_STATIC_METHOD(Chroma::ChromaFogController*, getInstance);
+                      DECLARE_STATIC_METHOD(void, clearInstance); DECLARE_SIMPLE_DTOR();
 
-        public:
-        void AssignTrack(Track *track);
-)
+                      public
+                      : void AssignTrack(Track* track);)

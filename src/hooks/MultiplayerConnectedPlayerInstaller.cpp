@@ -20,16 +20,15 @@ using namespace GlobalNamespace;
 using namespace Chroma;
 
 MAKE_HOOK_MATCH(MultiplayerConnectedPlayerInstaller_InstallBindings,
-                &MultiplayerConnectedPlayerInstaller::InstallBindings,
-                void,
+                &MultiplayerConnectedPlayerInstaller::InstallBindings, void,
                 MultiplayerConnectedPlayerInstaller* self) {
-    MultiplayerConnectedPlayerInstallerHookHolder::MultiplayerInvoked = true;
-    MultiplayerConnectedPlayerInstaller_InstallBindings(self);
-    MultiplayerConnectedPlayerInstallerHookHolder::MultiplayerInvoked = false;
+  MultiplayerConnectedPlayerInstallerHookHolder::MultiplayerInvoked = true;
+  MultiplayerConnectedPlayerInstaller_InstallBindings(self);
+  MultiplayerConnectedPlayerInstallerHookHolder::MultiplayerInvoked = false;
 }
 
 void MultiplayerConnectedPlayerInstallerHook(Logger& logger) {
-    INSTALL_HOOK(getLogger(), MultiplayerConnectedPlayerInstaller_InstallBindings);
+  INSTALL_HOOK(getLogger(), MultiplayerConnectedPlayerInstaller_InstallBindings);
 }
 
-//ChromaInstallHooks(MultiplayerConnectedPlayerInstallerHook)
+// ChromaInstallHooks(MultiplayerConnectedPlayerInstallerHook)

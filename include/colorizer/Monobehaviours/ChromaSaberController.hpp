@@ -17,17 +17,13 @@
 #include "custom-types/shared/macros.hpp"
 #include "main.hpp"
 
+DECLARE_CLASS_CODEGEN(Chroma, ChromaSaberController, UnityEngine::MonoBehaviour, private
+                      : SaberColorizer* _colorizer;
+                      GlobalNamespace::SaberType _saberType;
+                      DECLARE_INSTANCE_FIELD(GlobalNamespace::SaberModelController*, _saberModelController);
 
-DECLARE_CLASS_CODEGEN(Chroma, ChromaSaberController, UnityEngine::MonoBehaviour,
-  private:
-          SaberColorizer* _colorizer;
-          GlobalNamespace::SaberType _saberType;
-          DECLARE_INSTANCE_FIELD(GlobalNamespace::SaberModelController*, _saberModelController);
+                      public
+                      : DECLARE_INSTANCE_METHOD(void, Init, GlobalNamespace::Saber* saber);
+                      DECLARE_INSTANCE_METHOD(void, OnDestroy);
 
-          public:
-          DECLARE_INSTANCE_METHOD(void, Init, GlobalNamespace::Saber* saber);
-          DECLARE_INSTANCE_METHOD(void, OnDestroy);
-
-          DECLARE_SIMPLE_DTOR();
-          DECLARE_DEFAULT_CTOR();
-)
+                      DECLARE_SIMPLE_DTOR(); DECLARE_DEFAULT_CTOR();)

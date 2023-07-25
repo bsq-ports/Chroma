@@ -9,36 +9,34 @@ using namespace GlobalNamespace;
 using namespace UnityEngine;
 using namespace Sombrero;
 
-
 // TODO: unsure of this
 
 EXPOSE_API(getObstacleControllerColorSafe, OptColor, ObstacleController* obstacleController) {
 
-    auto ocm = ObstacleColorizer::GetObstacleColorizer(obstacleController);
+  auto ocm = ObstacleColorizer::GetObstacleColorizer(obstacleController);
 
-    if (!ocm) return OptColor();
+  if (!ocm) return OptColor();
 
-    auto color = ocm->getColor();
+  auto color = ocm->getColor();
 
-
-    return OptColorFromColor(color);
+  return OptColorFromColor(color);
 }
 
 EXPOSE_API(setObstacleColorSafe, void, ObstacleController* oc, Sombrero::FastColor color1) {
-    ObstacleColorizer::ColorizeObstacle(oc, color1);
+  ObstacleColorizer::ColorizeObstacle(oc, color1);
 }
 
 EXPOSE_API(setAllObstacleColorSafe, void, Sombrero::FastColor color1) {
-    ObstacleColorizer::GlobalColorize(color1);
+  ObstacleColorizer::GlobalColorize(color1);
 }
 
 EXPOSE_API(setObstacleColorable, void, bool colorable) {
-    ObstacleColorizer::ObstacleColorable = colorable;
+  ObstacleColorizer::ObstacleColorable = colorable;
 }
 
 EXPOSE_API(isObstacleColorable, bool) {
-    return ObstacleColorizer::ObstacleColorable;
+  return ObstacleColorizer::ObstacleColorable;
 }
 EXPOSE_API(getObstacleChangedColorCallbackSafe, ObstacleAPI::ObstacleCallback*) {
-    return &ObstacleColorizer::ObstacleColorChanged;
+  return &ObstacleColorizer::ObstacleColorChanged;
 }

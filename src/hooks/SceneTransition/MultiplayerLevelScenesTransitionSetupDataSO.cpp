@@ -21,23 +21,24 @@ using namespace GlobalNamespace;
 using namespace UnityEngine;
 using namespace Chroma;
 
-MAKE_HOOK_MATCH(MultiplayerLevelScenesTransitionSetupDataSO_Init,
-                &MultiplayerLevelScenesTransitionSetupDataSO::Init,
-                void,MultiplayerLevelScenesTransitionSetupDataSO* self,
-                     StringW gameMode, GlobalNamespace::IPreviewBeatmapLevel* previewBeatmapLevel,
-                     GlobalNamespace::BeatmapDifficulty beatmapDifficulty, GlobalNamespace::BeatmapCharacteristicSO* beatmapCharacteristic,
-                     GlobalNamespace::IDifficultyBeatmap* difficultyBeatmap, GlobalNamespace::ColorScheme* overrideColorScheme,
-                     GlobalNamespace::GameplayModifiers* gameplayModifiers, GlobalNamespace::PlayerSpecificSettings* playerSpecificSettings,
-                     GlobalNamespace::PracticeSettings* practiceSettings, bool useTestNoteCutSoundEffects) {
-    MultiplayerLevelScenesTransitionSetupDataSO_Init(self, gameMode, previewBeatmapLevel,beatmapDifficulty, beatmapCharacteristic,
-                                                 difficultyBeatmap,
-                                                 overrideColorScheme, gameplayModifiers,
-                                                 playerSpecificSettings, practiceSettings, useTestNoteCutSoundEffects);
-    SceneTransitionHelper::Patch(difficultyBeatmap);
+MAKE_HOOK_MATCH(MultiplayerLevelScenesTransitionSetupDataSO_Init, &MultiplayerLevelScenesTransitionSetupDataSO::Init,
+                void, MultiplayerLevelScenesTransitionSetupDataSO* self, StringW gameMode,
+                GlobalNamespace::IPreviewBeatmapLevel* previewBeatmapLevel,
+                GlobalNamespace::BeatmapDifficulty beatmapDifficulty,
+                GlobalNamespace::BeatmapCharacteristicSO* beatmapCharacteristic,
+                GlobalNamespace::IDifficultyBeatmap* difficultyBeatmap,
+                GlobalNamespace::ColorScheme* overrideColorScheme,
+                GlobalNamespace::GameplayModifiers* gameplayModifiers,
+                GlobalNamespace::PlayerSpecificSettings* playerSpecificSettings,
+                GlobalNamespace::PracticeSettings* practiceSettings, bool useTestNoteCutSoundEffects) {
+  MultiplayerLevelScenesTransitionSetupDataSO_Init(
+      self, gameMode, previewBeatmapLevel, beatmapDifficulty, beatmapCharacteristic, difficultyBeatmap,
+      overrideColorScheme, gameplayModifiers, playerSpecificSettings, practiceSettings, useTestNoteCutSoundEffects);
+  SceneTransitionHelper::Patch(difficultyBeatmap);
 }
 
 void MultiplayerLevelScenesTransitionSetupDataSOHook(Logger& logger) {
-    INSTALL_HOOK(logger, MultiplayerLevelScenesTransitionSetupDataSO_Init);
+  INSTALL_HOOK(logger, MultiplayerLevelScenesTransitionSetupDataSO_Init);
 }
 
 ChromaInstallHooks(MultiplayerLevelScenesTransitionSetupDataSOHook)

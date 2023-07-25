@@ -4,25 +4,20 @@
 
 namespace Chroma {
 
-    enum class ComponentType {
-        TrackLaneRingsManager
-    };
+enum class ComponentType { TrackLaneRingsManager };
 
-    class IComponentData {
-    public:
-        virtual ComponentType getComponentType() = 0;
-    };
+class IComponentData {
+public:
+  virtual ComponentType getComponentType() = 0;
+};
 
-    // TODO: Maybe custom-type?
-    class TrackLaneRingsManagerComponentData : public IComponentData
-    {
-    public:
-        SafePtrUnity<GlobalNamespace::TrackLaneRingsManager> OldTrackLaneRingsManager;
+// TODO: Maybe custom-type?
+class TrackLaneRingsManagerComponentData : public IComponentData {
+public:
+  SafePtrUnity<GlobalNamespace::TrackLaneRingsManager> OldTrackLaneRingsManager;
 
-        SafePtrUnity<GlobalNamespace::TrackLaneRingsManager> NewTrackLaneRingsManager;
+  SafePtrUnity<GlobalNamespace::TrackLaneRingsManager> NewTrackLaneRingsManager;
 
-        ComponentType getComponentType() override;
-    };
-}
-
-
+  ComponentType getComponentType() override;
+};
+} // namespace Chroma

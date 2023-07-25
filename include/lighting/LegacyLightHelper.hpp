@@ -17,23 +17,23 @@
 
 namespace Chroma {
 // Please let me delete this whole class
-    class LegacyLightHelper {
-    public:
-        typedef std::unordered_map<int, std::vector<pair<float, Sombrero::FastColor>>> ColorMap;
+class LegacyLightHelper {
+public:
+  typedef std::unordered_map<int, std::vector<pair<float, Sombrero::FastColor>>> ColorMap;
 
-        //internal
-        inline const static int RGB_INT_OFFSET = 2000000000;
+  // internal
+  inline const static int RGB_INT_OFFSET = 2000000000;
 
-        // internal
-        static ColorMap LegacyColorEvents;
+  // internal
+  static ColorMap LegacyColorEvents;
 
-        // internal
-        static void Activate(std::span<GlobalNamespace::BasicBeatmapEventData*> eventData);
+  // internal
+  static void Activate(std::span<GlobalNamespace::BasicBeatmapEventData*> eventData);
 
-        // internal
-        static std::optional<Sombrero::FastColor> GetLegacyColor(GlobalNamespace::BasicBeatmapEventData* beatmapEventData);
+  // internal
+  static std::optional<Sombrero::FastColor> GetLegacyColor(GlobalNamespace::BasicBeatmapEventData* beatmapEventData);
 
-    private:
-        static constexpr Sombrero::FastColor ColorFromInt(int rgb);
-    };
-}
+private:
+  static constexpr Sombrero::FastColor ColorFromInt(int rgb);
+};
+} // namespace Chroma

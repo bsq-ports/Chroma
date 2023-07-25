@@ -3,9 +3,8 @@
 #include "custom-json-data/shared/CustomBeatmapData.h"
 
 namespace Chroma {
-    class LegacyEnvironmentRemoval {
-    public:
-        static void Init(CustomJSONData::CustomBeatmapData* customBeatmap);
-    };
-}
-
+class LegacyEnvironmentRemoval {
+public:
+  static void Init(CustomJSONData::CustomBeatmapData* customBeatmap);
+};
+} // namespace Chroma

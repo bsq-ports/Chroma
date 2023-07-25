@@ -16,30 +16,26 @@
 #include "main.hpp"
 
 namespace Chroma {
-    struct ChromaRotationEffect {
-    public:
-        float RotationAngle;
+struct ChromaRotationEffect {
+public:
+  float RotationAngle;
 
-        float RotationStep;
+  float RotationStep;
 
-        float RotationFlexySpeed;
+  float RotationFlexySpeed;
 
-        float RotationPropagationSpeed;
+  float RotationPropagationSpeed;
 
-        float ProgressPos;
+  float ProgressPos;
 
-        ChromaRotationEffect(float rotationAngle, float rotationStep, float rotationFlexySpeed,
-                             float rotationPropagationSpeed, float progressPos) : RotationAngle(rotationAngle),
-                                                                                  RotationStep(rotationStep),
-                                                                                  RotationFlexySpeed(
-                                                                                          rotationFlexySpeed),
-                                                                                  RotationPropagationSpeed(
-                                                                                          rotationPropagationSpeed),
-                                                                                  ProgressPos(progressPos) {}
+  ChromaRotationEffect(float rotationAngle, float rotationStep, float rotationFlexySpeed,
+                       float rotationPropagationSpeed, float progressPos)
+      : RotationAngle(rotationAngle), RotationStep(rotationStep), RotationFlexySpeed(rotationFlexySpeed),
+        RotationPropagationSpeed(rotationPropagationSpeed), ProgressPos(progressPos) {}
 
-        ChromaRotationEffect() = default;
-    };
-}
+  ChromaRotationEffect() = default;
+};
+} // namespace Chroma
 
 DECLARE_CLASS_CODEGEN(Chroma, ChromaRingsRotationEffect, GlobalNamespace::TrackLaneRingsRotationEffect,
 public:

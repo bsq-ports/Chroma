@@ -9,21 +9,21 @@
 
 // Custom events, not Beatmap Events
 namespace ChromaEvents {
-    struct CustomEventAssociatedData {
-        Track* track;
-        bool parsed = false;
-    };
+struct CustomEventAssociatedData {
+  Track* track;
+  bool parsed = false;
+};
 
-    static std::unordered_map<CustomJSONData::CustomEventData const*, CustomEventAssociatedData> eventDataMap;
+static std::unordered_map<CustomJSONData::CustomEventData const*, CustomEventAssociatedData> eventDataMap;
 
-    static CustomEventAssociatedData &getEventAD(CustomJSONData::CustomEventData const* customData) {
-        return eventDataMap[customData];
-    }
-
-    void deserialize(CustomJSONData::CustomBeatmapData *readOnlyBeatmap);
-
-    void parseEventData(TracksAD::BeatmapAssociatedData &beatmapAD,
-                        CustomJSONData::CustomEventData const *customEventData, bool v2);
-
-    void AddEventCallbacks(Logger &logger);
+static CustomEventAssociatedData& getEventAD(CustomJSONData::CustomEventData const* customData) {
+  return eventDataMap[customData];
 }
+
+void deserialize(CustomJSONData::CustomBeatmapData* readOnlyBeatmap);
+
+void parseEventData(TracksAD::BeatmapAssociatedData& beatmapAD, CustomJSONData::CustomEventData const* customEventData,
+                    bool v2);
+
+void AddEventCallbacks(Logger& logger);
+} // namespace ChromaEvents
