@@ -1,4 +1,4 @@
-Checks: '*,-llvm*,
+Checks: "*,-llvm*,
   -google-readability-namespace,
   -llvmlib,
   -fuchsi,
@@ -14,9 +14,13 @@ Checks: '*,-llvm*,
   -altera*,
   -cppcoreguidelines-pro-type-vararg,
   -cppcoreguidelines-pro-type-static-cast-downcast,
+  -misc-non-private-member-variables-in-classes,
+  -fuchsia-statically-constructed-objects,
+  -bugprone-easily-swappable-parameters,
+  -cppcoreguidelines-avoid-magic-numbers,
   -hicpp-vararg,
   -cppcoreguidelines-pro-bounds-constant-array-index,
   -google-build-using-namespace,
-  -abseil-string-find-str-contains'
-FormatStyle:     file
-HeaderFilterRegex: '^(?!extern).+$' #'./include/*.hpp,./shared/*.hpp'
+  -abseil-string-find-str-contains"
+FormatStyle: file
+HeaderFilterRegex: "^(?!extern).+$" #'./include/*.hpp,./shared/*.hpp'

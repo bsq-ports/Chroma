@@ -1,14 +1,11 @@
 #include "Chroma.hpp"
 #include "ChromaController.hpp"
 
+#include "colorizer/LightColorizer.hpp"
+
 #include <vector>
 #include <optional>
 #include "custom-json-data/shared/CustomBeatmapData.h"
-#include "System/Collections/Generic/IEnumerator_1.hpp"
-#include "colorizer/LightColorizer.hpp"
-#include "custom-types/shared/types.hpp"
-#include "custom-types/shared/macros.hpp"
-#include "custom-types/shared/register.hpp"
 #include "System/Collections/IEnumerator.hpp"
 #include "custom-types/shared/coroutine.hpp"
 #include "UnityEngine/Color.hpp"
