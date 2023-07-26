@@ -1,24 +1,16 @@
 #include "Chroma.hpp"
-#include "beatsaber-hook/shared/utils/il2cpp-utils.hpp"
 #include "beatsaber-hook/shared/utils/typedefs-array.hpp"
 
 #include "lighting/LightIDTableManager.hpp"
 #include "colorizer/LightColorizer.hpp"
-#include "utils/ChromaUtils.hpp"
 
 #include <unordered_map>
 
-#include "custom-json-data/shared/CustomBeatmapData.h"
-
-#include "UnityEngine/Mathf.hpp"
-
-#include "GlobalNamespace/LightWithIdMonoBehaviour.hpp"
-#include "GlobalNamespace/LightWithIds.hpp"
-#include "GlobalNamespace/LightWithIds_LightWithId.hpp"
 #include "GlobalNamespace/TrackLaneRingsManager.hpp"
 #include "GlobalNamespace/TrackLaneRing.hpp"
-#include "GlobalNamespace/ParticleSystemEventEffect.hpp"
 #include "GlobalNamespace/ColorSO.hpp"
+
+#include "UnityEngine/Transform.hpp"
 
 #include "System/Linq/Enumerable.hpp"
 

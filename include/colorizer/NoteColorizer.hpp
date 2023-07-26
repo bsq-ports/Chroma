@@ -37,8 +37,7 @@ private:
   NoteColorizer(GlobalNamespace::NoteControllerBase* noteController);
 
 protected:
-  //        override Color? GlobalColorGetter => GlobalColor[(int)ColorType];
-  //        override Color OriginalColorGetter => OriginalColors[(int)ColorType];
+
   std::optional<Sombrero::FastColor> GlobalColorGetter();
 
   std::optional<Sombrero::FastColor> OriginalColorGetter();
@@ -70,15 +69,19 @@ public:
   // extensions
   inline static NoteColorizer* GetNoteColorizer(GlobalNamespace::NoteControllerBase* noteController) {
     auto it = Colorizers.find(noteController);
-    if (it == Colorizers.end()) return nullptr;
+    if (it == Colorizers.end()) {
+      return nullptr;
+    }
 
     return &it->second;
   }
 
   inline static void ColorizeNote(GlobalNamespace::NoteControllerBase* noteController,
                                   std::optional<Sombrero::FastColor> const& color) {
-    auto colorizer = GetNoteColorizer(noteController);
-    if (colorizer) colorizer->Colorize(color);
+    auto* colorizer = GetNoteColorizer(noteController);
+    if (colorizer != nullptr) {
+      colorizer->Colorize(color);
+    }
   }
 };
 } // namespace Chroma

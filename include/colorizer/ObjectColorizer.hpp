@@ -45,10 +45,14 @@ public:
   }
 
   [[nodiscard]] Sombrero::FastColor getColor() {
-    if (_color) return *_color;
+    if (_color) {
+      return *_color;
+    }
 
     auto globalColor = static_cast<T*>(this)->GlobalColorGetter();
-    if (globalColor) return *globalColor;
+    if (globalColor) {
+      return *globalColor;
+    }
 
     // Throw an exception here intentionally or CRASH?
     return *static_cast<T*>(this)->OriginalColorGetter();
@@ -59,6 +63,8 @@ public:
     static_cast<T*>(this)->Refresh();
   }
 
+  ObjectColorizer() = default;
+  ObjectColorizer(ObjectColorizer&&) noexcept = default;
   virtual ~ObjectColorizer() = default;
 };
 

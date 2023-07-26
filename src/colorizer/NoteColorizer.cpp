@@ -1,21 +1,15 @@
 #include "Chroma.hpp"
 
-#include "UnityEngine/SpriteRenderer.hpp"
 #include "UnityEngine/MaterialPropertyBlock.hpp"
-#include "UnityEngine/MeshRenderer.hpp"
 
-#include "GlobalNamespace/GameNoteController.hpp"
 #include "GlobalNamespace/MaterialPropertyBlockController.hpp"
-
-#include "System/Action_2.hpp"
 
 #include <unordered_map>
 #include "colorizer/NoteColorizer.hpp"
 #include "colorizer/SliderColorizer.hpp"
 #include "colorizer/SaberColorizer.hpp"
 #include "ChromaController.hpp"
-#include "utils/ChromaUtils.hpp"
-#include "ChromaObjectData.hpp"
+
 
 using namespace CustomJSONData;
 using namespace GlobalNamespace;
