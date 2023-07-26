@@ -272,16 +272,16 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, std::optional<std::vector<
         Sombrero::FastColor multiplierColor;
         if (usingBoostColors) {
           if (nextColorType == EnvironmentColorType::Color1) {
-            multiplierColor = _highlightColor1BoostMult;
+            multiplierColor = _lightColor1BoostMult;
+          } else {
+            multiplierColor = _lightColor0BoostMult;
           }
-
-          multiplierColor = _highlightColor0BoostMult;
         } else {
           if (nextColorType == EnvironmentColorType::Color1) {
-            multiplierColor = _highlightColor1Mult;
+            multiplierColor = _lightColor1Mult;
+          } else {
+            multiplierColor = _lightColor0Mult;
           }
-
-          multiplierColor = _highlightColor0Mult;
         }
 
         nextColor = nextColorData.value() * multiplierColor;
