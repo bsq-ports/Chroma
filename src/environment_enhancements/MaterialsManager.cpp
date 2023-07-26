@@ -57,7 +57,11 @@ UnityEngine::Material* Chroma::MaterialsManager::InstantiateSharedMaterial(Shade
     shaderName = standardBTSCube;
     shaderKeywords = ArrayW<StringW>(std::initializer_list<StringW>(
         { "DIFFUSE", "ENABLE_DIFFUSE", "ENABLE_FOG", "ENABLE_HEIGHT_FOG", "ENABLE_SPECULAR", "FOG", "HEIGHT_FOG",
-          "REFLECTION_PROBE_BOX_PROJECTION", "SPECULAR", "_EMISSION", "_ENABLE_FOG_TINT", "_RIMLIGHT_NONE" }));
+          "REFLECTION_PROBE_BOX_PROJECTION", "SPECULAR", "_EMISSION", "_ENABLE_FOG_TINT", "_RIMLIGHT_NONE",
+
+          // Added in BS 1.30
+          "_ACES_APPROACH_AFTER_EMISSIVE", "_DECALBLEND_ALPHABLEND", "_DISSOLVEAXIS_LOCALX", "_EMISSIONCOLORTYPE_FLAT",
+          "EMISSIONTEXTURE_NONE", "_ROTATE_UV_NONE", "_VERTEXMODE_NONE", "WHITEBOOSTTYPE_NONE", "ZWRITE_ON" }));
     break;
   case ShaderType::OpaqueLight:
     shaderName = opaqueLight;
