@@ -32,7 +32,7 @@ private:
 protected:
   void Refresh();
 
-  std::optional<Sombrero::FastColor> GlobalColorGetter();
+  static std::optional<Sombrero::FastColor> GlobalColorGetter();
 
 public:
   inline static bool BombColorable = false;

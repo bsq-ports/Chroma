@@ -22,7 +22,7 @@ MAKE_HOOK_MATCH(ObstacleController_Init, &ObstacleController::Init, void, Obstac
                 ObstacleData* obstacleData, float worldRotation, UnityEngine::Vector3 startPos,
                 UnityEngine::Vector3 midPos, UnityEngine::Vector3 endPos, float move1Duration, float move2Duration,
                 float singleLineWidth, float height) {
-  static auto MultiplayerConnectedPlayerObstacleControllerKlass =
+  static auto* MultiplayerConnectedPlayerObstacleControllerKlass =
       classof(MultiplayerConnectedPlayerObstacleController*);
 
   ObstacleController_Init(self, obstacleData, worldRotation, startPos, midPos, endPos, move1Duration, move2Duration,
@@ -43,7 +43,7 @@ MAKE_HOOK_MATCH(ObstacleController_Init, &ObstacleController::Init, void, Obstac
 }
 // Update is too small, use manual update yay
 MAKE_HOOK_MATCH(ObstacleController_ManualUpdate, &ObstacleController::ManualUpdate, void, ObstacleController* self) {
-  static auto MultiplayerConnectedPlayerObstacleControllerKlass =
+  static auto* MultiplayerConnectedPlayerObstacleControllerKlass =
       classof(MultiplayerConnectedPlayerObstacleController*);
 
   ObstacleController_ManualUpdate(self);
@@ -64,7 +64,7 @@ MAKE_HOOK_MATCH(ObstacleController_ManualUpdate, &ObstacleController::ManualUpda
           ChromaTimeSourceHelper::getSongTimeChroma(self->audioTimeSyncController) - self->startTimeOffset;
       float normalTime = (elapsedTime - self->move1Duration) / (jumpDuration + self->obstacleDuration);
 
-      [[maybe_unused]] bool updated;
+      [[maybe_unused]] bool updated = 0;
       std::optional<Sombrero::FastColor> colorOffset =
           AnimationHelper::GetColorOffset(pathPointDefinition, tracks, normalTime, updated, 0);
 
@@ -75,7 +75,7 @@ MAKE_HOOK_MATCH(ObstacleController_ManualUpdate, &ObstacleController::ManualUpda
   }
 }
 
-void ObstacleControllerHook(Logger& logger) {
+void ObstacleControllerHook(Logger& /*logger*/) {
   INSTALL_HOOK(getLogger(), ObstacleController_Init);
   INSTALL_HOOK(getLogger(), ObstacleController_ManualUpdate);
 }

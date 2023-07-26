@@ -34,7 +34,9 @@ void ChromaEvents::parseEventData(TracksAD::BeatmapAssociatedData& beatmapAD,
   rapidjson::Value const& eventData = *customEventData->data;
   auto& eventAD = getEventAD(customEventData);
 
-  if (eventAD.parsed) return;
+  if (eventAD.parsed) {
+    return;
+  }
 
   eventAD.parsed = true;
 
@@ -55,9 +57,9 @@ void ChromaEvents::parseEventData(TracksAD::BeatmapAssociatedData& beatmapAD,
 }
 
 void ChromaEvents::deserialize(CustomJSONData::CustomBeatmapData* readOnlyBeatmap) {
-  auto beatmapCast = readOnlyBeatmap;
+  auto* beatmapCast = readOnlyBeatmap;
 
-  auto beatmap = beatmapCast;
+  auto* beatmap = beatmapCast;
   auto& beatmapAD = TracksAD::getBeatmapAD(beatmap->customData);
 
   if (!beatmapAD.valid) {
@@ -66,7 +68,9 @@ void ChromaEvents::deserialize(CustomJSONData::CustomBeatmapData* readOnlyBeatma
 
   // Parse events
   for (auto const& customEventData : beatmap->customEventDatas) {
-    if (!customEventData) continue;
+    if (customEventData == nullptr) {
+      continue;
+    }
 
     parseEventData(beatmapAD, customEventData, beatmap->v2orEarlier);
   }
@@ -103,6 +107,6 @@ void CustomEventCallback(BeatmapCallbacksController* callbackController,
       })
 }
 
-void ChromaEvents::AddEventCallbacks(Logger& logger) {
+void ChromaEvents::AddEventCallbacks(Logger& /*logger*/) {
   CustomJSONData::CustomEventCallbacks::AddCustomEventCallback(&CustomEventCallback);
 }

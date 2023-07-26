@@ -25,15 +25,16 @@ EXPOSE_API(getBombColorSafe, OptColor) {
     color = optional.value();
 
     return OptColorFromColor(color);
-  } else {
-    return OptColorNull;
   }
+  return OptColorNull;
 }
 
 EXPOSE_API(getBombNoteControllerOverrideColorSafe, OptColor, BombNoteController* BombNoteController) {
-  auto cnv = BombColorizer::GetBombColorizer(BombNoteController);
+  auto* cnv = BombColorizer::GetBombColorizer(BombNoteController);
 
-  if (!cnv) return OptColor();
+  if (cnv == nullptr) {
+    return {};
+  }
 
   auto color = cnv->getColor();
 
@@ -43,11 +44,15 @@ EXPOSE_API(getBombNoteControllerOverrideColorSafe, OptColor, BombNoteController*
 EXPOSE_API(getBombNoteControllerColorSafe, OptColor, BombNoteController* BombNoteController) {
   auto it = ChromaObjectDataManager::ChromaObjectDatas.find(BombNoteController->noteData);
 
-  if (it == ChromaObjectDataManager::ChromaObjectDatas.end()) return OptColorNull;
+  if (it == ChromaObjectDataManager::ChromaObjectDatas.end()) {
+    return OptColorNull;
+  }
 
   auto color = it->second.Color;
 
-  if (!color) return OptColorNull;
+  if (!color) {
+    return OptColorNull;
+  }
 
   return OptColorFromColor(color.value());
 }

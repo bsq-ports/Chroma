@@ -27,7 +27,7 @@ MAKE_HOOK_MATCH(MultiplayerConnectedPlayerInstaller_InstallBindings,
   MultiplayerConnectedPlayerInstallerHookHolder::MultiplayerInvoked = false;
 }
 
-void MultiplayerConnectedPlayerInstallerHook(Logger& logger) {
+void MultiplayerConnectedPlayerInstallerHook(Logger& /*logger*/) {
   INSTALL_HOOK(getLogger(), MultiplayerConnectedPlayerInstaller_InstallBindings);
 }
 

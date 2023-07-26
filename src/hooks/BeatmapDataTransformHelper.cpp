@@ -27,7 +27,7 @@ MAKE_HOOK_MATCH(BeatmapDataTransformHelper_CreateTransformedBeatmapData,
                 ::GlobalNamespace::EnvironmentEffectsFilterPreset environmentEffectsFilterPreset,
                 ::GlobalNamespace::EnvironmentIntensityReductionOptions* environmentIntensityReductionOptions,
                 ::GlobalNamespace::MainSettingsModelSO* mainSettingsModel) {
-  auto result = BeatmapDataTransformHelper_CreateTransformedBeatmapData(
+  auto* result = BeatmapDataTransformHelper_CreateTransformedBeatmapData(
       beatmapData, beatmapLevel, gameplayModifiers, leftHanded, environmentEffectsFilterPreset,
       environmentIntensityReductionOptions, mainSettingsModel);
 
@@ -61,7 +61,7 @@ MAKE_HOOK_MATCH(BeatmapDataTransformHelper_CreateTransformedBeatmapData,
   return result;
 }
 
-void BeatmapDataTransformHelperHook(Logger& logger) {
+void BeatmapDataTransformHelperHook(Logger& /*logger*/) {
   INSTALL_HOOK(getLogger(), BeatmapDataTransformHelper_CreateTransformedBeatmapData);
 }
 

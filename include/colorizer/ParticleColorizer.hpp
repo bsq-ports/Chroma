@@ -53,7 +53,7 @@ public:
 
   inline static std::unordered_map<int, std::unordered_set<std::shared_ptr<ParticleColorizer>>> Colorizers;
 
-  int PreviousValue;
+  int PreviousValue{};
 
   void UnsubscribeEvent();
 

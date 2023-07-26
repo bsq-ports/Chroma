@@ -19,7 +19,7 @@ MAKE_HOOK_MATCH(SceneManager_Internal_SceneLoaded, &UnityEngine::SceneManagement
   SceneManager_Internal_SceneLoaded(scene, mode);
 }
 
-void SceneManager_Internal(Logger& logger) {
+void SceneManager_Internal(Logger& /*logger*/) {
   INSTALL_HOOK(getLogger(), SceneManager_Internal_SceneLoaded);
 }
 

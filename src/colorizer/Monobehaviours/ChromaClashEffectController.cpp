@@ -1,5 +1,7 @@
 #include "utils/ChromaUtils.hpp"
 #include "colorizer/Monobehaviours/ChromaClashEffectController.hpp"
+
+#include <cmath>
 #include "colorizer/SaberColorizer.hpp"
 
 #include "UnityEngine/ParticleSystem_MainModule.hpp"
@@ -23,18 +25,18 @@ void ChromaClashEffectController::Init(UnityEngine::ParticleSystem* sparkleParti
 }
 
 void ChromaClashEffectController::OnSaberColorChanged(int saberType,
-                                                      GlobalNamespace::SaberModelController* saberModelController,
+                                                      GlobalNamespace::SaberModelController* /*saberModelController*/,
                                                       Sombrero::FastColor const& color) {
-  float h;
-  float s;
-  float _;
+  float h = 0;
+  float s = 0;
+  float _ = 0;
 
   Sombrero::FastColor::RGBToHSV(color, h, s, _);
   Sombrero::FastColor effectColor = Sombrero::FastColor::HSVToRGB(h, s, 1);
 
-  _colors[(int)saberType] = effectColor;
+  _colors[saberType] = effectColor;
 
-  Sombrero::FastColor average = Sombrero::FastColor::Lerp(_colors[0], _colors[1], 0.5f);
+  Sombrero::FastColor average = Sombrero::FastColor::Lerp(_colors[0], _colors[1], 0.5F);
   auto sparkleMain = _sparkleParticleSystem->get_main();
   sparkleMain.set_startColor(ParticleSystem::MinMaxGradient(average));
   auto glowMain = _glowParticleSystem->get_main();

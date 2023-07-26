@@ -8,8 +8,8 @@
 namespace Chroma {
 class SceneTransitionHelper {
 public:
-  static void Patch(GlobalNamespace::IDifficultyBeatmap* difficultyBeatmap);
-  static void Patch(GlobalNamespace::IDifficultyBeatmap* difficultyBeatmap,
+  static void Patch(GlobalNamespace::IDifficultyBeatmap* customBeatmapData);
+  static void Patch(GlobalNamespace::IDifficultyBeatmap* customBeatmapData,
                     GlobalNamespace::OverrideEnvironmentSettings*& overrideEnvironmentSettings);
   static bool BasicPatch(GlobalNamespace::IDifficultyBeatmap* customBeatmapDifficultyData,
                          CustomJSONData::v3::CustomBeatmapSaveData* customBeatmapDataCustom);

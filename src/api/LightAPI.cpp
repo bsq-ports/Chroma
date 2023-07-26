@@ -12,9 +12,11 @@ using namespace UnityEngine;
 
 EXPOSE_API(getLightColorSafe, LightAPI::LSEData*, BasicBeatmapEventType mb) {
 
-  auto lse = LightColorizer::GetLightColorizer(mb);
+  auto* lse = LightColorizer::GetLightColorizer(mb);
 
-  if (!lse) return nullptr;
+  if (lse == nullptr) {
+    return nullptr;
+  }
 
   auto colors = lse->getColor();
 
@@ -23,8 +25,8 @@ EXPOSE_API(getLightColorSafe, LightAPI::LSEData*, BasicBeatmapEventType mb) {
   auto _lightColor0Boost = colors[2];
   auto _lightColor1Boost = colors[3];
 
-  auto lseData = new LightAPI::LSEData{ std::make_optional(_lightColor0), std::make_optional(_lightColor1),
-                                        std::make_optional(_lightColor0Boost), std::make_optional(_lightColor1Boost) };
+  auto* lseData = new LightAPI::LSEData{ std::make_optional(_lightColor0), std::make_optional(_lightColor1),
+                                         std::make_optional(_lightColor0Boost), std::make_optional(_lightColor1Boost) };
 
   return lseData;
 }
@@ -36,13 +38,12 @@ EXPOSE_API(setLightColorSafe, bool, BasicBeatmapEventType mb, bool refresh, std:
                                                                lseData->_lightColor0Boost, lseData->_lightColor1Boost }
           : std::array<std::optional<Sombrero::FastColor>, 4>{ std::nullopt, std::nullopt, std::nullopt, std::nullopt };
 
-  auto colorizer = LightColorizer::GetLightColorizer(mb);
-  if (colorizer) {
+  auto* colorizer = LightColorizer::GetLightColorizer(mb);
+  if (colorizer != nullptr) {
     colorizer->Colorize(refresh, colors);
     return true;
-  } else {
-    return false;
   }
+  return false;
 }
 
 EXPOSE_API(setAllLightingColorsSafe, void, bool refresh, std::optional<LightAPI::LSEData> data) {
@@ -62,7 +63,7 @@ using LightMap = std::vector<GlobalNamespace::ILightWithId*>;
 
 EXPOSE_API(getLightsSafe, LightMap*, GlobalNamespace::LightSwitchEventEffect* lse) {
   auto vectorOrg = VList<ILightWithId*>(LightColorizer::GetLightColorizer(lse->event)->Lights);
-  auto vectorPtr = new LightMap(vectorOrg.begin(), vectorOrg.end());
+  auto* vectorPtr = new LightMap(vectorOrg.begin(), vectorOrg.end());
 
   return vectorPtr;
 }
@@ -76,7 +77,7 @@ using LightPropMap = std::unordered_map<int, std::vector<GlobalNamespace::ILight
 // GlobalNamespace::LightSwitchEventEffect *lse) {
 EXPOSE_API(getLightsPropagationGroupedSafe, LightPropMap*, GlobalNamespace::LightSwitchEventEffect* lse) {
   auto mapOrg = LightColorizer::GetLightColorizer(lse->event)->getLightsPropagationGrouped();
-  auto mapPtr = new std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId*>>(std::move(mapOrg));
+  auto* mapPtr = new std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId*>>(std::move(mapOrg));
 
   return mapPtr;
 }

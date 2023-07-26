@@ -8,7 +8,7 @@ using namespace Chroma;
 DEFINE_TYPE(Chroma, ChromaRingsRotationEffect);
 
 void ChromaRingsRotationEffect::AddRingRotationEffect(float angle, float step, int propagationSpeed, float flexySpeed) {
-  AddRingRotationEffectF(angle, step, (float)propagationSpeed, flexySpeed);
+  AddRingRotationEffectF(angle, step, static_cast<float>(propagationSpeed), flexySpeed);
 }
 
 void ChromaRingsRotationEffect::AddRingRotationEffectF(float angle, float step, float propagationSpeed,
@@ -43,7 +43,7 @@ void ChromaRingsRotationEffect::Awake() {
 }
 
 void ChromaRingsRotationEffect::Start() {
-  AddRingRotationEffectF(startupRotationAngle, startupRotationStep, (float)startupRotationPropagationSpeed,
+  AddRingRotationEffectF(startupRotationAngle, startupRotationStep, static_cast<float>(startupRotationPropagationSpeed),
                          startupRotationFlexySpeed);
 }
 
@@ -61,14 +61,14 @@ void ChromaRingsRotationEffect::FixedUpdate() {
     // Reverse iterate so we can delete while iterating
     for (auto it = _activeRingRotationEffects.rbegin(); it != _activeRingRotationEffects.rend(); it++) {
       ChromaRotationEffect& ringRotationEffect = *it;
-      auto num = (long)ringRotationEffect.ProgressPos;
+      auto num = static_cast<long>(ringRotationEffect.ProgressPos);
       auto progressPos = ringRotationEffect.ProgressPos += ringRotationEffect.RotationPropagationSpeed;
 
-      auto length = (int)rings.Length();
+      auto length = static_cast<int>(rings.Length());
 
       while (num < progressPos && num < length) {
         SetDestRotation(rings.get(num),
-                        ringRotationEffect.RotationAngle + ((float)num * ringRotationEffect.RotationStep),
+                        ringRotationEffect.RotationAngle + (static_cast<float>(num) * ringRotationEffect.RotationStep),
                         ringRotationEffect.RotationFlexySpeed);
         num++;
       }

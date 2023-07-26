@@ -98,7 +98,7 @@ ChromaController::DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnCont
 void ChromaController::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene current) {
   getLogger().debug("Clear scene");
 
-  if (current && current.IsValid() && current.get_name() == "GameCore") {
+  if (current.IsValid() && current.get_name() == "GameCore") {
     CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Clearing all data");
     ChromaGradientController::clearInstance();
     TrackLaneRingsManagerHolder::RingManagers.clear();

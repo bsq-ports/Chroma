@@ -51,7 +51,8 @@ void setChromaEnv() {
 }
 
 void DidActivate(HMUI::ViewController* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
-  getLogger().info("DidActivate: %p, %d, %d, %d", self, firstActivation, addedToHierarchy, screenSystemEnabling);
+  getLogger().info("DidActivate: %p, %d, %d, %d", self, static_cast<int>(firstActivation),
+                   static_cast<int>(addedToHierarchy), static_cast<int>(screenSystemEnabling));
 
   static QUC::RenderContext ctx{ nullptr };
 

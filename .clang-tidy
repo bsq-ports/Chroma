@@ -1,0 +1,18 @@
+Checks: '*,-llvm*,
+  -google-readability-namespace,
+  -llvmlib,
+  -fuchsi,
+  -alter,
+  -modernize-use-trailing-return-type,
+  -modernize-use-trailing-return,
+  -readability-avoid-const-params-in,
+  -cppcoreguidelines-macro-usage,
+  -readability-identifier-length,
+  -google-readability-todo,
+  -fuchsia-default-arguments-calls,
+  -altera-unroll-loops,
+  -cppcoreguidelines-pro-type-vararg,
+  -hicpp-vararg,
+  -abseil-string-find-str-contains'
+FormatStyle:     file
+HeaderFilterRegex: '^(?!extern).+$' #'./include/*.hpp,./shared/*.hpp'

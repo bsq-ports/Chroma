@@ -16,7 +16,6 @@
 #include "colorizer/NoteColorizer.hpp"
 #include "colorizer/BombColorizer.hpp"
 #include "ChromaObjectData.hpp"
-#include "hooks/colorizer/Note/ColorManager.hpp"
 
 using namespace Chroma;
 using namespace GlobalNamespace;

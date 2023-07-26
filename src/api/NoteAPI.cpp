@@ -17,15 +17,16 @@ EXPOSE_API(getGlobalNoteColorSafe, OptColor, int colorType) {
 
   if (optional) {
     return OptColorFromColor(optional.value());
-  } else {
-    return OptColorNull;
   }
+  return OptColorNull;
 }
 
 EXPOSE_API(getNoteControllerOverrideColorSafe, OptColor, NoteController* noteController) {
-  auto cnv = NoteColorizer::GetNoteColorizer(noteController);
+  auto* cnv = NoteColorizer::GetNoteColorizer(noteController);
 
-  if (!cnv) return OptColor();
+  if (cnv == nullptr) {
+    return {};
+  }
 
   auto color = cnv->getColor();
 
@@ -35,19 +36,25 @@ EXPOSE_API(getNoteControllerOverrideColorSafe, OptColor, NoteController* noteCon
 EXPOSE_API(getNoteControllerColorSafe, OptColor, NoteController* noteController) {
   auto it = ChromaObjectDataManager::ChromaObjectDatas.find(noteController->noteData);
 
-  if (it == ChromaObjectDataManager::ChromaObjectDatas.end()) return OptColorNull;
+  if (it == ChromaObjectDataManager::ChromaObjectDatas.end()) {
+    return OptColorNull;
+  }
 
   auto const& color = it->second.Color;
 
-  if (!color) return OptColorNull;
+  if (!color) {
+    return OptColorNull;
+  }
 
   return OptColorFromColor(color.value());
 }
 
 EXPOSE_API(getRealtimeNoteControllerColorSafe, OptColor, NoteController* noteController) {
-  auto colorizer = NoteColorizer::GetNoteColorizer(noteController);
+  auto* colorizer = NoteColorizer::GetNoteColorizer(noteController);
 
-  if (!colorizer) return OptColorNull;
+  if (colorizer == nullptr) {
+    return OptColorNull;
+  }
 
   return OptColorFromColor(colorizer->getColor());
 }

@@ -31,7 +31,9 @@ Chroma::MaterialsManager::MaterialsManager(rapidjson::Value const& customData,
   auto it = customData.FindMember(v2 ? NewConstants::V2_MATERIALS.data() : NewConstants::MATERIALS.data());
 
   // notice no v2 arbitrary gatekeeping? :Kek:
-  if (it == customData.MemberEnd()) return;
+  if (it == customData.MemberEnd()) {
+    return;
+  }
 
   for (auto const& [key, val] : it->value.GetObject()) {
     materials.try_emplace(key.GetString(), CreateMaterialInfo(val));
@@ -84,8 +86,8 @@ UnityEngine::Material* Chroma::MaterialsManager::InstantiateSharedMaterial(Shade
     break;
   }
 
-  auto shader = Shader::Find(shaderName);
-  auto material = Material::New_ctor(shader);
+  auto* shader = Shader::Find(shaderName);
+  auto* material = Material::New_ctor(shader);
 
   material->set_globalIlluminationFlags(globalIlluminationFlags);
   material->set_enableInstancing(true);
@@ -133,7 +135,7 @@ MaterialInfo Chroma::MaterialsManager::CreateMaterialInfo(rapidjson::Value const
     }
   }
 
-  auto material = Object::Instantiate(GetMaterialTemplate(shaderType));
+  auto* material = Object::Instantiate(GetMaterialTemplate(shaderType));
   createdMaterials.emplace_back(material);
   if (color) {
     material->set_color(*color);
@@ -149,7 +151,9 @@ std::optional<MaterialInfo> Chroma::MaterialsManager::GetMaterial(rapidjson::Val
   if (data.IsString()) {
     auto it = materials.find(data.GetString());
 
-    if (it != materials.end()) return it->second;
+    if (it != materials.end()) {
+      return it->second;
+    }
   } else if (data.IsObject()) {
     // mappers generating 10293029843 identical materials
     rapidjson::StringBuffer s;
@@ -157,7 +161,7 @@ std::optional<MaterialInfo> Chroma::MaterialsManager::GetMaterial(rapidjson::Val
 
     data.Accept(writer);
 
-    auto jsonStr = s.GetString();
+    auto const* jsonStr = s.GetString();
     auto it = materialsJSON.find(jsonStr);
     if (it != materialsJSON.end()) {
       return it->second;
@@ -173,22 +177,30 @@ std::optional<MaterialInfo> Chroma::MaterialsManager::GetMaterial(rapidjson::Val
 
 UnityEngine::Material* MaterialsManager::GetMaterialTemplate(ShaderType shaderType) {
   static SafePtrUnity<Material> _standardMaterial;
-  if (!_standardMaterial) _standardMaterial = InstantiateSharedMaterial(ShaderType::Standard);
+  if (!_standardMaterial) {
+    _standardMaterial = InstantiateSharedMaterial(ShaderType::Standard);
+  }
 
   static SafePtrUnity<Material> _opaqueLightMaterial;
-  if (!_opaqueLightMaterial) _opaqueLightMaterial = InstantiateSharedMaterial(ShaderType::OpaqueLight);
+  if (!_opaqueLightMaterial) {
+    _opaqueLightMaterial = InstantiateSharedMaterial(ShaderType::OpaqueLight);
+  }
 
   static SafePtrUnity<Material> _transparentLightMaterial;
-  if (!_transparentLightMaterial) _transparentLightMaterial = InstantiateSharedMaterial(ShaderType::TransparentLight);
+  if (!_transparentLightMaterial) {
+    _transparentLightMaterial = InstantiateSharedMaterial(ShaderType::TransparentLight);
+  }
 
   static SafePtrUnity<Material> _baseWaterMaterial;
-  if (!_baseWaterMaterial) _baseWaterMaterial = InstantiateSharedMaterial(ShaderType::BaseWater);
+  if (!_baseWaterMaterial) {
+    _baseWaterMaterial = InstantiateSharedMaterial(ShaderType::BaseWater);
+  }
 
   CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Material templates {} {} {} {}", _standardMaterial.isAlive(),
                                                  _opaqueLightMaterial.isAlive(), _transparentLightMaterial.isAlive(),
                                                  _baseWaterMaterial.isAlive());
 
-  Material* originalMaterial;
+  Material* originalMaterial = nullptr;
   switch (shaderType) {
   default:
     originalMaterial = EnvironmentMaterialManager::getMaterial(shaderType).value_or((Material*)_standardMaterial);
@@ -213,7 +225,9 @@ decltype(MaterialsManager::materials) const& MaterialsManager::GetMaterials() co
 
 void MaterialsManager::Reset() {
   for (auto& m : createdMaterials) {
-    if (!m || !m.isAlive()) continue;
+    if (!m || !m.isAlive()) {
+      continue;
+    }
     UnityEngine::Object::Destroy(const_cast<UnityEngine::Material*>(m.ptr()));
   }
   createdMaterials.clear();

@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include "Chroma.hpp"
 #include "ChromaController.hpp"
 #include "utils/ChromaUtils.hpp"
@@ -10,6 +12,8 @@
 
 #include "lighting/ChromaEventData.hpp"
 #include "sombrero/shared/RandomUtils.hpp"
+
+
 
 using namespace CustomJSONData;
 using namespace GlobalNamespace;
@@ -44,18 +48,18 @@ MAKE_HOOK_MATCH(LightRotationEventEffect_HandleBeatmapObjectCallbackControllerBe
 
   std::optional<int> dir = chromaData.Direction;
 
-  float direction;
+  float direction = NAN;
   if (dir) {
     switch (dir.value()) {
     case 0:
-      direction = isLeftEvent ? -1.0f : 1.0f;
+      direction = isLeftEvent ? -1.0F : 1.0F;
       break;
     case 1:
-      direction = isLeftEvent ? 1.0f : -1.0f;
+      direction = isLeftEvent ? 1.0F : -1.0F;
       break;
     }
   } else {
-    direction = (ChromaController::randomXoshiro() > 0.5f) ? 1.0f : -1.0f;
+    direction = (ChromaController::randomXoshiro() > 0.5F) ? 1.0F : -1.0F;
   }
 
   if (beatmapEventData->value == 0) {
@@ -65,11 +69,11 @@ MAKE_HOOK_MATCH(LightRotationEventEffect_HandleBeatmapObjectCallbackControllerBe
     }
   } else if (beatmapEventData->value > 0) {
     self->set_enabled(true);
-    self->rotationSpeed = precisionSpeed * 20.0f * direction;
+    self->rotationSpeed = precisionSpeed * 20.0F * direction;
     if (!lockPosition) {
-      auto transform = self->get_transform();
+      auto* transform = self->get_transform();
       transform->set_localRotation(self->startRotation);
-      transform->Rotate(self->rotationVector, ChromaController::randomXoshiro(0.0f, 180.0f), Space::Self);
+      transform->Rotate(self->rotationVector, ChromaController::randomXoshiro(0.0F, 180.0F), Space::Self);
     }
   }
 }

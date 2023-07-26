@@ -43,12 +43,13 @@ void LightIDTableManager::RegisterIndex(int lightId, int index, std::optional<in
   // https://github.com/Aeroluna/Chroma/commit/0f379e54e006de9dba0b64debcb64fb913b453cf#diff-efd8021f3aec91a9e88e1e6823f48c13605a7ef8b27790c9c3d4545860f43849R47
   auto& dictioanry = table[lightId];
 
-  int key;
+  int key = 0;
 
   if (requestedKey) {
     key = *requestedKey;
-    while (dictioanry.contains(key))
+    while (dictioanry.contains(key)) {
       key++;
+    }
   } else {
     if (dictioanry.empty()) {
       key = 0;
@@ -80,7 +81,9 @@ void LightIDTableManager::UnregisterIndex(int lightID, int index) {
   }
 
   auto it = activeTable->find(lightID);
-  if (it == activeTable->end()) return;
+  if (it == activeTable->end()) {
+    return;
+  }
 
   auto& map = it->second;
 

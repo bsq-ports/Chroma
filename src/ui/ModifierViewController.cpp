@@ -30,7 +30,7 @@ UnityEngine::Sprite* UIUtils::configToIcon(ConfigUtils::ConfigValue<bool> const&
 
   auto& sprite = spriteMap[name];
 
-  if (!sprite || !sprite->m_CachedPtr) {
+  if ((sprite == nullptr) || (sprite->m_CachedPtr.m_value == nullptr)) {
     sprite = QuestUI::ArrayUtil::First(Resources::FindObjectsOfTypeAll<Sprite*>(),
                                        [&name](Sprite* x) { return x->get_name() == name; });
   }
@@ -50,7 +50,7 @@ void Chroma::ModifierViewController::DidActivate(bool first) {
   if (first) {
     this->ctx = RenderContext(get_transform());
 
-    layout.spacing = 0.75f;
+    layout.spacing = 0.75F;
     layoutElement.preferredWidth = 55;
 
     detail::renderSingle(container, ctx);

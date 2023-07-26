@@ -19,7 +19,7 @@ MAKE_HOOK_MATCH(MainSystemInit_Init, &MainSystemInit::Init, void, MainSystemInit
   return MainSystemInit_Init(self);
 }
 
-void MainSystemInitHook(Logger& logger) {
+void MainSystemInitHook(Logger& /*logger*/) {
   INSTALL_HOOK(getLogger(), MainSystemInit_Init);
 }
 

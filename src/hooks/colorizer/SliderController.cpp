@@ -58,10 +58,10 @@ MAKE_HOOK_MATCH(SliderController_Update, &SliderController::ManualUpdate, void, 
     if (!tracks.empty() || pathPointDefinition) {
       float jumpDuration = self->sliderMovement->jumpDuration;
 
-      float duration = (jumpDuration * 0.75f) + (self->sliderData->tailTime - self->sliderData->time);
+      float duration = (jumpDuration * 0.75F) + (self->sliderData->tailTime - self->sliderData->time);
       float normalTime = self->sliderMovement->timeSinceHeadNoteJump / (jumpDuration + duration);
 
-      [[maybe_unused]] bool updated;
+      [[maybe_unused]] bool updated = 0;
       std::optional<Sombrero::FastColor> colorOffset =
           AnimationHelper::GetColorOffset(pathPointDefinition, tracks, normalTime, updated, 0);
 
@@ -73,7 +73,7 @@ MAKE_HOOK_MATCH(SliderController_Update, &SliderController::ManualUpdate, void, 
   }
 }
 
-void SliderControllerHook(Logger& logger) {
+void SliderControllerHook(Logger& /*logger*/) {
   INSTALL_HOOK(getLogger(), SliderController_Init);
   INSTALL_HOOK(getLogger(), SliderController_Update);
 }

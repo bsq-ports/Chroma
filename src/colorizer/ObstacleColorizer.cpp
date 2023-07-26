@@ -16,7 +16,7 @@ using namespace Chroma;
 
 ObstacleColorizer::ObstacleColorizer(GlobalNamespace::ObstacleControllerBase* obstacleController)
     : obstacleController(obstacleController) {
-  auto stretchableObstacle = obstacleController->GetComponent<StretchableObstacle*>();
+  auto* stretchableObstacle = obstacleController->GetComponent<StretchableObstacle*>();
   _obstacleFrame = stretchableObstacle->obstacleFrame;
   _obstacleFakeGlow = stretchableObstacle->obstacleFakeGlow;
   _addColorMultiplier = stretchableObstacle->addColorMultiplier;

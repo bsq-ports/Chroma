@@ -19,14 +19,16 @@ SliderColorizer::SliderColorizer(GlobalNamespace::SliderController* sliderContro
 }
 
 SliderColorizer* SliderColorizer::New(GlobalNamespace::SliderController* sliderControllerBase) {
-  if (!ChromaController::DoColorizerSabers()) return nullptr;
+  if (!ChromaController::DoColorizerSabers()) {
+    return nullptr;
+  }
 
   return &Colorizers.try_emplace(sliderControllerBase, sliderControllerBase).first->second;
 }
 
 GlobalNamespace::ColorType SliderColorizer::getColorType() {
-  if (_sliderController && _sliderController->sliderData) {
-    auto sliderData = _sliderController->sliderData;
+  if ((_sliderController != nullptr) && (_sliderController->sliderData != nullptr)) {
+    auto* sliderData = _sliderController->sliderData;
 
     return sliderData->colorType;
   }

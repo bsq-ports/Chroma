@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include "Chroma.hpp"
 
 #include "ChromaController.hpp"
@@ -19,34 +21,35 @@ using namespace GlobalNamespace;
 using namespace Chroma;
 using namespace UnityEngine;
 
-std::array<LineRenderer*, 2> _lineRenderers = { nullptr, nullptr };
+std::array<LineRenderer*, 2> lineRenderers = { nullptr, nullptr };
 
 int saberBurnMarkCount = 0;
 
-void OnSaberColorChanged_SaberBurnMarkArea(int saberType, GlobalNamespace::SaberModelController* saberModelController,
+void OnSaberColorChanged_SaberBurnMarkArea(int saberType,
+                                           GlobalNamespace::SaberModelController* /*saberModelController*/,
                                            Color const& color) {
-  float h;
-  float s;
-  float _;
+  float h = NAN;
+  float s = NAN;
+  float _ = NAN;
 
   Sombrero::FastColor::RGBToHSV(color, h, s, _);
   Sombrero::FastColor effectColor = Sombrero::FastColor::HSVToRGB(h, s, 1);
   int intType = saberType;
-  _lineRenderers[intType]->set_startColor(effectColor);
-  _lineRenderers[intType]->set_endColor(effectColor);
+  lineRenderers[intType]->set_startColor(effectColor);
+  lineRenderers[intType]->set_endColor(effectColor);
 }
 
 MAKE_HOOK_MATCH(SaberBurnMarkArea_Start, &SaberBurnMarkArea::Start, void, SaberBurnMarkArea* self) {
   SaberBurnMarkArea_Start(self);
 
   // Do nothing if Chroma shouldn't run
-  if (!ChromaController::DoChromaHooks() || !self) {
+  if (!ChromaController::DoChromaHooks() || (self == nullptr)) {
     return;
   }
 
   if (self->lineRenderers && self->lineRenderers.Length() >= 2) {
-    _lineRenderers[0] = self->lineRenderers.get(0);
-    _lineRenderers[1] = self->lineRenderers.get(1);
+    lineRenderers[0] = self->lineRenderers.get(0);
+    lineRenderers[1] = self->lineRenderers.get(1);
   }
 
   if (saberBurnMarkCount == 0) {

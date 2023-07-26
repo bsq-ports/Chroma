@@ -36,7 +36,7 @@ struct ::il2cpp_utils::il2cpp_type_check::MetadataGetter<
 };
 
 void UpdateMirror(NoteControllerBase* noteController, GlobalNamespace::NoteControllerBase* followedNote) {
-  static auto MirroredBombNoteControllerKlass = classof(MirroredBombNoteController*);
+  static auto* MirroredBombNoteControllerKlass = classof(MirroredBombNoteController*);
   if (ASSIGNMENT_CHECK(MirroredBombNoteControllerKlass, noteController->klass)) {
     BombColorizer::ColorizeBomb(noteController, BombColorizer::GetBombColorizer(followedNote)->getColor());
   } else {
@@ -73,8 +73,8 @@ MAKE_HOOK_MATCH(MirroredNoteController_UpdatePositionAndRotationCubeGeneric,
 }
 
 void MirroredNoteControllerHook(Logger& logger) {
-  auto iNoteGeneric = classof(GlobalNamespace::MirroredNoteController_1<INoteMirrorable*>*);
-  auto iNoteCubeGeneric = classof(GlobalNamespace::MirroredNoteController_1<IGameNoteMirrorable*>*);
+  auto* iNoteGeneric = classof(GlobalNamespace::MirroredNoteController_1<INoteMirrorable*>*);
+  auto* iNoteCubeGeneric = classof(GlobalNamespace::MirroredNoteController_1<IGameNoteMirrorable*>*);
 
   INSTALL_HOOK(logger, MirroredNoteController_UpdatePositionAndRotationGeneric);
   INSTALL_HOOK(logger, MirroredNoteController_UpdatePositionAndRotationCubeGeneric);

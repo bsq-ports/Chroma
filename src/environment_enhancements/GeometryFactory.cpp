@@ -50,12 +50,14 @@ GeometryType geometryTypeFromString(std::string_view str) {
 
 GeometryFactory::GeometryFactory(MaterialsManager& materialsManager, bool v2)
     : materialsManager(materialsManager), v2(v2) {
-  auto tube = Resources::FindObjectsOfTypeAll<TubeBloomPrePassLight*>().FirstOrDefault();
+  auto* tube = Resources::FindObjectsOfTypeAll<TubeBloomPrePassLight*>().FirstOrDefault();
 
-  if (tube) _originalTubeBloomPrePassLight = tube;
+  if (tube != nullptr) {
+    _originalTubeBloomPrePassLight = tube;
+  }
 
-  instantiator =
-      (Zenject::IInstantiator*)Resources::FindObjectsOfTypeAll<SaberModelContainer*>().FirstOrDefault()->container;
+  instantiator = reinterpret_cast<Zenject::IInstantiator*>(
+      Resources::FindObjectsOfTypeAll<SaberModelContainer*>().FirstOrDefault()->container);
 }
 
 GameObject* Chroma::GeometryFactory::Create(rapidjson::Value const& data) {
@@ -65,10 +67,11 @@ GameObject* Chroma::GeometryFactory::Create(rapidjson::Value const& data) {
   bool collision =
       ChromaUtils::getIfExists<bool>(data, v2 ? NewConstants::V2_COLLISION : NewConstants::COLLISION).value_or(false);
 
-  if (!geometryStr)
+  if (!geometryStr) {
     geometryType = GeometryType::Cube;
-  else
+  } else {
     geometryType = geometryTypeFromString(geometryStr->data());
+  }
 
   MaterialInfo materialInfo =
       materialsManager
@@ -119,7 +122,7 @@ GameObject* Chroma::GeometryFactory::Create(rapidjson::Value const& data) {
     go->GetComponent<MeshFilter*>()->set_sharedMesh(mesh);
     if (collision) {
       auto* meshCollider = go->GetComponent<MeshCollider*>();
-      if (meshCollider) {
+      if (meshCollider != nullptr) {
         meshCollider->set_sharedMesh(mesh);
       }
     }
@@ -148,7 +151,7 @@ GameObject* Chroma::GeometryFactory::Create(rapidjson::Value const& data) {
   parametricBoxController->meshRenderer = meshRenderer;
 
   if (_originalTubeBloomPrePassLight) {
-    auto origTube = *_originalTubeBloomPrePassLight;
+    auto* origTube = *_originalTubeBloomPrePassLight;
 
     tubeBloomPrePassLight->mainEffectPostProcessEnabled = origTube->mainEffectPostProcessEnabled;
     tubeBloomPrePassLight->lightType = origTube->lightType;
@@ -160,7 +163,7 @@ GameObject* Chroma::GeometryFactory::Create(rapidjson::Value const& data) {
 
   tubeBloomPrePassLight->parametricBoxController = parametricBoxController;
 
-  auto tubeBloomPrePassLightWithId = instantiator->InstantiateComponent<TubeBloomPrePassLightWithId*>(go);
+  auto* tubeBloomPrePassLightWithId = instantiator->InstantiateComponent<TubeBloomPrePassLightWithId*>(go);
   tubeBloomPrePassLightWithId->tubeBloomPrePassLight = tubeBloomPrePassLight;
 
   LightIdRegisterer::MarkForTableRegister(tubeBloomPrePassLightWithId->i_ILightWithId());

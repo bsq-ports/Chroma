@@ -25,7 +25,7 @@ using namespace Chroma;
 
 NoteColorizer::NoteColorizer(GlobalNamespace::NoteControllerBase* noteController) : _noteController(noteController) {
 
-  auto colorNoteVisuals = _noteController->GetComponent<GlobalNamespace::ColorNoteVisuals*>();
+  auto* colorNoteVisuals = _noteController->GetComponent<GlobalNamespace::ColorNoteVisuals*>();
   _colorNoteVisuals = colorNoteVisuals;
   CRASH_UNLESS(_noteController);
   CRASH_UNLESS(_colorNoteVisuals);
@@ -34,14 +34,16 @@ NoteColorizer::NoteColorizer(GlobalNamespace::NoteControllerBase* noteController
 }
 
 NoteColorizer* NoteColorizer::New(GlobalNamespace::NoteControllerBase* noteControllerBase) {
-  if (!ChromaController::DoColorizerSabers()) return nullptr;
+  if (!ChromaController::DoColorizerSabers()) {
+    return nullptr;
+  }
 
   return &Colorizers.try_emplace(noteControllerBase, noteControllerBase).first->second;
 }
 
 GlobalNamespace::ColorType NoteColorizer::getColorType() {
-  auto noteData = _noteController->get_noteData();
-  if (noteData) {
+  auto* noteData = _noteController->get_noteData();
+  if (noteData != nullptr) {
     return noteData->colorType;
   }
 
@@ -82,7 +84,7 @@ void NoteColorizer::Reset() {
 
 void NoteColorizer::ColorizeSaber(GlobalNamespace::NoteController* noteController, NoteCutInfo const& noteCutInfo) {
   if (ChromaController::DoColorizerSabers()) {
-    auto noteData = noteController->noteData;
+    auto* noteData = noteController->noteData;
     SaberType saberType = noteCutInfo.saberType;
     if ((int)noteData->colorType == (int)saberType) {
       SaberColorizer::ColorizeSaber(saberType, GetNoteColorizer(noteController)->getColor());
@@ -91,7 +93,9 @@ void NoteColorizer::ColorizeSaber(GlobalNamespace::NoteController* noteControlle
 }
 
 void NoteColorizer::Refresh() {
-  if (!_colorNoteVisuals->get_isActiveAndEnabled()) return;
+  if (!_colorNoteVisuals->get_isActiveAndEnabled()) {
+    return;
+  }
 
   Sombrero::FastColor const& color = getColor().Alpha(_colorNoteVisuals->noteColor.a);
   if (color == Sombrero::FastColor(_colorNoteVisuals->noteColor)) {
@@ -99,18 +103,22 @@ void NoteColorizer::Refresh() {
   }
 
   NoteColorChanged.invoke(_noteController, color, getColorType());
-  if (NoteColorable) return;
+  if (NoteColorable) {
+    return;
+  }
 
   static auto ApplyChanges = FPtrWrapper<&GlobalNamespace::MaterialPropertyBlockController::ApplyChanges>::get();
   static auto SetColor = FPtrWrapper<static_cast<void (UnityEngine::MaterialPropertyBlock::*)(int, UnityEngine::Color)>(
       &UnityEngine::MaterialPropertyBlock::SetColor)>::get();
 
   _colorNoteVisuals->noteColor = color;
-  for (auto materialPropertyBlockController : _materialPropertyBlockControllers) {
-    if (!materialPropertyBlockController) continue;
+  for (auto* materialPropertyBlockController : _materialPropertyBlockControllers) {
+    if (materialPropertyBlockController == nullptr) {
+      continue;
+    }
 
-    if (materialPropertyBlockController->materialPropertyBlock) {
-      auto propertyBlock = materialPropertyBlockController->materialPropertyBlock;
+    if (materialPropertyBlockController->materialPropertyBlock != nullptr) {
+      auto* propertyBlock = materialPropertyBlockController->materialPropertyBlock;
       auto const& originalColor = propertyBlock->GetColor(_colorID());
       SetColor(propertyBlock, _colorID(), color.Alpha(originalColor.a));
     }

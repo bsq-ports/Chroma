@@ -59,13 +59,14 @@ void ParticleColorizer::OnLightColorChanged(GlobalNamespace::BasicBeatmapEventTy
       static auto SetColor = FPtrWrapper<&GlobalNamespace::SimpleColorSO::SetColor>::get();
 
       auto it = _simpleColorSOs.find(i); // std::unordered_map<int, SafePtr<GlobalNamespace::SimpleColorSO>>
-      if (it != _simpleColorSOs.end() && it->second && (SimpleColorSO*)it->second)
+      if (it != _simpleColorSOs.end() && it->second && ((SimpleColorSO*)it->second != nullptr)) {
         SetColor((SimpleColorSO*)it->second, color);
+      }
     }
 
     static auto RefreshParticles = FPtrWrapper<&GlobalNamespace::ParticleSystemEventEffect::RefreshParticles>::get();
 
-    auto particleSystemEventEffect = _particleSystemEventEffect;
+    auto* particleSystemEventEffect = _particleSystemEventEffect;
     Sombrero::FastColor color;
     Sombrero::FastColor afterHighlightColor;
     switch (PreviousValue) {
@@ -118,12 +119,12 @@ void ParticleColorizer::OnLightColorChanged(GlobalNamespace::BasicBeatmapEventTy
 
 void ParticleColorizer::InitializeSO(std::string const& id, int index, bool highlight) {
   static Il2CppClass* klass = classof(ParticleSystemEventEffect*);
-  auto colorSOAcessor = il2cpp_utils::FindField(klass, (std::string_view)id);
-  auto lightMultSO = il2cpp_utils::cast<MultipliedColorSO>(
+  auto* colorSOAcessor = il2cpp_utils::FindField(klass, std::string_view(id));
+  auto* lightMultSO = il2cpp_utils::cast<MultipliedColorSO>(
       CRASH_UNLESS(il2cpp_utils::GetFieldValue<GlobalNamespace::ColorSO*>(_particleSystemEventEffect, colorSOAcessor)));
 
   Sombrero::FastColor multiplierColor = lightMultSO->multiplierColor;
-  auto lightSO = lightMultSO->baseColor;
+  auto* lightSO = lightMultSO->baseColor;
 
   SafePtrUnity<MultipliedColorSO> mColorSO(ScriptableObject::CreateInstance<MultipliedColorSO*>());
   mColorSO->multiplierColor = multiplierColor;
@@ -137,7 +138,7 @@ void ParticleColorizer::InitializeSO(std::string const& id, int index, bool high
   SafePtrUnity<SimpleColorSO>& sColorSO = _simpleColorSOs[index];
 
   mColorSO->baseColor = (SimpleColorSO*)sColorSO;
-  MultipliedColorSO* mColorPtr = (MultipliedColorSO*)mColorSO;
+  auto* mColorPtr = (MultipliedColorSO*)mColorSO;
 
   if (highlight) {
     _multipliedHighlightColorSOs.emplace(index, mColorSO);

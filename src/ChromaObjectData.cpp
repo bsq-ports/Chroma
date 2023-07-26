@@ -17,24 +17,26 @@ void Chroma::ChromaObjectDataManager::deserialize(CustomJSONData::CustomBeatmapD
 
   static auto contextLogger = getLogger().WithContext(ChromaLogger::ObjectDataDeserialize);
 
-  auto beatmapDataCast = beatmapData;
+  auto* beatmapDataCast = beatmapData;
   bool v2 = beatmapDataCast->v2orEarlier;
 
   debugSpamLog(contextLogger, "Array klass: %s", il2cpp_utils::ClassStandardName(beatmapLines->klass).c_str());
 
   TracksAD::BeatmapAssociatedData& beatmapAD = TracksAD::getBeatmapAD(beatmapDataCast->customData);
 
-  static auto CustomNoteDataKlass = classof(CustomJSONData::CustomNoteData*);
-  static auto CustomSliderDataKlass = classof(CustomJSONData::CustomSliderData*);
-  static auto CustomObstacleDataKlass = classof(CustomJSONData::CustomObstacleData*);
-  static auto CustomWaypointDataKlass = classof(CustomJSONData::CustomWaypointData*);
+  static auto* CustomNoteDataKlass = classof(CustomJSONData::CustomNoteData*);
+  static auto* CustomSliderDataKlass = classof(CustomJSONData::CustomSliderData*);
+  static auto* CustomObstacleDataKlass = classof(CustomJSONData::CustomObstacleData*);
+  static auto* CustomWaypointDataKlass = classof(CustomJSONData::CustomWaypointData*);
 
-  for (auto beatmapObjectData : beatmapData->beatmapObjectDatas) {
-    if (!beatmapObjectData) continue;
+  for (auto* beatmapObjectData : beatmapData->beatmapObjectDatas) {
+    if (beatmapObjectData == nullptr) {
+      continue;
+    }
 
     ChromaObjectData chromaObjectData;
 
-    CustomJSONData::JSONWrapper* objectDynData;
+    CustomJSONData::JSONWrapper* objectDynData = nullptr;
 
     if (ASSIGNMENT_CHECK(CustomNoteDataKlass, beatmapObjectData->klass)) {
       debugSpamLog(contextLogger, "Custom note %s", il2cpp_utils::ClassStandardName(beatmapObjectData->klass).c_str());
@@ -80,8 +82,9 @@ void Chroma::ChromaObjectDataManager::deserialize(CustomJSONData::CustomBeatmapD
     //
     //                    chromaObjectData = data;
     //                }
-    else
+    else {
       continue;
+    }
 
     if (objectDynData->value) {
       rapidjson::Value const& customData = *objectDynData->value;
@@ -93,11 +96,11 @@ void Chroma::ChromaObjectDataManager::deserialize(CustomJSONData::CustomBeatmapD
             Animation::TryGetPointData(beatmapAD, anonPointDef, animationObjectDyn->value,
                                        v2 ? Chroma::NewConstants::V2_COLOR : Chroma::NewConstants::COLOR);
 
-        if (anonPointDef) {
+        if (anonPointDef != nullptr) {
           beatmapAD.anonPointDefinitions.emplace(anonPointDef);
         }
 
-        chromaObjectData.LocalPathColor = localColor ? std::make_optional(localColor) : std::nullopt;
+        chromaObjectData.LocalPathColor = localColor != nullptr ? std::make_optional(localColor) : std::nullopt;
       }
     }
     auto const& tracks = TracksAD::getAD(objectDynData).tracks;

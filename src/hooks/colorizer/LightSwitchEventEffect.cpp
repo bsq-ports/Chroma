@@ -44,9 +44,11 @@ custom_types::Helpers::Coroutine WaitThenStartLight(LightSwitchEventEffect* inst
 }
 
 MAKE_HOOK_MATCH(LightSwitchEventEffect_Awake, &LightSwitchEventEffect::Awake, void, LightSwitchEventEffect* self) {
-  static auto ChromaLightSwitchEventEffectKlass = classof(ChromaLightSwitchEventEffect*);
+  static auto* ChromaLightSwitchEventEffectKlass = classof(ChromaLightSwitchEventEffect*);
 
-  if (self->klass == ChromaLightSwitchEventEffectKlass) return;
+  if (self->klass == ChromaLightSwitchEventEffectKlass) {
+    return;
+  }
 
   // Do nothing if Chroma shouldn't run
   if (!ChromaController::GetChromaLegacy() && !ChromaController::DoChromaHooks()) {
@@ -57,9 +59,11 @@ MAKE_HOOK_MATCH(LightSwitchEventEffect_Awake, &LightSwitchEventEffect::Awake, vo
 }
 
 MAKE_HOOK_MATCH(LightSwitchEventEffect_Start, &LightSwitchEventEffect::Start, void, LightSwitchEventEffect* self) {
-  static auto ChromaLightSwitchEventEffectKlass = classof(ChromaLightSwitchEventEffect*);
+  static auto* ChromaLightSwitchEventEffectKlass = classof(ChromaLightSwitchEventEffect*);
 
-  if (self->klass == ChromaLightSwitchEventEffectKlass) return;
+  if (self->klass == ChromaLightSwitchEventEffectKlass) {
+    return;
+  }
 
   // Do nothing if Chroma shouldn't run
   if (!ChromaController::GetChromaLegacy() && !ChromaController::DoChromaHooks()) {
@@ -83,19 +87,19 @@ MAKE_HOOK_MATCH(BeatmapCallbacksController_ManualUpdate, &BeatmapCallbacksContro
 
     // I don't want to deal with delegates
 
-    auto basicEvents = CustomJSONData::CustomBeatmapDataCallbackWrapper::New_ctor();
+    auto* basicEvents = CustomJSONData::CustomBeatmapDataCallbackWrapper::New_ctor();
     basicEvents->controller = self;
     basicEvents->BasicBeatmapEventType = csTypeOf(BasicBeatmapEventData*);
-    basicEvents->redirectEvent = [](auto* controller, BeatmapDataItem* item) {
+    basicEvents->redirectEvent = [](auto* /*controller*/, BeatmapDataItem* item) {
       for (auto const& _lightSwitchEventEffect : ChromaLightSwitchEventEffect::livingLightSwitch) {
         _lightSwitchEventEffect->HandleEvent(static_cast<BasicBeatmapEventData*>(item));
       }
     };
 
-    auto boostEvents = CustomJSONData::CustomBeatmapDataCallbackWrapper::New_ctor();
+    auto* boostEvents = CustomJSONData::CustomBeatmapDataCallbackWrapper::New_ctor();
     boostEvents->controller = self;
     boostEvents->BasicBeatmapEventType = csTypeOf(ColorBoostBeatmapEventData*);
-    boostEvents->redirectEvent = [](auto* controller, BeatmapDataItem* item) {
+    boostEvents->redirectEvent = [](auto* /*controller*/, BeatmapDataItem* item) {
       for (auto const& _lightSwitchEventEffect : ChromaLightSwitchEventEffect::livingLightSwitch) {
         _lightSwitchEventEffect->HandleBoostEvent(static_cast<ColorBoostBeatmapEventData*>(item));
       }

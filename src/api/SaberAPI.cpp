@@ -23,9 +23,8 @@ EXPOSE_API(getGlobalSaberColorSafe, OptColor, int saberType) {
     color = optional.value();
 
     return OptColorFromColor(color);
-  } else {
-    return OptColorNull;
   }
+  return OptColorNull;
 }
 
 EXPOSE_API(setGlobalSaberColorSafe, void, int saberType, std::optional<Sombrero::FastColor> color) {
@@ -42,9 +41,8 @@ EXPOSE_API(getSaberColorSafe, OptColor, GlobalNamespace::SaberModelController* s
   if (optional) {
     color = optional.value();
     return OptColorFromColor(color);
-  } else {
-    return OptColorNull;
   }
+  return OptColorNull;
 }
 
 EXPOSE_API(setSaberColorSafe, void, GlobalNamespace::SaberModelController* saberModelController,

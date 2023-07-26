@@ -25,14 +25,16 @@ void BombColorizer::Refresh() {
 
   // getter here causes the null value to instantiate
   // which then allows later use through field
-  auto bombMaterial = _materialPropertyBlockController->materialPropertyBlock;
+  auto* bombMaterial = _materialPropertyBlockController->materialPropertyBlock;
   if (color == static_cast<Sombrero::FastColor>(bombMaterial->GetColor(_simpleColor()))) {
     return;
   }
 
   BombColorChanged.invoke(noteController, color);
 
-  if (BombColorable) return;
+  if (BombColorable) {
+    return;
+  }
 
   bombMaterial->SetColor(_simpleColor(), color);
   bombMaterial->SetColor(_color(), color);
@@ -47,7 +49,7 @@ BombColorizer::BombColorizer(GlobalNamespace::NoteControllerBase* noteController
   OriginalColor = noteController->GetComponentInChildren<Renderer*>()->get_material()->GetColor(_simpleColor());
   // getter here causes the null value to instantiate
   // which then allows later use through field
-  auto materialPropertyBlock = _materialPropertyBlockController->get_materialPropertyBlock();
+  auto* materialPropertyBlock = _materialPropertyBlockController->get_materialPropertyBlock();
   materialPropertyBlock->SetColor(_simpleColor(), OriginalColor);
   materialPropertyBlock->SetColor(_color(), OriginalColor);
 }

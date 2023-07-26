@@ -17,14 +17,16 @@ MAKE_HOOK_MATCH(TrackLaneRingsRotationEffect_AddRingRotationEffect,
     return;
   }
 
-  static auto TrackLaneRingsRotationEffectKlass = classof(GlobalNamespace::TrackLaneRingsRotationEffect*);
-  static auto ChromaTrackLaneRingsRotationEffectKlass = classof(Chroma::ChromaRingsRotationEffect*);
+  static auto* TrackLaneRingsRotationEffectKlass = classof(GlobalNamespace::TrackLaneRingsRotationEffect*);
+  static auto* ChromaTrackLaneRingsRotationEffectKlass = classof(Chroma::ChromaRingsRotationEffect*);
 
-  if (self->klass == TrackLaneRingsRotationEffectKlass) return;
+  if (self->klass == TrackLaneRingsRotationEffectKlass) {
+    return;
+  }
 
   if (self->klass == ChromaTrackLaneRingsRotationEffectKlass) {
     reinterpret_cast<Chroma::ChromaRingsRotationEffect*>(self)->AddRingRotationEffectF(
-        angle, step, (float)propagationSpeed, flexySpeed);
+        angle, step, static_cast<float>(propagationSpeed), flexySpeed);
     return;
   }
 
@@ -36,7 +38,7 @@ MAKE_HOOK_FIND_CLASS_UNSAFE_INSTANCE(ChromaRingsRotationEffect_AddRingRotationEf
                                      GlobalNamespace::TrackLaneRingsRotationEffect* self, float angle, float step,
                                      int propagationSpeed, float flexySpeed) {
   reinterpret_cast<Chroma::ChromaRingsRotationEffect*>(self)->AddRingRotationEffectF(
-      angle, step, (float)propagationSpeed, flexySpeed);
+      angle, step, static_cast<float>(propagationSpeed), flexySpeed);
 }
 
 MAKE_HOOK_MATCH(TrackLaneRingsRotationEffect_FixedUpdate, &TrackLaneRingsRotationEffect::FixedUpdate, void,
@@ -47,14 +49,16 @@ MAKE_HOOK_MATCH(TrackLaneRingsRotationEffect_FixedUpdate, &TrackLaneRingsRotatio
     return;
   }
 
-  static auto TrackLaneRingsRotationEffectKlass = classof(GlobalNamespace::TrackLaneRingsRotationEffect*);
+  static auto* TrackLaneRingsRotationEffectKlass = classof(GlobalNamespace::TrackLaneRingsRotationEffect*);
 
-  if (self->klass == TrackLaneRingsRotationEffectKlass) return;
+  if (self->klass == TrackLaneRingsRotationEffectKlass) {
+    return;
+  }
 
   TrackLaneRingsRotationEffect_FixedUpdate(self);
 }
 
-void TrackLaneRingsRotationEffectHook(Logger& logger) {
+void TrackLaneRingsRotationEffectHook(Logger& /*logger*/) {
   INSTALL_HOOK_ORIG(getLogger(), TrackLaneRingsRotationEffect_AddRingRotationEffect);
   INSTALL_HOOK_ORIG(getLogger(), ChromaRingsRotationEffect_AddRingRotationEffect);
   INSTALL_HOOK_ORIG(getLogger(), TrackLaneRingsRotationEffect_FixedUpdate);

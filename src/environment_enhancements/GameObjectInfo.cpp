@@ -14,7 +14,7 @@ Chroma::GameObjectInfo::GameObjectInfo(UnityEngine::GameObject* gameObject) {
   while (true) {
     UnityEngine::GameObject* transformGameObject = transform->get_gameObject();
     UnityEngine::Transform* transformParent = transform->get_parent();
-    int index;
+    int index = 0;
     if (transformParent != nullptr) {
       index = transform->GetSiblingIndex();
     } else {

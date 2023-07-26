@@ -30,7 +30,9 @@ MAKE_HOOK_MATCH(MirroredObstacleController_UpdatePositionAndRotation,
     return;
   }
 
-  if (!self->followedObstacle) return;
+  if (self->followedObstacle == nullptr) {
+    return;
+  }
 
   ObstacleColorizer::ColorizeObstacle(self,
                                       ObstacleColorizer::GetObstacleColorizer(self->followedObstacle)->getColor());

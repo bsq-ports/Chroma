@@ -1,4 +1,4 @@
-#include "Chroma.hpp"
+#include <cmath>
 
 #include "ChromaController.hpp"
 
@@ -17,7 +17,6 @@
 #include "UnityEngine/XR/XRNode.hpp"
 
 #include "colorizer/ObstacleColorizer.hpp"
-#include "utils/ChromaUtils.hpp"
 
 #include "custom-json-data/shared/VList.h"
 
@@ -27,7 +26,9 @@ using namespace UnityEngine;
 
 void SetObstacleSaberSparkleColor(ObstacleSaberSparkleEffect* obstacleSaberSparkleEffect,
                                   GlobalNamespace::ObstacleController* obstacleController) {
-  float h, s, _;
+  float h = 0;
+  float s = 0;
+  float _ = 0;
   Sombrero::FastColor::RGBToHSV(ObstacleColorizer::GetObstacleColorizer(obstacleController)->getColor(), h, s, _);
   obstacleSaberSparkleEffect->set_color(Sombrero::FastColor::HSVToRGB(h, s, 1));
 }
@@ -45,10 +46,12 @@ MAKE_HOOK_MATCH(ObstacleSaberSparkleEffectManager_Update, &ObstacleSaberSparkleE
   self->isSystemActive.get(0) = false;
   self->isSystemActive.get(1) = false;
 
-  auto obstacleControllers = self->beatmapObjectManager->get_activeObstacleControllers();
+  auto* obstacleControllers = self->beatmapObjectManager->get_activeObstacleControllers();
 
   for (auto const& obstacleController : VList<GlobalNamespace::ObstacleController*>(obstacleControllers)) {
-    if (!obstacleController) continue;
+    if (obstacleController == nullptr) {
+      continue;
+    }
 
     auto const& bounds = obstacleController->bounds;
     for (int i = 0; i < 2; i++) {
@@ -69,8 +72,8 @@ MAKE_HOOK_MATCH(ObstacleSaberSparkleEffectManager_Update, &ObstacleSaberSparkleE
             SaberTypeExtensions::Node(self->sabers.get(i)->get_saberType()), self->rumblePreset);
         if (!self->wasSystemActive.get(i)) {
           self->effects.get(i)->StartEmission();
-          auto action = self->sparkleEffectDidStartEvent;
-          if (action) {
+          auto* action = self->sparkleEffectDidStartEvent;
+          if (action != nullptr) {
             action->Invoke(self->sabers.get(i)->get_saberType());
           }
         }
@@ -81,15 +84,15 @@ MAKE_HOOK_MATCH(ObstacleSaberSparkleEffectManager_Update, &ObstacleSaberSparkleE
   for (int j = 0; j < 2; j++) {
     if (!self->isSystemActive.get(j) && self->wasSystemActive.get(j)) {
       self->effects.get(j)->StopEmission();
-      auto action2 = self->sparkleEffectDidEndEvent;
-      if (action2) {
+      auto* action2 = self->sparkleEffectDidEndEvent;
+      if (action2 != nullptr) {
         action2->Invoke(self->sabers.get(j)->get_saberType());
       }
     }
   }
 }
 
-void ObstacleSaberSparkleEffectManagerHook(Logger& logger) {
+void ObstacleSaberSparkleEffectManagerHook(Logger& /*logger*/) {
   INSTALL_HOOK_ORIG(getLogger(), ObstacleSaberSparkleEffectManager_Update);
 }
 

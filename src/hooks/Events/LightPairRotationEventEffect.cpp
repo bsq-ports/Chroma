@@ -10,7 +10,6 @@
 #include "GlobalNamespace/LightPairRotationEventEffect_RotationData.hpp"
 #include "UnityEngine/Quaternion.hpp"
 #include "UnityEngine/Transform.hpp"
-#include "utils/ChromaUtils.hpp"
 #include "lighting/ChromaEventData.hpp"
 
 using namespace CustomJSONData;
@@ -52,7 +51,7 @@ MAKE_HOOK_MATCH(LightPairRotationEventEffect_UpdateRotationData, &LightPairRotat
     return;
   }
 
-  auto beatmapEventData = LastLightPairRotationEventEffectData;
+  auto* beatmapEventData = LastLightPairRotationEventEffectData;
 
   auto chromaIt = ChromaEventDataManager::ChromaEventDatas.find(beatmapEventData);
 
@@ -77,11 +76,11 @@ MAKE_HOOK_MATCH(LightPairRotationEventEffect_UpdateRotationData, &LightPairRotat
   if (dir) {
     switch (*dir) {
     case 0:
-      direction = isLeftEvent ? -1.0f : 1.0f;
+      direction = isLeftEvent ? -1.0F : 1.0F;
       break;
 
     case 1:
-      direction = isLeftEvent ? 1.0f : -1.0f;
+      direction = isLeftEvent ? 1.0F : -1.0F;
       break;
     }
   }
@@ -100,7 +99,7 @@ MAKE_HOOK_MATCH(LightPairRotationEventEffect_UpdateRotationData, &LightPairRotat
     }
   } else if (beatmapEventData->value > 0) {
     customRotationData->enabled = true;
-    customRotationData->rotationSpeed = precisionSpeed * 20.0f * direction;
+    customRotationData->rotationSpeed = precisionSpeed * 20.0F * direction;
     // getLogger().debug("Doing rotation speed (%d) %d", beatmapEventData->value, customRotationData->rotationSpeed);
     if (!lockPosition) {
       float rotationAngle = startRotationOffset + customRotationData->startRotationAngle;
@@ -112,7 +111,7 @@ MAKE_HOOK_MATCH(LightPairRotationEventEffect_UpdateRotationData, &LightPairRotat
   }
 }
 
-void LightPairRotationEventEffectHook(Logger& logger) {
+void LightPairRotationEventEffectHook(Logger& /*logger*/) {
   INSTALL_HOOK(getLogger(), LightPairRotationEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger);
   INSTALL_HOOK(getLogger(), LightPairRotationEventEffect_UpdateRotationData);
 }

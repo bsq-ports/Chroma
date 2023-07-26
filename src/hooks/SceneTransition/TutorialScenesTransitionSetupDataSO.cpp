@@ -21,7 +21,7 @@ MAKE_HOOK_MATCH(TutorialScenesTransitionSetupDataSO_Init, &TutorialScenesTransit
   TutorialScenesTransitionSetupDataSO_Init(self, playerSpecificSettings);
 }
 
-void TutorialScenesTransitionSetupDataSOHook(Logger& logger) {
+void TutorialScenesTransitionSetupDataSOHook(Logger& /*logger*/) {
   INSTALL_HOOK(getLogger(), TutorialScenesTransitionSetupDataSO_Init);
 }
 

@@ -61,15 +61,15 @@ MAKE_HOOK_MATCH(NoteController_Update, &NoteController::ManualUpdate, void, Note
       NoteJump* noteJump = self->noteMovement->jump;
       float jumpDuration = noteJump->jumpDuration;
       float elapsedTime = ChromaTimeSourceHelper::getSongTimeChroma(noteJump->audioTimeSyncController) -
-                          (self->noteData->time - (jumpDuration * 0.5f));
+                          (self->noteData->time - (jumpDuration * 0.5F));
       float normalTime = elapsedTime / jumpDuration;
 
-      [[maybe_unused]] bool updated;
+      [[maybe_unused]] bool updated = 0;
       std::optional<Sombrero::FastColor> colorOffset =
           AnimationHelper::GetColorOffset(pathPointDefinition, tracks, normalTime, updated, 0);
 
       if (colorOffset) {
-        static auto BombNoteControllerKlass = classof(BombNoteController*);
+        static auto* BombNoteControllerKlass = classof(BombNoteController*);
         if (ASSIGNMENT_CHECK(BombNoteControllerKlass, self->klass)) {
           BombColorizer::ColorizeBomb((BombNoteController*)self, colorOffset);
         } else {
@@ -80,7 +80,7 @@ MAKE_HOOK_MATCH(NoteController_Update, &NoteController::ManualUpdate, void, Note
   }
 }
 
-void NoteControllerHook(Logger& logger) {
+void NoteControllerHook(Logger& /*logger*/) {
   INSTALL_HOOK(getLogger(), NoteController_Init);
   INSTALL_HOOK(getLogger(), NoteController_Update);
 }

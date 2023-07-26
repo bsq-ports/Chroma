@@ -145,16 +145,12 @@
     {
       "dependency": {
         "id": "tracks",
-        "versionRange": "=0.8.1",
+        "versionRange": "=0.8.2",
         "additionalData": {
-          "soLink": "https://github.com/StackDoubleFlow/Tracks/releases/download/v0.8.1/libtracks.so",
-          "debugSoLink": "https://github.com/StackDoubleFlow/Tracks/releases/download/v0.8.1/debug_libtracks.so",
-          "overrideSoName": "libtracks.so",
-          "modLink": "https://github.com/StackDoubleFlow/Tracks/releases/download/v0.8.1/tracks",
-          "branchName": "version/v0_8_1"
+          "overrideSoName": "libtracks.so"
         }
       },
-      "version": "0.8.1"
+      "version": "0.8.2"
     },
     {
       "dependency": {

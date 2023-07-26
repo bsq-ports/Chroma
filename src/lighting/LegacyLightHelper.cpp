@@ -38,7 +38,9 @@ void LegacyLightHelper::Activate(std::span<GlobalNamespace::BasicBeatmapEventDat
 
 std::optional<Sombrero::FastColor>
 LegacyLightHelper::GetLegacyColor(GlobalNamespace::BasicBeatmapEventData* beatmapEventData) {
-  if (!ChromaController::GetChromaLegacy()) return std::nullopt;
+  if (!ChromaController::GetChromaLegacy()) {
+    return std::nullopt;
+  }
 
   auto it = LegacyColorEvents.find(beatmapEventData->basicBeatmapEventType);
   if (it != LegacyColorEvents.end()) {
@@ -46,7 +48,9 @@ LegacyLightHelper::GetLegacyColor(GlobalNamespace::BasicBeatmapEventData* beatma
     std::vector<pair<float, Sombrero::FastColor>> colors;
 
     for (pair<float, Sombrero::FastColor>& n : dictionaryID) {
-      if (n.first <= beatmapEventData->time) colors.push_back(n);
+      if (n.first <= beatmapEventData->time) {
+        colors.push_back(n);
+      }
     }
 
     if (!colors.empty()) {
@@ -59,8 +63,8 @@ LegacyLightHelper::GetLegacyColor(GlobalNamespace::BasicBeatmapEventData* beatma
 
 constexpr Sombrero::FastColor LegacyLightHelper::ColorFromInt(int rgb) {
   rgb -= RGB_INT_OFFSET;
-  auto red = (float)((rgb >> 16) & 0x0ff);
-  auto green = (float)((rgb >> 8) & 0x0ff);
-  auto blue = (float)(rgb & 0x0ff);
-  return { red / 255.0f, green / 255.0f, blue / 255.0f, 1 };
+  auto red = static_cast<float>((rgb >> 16) & 0x0ff);
+  auto green = static_cast<float>((rgb >> 8) & 0x0ff);
+  auto blue = static_cast<float>(rgb & 0x0ff);
+  return { red / 255.0F, green / 255.0F, blue / 255.0F, 1 };
 }

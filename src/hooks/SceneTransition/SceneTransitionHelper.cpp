@@ -19,7 +19,7 @@ using namespace UnityEngine;
 using namespace System::Collections;
 
 void SceneTransitionHelper::Patch(GlobalNamespace::IDifficultyBeatmap* customBeatmapData) {
-  if (!customBeatmapData) {
+  if (customBeatmapData == nullptr) {
     BasicPatch(nullptr, nullptr);
     return;
   }
@@ -38,13 +38,17 @@ template <typename RValue = ValueUTF16, typename StringValue = std::u16string_vi
 static bool CheckIfInArrayOrKey(RValue const& val, const StringValue stringToCheck) {
   if (val.IsArray()) {
     for (auto& element : val.GetArray()) {
-      if (element.IsString() && element.GetString() == stringToCheck) return true;
+      if (element.IsString() && element.GetString() == stringToCheck) {
+        return true;
+      }
     }
   }
 
   if (val.IsObject()) {
     for (auto const& element : val.GetObject()) {
-      if (element.name.IsString() && element.name.GetString() == stringToCheck) return true;
+      if (element.name.IsString() && element.name.GetString() == stringToCheck) {
+        return true;
+      }
     }
   }
 
@@ -54,14 +58,16 @@ static bool CheckIfInArrayOrKey(RValue const& val, const StringValue stringToChe
 template <typename RValue = ValueUTF16, typename StringValue = std::u16string_view>
 inline static bool CheckIfInArrayOrKey(std::optional<std::reference_wrapper<const RValue>> const val,
                                        const StringValue stringToCheck) {
-  if (!val) return false;
+  if (!val) {
+    return false;
+  }
 
   return CheckIfInArrayOrKey<RValue, StringValue>(val->get(), stringToCheck);
 }
 
 void SceneTransitionHelper::Patch(GlobalNamespace::IDifficultyBeatmap* customBeatmapData,
                                   OverrideEnvironmentSettings*& overrideEnvironmentSettings) {
-  if (!customBeatmapData) {
+  if (customBeatmapData == nullptr) {
     BasicPatch(nullptr, nullptr);
     return;
   }
@@ -69,7 +75,7 @@ void SceneTransitionHelper::Patch(GlobalNamespace::IDifficultyBeatmap* customBea
   std::optional<GlobalNamespace::CustomDifficultyBeatmap*> customBeatmapDataCustomOpt =
       il2cpp_utils::try_cast<GlobalNamespace::CustomDifficultyBeatmap>(customBeatmapData);
   if (customBeatmapDataCustomOpt) {
-    auto customBeatmapDataCustom = il2cpp_utils::cast<CustomJSONData::v3::CustomBeatmapSaveData>(
+    auto* customBeatmapDataCustom = il2cpp_utils::cast<CustomJSONData::v3::CustomBeatmapSaveData>(
         customBeatmapDataCustomOpt.value()->beatmapSaveData);
 
     bool chromaRequirement = SceneTransitionHelper::BasicPatch(customBeatmapData, customBeatmapDataCustom);
@@ -77,18 +83,18 @@ void SceneTransitionHelper::Patch(GlobalNamespace::IDifficultyBeatmap* customBea
 
       bool v2 = customBeatmapDataCustom->isV2;
 
-      if (v2 && overrideEnvironmentSettings && customBeatmapDataCustom->levelCustomData &&
+      if (v2 && (overrideEnvironmentSettings != nullptr) && customBeatmapDataCustom->levelCustomData &&
           CheckIfInArrayOrKey(customBeatmapDataCustom->levelCustomData, Chroma::NewConstants::V2_ENVIRONMENT_REMOVAL)) {
         overrideEnvironmentSettings = nullptr;
       }
-      if (overrideEnvironmentSettings && customBeatmapDataCustom->customData &&
+      if ((overrideEnvironmentSettings != nullptr) && customBeatmapDataCustom->customData &&
           CheckIfInArrayOrKey<rapidjson::Value>(customBeatmapDataCustom->customData,
                                                 v2 ? Chroma::NewConstants::V2_ENVIRONMENT
                                                    : Chroma::NewConstants::ENVIRONMENT)) {
         overrideEnvironmentSettings = nullptr;
       }
 
-      if (!overrideEnvironmentSettings) {
+      if (overrideEnvironmentSettings == nullptr) {
         getLogger().debug("Environment removal!");
       }
     }
@@ -110,8 +116,8 @@ bool SceneTransitionHelper::BasicPatch(GlobalNamespace::IDifficultyBeatmap* cust
   // please let me remove this shit
   bool legacyOverride = false;
 
-  if (customBeatmapDifficultyData) {
-    auto environmentInfo = BeatmapEnvironmentHelper::GetEnvironmentInfo(customBeatmapDifficultyData);
+  if (customBeatmapDifficultyData != nullptr) {
+    auto* environmentInfo = BeatmapEnvironmentHelper::GetEnvironmentInfo(customBeatmapDifficultyData);
 
     LightIDTableManager::SetEnvironment(static_cast<std::string>(environmentInfo->serializedName));
 
@@ -146,13 +152,19 @@ bool SceneTransitionHelper::BasicPatch(GlobalNamespace::IDifficultyBeatmap* cust
     if (customBeatmapDataCustom->isV2) {
       auto beatmapEvents = customBeatmapDataCustom->basicBeatmapEvents->items;
       auto length = beatmapEvents.Length();
-      getLogger().debug("Checking at most %d for ChromaLite notes", (int)length);
-      for (auto event : beatmapEvents) {
-        if (!event) continue;
+      getLogger().debug("Checking at most %d for ChromaLite notes", static_cast<int>(length));
+      for (auto* event : beatmapEvents) {
+        if (event == nullptr) {
+          continue;
+        }
 
-        if (event->get_value() >= LegacyLightHelper::RGB_INT_OFFSET) legacyOverride = true;
+        if (event->get_value() >= LegacyLightHelper::RGB_INT_OFFSET) {
+          legacyOverride = true;
+        }
 
-        if (legacyOverride) break;
+        if (legacyOverride) {
+          break;
+        }
       }
 
       if (legacyOverride) {

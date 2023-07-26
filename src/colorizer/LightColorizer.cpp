@@ -35,7 +35,7 @@ LightColorizer::LightColorizer(ChromaLightSwitchEventEffect* lightSwitchEventEff
 
   auto Initialize = [this](ColorSO*& colorSO, int index) {
     if (auto mColor = il2cpp_utils::try_cast<MultipliedColorSO>(colorSO)) {
-      auto lightSO = mColor.value()->baseColor;
+      auto* lightSO = mColor.value()->baseColor;
       _originalColors[index] = lightSO->color;
     } else if (auto sColor = il2cpp_utils::try_cast<SimpleColorSO>(colorSO)) {
       _originalColors[index] = sColor.value()->color;
@@ -50,7 +50,7 @@ LightColorizer::LightColorizer(ChromaLightSwitchEventEffect* lightSwitchEventEff
   // AAAAAA PROPAGATION STUFFF
   Lights = lightManager->lights.get(lightSwitchEventEffect->lightsID);
 
-  if (!Lights) {
+  if (Lights == nullptr) {
     Lights = lightManager->lights.get(lightSwitchEventEffect->lightsID) =
         System::Collections::Generic::List_1<::GlobalNamespace::ILightWithId*>::New_ctor(10);
   }
@@ -96,12 +96,13 @@ void LightColorizer::Reset() {
   _contractsByLightID.clear();
 }
 
-void LightColorizer::InitializeSO(ColorSO*& lightColor0, ColorSO*& highlightColor0, ColorSO*& lightColor1,
-                                  ColorSO*& highlightColor1, ColorSO*& lightColor0Boost, ColorSO*& highlightColor0Boost,
-                                  ColorSO*& lightColor1Boost, ColorSO*& highlightColor1Boost) {
+void LightColorizer::InitializeSO(ColorSO*& lightColor0, ColorSO*& /*highlightColor0*/, ColorSO*& lightColor1,
+                                  ColorSO*& /*highlightColor1*/, ColorSO*& lightColor0Boost,
+                                  ColorSO*& /*highlightColor0Boost*/, ColorSO*& lightColor1Boost,
+                                  ColorSO*& /*highlightColor1Boost*/) {
   auto Initialize = [this](ColorSO*& colorSO, int index) {
     if (auto mColor = il2cpp_utils::try_cast<MultipliedColorSO>(colorSO)) {
-      auto lightSO = mColor.value()->baseColor;
+      auto* lightSO = mColor.value()->baseColor;
       _originalColors[index] = lightSO->color;
     } else if (auto sColor = il2cpp_utils::try_cast<SimpleColorSO>(colorSO)) {
       _originalColors[index] = sColor.value()->color;
@@ -165,8 +166,8 @@ std::vector<ILightWithId*> LightColorizer::GetLightWithIds(std::vector<int> cons
     // Transform
     id = LightIDTableManager::GetActiveTableValue(lightId, id).value_or(id);
 
-    auto lightWithId = id >= 0 && id < maxLightId ? Lights[id] : nullptr;
-    if (lightWithId) {
+    auto* lightWithId = id >= 0 && id < maxLightId ? Lights[id] : nullptr;
+    if (lightWithId != nullptr) {
       result.push_back(lightWithId);
     }
   }
@@ -233,23 +234,27 @@ LightColorizer::getLightsPropagationGrouped() {
 
   auto managers = UnityEngine::Object::FindObjectsOfType<TrackLaneRingsManager*>();
 
-  for (auto light : Lights) {
-    if (light == nullptr) continue;
+  for (auto* light : Lights) {
+    if (light == nullptr) {
+      continue;
+    }
 
     auto monoBehaviour = il2cpp_utils::try_cast<MonoBehaviour>(light);
 
-    if (!monoBehaviour) continue;
+    if (!monoBehaviour) {
+      continue;
+    }
 
-    int z = (int)std::round((double)(*monoBehaviour)->get_transform()->get_position().z);
+    int z = static_cast<int>(std::round(static_cast<double>((*monoBehaviour)->get_transform()->get_position().z)));
 
-    auto ring = (*monoBehaviour)->GetComponentInParent<TrackLaneRing*>();
+    auto* ring = (*monoBehaviour)->GetComponentInParent<TrackLaneRing*>();
 
-    if (ring) {
+    if (ring != nullptr) {
       TrackLaneRingsManager* mngr = managers.FirstOrDefault([&](TrackLaneRingsManager* it) -> bool {
-        return it && std::find(it->rings.begin(), it->rings.end(), ring) != it->rings.end();
+        return (it != nullptr) && std::find(it->rings.begin(), it->rings.end(), ring) != it->rings.end();
       });
 
-      if (mngr) {
+      if (mngr != nullptr) {
         z = 1000 + mngr->rings.IndexOf(ring);
       }
     }

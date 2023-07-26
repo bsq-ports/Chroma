@@ -28,7 +28,7 @@ static void FindTrackLaneRingManager(UnityEngine::Transform* transform, std::vec
   auto childCount = transform->GetChildCount();
 
   for (int i = 0; i < childCount; i++) {
-    auto child = transform->GetChild(i);
+    auto* child = transform->GetChild(i);
     FindTrackLaneRingManager(child, managers);
   }
 }
@@ -38,8 +38,9 @@ static TrackLaneRing* QueueInject(DiContainer* container, TrackLaneRing* prefab)
   auto injectables = VList<UnityEngine::MonoBehaviour*>();
   ZenUtilInternal::GetInjectableMonoBehavioursUnderGameObject(trackLaneRing->get_gameObject(), injectables);
 
-  for (auto const& i : injectables)
+  for (auto const& i : injectables) {
     container->QueueForInject(i);
+  }
 
   return trackLaneRing;
 }
@@ -51,16 +52,18 @@ MAKE_HOOK_MATCH(TrackLaneRingsManager_Start, &TrackLaneRingsManager::Start, void
     return;
   }
 
-  if (self->rings) return;
+  if (self->rings) {
+    return;
+  }
 
   self->rings = ArrayW<GlobalNamespace::TrackLaneRing*>(self->ringCount);
-  auto transform = self->get_transform();
+  auto* transform = self->get_transform();
   Sombrero::FastVector3 forward = transform->get_forward();
   if (self->spawnAsChildren) {
     for (int i = 0; i < self->rings.size(); i++) {
       self->rings[i] = QueueInject(self->container, self->trackLaneRingPrefab);
       self->rings[i]->get_transform()->set_parent(transform);
-      Sombrero::FastVector3 position = { 0.0f, 0.0f, (float)i * self->ringPositionStep };
+      Sombrero::FastVector3 position = { 0.0F, 0.0F, static_cast<float>(i) * self->ringPositionStep };
       self->rings[i]->Init(position, { 0, 0, 0 });
     }
     return;
@@ -68,7 +71,7 @@ MAKE_HOOK_MATCH(TrackLaneRingsManager_Start, &TrackLaneRingsManager::Start, void
   auto position = transform->get_position();
   for (int j = 0; j < self->rings.size(); j++) {
     self->rings[j] = QueueInject(self->container, self->trackLaneRingPrefab);
-    Sombrero::FastVector3 position2 = forward * ((float)j * self->ringPositionStep);
+    Sombrero::FastVector3 position2 = forward * (static_cast<float>(j) * self->ringPositionStep);
     self->rings[j]->Init(position2, position);
   }
 }
@@ -86,8 +89,8 @@ MAKE_HOOK_MATCH(SceneDecoratorContext_InitializeRings, &SceneDecoratorContext::I
     FindTrackLaneRingManager(n->get_transform(), managers);
   }
 
-  for (auto manager : managers) {
-    if (!manager) {
+  for (auto* manager : managers) {
+    if (manager == nullptr) {
       continue;
     }
 

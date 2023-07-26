@@ -13,9 +13,11 @@ using namespace Sombrero;
 
 EXPOSE_API(getObstacleControllerColorSafe, OptColor, ObstacleController* obstacleController) {
 
-  auto ocm = ObstacleColorizer::GetObstacleColorizer(obstacleController);
+  auto* ocm = ObstacleColorizer::GetObstacleColorizer(obstacleController);
 
-  if (!ocm) return OptColor();
+  if (ocm == nullptr) {
+    return {};
+  }
 
   auto color = ocm->getColor();
 

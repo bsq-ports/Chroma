@@ -31,7 +31,7 @@ MAKE_HOOK_MATCH(StandardLevelScenesTransitionSetupDataSO_Init, &StandardLevelSce
                 ::GlobalNamespace::PlayerSpecificSettings* playerSpecificSettings,
                 ::GlobalNamespace::PracticeSettings* practiceSettings, ::StringW backButtonText,
                 bool useTestNoteCutSoundEffects, bool startPaused, BeatmapDataCache* cache) {
-  auto settings = overrideEnvironmentSettings;
+  auto* settings = overrideEnvironmentSettings;
   SceneTransitionHelper::Patch(difficultyBeatmap, settings);
   StandardLevelScenesTransitionSetupDataSO_Init(
       self, gameMode, difficultyBeatmap, previewBeatmapLevel, settings, overrideColorScheme, gameplayModifiers,

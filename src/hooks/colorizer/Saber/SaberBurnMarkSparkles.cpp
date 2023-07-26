@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include "Chroma.hpp"
 
 #include "ChromaController.hpp"
@@ -23,17 +25,17 @@ using namespace UnityEngine;
 
 int subCount = 0;
 
-std::array<ParticleSystem*, 2> _burnMarksPS = { nullptr, nullptr };
+std::array<ParticleSystem*, 2> burnMarksPS = { nullptr, nullptr };
 
-void OnSaberColorChanged(int saberType, GlobalNamespace::SaberModelController* saberModelController,
+void OnSaberColorChanged(int saberType, GlobalNamespace::SaberModelController* /*saberModelController*/,
                          Color const& color) {
-  float h;
-  float s;
-  float _;
+  float h = NAN;
+  float s = NAN;
+  float _ = NAN;
 
   Sombrero::FastColor::RGBToHSV(color, h, s, _);
   Sombrero::FastColor effectColor = Sombrero::FastColor::HSVToRGB(h, s, 1);
-  ParticleSystem::MainModule main = _burnMarksPS[(int)saberType]->get_main();
+  ParticleSystem::MainModule main = burnMarksPS[saberType]->get_main();
   main.set_startColor(effectColor);
 }
 
@@ -41,12 +43,12 @@ MAKE_HOOK_MATCH(SaberBurnMarkSparkles_Start, &SaberBurnMarkSparkles::Start, void
   SaberBurnMarkSparkles_Start(self);
 
   // Do nothing if Chroma shouldn't run
-  if (!ChromaController::DoChromaHooks() || !self) {
+  if (!ChromaController::DoChromaHooks() || (self == nullptr)) {
     return;
   }
   if (self->burnMarksPS && self->burnMarksPS.Length() >= 2) {
-    _burnMarksPS[0] = self->burnMarksPS.get(0);
-    _burnMarksPS[1] = self->burnMarksPS.get(1);
+    burnMarksPS[0] = self->burnMarksPS.get(0);
+    burnMarksPS[1] = self->burnMarksPS.get(1);
   }
 
   if (subCount == 0) {

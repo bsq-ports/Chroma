@@ -1,4 +1,3 @@
-#include "Chroma.hpp"
 #include "ChromaController.hpp"
 
 #include "GlobalNamespace/LightWithIdManager.hpp"
@@ -46,7 +45,7 @@ MAKE_HOOK_MATCH(LightWithIdManager_RegisterLight, &LightWithIdManager::RegisterL
 
   lightWithId->__SetIsRegistered();
 
-  auto lightWithIdIt = std::find(lights->items.begin(), lights->items.end(), lightWithId);
+  auto* lightWithIdIt = std::find(lights->items.begin(), lights->items.end(), lightWithId);
   if (lightWithIdIt != lights->items.end()) {
     return;
   }
@@ -125,7 +124,7 @@ MAKE_HOOK_MATCH(LightWithIdManager_SetColorForId, &LightWithIdManager::SetColorF
     return;
   }
   for (auto const& lightWithId : list) {
-    if (lightWithId && lightWithId->get_isRegistered()) {
+    if ((lightWithId != nullptr) && lightWithId->get_isRegistered()) {
       lightWithId->ColorWasSet(color);
     }
   }

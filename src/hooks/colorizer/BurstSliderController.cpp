@@ -66,7 +66,7 @@ MAKE_HOOK_MATCH(BurstSliderGameNoteController_Init, &BurstSliderGameNoteControll
     NoteColorizer::ColorizeNote(self, color);
   }
 }
-void BurstSliderControllerHook(Logger& logger) {
+void BurstSliderControllerHook(Logger& /*logger*/) {
   INSTALL_HOOK(getLogger(), BurstSliderGameNoteController_Init);
   INSTALL_HOOK(getLogger(), BurstSliderGameNoteController_Awake);
   INSTALL_HOOK(getLogger(), BurstSliderGameNoteController_OnDestroy);

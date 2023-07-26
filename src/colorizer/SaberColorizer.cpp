@@ -13,7 +13,6 @@
 #include "GlobalNamespace/SetSaberGlowColor_PropertyTintColorPair.hpp"
 #include "GlobalNamespace/Parametric3SliceSpriteController.hpp"
 #include "GlobalNamespace/SaberManager.hpp"
-#include "GlobalNamespace/SaberModelController.hpp"
 #include "GlobalNamespace/SaberBurnMarkSparkles.hpp"
 #include "GlobalNamespace/ColorManager.hpp"
 #include "UnityEngine/LineRenderer.hpp"
@@ -37,10 +36,9 @@ using namespace custom_types::Helpers;
 using namespace Chroma;
 using namespace Sombrero;
 
-SaberColorizer::SaberColorizer(GlobalNamespace::Saber* saber, SaberModelController* saberModelController) {
+SaberColorizer::SaberColorizer(GlobalNamespace::Saber* saber, SaberModelController* saberModelController)
+    : _saberModelController(saberModelController) {
   _saberType = saber->get_saberType();
-
-  _saberModelController = saberModelController;
 
   _saberTrail = _saberModelController->saberTrail;
   _trailTintColor = _saberModelController->initData->trailTintColor;
@@ -51,7 +49,7 @@ SaberColorizer::SaberColorizer(GlobalNamespace::Saber* saber, SaberModelControll
 }
 
 SaberColorizer& SaberColorizer::New(GlobalNamespace::Saber* saber) {
-  auto saberModelController = saber->get_gameObject()->GetComponentInChildren<SaberModelController*>(true);
+  auto* saberModelController = saber->get_gameObject()->GetComponentInChildren<SaberModelController*>(true);
 
   return Colorizers.try_emplace(saberModelController, saber, saberModelController).first->second;
 }
@@ -63,7 +61,7 @@ std::optional<Sombrero::FastColor> SaberColorizer::GlobalColorGetter() {
 void SaberColorizer::GlobalColorize(GlobalNamespace::SaberType saberType,
                                     std::optional<Sombrero::FastColor> const& color) {
   GlobalColor[(int)saberType] = color;
-  for (auto& c : GetColorizerList(saberType)) {
+  for (auto const& c : GetColorizerList(saberType)) {
     c->Refresh();
   }
 }
@@ -78,7 +76,7 @@ void SaberColorizer::Reset() {
 }
 
 void SaberColorizer::Refresh() {
-  Sombrero::FastColor const& color = getColor().Alpha(1.0f);
+  Sombrero::FastColor const& color = getColor().Alpha(1.0F);
   if (color == Sombrero::FastColor(_lastColor)) {
     return;
   }
@@ -96,15 +94,17 @@ void SaberColorizer::Refresh() {
     auto _setSaberGlowColors = _saberModelController->setSaberGlowColors;
     auto _setSaberFakeGlowColors = _saberModelController->setSaberFakeGlowColors;
 
-    auto saberTrail = _saberTrail;
+    auto* saberTrail = _saberTrail;
     saberTrail->color = (color * _trailTintColor).Linear();
 
     if (_setSaberGlowColors) {
-      for (auto setSaberGlowColor : _setSaberGlowColors) {
-        if (!setSaberGlowColor) continue;
+      for (auto* setSaberGlowColor : _setSaberGlowColors) {
+        if (setSaberGlowColor == nullptr) {
+          continue;
+        }
 
         MaterialPropertyBlock* materialPropertyBlock = setSaberGlowColor->materialPropertyBlock;
-        if (!materialPropertyBlock) {
+        if (materialPropertyBlock == nullptr) {
           setSaberGlowColor->materialPropertyBlock = MaterialPropertyBlock::New_ctor();
           materialPropertyBlock = setSaberGlowColor->materialPropertyBlock;
         }
@@ -113,27 +113,32 @@ void SaberColorizer::Refresh() {
 
         if (propertyTintColorPairs) {
           for (auto& propertyTintColorPair : propertyTintColorPairs) {
-            if (propertyTintColorPair)
+            if (propertyTintColorPair != nullptr) {
               SetColor(materialPropertyBlock, propertyTintColorPair->property,
                        color * Sombrero::FastColor(propertyTintColorPair->tintColor));
+            }
           }
         }
 
-        if (setSaberGlowColor->meshRenderer) SetPropertyBlock(setSaberGlowColor->meshRenderer, materialPropertyBlock);
+        if (setSaberGlowColor->meshRenderer != nullptr) {
+          SetPropertyBlock(setSaberGlowColor->meshRenderer, materialPropertyBlock);
+        }
       }
     }
 
     if (_setSaberFakeGlowColors) {
-      for (auto setSaberFakeGlowColor : _setSaberFakeGlowColors) {
-        if (!setSaberFakeGlowColor) continue;
+      for (auto* setSaberFakeGlowColor : _setSaberFakeGlowColors) {
+        if (setSaberFakeGlowColor == nullptr) {
+          continue;
+        }
 
-        auto parametric3SliceSprite = setSaberFakeGlowColor->parametric3SliceSprite;
+        auto* parametric3SliceSprite = setSaberFakeGlowColor->parametric3SliceSprite;
         parametric3SliceSprite->color = color * setSaberFakeGlowColor->tintColor;
         Refresh(parametric3SliceSprite);
       }
     }
 
-    if (_saberLight) {
+    if (_saberLight != nullptr) {
       _saberLight->color = color;
     }
   } else {
@@ -168,10 +173,11 @@ void SaberColorizer::ColorColorable(Sombrero::FastColor const& color) {
 }
 
 void SaberColorizer::SetColorable(GlobalNamespace::SaberModelController* saberModelController, bool colorable) {
-  if (colorable)
+  if (colorable) {
     ColorableModels.emplace(saberModelController);
-  else
+  } else {
     ColorableModels.erase(saberModelController);
+  }
 }
 
 bool SaberColorizer::IsColorable(GlobalNamespace::SaberModelController* saberModelController) {

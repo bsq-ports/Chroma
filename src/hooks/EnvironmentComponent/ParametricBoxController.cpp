@@ -53,8 +53,8 @@ MAKE_HOOK_MATCH(ParametricBoxController_Refresh, &ParametricBoxController::Refre
     return;
   }
 
-  auto scale = Sombrero::FastVector3(self->width * 0.5f, self->height * 0.5f, self->length * 0.5f);
-  auto pos = Sombrero::FastVector3(0.0f, (0.5f - self->heightCenter) * self->height, 0.0f);
+  auto scale = Sombrero::FastVector3(self->width * 0.5F, self->height * 0.5F, self->length * 0.5F);
+  auto pos = Sombrero::FastVector3(0.0F, (0.5F - self->heightCenter) * self->height, 0.0F);
 
   auto it = ParametricBoxControllerParameters::TransformParameters.find(self);
 
@@ -63,19 +63,19 @@ MAKE_HOOK_MATCH(ParametricBoxController_Refresh, &ParametricBoxController::Refre
     pos = GetTransformPosition(pos, it->second);
   }
 
-  static auto transformProp = il2cpp_utils::FindProperty(classof(UnityEngine::Component*), "transform");
+  static auto const* transformProp = il2cpp_utils::FindProperty(classof(UnityEngine::Component*), "transform");
 
   //        auto transform = self->get_transform();
 
-  auto transform = CRASH_UNLESS(il2cpp_utils::GetPropertyValue<UnityEngine::Transform*>(self, transformProp));
+  auto* transform = CRASH_UNLESS(il2cpp_utils::GetPropertyValue<UnityEngine::Transform*>(self, transformProp));
 
-  static auto localScaleProp = il2cpp_utils::FindProperty(classof(UnityEngine::Transform*), "localScale");
-  static auto localPosProp = il2cpp_utils::FindProperty(classof(UnityEngine::Transform*), "localPosition");
+  static auto const* localScaleProp = il2cpp_utils::FindProperty(classof(UnityEngine::Transform*), "localScale");
+  static auto const* localPosProp = il2cpp_utils::FindProperty(classof(UnityEngine::Transform*), "localPosition");
 
   CRASH_UNLESS(il2cpp_utils::SetPropertyValue(transform, localScaleProp, scale));
   CRASH_UNLESS(il2cpp_utils::SetPropertyValue(transform, localPosProp, pos));
 
-  static auto materialPropertyBlock = ParametricBoxController::_get__materialPropertyBlock();
+  static auto* materialPropertyBlock = ParametricBoxController::_get__materialPropertyBlock();
 
   if (materialPropertyBlock == nullptr) {
     materialPropertyBlock = UnityEngine::MaterialPropertyBlock::New_ctor();

@@ -53,18 +53,18 @@ MAKE_HOOK_MATCH(BeatEffectSpawner_HandleNoteDidStartJump, &BeatEffectSpawner::Ha
   if (noteController->hidden) {
     return;
   }
-  if (noteController->noteData->time + 0.1f < self->audioTimeSyncController->songTime) {
+  if (noteController->noteData->time + 0.1F < self->audioTimeSyncController->songTime) {
     return;
   }
   ColorType colorType = noteController->noteData->colorType;
   Sombrero::FastColor a =
       (colorType != ColorType::None) ? self->colorManager->ColorForType(colorType) : self->bombColorEffect;
-  auto beatEffect = self->beatEffectPoolContainer->Spawn();
+  auto* beatEffect = self->beatEffectPoolContainer->Spawn();
   beatEffect->didFinishEvent->Add(self->i_IBeatEffectDidFinishEvent());
   beatEffect->get_transform()->SetPositionAndRotation(
-      noteController->get_worldRotation() * noteController->get_jumpStartPos() - Sombrero::FastVector3(0.f, 0.15f, 0.f),
+      noteController->get_worldRotation() * noteController->get_jumpStartPos() - Sombrero::FastVector3(0.F, 0.15F, 0.F),
       Sombrero::FastQuaternion::identity());
-  beatEffect->Init(a * 1.f, self->effectDuration, noteController->get_worldRotation());
+  beatEffect->Init(a * 1.F, self->effectDuration, noteController->get_worldRotation());
 }
 
 void BeatEffectSpawnerHook(Logger& logger) {

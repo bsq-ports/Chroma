@@ -9,7 +9,7 @@
 
 using namespace Chroma;
 
-void Chroma::LegacyEnvironmentRemoval::Init(CustomJSONData::CustomBeatmapData* customBeatmap) {
+void Chroma::LegacyEnvironmentRemoval::Init(CustomJSONData::CustomBeatmapData* /*customBeatmap*/) {
   static auto contextLogger = getLogger().WithContext(ChromaLogger::EnvironmentRemoval);
 
   auto& dynDataWrapper = ChromaController::infoDatCopy;
@@ -36,7 +36,9 @@ void Chroma::LegacyEnvironmentRemoval::Init(CustomJSONData::CustomBeatmapData* c
           for (int i = 0; i < gameObjects.Length(); i++) {
             UnityEngine::GameObject* n = gameObjects.get(i);
 
-            if (!n) continue;
+            if (n == nullptr) {
+              continue;
+            }
 
             auto nName = csstrtostr(n->get_name());
             if (nName.find(s) != std::string::npos) {
@@ -51,17 +53,21 @@ void Chroma::LegacyEnvironmentRemoval::Init(CustomJSONData::CustomBeatmapData* c
           for (int i = 0; i < gameObjects.Length(); i++) {
             UnityEngine::GameObject* n = gameObjects.get(i);
 
-            if (!n) continue;
+            if (n == nullptr) {
+              continue;
+            }
 
             auto gStrIl2 = n->get_name();
-            std::u16string gStr = gStrIl2 ? std::u16string(csstrtostr(gStrIl2)) : u"";
+            std::u16string gStr = gStrIl2 != nullptr ? std::u16string(csstrtostr(gStrIl2)) : u"";
 
             auto scene = n->get_scene();
 
-            if (!scene) continue;
+            if (!scene.IsValid()) {
+              continue;
+            }
 
             auto sceneNameIl2 = scene.get_name();
-            std::string sceneName = sceneNameIl2 ? sceneNameIl2 : "";
+            std::string sceneName = sceneNameIl2 != nullptr ? sceneNameIl2 : "";
 
             bool sceneEnvironment = !sceneName.empty() && sceneName.find("Environment") != std::string::npos;
 

@@ -29,7 +29,7 @@ Chroma::ChromaFogController* ChromaFogController::getInstance() {
 }
 
 void Chroma::ChromaFogController::clearInstance() {
-  if (_instance) {
+  if (_instance != nullptr) {
     UnityEngine::GameObject::Destroy(_instance);
     _instance = nullptr;
   }
@@ -67,7 +67,7 @@ void Chroma::ChromaFogController::Update() {
     CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Fog track is null!");
     return;
   }
-  if (!_transitionFogParams) {
+  if (_transitionFogParams == nullptr) {
     getLogger().error("ChromaFog TransitionFogParams is null");
     CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("ChromaFog TransitionFogParams is null!");
     return;

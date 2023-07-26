@@ -40,7 +40,7 @@ Chroma::ChromaGradientController* ChromaGradientController::getInstance() {
 }
 
 void Chroma::ChromaGradientController::clearInstance() {
-  if (_instance) {
+  if (_instance != nullptr) {
     UnityEngine::GameObject::Destroy(_instance);
     _instance = nullptr;
   }
@@ -76,7 +76,9 @@ Sombrero::FastColor ChromaGradientController::AddGradient(ChromaEventData::Gradi
 
   auto r = newGradientEvent.Interpolate(erased, ChromaController::CallbacksController->songTime);
 
-  if (erased) getInstance()->Gradients.erase(it.first);
+  if (erased) {
+    getInstance()->Gradients.erase(it.first);
+  }
 
   return r;
 }
@@ -99,10 +101,11 @@ void Chroma::ChromaGradientController::Update() {
 
       LightColorizer::ColorizeLight(eventType, true, { color, color, color, color });
 
-      if (!modified)
+      if (!modified) {
         it++;
-      else
+      } else {
         it = Gradients.erase(it);
+      }
     }
   }
 }
@@ -117,10 +120,10 @@ constexpr Sombrero::FastColor Chroma::ChromaGradientEvent::Interpolate(bool& mod
   float normalTime = songTime - _start;
   if (normalTime < 0) {
     return _initcolor;
-  } else if (normalTime <= _duration) {
-    return lerpUnclamped(_initcolor, _endcolor, Easings::Interpolate(normalTime / _duration, _easing));
-  } else {
-    modified = true;
-    return _endcolor;
   }
+  if (normalTime <= _duration) {
+    return lerpUnclamped(_initcolor, _endcolor, Easings::Interpolate(normalTime / _duration, _easing));
+  }
+  modified = true;
+  return _endcolor;
 }

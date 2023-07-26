@@ -39,8 +39,8 @@ MAKE_HOOK_MATCH(ParticleSystemEventEffect_Start, &ParticleSystemEventEffect::Sta
   }
 
   // If duplicated, clean up before duping
-  auto oldController = self->GetComponent<ChromaParticleEventController*>();
-  if (oldController) {
+  auto* oldController = self->GetComponent<ChromaParticleEventController*>();
+  if (oldController != nullptr) {
     UnityEngine::Object::Destroy(oldController);
   }
 
@@ -59,7 +59,7 @@ MAKE_HOOK_MATCH(ParticleSystemEventEffect_HandleBeatmapObjectCallbackControllerB
   }
 
   if (beatmapEventData->basicBeatmapEventType == self->colorEvent) {
-    for (auto& colorizer : ParticleColorizer::GetParticleColorizers(self->colorEvent)) {
+    for (auto const& colorizer : ParticleColorizer::GetParticleColorizers(self->colorEvent)) {
       colorizer->PreviousValue = beatmapEventData->value;
     }
   }
