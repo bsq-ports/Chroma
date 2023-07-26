@@ -126,6 +126,8 @@ inline static constexpr const std::string_view OFFSET = "offset";
 inline static constexpr const std::string_view HEIGHT_FOG_STARTY = "startY";
 inline static constexpr const std::string_view HEIGHT_FOG_HEIGHT = "height";
 
+inline static constexpr const std::string_view ANIMATE_COMPONENT = "AnimateComponent";
+
 inline static constexpr const std::string_view COMPONENTS = "components";
 inline static constexpr const std::string_view LIGHT_WITH_ID = "ILightWithId";
 inline static constexpr const std::string_view BLOOM_FOG_ENVIRONMENT = "BloomFogEnvironment";
