@@ -13,15 +13,17 @@ void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapDa
   static auto contextLogger = getLogger().WithContext(ChromaLogger::ObjectDataDeserialize);
   ChromaEventDatas.clear();
 
-  auto beatmapDataCast = beatmapData;
-  static auto CustomBasicBeatmapEventDataKlass = classof(CustomJSONData::CustomBeatmapEventData*);
+  auto* beatmapDataCast = beatmapData;
+  static auto* CustomBasicBeatmapEventDataKlass = classof(CustomJSONData::CustomBeatmapEventData*);
 
   bool v2 = beatmapDataCast->v2orEarlier;
 
-  for (auto beatmapEvent : beatmapDataCast->beatmapEventDatas) {
+  for (auto* beatmapEvent : beatmapDataCast->beatmapEventDatas) {
 
-    if (beatmapEvent->klass != CustomBasicBeatmapEventDataKlass) continue;
-    auto customBeatmapEvent = reinterpret_cast<CustomJSONData::CustomBeatmapEventData*>(beatmapEvent);
+    if (beatmapEvent->klass != CustomBasicBeatmapEventDataKlass) {
+      continue;
+    }
+    auto* customBeatmapEvent = reinterpret_cast<CustomJSONData::CustomBeatmapEventData*>(beatmapEvent);
 
     auto const& optionalDynData = customBeatmapEvent->customData->value;
 
@@ -83,7 +85,7 @@ void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapDa
 
               for (auto const& lightId : propIDobjects) {
                 auto propId = lightId.value.GetInt64();
-                propIds.push_back((int)propId);
+                propIds.push_back(static_cast<int>(propId));
               }
             } else if (propIDData.IsArray()) {
               auto const& propIDArray = propIDData.GetArray();
@@ -91,7 +93,7 @@ void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapDa
 
               for (auto const& lightId : propIDArray) {
                 auto propId = lightId.GetInt64();
-                propIds.push_back((int)propId);
+                propIds.push_back(static_cast<int>(propId));
               }
             } else {
               getLogger().error("Prop id type is not array or number!");
@@ -141,7 +143,7 @@ void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapDa
 
         if (lightIdData.IsNumber()) {
           auto lightIdLong = lightIdData.GetInt64();
-          lightIds.push_back((int)lightIdLong);
+          lightIds.push_back(static_cast<int>(lightIdLong));
 
         } else if (lightIdData.IsArray()) {
           lightIds.reserve(lightIdData.Size());
@@ -173,7 +175,9 @@ void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapDa
       std::optional<float> speed =
           getIfExists<float>(optionalDynData, v2 ? NewConstants::V2_SPEED : NewConstants::SPEED);
 
-      if (!speed && v2) speed = getIfExists<float>(optionalDynData, NewConstants::V2_PRECISE_SPEED);
+      if (!speed && v2) {
+        speed = getIfExists<float>(optionalDynData, NewConstants::V2_PRECISE_SPEED);
+      }
 
       chromaEventData.Prop = getIfExists<float>(optionalDynData, v2 ? NewConstants::V2_PROP : NewConstants::PROP);
       chromaEventData.Step = getIfExists<float>(optionalDynData, v2 ? NewConstants::V2_STEP : NewConstants::STEP);
@@ -182,9 +186,9 @@ void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapDa
           getIfExists<float>(optionalDynData, v2 ? NewConstants::V2_ROTATION : NewConstants::ROTATION);
     }
 
-    chromaEventData.StepMult = v2 ? getIfExists<float>(optionalDynData, NewConstants::V2_STEP_MULT, 1.0f) : 1;
-    chromaEventData.PropMult = v2 ? getIfExists<float>(optionalDynData, NewConstants::V2_PROP_MULT, 1.0f) : 1;
-    chromaEventData.SpeedMult = v2 ? getIfExists<float>(optionalDynData, NewConstants::V2_SPEED_MULT, 1.0f) : 1;
+    chromaEventData.StepMult = v2 ? getIfExists<float>(optionalDynData, NewConstants::V2_STEP_MULT, 1.0F) : 1;
+    chromaEventData.PropMult = v2 ? getIfExists<float>(optionalDynData, NewConstants::V2_PROP_MULT, 1.0F) : 1;
+    chromaEventData.SpeedMult = v2 ? getIfExists<float>(optionalDynData, NewConstants::V2_SPEED_MULT, 1.0F) : 1;
 
     // Light stuff again
     chromaEventData.LockPosition =
@@ -198,71 +202,85 @@ void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapDa
 
   for (auto const& event : beatmapDataCast->beatmapEventDatas) {
     auto const& dataIt = ChromaEventDatas.find(event);
-    if (dataIt == ChromaEventDatas.end()) continue;
+    if (dataIt == ChromaEventDatas.end()) {
+      continue;
+    }
 
     auto const& d = dataIt->second;
 
-    if (!d.LightID) continue;
+    if (!d.LightID) {
+      continue;
+    }
 
     for (auto const& l : *d.LightID) {
-      if (std::find(allUsedIds.begin(), allUsedIds.end(), l) == allUsedIds.end()) continue;
+      if (std::find(allUsedIds.begin(), allUsedIds.end(), l) == allUsedIds.end()) {
+        continue;
+      }
       allUsedIds.push_back(l);
     }
   }
 
+  // start at 0
   int i = -1;
   auto beatmapEventsLength = beatmapDataCast->beatmapEventDatas.size();
 
-  for (auto beatmapEventData : beatmapDataCast->beatmapEventDatas) {
+  for (auto* beatmapEventData : beatmapDataCast->beatmapEventDatas) {
     i++;
 
     auto tryCast = il2cpp_utils::try_cast<GlobalNamespace::BasicBeatmapEventData>(beatmapEventData);
-    if (!tryCast) continue;
+    if (!tryCast) {
+      continue;
+    }
 
-    auto basicBeatmapEventData = *tryCast;
+    auto* basicBeatmapEventData = *tryCast;
     auto chromaEventDataIt = ChromaEventDatas.find(basicBeatmapEventData);
 
-    if (chromaEventDataIt == ChromaEventDatas.end()) continue;
+    if (chromaEventDataIt == ChromaEventDatas.end()) {
+      continue;
+    }
 
     auto* customBeatmapEvent = static_cast<CustomJSONData::CustomBeatmapEventData*>(basicBeatmapEventData);
     auto& currentEventData = chromaEventDataIt->second;
     // Horrible stupid logic to get next same type event per light id
-    if (currentEventData.LightID || true) {
-      auto type = customBeatmapEvent->basicBeatmapEventType;
-      auto& nextSameTypeEvent = currentEventData.NextSameTypeEvent;
 
-      auto const& ids = currentEventData.LightID.value_or(allUsedIds);
+    auto type = customBeatmapEvent->basicBeatmapEventType;
+    auto& nextSameTypeEvent = currentEventData.NextSameTypeEvent;
 
-      for (int id : ids) {
-        if (i >= beatmapEventsLength - 1) {
-          continue;
-        }
+    auto const& ids = currentEventData.LightID.value_or(allUsedIds);
 
-        int nextIndex = FindIndex(
-            beatmapDataCast->beatmapEventDatas,
-            [type, id](GlobalNamespace::BeatmapEventData* n) {
-              auto tryCast = il2cpp_utils::try_cast<GlobalNamespace::BasicBeatmapEventData>(n);
-              if (!tryCast) return false;
+    for (int id : ids) {
+      if (i >= beatmapEventsLength - 1) {
+        continue;
+      }
 
-              if (tryCast.value()->basicBeatmapEventType != type) {
-                return false;
-              }
+      int nextIndex = FindIndex(
+          beatmapDataCast->beatmapEventDatas,
+          [type, id](GlobalNamespace::BeatmapEventData* n) {
+            auto tryCast = il2cpp_utils::try_cast<GlobalNamespace::BasicBeatmapEventData>(n);
+            if (!tryCast) {
+              return false;
+            }
 
-              auto it = ChromaEventDatas.find(n);
+            if (tryCast.value()->basicBeatmapEventType != type) {
+              return false;
+            }
 
-              if (it == ChromaEventDatas.end()) return false;
+            auto it = ChromaEventDatas.find(n);
 
-              ChromaEventData const& nextEventData = it->second;
-              auto const& lightId = nextEventData.LightID;
+            if (it == ChromaEventDatas.end()) {
+              return false;
+            }
 
-              return !lightId || std::find(lightId->begin(), lightId->end(), id) != lightId->end();
-            },
-            i + 1);
+            ChromaEventData const& nextEventData = it->second;
+            auto const& lightId = nextEventData.LightID;
 
-        if (nextIndex != -1) {
-          auto beatmapEvent = beatmapDataCast->beatmapEventDatas[nextIndex];
-          currentEventData.NextSameTypeEvent[id] = { beatmapEvent, &ChromaEventDatas.at(beatmapEvent) };
-        }
+            return !lightId || std::find(lightId->begin(), lightId->end(), id) != lightId->end();
+          },
+          i + 1);
+
+      if (nextIndex != -1) {
+        auto* beatmapEvent = beatmapDataCast->beatmapEventDatas[nextIndex];
+        currentEventData.NextSameTypeEvent[id] = { beatmapEvent, &ChromaEventDatas.at(beatmapEvent) };
       }
     }
   }

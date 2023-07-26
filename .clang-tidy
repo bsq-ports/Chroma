@@ -12,6 +12,7 @@ Checks: '*,-llvm*,
   -fuchsia-default-arguments-calls,
   -altera-unroll-loops,
   -cppcoreguidelines-pro-type-vararg,
+  -cppcoreguidelines-pro-type-static-cast-downcast,
   -hicpp-vararg,
   -abseil-string-find-str-contains'
 FormatStyle:     file
