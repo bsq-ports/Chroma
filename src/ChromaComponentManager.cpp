@@ -3,6 +3,7 @@
 #include "Chroma.hpp"
 #include "ChromaEvents.hpp"
 #include "ChromaComponentManager.hpp"
+#include "lighting/ChromaFogController.hpp"
 
 #include "tracks/shared/Animation/Track.h"
 #include "tracks/shared/Animation/Easings.h"
@@ -21,8 +22,8 @@
 #include "GlobalNamespace/TubeBloomPrePassLight.hpp"
 
 struct CoroutineInfo {
-  CoroutineInfo(std::string_view componentName, std::vector<UnityEngine::Component*> component, PointDefinition* const points,
-                float duration, float startTime, Functions easing)
+  CoroutineInfo(std::string_view componentName, std::vector<UnityEngine::Component*> component,
+                PointDefinition* const points, float duration, float startTime, Functions easing)
       : componentName(componentName), component(std::move(component)), points(points), duration(duration),
         startTime(startTime), easing(easing) {}
 
@@ -46,13 +47,15 @@ void animateBloomFog(std::string_view propName, std::span<UnityEngine::Component
     return;
   }
 
-  auto handleFog = [&](auto&& func) {
+  auto handleFog = [&](auto&& func) constexpr {
     for (auto const& c : components) {
       func(reinterpret_cast<GlobalNamespace::BloomFogEnvironment*>(c));
     }
   };
   if (propName == Chroma::NewConstants::ATTENUATION) {
-    handleFog([&](GlobalNamespace::BloomFogEnvironment* fog) { fog->fogParams->attenuation = val; });
+    handleFog([&](GlobalNamespace::BloomFogEnvironment* fog) {
+      fog->fogParams->attenuation = Chroma::fogAttenuationFix(val);
+    });
   }
   if (propName == Chroma::NewConstants::OFFSET) {
     handleFog([&](GlobalNamespace::BloomFogEnvironment* fog) { fog->fogParams->offset = val; });
@@ -69,20 +72,19 @@ void animateTubeBloom(std::string_view propName, std::span<UnityEngine::Componen
     return;
   }
 
-  if (components.empty()) {
-    return;
-  }
-
-  auto handleFog = [&](auto&& func) {
+  auto handleTube = [&](auto&& func) {
     for (auto const& c : components) {
       func(reinterpret_cast<GlobalNamespace::TubeBloomPrePassLight*>(c));
     }
   };
   if (propName == Chroma::NewConstants::COLOR_ALPHA_MULTIPLIER) {
-    handleFog([&](GlobalNamespace::TubeBloomPrePassLight* tube) {
+    handleTube([&](GlobalNamespace::TubeBloomPrePassLight* tube) {
       tube->colorAlphaMultiplier = val;
       tube->MarkDirty();
     });
+  }
+  if (propName == Chroma::NewConstants::BLOOM_FOG_INTENSITY_MULTIPLIER) {
+    handleTube([&](GlobalNamespace::TubeBloomPrePassLight* tube) { tube->bloomFogIntensityMultiplier = val; });
   }
 }
 
@@ -123,10 +125,15 @@ static bool UpdateCoroutine(std::string_view propName, CoroutineInfo const& cont
 
 void Chroma::Component::UpdateCoroutines(GlobalNamespace::BeatmapCallbacksController* callbackController) {
   auto songTime = callbackController->songTime;
-  for (auto coroIt = coroutines.begin(); coroIt != coroutines.end();) {
+  for (auto& coroutineGroup : coroutines) {
 
-    auto const& componentName = coroIt->first;
-    auto& props = coroIt->second;
+    auto const& componentName = coroutineGroup.first;
+    auto& props = coroutineGroup.second;
+
+    // No coros
+    if (props.empty()) {
+      continue;
+    }
 
     for (auto it = props.begin(); it != props.end();) {
       if (UpdateCoroutine(componentName, it->second, songTime)) {
@@ -183,9 +190,9 @@ void Chroma::Component::StartEvent(GlobalNamespace::BeatmapCallbacksController* 
       }
 
       for (auto const& [propName, prop] : props) {
-
         auto& propCoros = coroutines[std::string(propName)];
-        propCoros.emplace(track, CoroutineInfo(componentName, components, prop, duration, customEventData->time, easing));
+        propCoros.emplace(track,
+                          CoroutineInfo(componentName, components, prop, duration, customEventData->time, easing));
       }
     }
   }

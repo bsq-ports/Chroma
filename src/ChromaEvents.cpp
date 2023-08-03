@@ -66,7 +66,7 @@ void ChromaEvents::parseEventData(TracksAD::BeatmapAssociatedData& beatmapAD,
       return;
     }
 
-    float duration = NEJSON::ReadOptionalFloat(eventData, Chroma::NewConstants::DURATION.data()).value_or(0);
+    float const duration = NEJSON::ReadOptionalFloat(eventData, Chroma::NewConstants::DURATION.data()).value_or(0);
 
     auto easing = static_cast<Functions>(NEJSON::ReadOptionalInt(eventData, Chroma::NewConstants::EASING.data())
                                              .value_or(static_cast<int>(Functions::easeLinear)));
@@ -77,7 +77,24 @@ void ChromaEvents::parseEventData(TracksAD::BeatmapAssociatedData& beatmapAD,
                                   Chroma::NewConstants::TUBE_BLOOM_PRE_PASS_LIGHT };
     std::unordered_map<std::string_view, std::vector<AnimateComponentEventData::ComponentData>> coroutineInfos;
 
-    for (auto const& it : eventData[Chroma::NewConstants::COMPONENTS.data()].GetObject()) {
+    // eventData -> {
+    //      "track": "fog",
+    //      "duration": 40,
+    //      "BloomFogEnvironment": {
+    //        "attenuation": [
+    //          [
+    //            0.0008,
+    //            0
+    //          ],
+    //          [
+    //            0.0001,
+    //            1,
+    //            "easeOutExpo"
+    //          ]
+    //        ]
+    //      }
+    //    }
+    for (auto const& it : eventData.GetObject()) {
       auto const& componentName = it.name.GetString();
       auto const& component = it.value;
       if (!component.IsObject()) {
@@ -133,9 +150,9 @@ void CustomEventCallback(BeatmapCallbacksController* callbackController,
   if (!isType && typeHash == (jsonNameHash_##varName)) isType = true;
 
       TYPE_GET(Chroma::OldConstants::ASSIGNFOGTRACK, ASSIGNFOGTRACK)
-          TYPE_GET(Chroma::NewConstants::ANIMATE_COMPONENT, ANIMATE_COMPONENT)
+      TYPE_GET(Chroma::NewConstants::ANIMATE_COMPONENT, ANIMATE_COMPONENT)
 
-              if (!isType) { return; }
+      if (!isType) { return; }
 
       auto const& ad = ChromaEvents::getEventAD(customEventData);
 
@@ -152,9 +169,9 @@ void CustomEventCallback(BeatmapCallbacksController* callbackController,
             std::get<ChromaEvents::AssignBloomFogTrack>(ad.data).track);
         CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Assigned fog controller to track");
       } if (typeHash == jsonNameHash_ANIMATE_COMPONENT && !customBeatmapData->v2orEarlier) {
+        CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Animated component");
         Chroma::Component::StartEvent(callbackController, customEventData,
                                       std::get<ChromaEvents::AnimateComponentEventData>(ad.data));
-        CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Animated component");
       }
 
   )
