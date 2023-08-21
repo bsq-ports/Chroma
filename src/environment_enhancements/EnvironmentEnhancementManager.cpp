@@ -287,335 +287,333 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
   RingRotationOffsets.clear();
   ParametricBoxControllerParameters::TransformParameters.clear();
 
-  if (!customDynWrapper) {
-    if (!v2) {
-      return;
+  if (customDynWrapper == nullptr) {
+    if (v2) {
+      LegacyEnvironmentRemoval::Init(customBeatmapData);
     }
+    return;
+  }
 
-    LegacyEnvironmentRemoval::Init(customBeatmapData);
+  rapidjson::Value const& dynData = *customDynWrapper;
+
+  auto environmentData =
+      dynData.FindMember(v2 ? NewConstants::V2_ENVIRONMENT.data() : NewConstants::ENVIRONMENT.data());
+
+  if (environmentData == dynData.MemberEnd()) {
+    if (v2) {
+      LegacyEnvironmentRemoval::Init(customBeatmapData);
+    }
     return;
   }
 
 
+  MaterialsManager materialsManager(dynData, trackBeatmapAD, v2);
+  GeometryFactory geometryFactory(materialsManager, v2);
 
-    rapidjson::Value const& dynData = *customDynWrapper;
+  GetAllGameObjects();
+  auto rings = UnityEngine::Resources::FindObjectsOfTypeAll<GlobalNamespace::TrackLaneRingsManager*>();
+  Chroma::TrackLaneRingsManagerHolder::RingManagers = { rings.begin(), rings.end() };
 
-    auto environmentData =
-        dynData.FindMember(v2 ? NewConstants::V2_ENVIRONMENT.data() : NewConstants::ENVIRONMENT.data());
+  std::vector<Profiler> profileData;
+  auto environmentDataObject = environmentData->value.GetArray();
 
-    if (environmentData != dynData.MemberEnd()) {
-      MaterialsManager materialsManager(dynData, trackBeatmapAD, v2);
-      GeometryFactory geometryFactory(materialsManager, v2);
+  // Record start time
+  auto startAll = std::chrono::high_resolution_clock::now();
 
-      GetAllGameObjects();
-      auto rings = UnityEngine::Resources::FindObjectsOfTypeAll<GlobalNamespace::TrackLaneRingsManager*>();
-      Chroma::TrackLaneRingsManagerHolder::RingManagers = { rings.begin(), rings.end() };
+  for (auto const& gameObjectDataVal : environmentDataObject) {
+    // Record start time
+    auto& profiler = profileData.emplace_back();
+    profiler.startTimer();
 
-      std::vector<Profiler> profileData;
-      auto environmentDataObject = environmentData->value.GetArray();
+    auto idMember =
+        gameObjectDataVal.FindMember(v2 ? NewConstants::V2_GAMEOBJECT_ID.data() : NewConstants::GAMEOBJECT_ID.data());
+    auto geometryMember =
+        gameObjectDataVal.FindMember(v2 ? NewConstants::V2_GEOMETRY.data() : NewConstants::GEOMETRY.data());
+    std::vector<ByRef<GameObjectInfo const>> foundObjects;
 
-      // Record start time
-      auto startAll = std::chrono::high_resolution_clock::now();
+    if (idMember == gameObjectDataVal.MemberEnd() && geometryMember == gameObjectDataVal.MemberEnd()) {
+      CJDLogger::Logger.fmtLog<Paper::LogLevel::ERR>("Missing geometry or lookup, skipping");
+      continue;
+    }
+    if (idMember != gameObjectDataVal.MemberEnd() && geometryMember != gameObjectDataVal.MemberEnd()) {
+      CJDLogger::Logger.fmtLog<Paper::LogLevel::ERR>("Can't use both lookup and geometry, skipping");
+      continue;
+    }
 
-      for (auto const& gameObjectDataVal : environmentDataObject) {
-        // Record start time
-        auto& profiler = profileData.emplace_back();
-        profiler.startTimer();
+    if (idMember != gameObjectDataVal.MemberEnd()) {
+      std::string_view id = idMember->value.GetString();
+      std::string lookupString =
+          gameObjectDataVal.FindMember(v2 ? NewConstants::V2_LOOKUP_METHOD.data() : NewConstants::LOOKUP_METHOD.data())
+              ->value.GetString();
 
-        auto idMember = gameObjectDataVal.FindMember(v2 ? NewConstants::V2_GAMEOBJECT_ID.data()
-                                                        : NewConstants::GAMEOBJECT_ID.data());
-        auto geometryMember =
-            gameObjectDataVal.FindMember(v2 ? NewConstants::V2_GEOMETRY.data() : NewConstants::GEOMETRY.data());
-        std::vector<ByRef<GameObjectInfo const>> foundObjects;
+      // Convert string to lower case
+      std::transform(lookupString.begin(), lookupString.end(), lookupString.begin(), ::tolower);
+      LookupMethod lookupMethod = LookupMethod::Exact;
 
-        if (idMember == gameObjectDataVal.MemberEnd() && geometryMember == gameObjectDataVal.MemberEnd()) {
-          CJDLogger::Logger.fmtLog<Paper::LogLevel::ERR>("Missing geometry or lookup, skipping");
-          continue;
-        }
-        if (idMember != gameObjectDataVal.MemberEnd() && geometryMember != gameObjectDataVal.MemberEnd()) {
-          CJDLogger::Logger.fmtLog<Paper::LogLevel::ERR>("Can't use both lookup and geometry, skipping");
-          continue;
-        }
+      // Record JSON parse time
+      profiler.mark("Parsing JSON for id " + std::string(id));
 
-        if (idMember != gameObjectDataVal.MemberEnd()) {
-          std::string_view id = idMember->value.GetString();
-          std::string lookupString =
-              gameObjectDataVal
-                  .FindMember(v2 ? NewConstants::V2_LOOKUP_METHOD.data() : NewConstants::LOOKUP_METHOD.data())
-                  ->value.GetString();
-
-          // Convert string to lower case
-          std::transform(lookupString.begin(), lookupString.end(), lookupString.begin(), ::tolower);
-          LookupMethod lookupMethod = LookupMethod::Exact;
-
-          // Record JSON parse time
-          profiler.mark("Parsing JSON for id " + std::string(id));
-
-          if (lookupString == "regex") {
-            lookupMethod = LookupMethod::Regex;
-          } else if (lookupString == "exact") {
-            lookupMethod = LookupMethod::Exact;
-          } else if (lookupString == "contains") {
-            lookupMethod = LookupMethod::Contains;
-          } else if (lookupString == "startswith") {
-            lookupMethod = LookupMethod::StartsWith;
-          } else if (lookupString == "endswith") {
-            lookupMethod = LookupMethod::EndsWith;
-          }
-
-          foundObjects = LookupId(id, lookupMethod);
-
-          // Record find object time
-          std::stringstream foundObjectsLog;
-          foundObjectsLog << "Finding objects for id (" << std::to_string(foundObjects.size()) << ") " << id
-                          << " using " << lookupString;
-
-          if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {
-            getLogger().info("ID [\"%s\"] using method [%s] found:", id.data(), lookupString.c_str());
-          }
-
-          profiler.mark(foundObjectsLog.str());
-        }
-
-        if (geometryMember != gameObjectDataVal.MemberEnd()) {
-          auto goInfo = ByRef<GameObjectInfo const>(
-              _globalGameObjectInfos.emplace_back(geometryFactory.Create(geometryMember->value)));
-          // Record JSON parse time
-          profiler.mark("Parsing JSON for geometry ");
-
-          foundObjects.emplace_back(goInfo);
-        }
-
-        if (foundObjects.empty()) {
-          profiler.mark("No objects found!", false);
-          profiler.endTimer();
-          continue;
-        }
-
-        if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {
-          for (auto const& o : foundObjects) {
-            getLogger().info("%s", o.heldRef.FullID.c_str());
-          }
-
-          getLogger().info("=====================================");
-        }
-
-        TransformData spawnData(gameObjectDataVal, v2, noteLinesDistance);
-
-        std::optional<int> dupeAmount = getIfExists<int>(gameObjectDataVal, v2 ? NewConstants::V2_DUPLICATION_AMOUNT
-                                                                               : NewConstants::DUPLICATION_AMOUNT);
-        std::optional<bool> active =
-            getIfExists<bool>(gameObjectDataVal, v2 ? NewConstants::V2_ACTIVE : NewConstants::ACTIVE);
-
-        // Create track if objects are found
-        auto trackNameIt = gameObjectDataVal.FindMember(v2 ? Chroma::NewConstants::V2_TRACK.data()
-                                                           : Chroma::NewConstants::TRACK.data());
-
-        std::optional<std::string_view> trackName;
-        std::vector<Track*> track;
-
-        if (trackNameIt != gameObjectDataVal.MemberEnd()) {
-          auto const& trackJSON = trackNameIt->value;
-          if (trackJSON.IsString()) {
-            trackName = trackJSON.GetString();
-            std::string_view val = *trackName;
-            track = { trackBeatmapAD.getTrack(val) };
-          } else if (trackJSON.IsArray()) {
-            for (auto const& trackJSONItem : trackJSON.GetArray()) {
-              trackName = trackJSON.GetString();
-              std::string_view val = *trackName;
-              track.emplace_back(trackBeatmapAD.getTrack(val));
-            }
-          }
-        }
-
-        std::vector<ByRef<GameObjectInfo const>> gameObjectInfos;
-        if (dupeAmount) {
-          gameObjectInfos.reserve(foundObjects.size() * dupeAmount.value());
-
-          for (auto const& gameObjectInfoRef : foundObjects) {
-            auto const& gameObjectInfo = gameObjectInfoRef.heldRef;
-            if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {
-              profiler.mark("Duplicating [" + gameObjectInfo.FullID + "]:", false);
-            }
-
-            auto* gameObject = gameObjectInfo.GameObject;
-            auto* parent = gameObject->get_transform()->get_parent();
-            auto scene = gameObject->get_scene();
-
-            for (int i = 0; i < dupeAmount.value(); i++) {
-              std::vector<std::shared_ptr<IComponentData>> componentDatas;
-              ComponentInitializer::PrefillComponentsData(gameObject->get_transform(), componentDatas);
-              auto* newGameObject = UnityEngine::Object::Instantiate(gameObject);
-              ComponentInitializer::PostfillComponentsData(newGameObject->get_transform(), gameObject->get_transform(),
-                                                           componentDatas);
-
-              SceneManager::MoveGameObjectToScene(newGameObject, scene);
-              newGameObject->get_transform()->SetParent(parent, true);
-
-              auto const& newGameObjectInfo = ComponentInitializer::InitializeComponents(
-                  newGameObject->get_transform(), gameObject->get_transform(), _globalGameObjectInfos, componentDatas);
-              gameObjectInfos.emplace_back(newGameObjectInfo);
-              // This is not needed as long as InitializeComponents adds to gameObjectInfos
-
-              //                            for (auto const& o : _globalGameObjectInfos) {
-              //                                if (o.GameObject->Equals(newGameObject)) {
-              //                                    gameObjectInfos.emplace_back(o);
-              //                                }
-              //                            }
-            }
-          }
-          // Record end time
-          profiler.mark("Duping ");
-        } else {
-
-          // Better way of doing this?
-          // For some reason, copy constructor is deleted?
-          gameObjectInfos = std::move(foundObjects);
-        }
-
-        for (auto const& gameObjectInfoRef : gameObjectInfos) {
-          auto const& gameObjectInfo = gameObjectInfoRef.heldRef;
-
-          auto* gameObject = gameObjectInfo.GameObject;
-
-          if (active) {
-            gameObject->SetActive(active.value());
-          }
-
-          auto* transform = gameObject->get_transform();
-
-          spawnData.Apply(transform, leftHanded);
-          auto const& position = spawnData.position;
-          auto const& localPosition = spawnData.localPosition;
-          auto const& rotation = spawnData.rotation;
-          auto const& localRotation = spawnData.localRotation;
-          auto const& scale = spawnData.scale;
-
-          if (position) {
-            CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Setting position to go {} to {} {} {}",
-                                                           gameObject->get_name().operator std::string(), position->x,
-                                                           position->y, position->z);
-          }
-
-          // Handle TrackLaneRing
-          auto* trackLaneRing = gameObject->GetComponentInChildren<GlobalNamespace::TrackLaneRing*>();
-          if (trackLaneRing != nullptr) {
-            if (position || localPosition) {
-              trackLaneRing->positionOffset = trackLaneRing->get_transform()->get_localPosition();
-              trackLaneRing->posZ = 0;
-            }
-
-            if (rotation || localRotation) {
-              RingRotationOffsets[trackLaneRing] = trackLaneRing->get_transform()->get_localRotation();
-              trackLaneRing->rotZ = 0;
-            }
-          }
-
-          // Handle ParametricBoxController
-          auto* parametricBoxController =
-              gameObject->GetComponentInChildren<GlobalNamespace::ParametricBoxController*>();
-          if (parametricBoxController != nullptr) {
-            if (position || localPosition) {
-              ParametricBoxControllerParameters::SetTransformPosition(
-                  parametricBoxController, parametricBoxController->get_transform()->get_localPosition());
-            }
-
-            if (scale) {
-              ParametricBoxControllerParameters::SetTransformScale(
-                  parametricBoxController, parametricBoxController->get_transform()->get_localScale());
-            }
-          }
-
-          auto* beatmapObjectsAvoidance =
-              gameObject->GetComponentInChildren<GlobalNamespace::BeatmapObjectsAvoidance*>();
-
-          if (beatmapObjectsAvoidance != nullptr) {
-            if (position || localPosition) {
-              AvoidancePosition[beatmapObjectsAvoidance] =
-                  beatmapObjectsAvoidance->get_transform()->get_localPosition();
-            }
-
-            if (rotation || localRotation) {
-              AvoidanceRotation[beatmapObjectsAvoidance] =
-                  beatmapObjectsAvoidance->get_transform()->get_localRotation();
-            }
-          }
-
-          ComponentInitializer::InitializeCustomComponents(gameObject, gameObjectDataVal, v2);
-
-          auto* controller =
-              GameObjectTrackController::HandleTrackData(gameObject, track, noteLinesDistance, v2).value_or(nullptr);
-
-          if (controller == nullptr) {
-            continue;
-          }
-          auto& controllerData = controller->getTrackControllerData();
-
-          if (trackLaneRing != nullptr) {
-            controllerData.RotationUpdate +=
-                [=]() { RingRotationOffsets[trackLaneRing] = trackLaneRing->transform->get_localRotation(); };
-            controllerData.PositionUpdate +=
-                [=]() { trackLaneRing->positionOffset = trackLaneRing->transform->get_localPosition(); };
-          } else if (parametricBoxController != nullptr) {
-            auto* parametricBoxControllerTransform = parametricBoxController->get_transform();
-            controllerData.ScaleUpdate += [=]() {
-              ParametricBoxControllerParameters::SetTransformScale(parametricBoxController,
-                                                                   parametricBoxControllerTransform->get_localScale());
-            };
-            controllerData.PositionUpdate += [=]() {
-              ParametricBoxControllerParameters::SetTransformPosition(
-                  parametricBoxController, parametricBoxControllerTransform->get_localPosition());
-            };
-          } else if (beatmapObjectsAvoidance != nullptr) {
-            controllerData.RotationUpdate += [=]() {
-              AvoidanceRotation[beatmapObjectsAvoidance] = beatmapObjectsAvoidance->transform->get_localRotation();
-            };
-            controllerData.PositionUpdate += [=]() {
-              AvoidancePosition[beatmapObjectsAvoidance] = beatmapObjectsAvoidance->transform->get_localPosition();
-            };
-          }
-        }
-
-        // Record end time
-        profiler.endTimer();
+      if (lookupString == "regex") {
+        lookupMethod = LookupMethod::Regex;
+      } else if (lookupString == "exact") {
+        lookupMethod = LookupMethod::Exact;
+      } else if (lookupString == "contains") {
+        lookupMethod = LookupMethod::Contains;
+      } else if (lookupString == "startswith") {
+        lookupMethod = LookupMethod::StartsWith;
+      } else if (lookupString == "endswith") {
+        lookupMethod = LookupMethod::EndsWith;
       }
 
-      // Record all end time
-      auto finish = std::chrono::high_resolution_clock::now();
-      auto millisElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(finish - startAll).count();
+      foundObjects = LookupId(id, lookupMethod);
 
-      std::thread([profileData = std::move(profileData), millisElapsed] {
-        // Log all objects
-        for (auto const& profile : profileData) {
-          profile.printMarks();
-          getLogger().info("=====================================\n");
-        }
+      // Record find object time
+      std::stringstream foundObjectsLog;
+      foundObjectsLog << "Finding objects for id (" << std::to_string(foundObjects.size()) << ") " << id << " using "
+                      << lookupString;
 
-        getLogger().info("Finished environment enhancements took %lldms", millisElapsed);
-      }).detach();
-
-      ///  Handle materials
-      auto const& materials = materialsManager.GetMaterials();
-      std::vector<MaterialInfo> animatedMaterials;
-      animatedMaterials.reserve(materials.size());
-
-      for (auto const& [s, m] : materials) {
-        if (!m.Track || m.Track->empty()) {
-          continue;
-        }
-        animatedMaterials.emplace_back(m);
+      if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {
+        getLogger().info("ID [\"%s\"] using method [%s] found:", id.data(), lookupString.c_str());
       }
 
-      if (!animatedMaterials.empty()) {
-        UnityEngine::GameObject::New_ctor("MaterialAnimator")->AddComponent<MaterialAnimator*>()->materials =
-            std::move(animatedMaterials);
+      profiler.mark(foundObjectsLog.str());
+    }
+
+    if (geometryMember != gameObjectDataVal.MemberEnd()) {
+      auto goInfo = ByRef<GameObjectInfo const>(
+          _globalGameObjectInfos.emplace_back(geometryFactory.Create(geometryMember->value)));
+      // Record JSON parse time
+      profiler.mark("Parsing JSON for geometry ");
+
+      foundObjects.emplace_back(goInfo);
+    }
+
+    if (foundObjects.empty()) {
+      profiler.mark("No objects found!", false);
+      profiler.endTimer();
+      continue;
+    }
+
+    if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {
+      for (auto const& o : foundObjects) {
+        getLogger().info("%s", o.heldRef.FullID.c_str());
+      }
+
+      getLogger().info("=====================================");
+    }
+
+    TransformData spawnData(gameObjectDataVal, v2, noteLinesDistance);
+
+    std::optional<int> dupeAmount = getIfExists<int>(gameObjectDataVal, v2 ? NewConstants::V2_DUPLICATION_AMOUNT
+                                                                           : NewConstants::DUPLICATION_AMOUNT);
+    std::optional<bool> active =
+        getIfExists<bool>(gameObjectDataVal, v2 ? NewConstants::V2_ACTIVE : NewConstants::ACTIVE);
+
+    // Create track if objects are found
+    auto trackNameIt =
+        gameObjectDataVal.FindMember(v2 ? Chroma::NewConstants::V2_TRACK.data() : Chroma::NewConstants::TRACK.data());
+
+    std::optional<std::string_view> trackName;
+    std::vector<Track*> track;
+
+    if (trackNameIt != gameObjectDataVal.MemberEnd()) {
+      auto const& trackJSON = trackNameIt->value;
+      if (trackJSON.IsString()) {
+        trackName = trackJSON.GetString();
+        std::string_view val = *trackName;
+        track = { trackBeatmapAD.getTrack(val) };
+      } else if (trackJSON.IsArray()) {
+        for (auto const& trackJSONItem : trackJSON.GetArray()) {
+          trackName = trackJSON.GetString();
+          std::string_view val = *trackName;
+          track.emplace_back(trackBeatmapAD.getTrack(val));
+        }
       }
     }
+
+    std::vector<ByRef<GameObjectInfo const>> gameObjectInfos;
+    if (dupeAmount) {
+      gameObjectInfos.reserve(foundObjects.size() * dupeAmount.value());
+
+      for (auto const& gameObjectInfoRef : foundObjects) {
+        auto const& gameObjectInfo = gameObjectInfoRef.heldRef;
+        if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {
+          profiler.mark("Duplicating [" + gameObjectInfo.FullID + "]:", false);
+        }
+
+        auto* gameObject = gameObjectInfo.GameObject;
+        auto* parent = gameObject->get_transform()->get_parent();
+        auto scene = gameObject->get_scene();
+
+        for (int i = 0; i < dupeAmount.value(); i++) {
+          std::vector<std::shared_ptr<IComponentData>> componentDatas;
+          ComponentInitializer::PrefillComponentsData(gameObject->get_transform(), componentDatas);
+          auto* newGameObject = UnityEngine::Object::Instantiate(gameObject);
+          ComponentInitializer::PostfillComponentsData(newGameObject->get_transform(), gameObject->get_transform(),
+                                                       componentDatas);
+
+          SceneManager::MoveGameObjectToScene(newGameObject, scene);
+          newGameObject->get_transform()->SetParent(parent, true);
+
+          auto const& newGameObjectInfo = ComponentInitializer::InitializeComponents(
+              newGameObject->get_transform(), gameObject->get_transform(), _globalGameObjectInfos, componentDatas);
+          gameObjectInfos.emplace_back(newGameObjectInfo);
+          // This is not needed as long as InitializeComponents adds to gameObjectInfos
+
+          //                            for (auto const& o : _globalGameObjectInfos) {
+          //                                if (o.GameObject->Equals(newGameObject)) {
+          //                                    gameObjectInfos.emplace_back(o);
+          //                                }
+          //                            }
+        }
+      }
+      // Record end time
+      profiler.mark("Duping ");
+    } else {
+
+      // Better way of doing this?
+      // For some reason, copy constructor is deleted?
+      gameObjectInfos = std::move(foundObjects);
+    }
+
+    for (auto const& gameObjectInfoRef : gameObjectInfos) {
+      auto const& gameObjectInfo = gameObjectInfoRef.heldRef;
+
+      auto* gameObject = gameObjectInfo.GameObject;
+
+      if (active) {
+        gameObject->SetActive(active.value());
+      }
+
+      auto* transform = gameObject->get_transform();
+
+      spawnData.Apply(transform, leftHanded);
+      auto const& position = spawnData.position;
+      auto const& localPosition = spawnData.localPosition;
+      auto const& rotation = spawnData.rotation;
+      auto const& localRotation = spawnData.localRotation;
+      auto const& scale = spawnData.scale;
+
+      if (position) {
+        CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Setting position to go {} to {} {} {}",
+                                                       gameObject->get_name().operator std::string(), position->x,
+                                                       position->y, position->z);
+      }
+
+      // Handle TrackLaneRing
+      auto* trackLaneRing = gameObject->GetComponentInChildren<GlobalNamespace::TrackLaneRing*>();
+      if (trackLaneRing != nullptr) {
+        if (position || localPosition) {
+          trackLaneRing->positionOffset = trackLaneRing->get_transform()->get_localPosition();
+          trackLaneRing->posZ = 0;
+        }
+
+        if (rotation || localRotation) {
+          RingRotationOffsets[trackLaneRing] = trackLaneRing->get_transform()->get_localRotation();
+          trackLaneRing->rotZ = 0;
+        }
+      }
+
+      // Handle ParametricBoxController
+      auto* parametricBoxController = gameObject->GetComponentInChildren<GlobalNamespace::ParametricBoxController*>();
+      if (parametricBoxController != nullptr) {
+        if (position || localPosition) {
+          ParametricBoxControllerParameters::SetTransformPosition(
+              parametricBoxController, parametricBoxController->get_transform()->get_localPosition());
+        }
+
+        if (scale) {
+          ParametricBoxControllerParameters::SetTransformScale(
+              parametricBoxController, parametricBoxController->get_transform()->get_localScale());
+        }
+      }
+
+      auto* beatmapObjectsAvoidance = gameObject->GetComponentInChildren<GlobalNamespace::BeatmapObjectsAvoidance*>();
+
+      if (beatmapObjectsAvoidance != nullptr) {
+        if (position || localPosition) {
+          AvoidancePosition[beatmapObjectsAvoidance] = beatmapObjectsAvoidance->get_transform()->get_localPosition();
+        }
+
+        if (rotation || localRotation) {
+          AvoidanceRotation[beatmapObjectsAvoidance] = beatmapObjectsAvoidance->get_transform()->get_localRotation();
+        }
+      }
+
+      ComponentInitializer::InitializeCustomComponents(gameObject, gameObjectDataVal, v2);
+
+      auto* controller =
+          GameObjectTrackController::HandleTrackData(gameObject, track, noteLinesDistance, v2).value_or(nullptr);
+
+      if (controller == nullptr) {
+        continue;
+      }
+      auto& controllerData = controller->getTrackControllerData();
+
+      if (trackLaneRing != nullptr) {
+        controllerData.RotationUpdate +=
+            [=]() { RingRotationOffsets[trackLaneRing] = trackLaneRing->transform->get_localRotation(); };
+        controllerData.PositionUpdate +=
+            [=]() { trackLaneRing->positionOffset = trackLaneRing->transform->get_localPosition(); };
+      } else if (parametricBoxController != nullptr) {
+        auto* parametricBoxControllerTransform = parametricBoxController->get_transform();
+        controllerData.ScaleUpdate += [=]() {
+          ParametricBoxControllerParameters::SetTransformScale(parametricBoxController,
+                                                               parametricBoxControllerTransform->get_localScale());
+        };
+        controllerData.PositionUpdate += [=]() {
+          ParametricBoxControllerParameters::SetTransformPosition(
+              parametricBoxController, parametricBoxControllerTransform->get_localPosition());
+        };
+      } else if (beatmapObjectsAvoidance != nullptr) {
+        controllerData.RotationUpdate += [=]() {
+          AvoidanceRotation[beatmapObjectsAvoidance] = beatmapObjectsAvoidance->transform->get_localRotation();
+        };
+        controllerData.PositionUpdate += [=]() {
+          AvoidancePosition[beatmapObjectsAvoidance] = beatmapObjectsAvoidance->transform->get_localPosition();
+        };
+      }
+    }
+
+    // Record end time
+    profiler.endTimer();
+  }
+
+  // Record all end time
+  auto finish = std::chrono::high_resolution_clock::now();
+  auto millisElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(finish - startAll).count();
+
+  std::thread([profileData = std::move(profileData), millisElapsed] {
+    // Log all objects
+    for (auto const& profile : profileData) {
+      profile.printMarks();
+      getLogger().info("=====================================\n");
+    }
+
+    getLogger().info("Finished environment enhancements took %lldms", millisElapsed);
+  }).detach();
+
+  ///  Handle materials
+  auto const& materials = materialsManager.GetMaterials();
+  std::vector<MaterialInfo> animatedMaterials;
+  animatedMaterials.reserve(materials.size());
+
+  for (auto const& [s, m] : materials) {
+    if (!m.Track || m.Track->empty()) {
+      continue;
+    }
+    animatedMaterials.emplace_back(m);
+  }
+
+  if (!animatedMaterials.empty()) {
+    UnityEngine::GameObject::New_ctor("MaterialAnimator")->AddComponent<MaterialAnimator*>()->materials =
+        std::move(animatedMaterials);
+  }
+
 }
 
 void EnvironmentEnhancementManager::GetChildRecursive(UnityEngine::Transform* gameObject,
-                                                             std::vector<UnityEngine::Transform*>& children) {
+                                                      std::vector<UnityEngine::Transform*>& children) {
   children.reserve(children.size() + gameObject->get_childCount());
   auto gameObjectChildCount = gameObject->get_childCount();
   for (int i = 0; i < gameObjectChildCount; i++) {
