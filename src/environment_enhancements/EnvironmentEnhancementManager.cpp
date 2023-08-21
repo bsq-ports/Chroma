@@ -287,7 +287,7 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
   RingRotationOffsets.clear();
   ParametricBoxControllerParameters::TransformParameters.clear();
 
-  if (customDynWrapper == nullptr) {
+  if (!customDynWrapper) {
     if (v2) {
       LegacyEnvironmentRemoval::Init(customBeatmapData);
     }
@@ -305,7 +305,6 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
     }
     return;
   }
-
 
   MaterialsManager materialsManager(dynData, trackBeatmapAD, v2);
   GeometryFactory geometryFactory(materialsManager, v2);
@@ -609,7 +608,6 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
     UnityEngine::GameObject::New_ctor("MaterialAnimator")->AddComponent<MaterialAnimator*>()->materials =
         std::move(animatedMaterials);
   }
-
 }
 
 void EnvironmentEnhancementManager::GetChildRecursive(UnityEngine::Transform* gameObject,
