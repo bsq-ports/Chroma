@@ -541,8 +541,12 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
 
       ComponentInitializer::InitializeCustomComponents(gameObject, gameObjectDataVal, v2);
 
-      auto* controller =
-          GameObjectTrackController::HandleTrackData(gameObject, track, noteLinesDistance, v2).value_or(nullptr);
+      GameObjectTrackController* controller;
+      
+      if (!track.empty()) {
+        controller =
+            GameObjectTrackController::HandleTrackData(gameObject, track, noteLinesDistance, v2, true).value_or(nullptr);
+      }
 
       if (controller == nullptr) {
         continue;
