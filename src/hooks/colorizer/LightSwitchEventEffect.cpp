@@ -18,8 +18,6 @@
 #include "hooks/LightSwitchEventEffect.hpp"
 #include "lighting/LightIDTableManager.hpp"
 
-#include <experimental/coroutine>
-
 using namespace CustomJSONData;
 using namespace Chroma;
 using namespace GlobalNamespace;

@@ -17,8 +17,6 @@
 #include "UnityEngine/Color.hpp"
 #include "UnityEngine/WaitForEndOfFrame.hpp"
 
-#include <experimental/coroutine>
-
 using namespace CustomJSONData;
 using namespace Chroma;
 using namespace GlobalNamespace;

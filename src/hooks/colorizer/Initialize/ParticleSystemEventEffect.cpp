@@ -15,8 +15,6 @@
 
 #include "custom-types/shared/coroutine.hpp"
 
-#include <experimental/coroutine>
-
 using namespace CustomJSONData;
 using namespace GlobalNamespace;
 using namespace Chroma;

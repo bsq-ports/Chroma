@@ -64,7 +64,7 @@ public:
 
   inline static void ColorizeBomb(GlobalNamespace::NoteControllerBase* noteController,
                                   std::optional<Sombrero::FastColor> const& color) {
-    GetBombColorizer(noteController)->Colorize(color);
+    CRASH_UNLESS(GetBombColorizer(noteController))->Colorize(color);
   }
 };
 } // namespace Chroma

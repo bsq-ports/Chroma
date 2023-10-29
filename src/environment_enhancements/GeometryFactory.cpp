@@ -9,7 +9,6 @@
 #include "UnityEngine/MeshFilter.hpp"
 #include "UnityEngine/Mesh.hpp"
 #include "UnityEngine/Rendering/ShadowCastingMode.hpp"
-#include "UnityEngine/MaterialGlobalIlluminationFlags.hpp"
 
 #include "GlobalNamespace/TubeBloomPrePassLight.hpp"
 #include "GlobalNamespace/ParametricBoxController.hpp"
@@ -50,7 +49,7 @@ GeometryType geometryTypeFromString(std::string_view str) {
 
 GeometryFactory::GeometryFactory(MaterialsManager& materialsManager, bool v2)
     : materialsManager(materialsManager), v2(v2) {
-  auto* tube = Resources::FindObjectsOfTypeAll<TubeBloomPrePassLight*>().FirstOrDefault();
+  auto* tube = CRASH_UNLESS(Resources::FindObjectsOfTypeAll<TubeBloomPrePassLight*>()).FirstOrDefault();
 
   if (tube != nullptr) {
     _originalTubeBloomPrePassLight = tube;

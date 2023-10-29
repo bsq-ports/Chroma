@@ -128,15 +128,15 @@ template <typename T> static T getIfExists(rapidjson::Value const& val, std::str
 }
 
 template <typename T>
-inline static T getIfExists(std::optional<std::reference_wrapper<const rapidjson::Value>> const& val,
-                            const std::string_view member, T const& def) {
+inline static T getIfExistsOpt(std::optional<std::reference_wrapper<const rapidjson::Value>> const& val,
+                               const std::string_view member, T const& def) {
   if (!val) return def;
 
   return getIfExists<T>(val->get(), member, def);
 }
 
 template <typename T>
-inline static std::optional<T> getIfExists(std::optional<std::reference_wrapper<const rapidjson::Value>> const& val,
+inline static std::optional<T> getIfExistsOpt(std::optional<std::reference_wrapper<const rapidjson::Value>> const& val,
                                            const std::string_view member) {
   if (!val) return std::nullopt;
 

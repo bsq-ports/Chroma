@@ -105,7 +105,7 @@ void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapDa
       }
 #pragma endregion
       auto easingString =
-          getIfExists<std::string>(optionalDynData, v2 ? NewConstants::V2_EASING : NewConstants::EASING);
+          getIfExistsOpt<std::string>(optionalDynData, v2 ? NewConstants::V2_EASING : NewConstants::EASING);
 
       if (easingString) {
         Functions easing;
@@ -120,7 +120,7 @@ void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapDa
       }
 
       auto lerpTypeStr =
-          getIfExists<std::string>(optionalDynData, v2 ? NewConstants::V2_LERP_TYPE : NewConstants::LERP_TYPE);
+          getIfExistsOpt<std::string>(optionalDynData, v2 ? NewConstants::V2_LERP_TYPE : NewConstants::LERP_TYPE);
 
       if (lerpTypeStr) {
         LerpType lerpType;
@@ -165,34 +165,34 @@ void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapDa
 
       // RING STUFF
       chromaEventData.NameFilter =
-          getIfExists<std::string>(optionalDynData, v2 ? NewConstants::V2_NAME_FILTER : NewConstants::NAME_FILTER);
+          getIfExistsOpt<std::string>(optionalDynData, v2 ? NewConstants::V2_NAME_FILTER : NewConstants::NAME_FILTER);
       chromaEventData.Direction =
-          getIfExists<int>(optionalDynData, v2 ? NewConstants::V2_DIRECTION : NewConstants::DIRECTION);
+          getIfExistsOpt<int>(optionalDynData, v2 ? NewConstants::V2_DIRECTION : NewConstants::DIRECTION);
       chromaEventData.CounterSpin =
-          v2 ? getIfExists<bool>(optionalDynData, NewConstants::V2_COUNTER_SPIN) : std::nullopt;
-      chromaEventData.Reset = v2 ? getIfExists<bool>(optionalDynData, NewConstants::V2_RESET) : std::nullopt;
+          v2 ? getIfExistsOpt<bool>(optionalDynData, NewConstants::V2_COUNTER_SPIN) : std::nullopt;
+      chromaEventData.Reset = v2 ? getIfExistsOpt<bool>(optionalDynData, NewConstants::V2_RESET) : std::nullopt;
 
       std::optional<float> speed =
-          getIfExists<float>(optionalDynData, v2 ? NewConstants::V2_SPEED : NewConstants::SPEED);
+          getIfExistsOpt<float>(optionalDynData, v2 ? NewConstants::V2_SPEED : NewConstants::SPEED);
 
       if (!speed && v2) {
-        speed = getIfExists<float>(optionalDynData, NewConstants::V2_PRECISE_SPEED);
+        speed = getIfExistsOpt<float>(optionalDynData, NewConstants::V2_PRECISE_SPEED);
       }
 
-      chromaEventData.Prop = getIfExists<float>(optionalDynData, v2 ? NewConstants::V2_PROP : NewConstants::PROP);
-      chromaEventData.Step = getIfExists<float>(optionalDynData, v2 ? NewConstants::V2_STEP : NewConstants::STEP);
+      chromaEventData.Prop = getIfExistsOpt<float>(optionalDynData, v2 ? NewConstants::V2_PROP : NewConstants::PROP);
+      chromaEventData.Step = getIfExistsOpt<float>(optionalDynData, v2 ? NewConstants::V2_STEP : NewConstants::STEP);
       chromaEventData.Speed = speed;
       chromaEventData.Rotation =
-          getIfExists<float>(optionalDynData, v2 ? NewConstants::V2_ROTATION : NewConstants::ROTATION);
+          getIfExistsOpt<float>(optionalDynData, v2 ? NewConstants::V2_ROTATION : NewConstants::ROTATION);
     }
 
-    chromaEventData.StepMult = v2 ? getIfExists<float>(optionalDynData, NewConstants::V2_STEP_MULT, 1.0F) : 1;
-    chromaEventData.PropMult = v2 ? getIfExists<float>(optionalDynData, NewConstants::V2_PROP_MULT, 1.0F) : 1;
-    chromaEventData.SpeedMult = v2 ? getIfExists<float>(optionalDynData, NewConstants::V2_SPEED_MULT, 1.0F) : 1;
+    chromaEventData.StepMult = v2 ? getIfExistsOpt<float>(optionalDynData, NewConstants::V2_STEP_MULT, 1.0F) : 1;
+    chromaEventData.PropMult = v2 ? getIfExistsOpt<float>(optionalDynData, NewConstants::V2_PROP_MULT, 1.0F) : 1;
+    chromaEventData.SpeedMult = v2 ? getIfExistsOpt<float>(optionalDynData, NewConstants::V2_SPEED_MULT, 1.0F) : 1;
 
     // Light stuff again
     chromaEventData.LockPosition =
-        getIfExists<bool>(optionalDynData, v2 ? NewConstants::V2_LOCK_POSITION : NewConstants::LOCK_POSITION, false);
+        getIfExistsOpt<bool>(optionalDynData, v2 ? NewConstants::V2_LOCK_POSITION : NewConstants::LOCK_POSITION, false);
 
     ChromaEventDatas.try_emplace(customBeatmapEvent, std::move(chromaEventData));
   }

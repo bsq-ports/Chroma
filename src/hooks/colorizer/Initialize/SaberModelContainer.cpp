@@ -8,8 +8,6 @@
 
 #include "UnityEngine/GameObject.hpp"
 
-#include <experimental/coroutine>
-
 using namespace Chroma;
 using namespace GlobalNamespace;
 using namespace UnityEngine;
