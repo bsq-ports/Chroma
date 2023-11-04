@@ -1,3 +1,6 @@
+#include <sstream>
+#include <concepts>
+
 #include "main.hpp"
 #include "environment_enhancements/EnvironmentEnhancementManager.hpp"
 
@@ -12,8 +15,7 @@
 #include "environment_enhancements/ParametricBoxControllerParameters.hpp"
 #include "tracks/shared/Animation/GameObjectTrackController.hpp"
 
-#include <sstream>
-#include <concepts>
+
 #include "boost-regex/regex/include/boost/regex.hpp"
 
 #include "tracks/shared/Animation/PointDefinition.h"
@@ -279,7 +281,6 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
   bool v2 = customBeatmapData->v2orEarlier;
   CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Is environment v2 {}", v2);
   TracksAD::BeatmapAssociatedData& trackBeatmapAD = TracksAD::getBeatmapAD(customBeatmapData->customData);
-  GameObjectTrackController::LeftHanded = trackBeatmapAD.leftHanded;
   bool leftHanded = trackBeatmapAD.leftHanded;
 
   AvoidanceRotation.clear();
@@ -541,7 +542,7 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
 
       ComponentInitializer::InitializeCustomComponents(gameObject, gameObjectDataVal, v2);
 
-      GameObjectTrackController* controller;
+      GameObjectTrackController* controller = nullptr;
       
       if (!track.empty()) {
         controller =
