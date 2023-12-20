@@ -2,7 +2,6 @@
 
 #include "UnityEngine/ParticleSystem.hpp"
 #include "UnityEngine/MonoBehaviour.hpp"
-#include "UnityEngine/Color.hpp"
 
 #include "GlobalNamespace/SaberModelController.hpp"
 #include "GlobalNamespace/ColorManager.hpp"
