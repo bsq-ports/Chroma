@@ -1,18 +1,12 @@
-/*#include "ui/ModifierViewController.hpp"
+#include "ui/ModifierViewController.hpp"
 
 #include "UnityEngine/RectOffset.hpp"
-
-#include "questui/shared/CustomTypes/Components/Backgroundable.hpp"
-
-#include "questui_components/shared/components/Backgroundable.hpp"
-#include "questui_components/shared/components/layouts/ModifierContainer.hpp"
-#include "questui_components/shared/reference_comp.hpp"
+#include "UnityEngine/Resources.hpp"
+#include "UnityEngine/Sprite.hpp"
 
 #include "main.hpp"
 
 using namespace Chroma;
-using namespace QUC;
-using namespace QuestUI::BeatSaberUI;
 using namespace UnityEngine::UI;
 using namespace UnityEngine;
 
@@ -30,8 +24,8 @@ UnityEngine::Sprite* UIUtils::configToIcon(ConfigUtils::ConfigValue<bool> const&
 
   auto& sprite = spriteMap[name];
 
-  if ((sprite == nullptr) || (sprite->m_CachedPtr.m_value == nullptr)) {
-    sprite = QuestUI::ArrayUtil::First(Resources::FindObjectsOfTypeAll<Sprite*>(),
+  if ((sprite == nullptr) || (sprite->m_CachedPtr == nullptr)) {
+    sprite = Resources::FindObjectsOfTypeAll<Sprite*>()->First(
                                        [&name](Sprite* x) { return x->get_name() == name; });
   }
 
@@ -40,22 +34,6 @@ UnityEngine::Sprite* UIUtils::configToIcon(ConfigUtils::ConfigValue<bool> const&
 
 void Chroma::ModifierViewController::DidActivate(bool first) {
 
-  static detail::ModifierContainer layout(UIUtils::buildMainUI<true>());
-
-  static ModifyLayoutElement layoutElement(QUC::detail::refComp(layout));
-
-  static detail::BackgroundableContainer container(
-      "round-rect-panel", Backgroundable("round-rect-panel", true, QUC::RefComp(layoutElement)));
-
   if (first) {
-    this->ctx = RenderContext(get_transform());
-
-    layout.spacing = 0.75F;
-    layoutElement.preferredWidth = 55;
-
-    detail::renderSingle(container, ctx);
-  } else {
-    detail::renderSingle(container, ctx);
   }
 }
-*/

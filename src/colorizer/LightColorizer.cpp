@@ -47,8 +47,7 @@ LightColorizer::LightColorizer(ChromaLightSwitchEventEffect* lightSwitchEventEff
         System::Collections::Generic::List_1<::GlobalNamespace::ILightWithId*>::New_ctor(10);
   }
 
-  //TODO: AAA
-  //LightsSafePtr.emplace(Lights->getInner());
+  LightsSafePtr.emplace(reinterpret_cast<List<GlobalNamespace::ILightWithId*>*>(Lights.getPtr()));
 }
 
 LightColorizer& LightColorizer::New(ChromaLightSwitchEventEffect* lightSwitchEventEffect,

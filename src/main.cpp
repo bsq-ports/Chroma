@@ -1,5 +1,4 @@
-//#include "questui/shared/QuestUI.hpp"
-//#include "questui/shared/BeatSaberUI.hpp"
+#include "bsml/shared/BSML.hpp"
 #include "main.hpp"
 
 #include "Chroma.hpp"
@@ -48,23 +47,11 @@ void setChromaEnv() {
   PinkCore::RequirementAPI::RegisterInstalled("Chroma Lighting Events");
 }
 
-/*void DidActivate(HMUI::ViewController* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
+void DidActivate(HMUI::ViewController* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
   getLogger().info("DidActivate: %p, %d, %d, %d", self, static_cast<int>(firstActivation),
                    static_cast<int>(addedToHierarchy), static_cast<int>(screenSystemEnabling));
 
-  static QUC::RenderContext ctx{ nullptr };
-
-  static QUC::ScrollableContainer container(Text("Chroma settings."), Text("Settings are saved when changed."),
-                                            Text("Not all settings have been tested or implemented."),
-                                            Text("Please use with caution."), Chroma::UIUtils::buildMainUI<false>());
-
-  if (firstActivation) {
-    ctx.destroyTree();
-    ctx = RenderContext(self->get_transform());
-  }
-
-  detail::renderSingle(container, ctx);
-}*/
+}
 
 extern "C" void setup(CModInfo* info) {
   info->id = modName.c_str();
@@ -80,8 +67,9 @@ extern "C" void setup(CModInfo* info) {
 
 extern "C" void late_load() {
   il2cpp_functions::Init();
+
   //QuestUI::Init();
-  //QuestUI::Register::RegisterModSettingsViewController(modInfo, DidActivate);
+  BSML::Register::RegisterSettingsMenu(modName, DidActivate, false);
   //QuestUI::Register::RegisterGameplaySetupMenu<ModifierViewController*>(modInfo, Register::Solo | Register::Online);
 
 #if DEBUGB == 1
