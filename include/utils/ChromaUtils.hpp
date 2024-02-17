@@ -16,8 +16,6 @@
 #include "UnityEngine/Mesh.hpp"
 #include "UnityEngine/Transform.hpp"
 
-#define GET_FIND_METHOD(mPtr) il2cpp_utils::il2cpp_type_check::MetadataGetter<mPtr>::get()
-
 namespace ChromaUtils {
 struct ChromaUtilities {
   inline static std::optional<Sombrero::FastColor> GetColorFromData(rapidjson::Value const& data,
@@ -201,8 +199,8 @@ static UnityEngine::Mesh* CreateTriangleMesh() {
   ArrayW<int> triangles = { 0, 1, 2 };
 
   UnityEngine::Mesh* mesh = UnityEngine::Mesh::New_ctor();
-  mesh->set_vertices(vertices);
-  mesh->set_uv(uv);
+  mesh->set_vertices(reinterpret_cast<Array<UnityEngine::Vector3>*>(vertices.convert()));
+  mesh->set_uv(reinterpret_cast<Array<UnityEngine::Vector2>*>(uv.convert()));
   mesh->set_triangles(triangles);
 
   mesh->RecalculateBounds();

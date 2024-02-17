@@ -22,7 +22,7 @@ MAKE_HOOK_MATCH(TrackLaneRing_Init, &TrackLaneRing::Init, void, GlobalNamespace:
     return;
   }
 
-  self->posZ = position.z;
+  self->_posZ = position.z;
 }
 
 MAKE_HOOK_MATCH(TrackLaneRing_FixedUpdateRing, &TrackLaneRing::FixedUpdateRing, void,
@@ -33,10 +33,10 @@ MAKE_HOOK_MATCH(TrackLaneRing_FixedUpdateRing, &TrackLaneRing::FixedUpdateRing, 
     return;
   }
 
-  self->prevRotZ = self->rotZ;
-  self->rotZ = std::lerp(self->rotZ, self->destRotZ, Sombrero::Clamp01(fixedDeltaTime * self->rotationSpeed));
-  self->prevPosZ = self->posZ;
-  self->posZ = std::lerp(self->posZ, self->destPosZ, Sombrero::Clamp01(fixedDeltaTime * self->moveSpeed));
+  self->_prevRotZ = self->_rotZ;
+  self->_rotZ = std::lerp(self->_rotZ, self->_destRotZ, Sombrero::Clamp01(fixedDeltaTime * self->_rotationSpeed));
+  self->_prevPosZ = self->_posZ;
+  self->_posZ = std::lerp(self->_posZ, self->_destPosZ, Sombrero::Clamp01(fixedDeltaTime * self->_moveSpeed));
 }
 
 MAKE_HOOK_MATCH(TrackLaneRing_LateUpdateRing, &TrackLaneRing::LateUpdateRing, void,
@@ -55,11 +55,11 @@ MAKE_HOOK_MATCH(TrackLaneRing_LateUpdateRing, &TrackLaneRing::LateUpdateRing, vo
     rotation = it2->second;
   }
 
-  float interpolatedZPos = self->prevPosZ + ((self->posZ - self->prevPosZ) * interpolationFactor);
+  float interpolatedZPos = self->_prevPosZ + ((self->_posZ - self->_prevPosZ) * interpolationFactor);
   Sombrero::FastVector3 positionZOffset = (rotation * Sombrero::FastVector3::forward()) * interpolatedZPos;
-  Sombrero::FastVector3 pos = Sombrero::FastVector3(self->positionOffset) + positionZOffset;
+  Sombrero::FastVector3 pos = Sombrero::FastVector3(self->_positionOffset) + positionZOffset;
 
-  float interpolatedZRot = self->prevRotZ + ((self->rotZ - self->prevRotZ) * interpolationFactor);
+  float interpolatedZRot = self->_prevRotZ + ((self->_rotZ - self->_prevRotZ) * interpolationFactor);
 
   static auto AngleAxis = FPtrWrapper<&Sombrero::FastQuaternion::AngleAxis>::get();
 

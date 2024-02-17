@@ -48,7 +48,7 @@ void ChromaFogController::AssignTrack(Track* track) {
 void ChromaFogController::Awake() {
   ArrayW<BloomFogSO*> fogs = Resources::FindObjectsOfTypeAll<BloomFogSO*>();
 
-  if (fogs && fogs.Length() > 0) {
+  if (fogs && fogs.size() > 0) {
     bloomFog = fogs.get(0);
   }
 

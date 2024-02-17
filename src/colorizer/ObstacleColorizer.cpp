@@ -17,16 +17,16 @@ using namespace Chroma;
 ObstacleColorizer::ObstacleColorizer(GlobalNamespace::ObstacleControllerBase* obstacleController)
     : obstacleController(obstacleController) {
   auto* stretchableObstacle = obstacleController->GetComponent<StretchableObstacle*>();
-  _obstacleFrame = stretchableObstacle->obstacleFrame;
-  _obstacleFakeGlow = stretchableObstacle->obstacleFakeGlow;
-  _addColorMultiplier = stretchableObstacle->addColorMultiplier;
-  _obstacleCoreLerpToWhiteFactor = stretchableObstacle->obstacleCoreLerpToWhiteFactor;
-  _materialPropertyBlockControllers = stretchableObstacle->materialPropertyBlockControllers;
+  _obstacleFrame = stretchableObstacle->_obstacleFrame;
+  _obstacleFakeGlow = stretchableObstacle->_obstacleFakeGlow;
+  _addColorMultiplier = stretchableObstacle->_addColorMultiplier;
+  _obstacleCoreLerpToWhiteFactor = stretchableObstacle->_obstacleCoreLerpToWhiteFactor;
+  _materialPropertyBlockControllers = stretchableObstacle->_materialPropertyBlockControllers;
 
   auto trueObstacleControllerCast = il2cpp_utils::try_cast<ObstacleController>(obstacleController);
   if (trueObstacleControllerCast) {
     static auto get_obstaclesColor = FPtrWrapper<&ColorManager::get_obstaclesColor>::get();
-    OriginalColor = get_obstaclesColor((*trueObstacleControllerCast)->colorManager);
+    OriginalColor = get_obstaclesColor((*trueObstacleControllerCast)->_colorManager);
   } else {
     static auto white = Sombrero::FastColor::white();
     // Fallback

@@ -2,6 +2,7 @@
 #include "Chroma.hpp"
 #include "utils/ChromaUtils.hpp"
 #include "UnityEngine/MaterialGlobalIlluminationFlags.hpp"
+#include "UnityEngine/Shader.hpp"
 #include "environment_enhancements/EnvironmentMaterialManager.hpp"
 
 using namespace Chroma;
@@ -86,7 +87,7 @@ UnityEngine::Material* Chroma::MaterialsManager::InstantiateSharedMaterial(Shade
     break;
   }
 
-  auto* shader = Shader::Find(shaderName);
+  auto shader = Shader::Find(shaderName);
   auto* material = Material::New_ctor(shader);
 
   material->set_globalIlluminationFlags(globalIlluminationFlags);

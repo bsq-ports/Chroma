@@ -1,4 +1,4 @@
-#pragma once
+/*#pragma once
 
 #include "questui_components/shared/context.hpp"
 #include "questui_components/shared/RootContainer.hpp"
@@ -55,3 +55,4 @@ DECLARE_CLASS_CODEGEN(Chroma, ModifierViewController, UnityEngine::MonoBehaviour
 
                       public
                       : DECLARE_SIMPLE_DTOR();)
+*/

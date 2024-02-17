@@ -1,6 +1,6 @@
 #include "Chroma.hpp"
 #include "lighting/ChromaRingsRotationEffect.hpp"
-#include "GlobalNamespace/TrackLaneRingsRotationEffect_RingRotationEffect.hpp"
+#include "GlobalNamespace/TrackLaneRingsRotationEffect.hpp"
 #include "GlobalNamespace/TrackLaneRing.hpp"
 
 using namespace Chroma;
@@ -23,16 +23,16 @@ void ChromaRingsRotationEffect::AddRingRotationEffectF(float angle, float step, 
 }
 
 void ChromaRingsRotationEffect::SetNewRingManager(GlobalNamespace::TrackLaneRingsManager* trackLaneRingsManager) {
-  this->trackLaneRingsManager = trackLaneRingsManager;
+  this->_trackLaneRingsManager = _trackLaneRingsManager;
 }
 
 void ChromaRingsRotationEffect::CopyValues(
     GlobalNamespace::TrackLaneRingsRotationEffect* trackLaneRingsRotationEffect) {
-  this->trackLaneRingsManager = trackLaneRingsRotationEffect->trackLaneRingsManager;
-  this->startupRotationAngle = trackLaneRingsRotationEffect->startupRotationAngle;
-  this->startupRotationStep = trackLaneRingsRotationEffect->startupRotationStep;
-  this->startupRotationPropagationSpeed = trackLaneRingsRotationEffect->startupRotationPropagationSpeed;
-  this->startupRotationFlexySpeed = trackLaneRingsRotationEffect->startupRotationFlexySpeed;
+  this->_trackLaneRingsManager = trackLaneRingsRotationEffect->_trackLaneRingsManager;
+  this->_startupRotationAngle = trackLaneRingsRotationEffect->_startupRotationAngle;
+  this->_startupRotationStep = trackLaneRingsRotationEffect->_startupRotationStep;
+  this->_startupRotationPropagationSpeed = trackLaneRingsRotationEffect->_startupRotationPropagationSpeed;
+  this->_startupRotationFlexySpeed = trackLaneRingsRotationEffect->_startupRotationFlexySpeed;
 }
 
 void ChromaRingsRotationEffect::Awake() {
@@ -43,17 +43,17 @@ void ChromaRingsRotationEffect::Awake() {
 }
 
 void ChromaRingsRotationEffect::Start() {
-  AddRingRotationEffectF(startupRotationAngle, startupRotationStep, static_cast<float>(startupRotationPropagationSpeed),
-                         startupRotationFlexySpeed);
+  AddRingRotationEffectF(_startupRotationAngle, _startupRotationStep, static_cast<float>(_startupRotationPropagationSpeed),
+                         _startupRotationFlexySpeed);
 }
 
 void ChromaRingsRotationEffect::FixedUpdate() {
   if (!_activeRingRotationEffects.empty()) {
-    auto rings = trackLaneRingsManager->rings;
+    auto rings = _trackLaneRingsManager->_rings;
 
     if (!rings) {
-      getLogger().warning("Rings is null why! %p ", trackLaneRingsManager);
-      rings = trackLaneRingsManager->rings = Array<GlobalNamespace::TrackLaneRing*>::New();
+      getLogger().warning("Rings is null why! %p ", _trackLaneRingsManager.ptr());
+      _trackLaneRingsManager->_rings = ArrayW<UnityW<GlobalNamespace::TrackLaneRing>>();
     }
 
     static auto SetDestRotation = FPtrWrapper<&GlobalNamespace::TrackLaneRing::SetDestRotation>::get();
@@ -64,7 +64,7 @@ void ChromaRingsRotationEffect::FixedUpdate() {
       auto num = static_cast<long>(ringRotationEffect.ProgressPos);
       auto progressPos = ringRotationEffect.ProgressPos += ringRotationEffect.RotationPropagationSpeed;
 
-      auto length = static_cast<int>(rings.Length());
+      auto length = static_cast<int>(rings.size());
 
       while (num < progressPos && num < length) {
         SetDestRotation(rings.get(num),
@@ -73,7 +73,7 @@ void ChromaRingsRotationEffect::FixedUpdate() {
         num++;
       }
 
-      if (progressPos >= rings.Length()) {
+      if (progressPos >= rings.size()) {
         RecycleRingRotationEffect(ringRotationEffect);
         _activeRingRotationEffects.erase(std::next(it).base());
       }

@@ -48,10 +48,10 @@ ChromaController::DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnCont
       try {
         Chroma::ChromaController::BeatmapObjectSpawnController = beatmapObjectSpawnController;
         auto* coreSetup =
-            il2cpp_utils::cast<BeatmapCallbacksController>(beatmapObjectSpawnController->beatmapCallbacksController);
+            il2cpp_utils::cast<BeatmapCallbacksController>(beatmapObjectSpawnController->_beatmapCallbacksController);
         Chroma::ChromaController::CallbacksController = coreSetup;
 
-        IReadonlyBeatmapData* beatmapData = coreSetup->beatmapData;
+        IReadonlyBeatmapData* beatmapData = coreSetup->_beatmapData;
 
         if (!beatmapData) {
           getLogger().debug("Beatmap is null, oh no what will we do now?");
@@ -124,11 +124,11 @@ void ChromaController::setChromaRequired(bool chromaMap) {
   getLogger().debug("Set chroma required/suggested to %s", ChromaMap ? "true" : "false");
 }
 
-void ChromaController::AddForceDoHooks(ModInfo const& otherModInfo) {
+void ChromaController::AddForceDoHooks(modloader::ModInfo const& otherModInfo) {
   getLogger().info("Adding force do hooks, ID: %s", otherModInfo.id.c_str());
   ModsForcingDoHooks.emplace(otherModInfo.id);
 }
-void ChromaController::RemoveForceDoHooks(ModInfo const& otherModInfo) {
+void ChromaController::RemoveForceDoHooks(modloader::ModInfo const& otherModInfo) {
   getLogger().info("Removing force do hooks, ID: %s", otherModInfo.id.c_str());
   ModsForcingDoHooks.erase(otherModInfo.id);
 }

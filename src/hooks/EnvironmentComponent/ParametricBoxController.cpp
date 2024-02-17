@@ -49,7 +49,7 @@ MAKE_HOOK_MATCH(ParametricBoxController_Refresh, &ParametricBoxController::Refre
     return;
   }
 
-  if (self->meshRenderer == nullptr) {
+  if (self->____meshRenderer == nullptr) {
     return;
   }
 
@@ -75,11 +75,11 @@ MAKE_HOOK_MATCH(ParametricBoxController_Refresh, &ParametricBoxController::Refre
   CRASH_UNLESS(il2cpp_utils::SetPropertyValue(transform, localScaleProp, scale));
   CRASH_UNLESS(il2cpp_utils::SetPropertyValue(transform, localPosProp, pos));
 
-  static auto* materialPropertyBlock = ParametricBoxController::_get__materialPropertyBlock();
+  static auto* materialPropertyBlock = ParametricBoxController::getStaticF__materialPropertyBlock();
 
   if (materialPropertyBlock == nullptr) {
     materialPropertyBlock = UnityEngine::MaterialPropertyBlock::New_ctor();
-    ParametricBoxController::_set__materialPropertyBlock(materialPropertyBlock);
+    ParametricBoxController::setStaticF__materialPropertyBlock(materialPropertyBlock);
   }
 
   auto color = self->color;
@@ -88,11 +88,11 @@ MAKE_HOOK_MATCH(ParametricBoxController_Refresh, &ParametricBoxController::Refre
     color.a = self->minAlpha;
   }
 
-  static auto colorId = ParametricBoxController::_get__colorID();
-  static auto alphaStartID = ParametricBoxController::_get__alphaStartID();
-  static auto alphaEndID = ParametricBoxController::_get__alphaEndID();
-  static auto widthStartID = ParametricBoxController::_get__widthStartID();
-  static auto widthEndID = ParametricBoxController::_get__widthEndID();
+  static auto colorId = ParametricBoxController::getStaticF__colorID();
+  static auto alphaStartID = ParametricBoxController::getStaticF__alphaStartID();
+  static auto alphaEndID = ParametricBoxController::getStaticF__alphaEndID();
+  static auto widthStartID = ParametricBoxController::getStaticF__widthStartID();
+  static auto widthEndID = ParametricBoxController::getStaticF__widthEndID();
 
   //    static auto SetColor = il2cpp_utils::FindMethodUnsafe(materialPropertyBlock, "SetColor", 2);
   //    static auto SetFloat = il2cpp_utils::FindMethodUnsafe(materialPropertyBlock, "SetFloat", 2);
@@ -121,7 +121,7 @@ MAKE_HOOK_MATCH(ParametricBoxController_Refresh, &ParametricBoxController::Refre
   SetFloat(materialPropertyBlock, widthStartID, self->widthStart);
   SetFloat(materialPropertyBlock, widthEndID, self->widthEnd);
 
-  SetPropertyBlock(self->meshRenderer, materialPropertyBlock);
+  SetPropertyBlock(self->_meshRenderer, materialPropertyBlock);
   //    static auto SetPropertyBlock = il2cpp_utils::FindMethodUnsafe(classof(UnityEngine::MeshRenderer*),
   //    "SetPropertyBlock", 1);
 

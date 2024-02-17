@@ -24,7 +24,7 @@ NoteColorizer::NoteColorizer(GlobalNamespace::NoteControllerBase* noteController
   CRASH_UNLESS(_noteController);
   CRASH_UNLESS(_colorNoteVisuals);
 
-  _materialPropertyBlockControllers = colorNoteVisuals->materialPropertyBlockControllers;
+  _materialPropertyBlockControllers = colorNoteVisuals->_materialPropertyBlockControllers;
 }
 
 NoteColorizer* NoteColorizer::New(GlobalNamespace::NoteControllerBase* noteControllerBase) {
@@ -51,16 +51,16 @@ std::optional<Sombrero::FastColor> NoteColorizer::GlobalColorGetter() {
     return std::nullopt;
   }
 
-  return GlobalColor[(int)colorType];
+  return GlobalColor[colorType.value__];
 }
 
 std::optional<Sombrero::FastColor> NoteColorizer::OriginalColorGetter() {
-  return _colorNoteVisuals->colorManager->ColorForType(getColorType());
+  return _colorNoteVisuals->_colorManager->ColorForType(getColorType());
 }
 
 void NoteColorizer::GlobalColorize(std::optional<Sombrero::FastColor> const& color,
                                    GlobalNamespace::ColorType const& colorType) {
-  GlobalColor[(int)colorType] = color;
+  GlobalColor[colorType.value__] = color;
   for (auto& [_, colorizer] : Colorizers) {
     colorizer.Refresh();
   }
@@ -80,7 +80,7 @@ void NoteColorizer::ColorizeSaber(GlobalNamespace::NoteController* noteControlle
   if (ChromaController::DoColorizerSabers()) {
     auto* noteData = noteController->noteData;
     SaberType saberType = noteCutInfo.saberType;
-    if ((int)noteData->colorType == (int)saberType) {
+    if (noteData->colorType.value__ == saberType.value__) {
       SaberColorizer::ColorizeSaber(saberType, GetNoteColorizer(noteController)->getColor());
     }
   }
@@ -91,8 +91,8 @@ void NoteColorizer::Refresh() {
     return;
   }
 
-  Sombrero::FastColor const& color = getColor().Alpha(_colorNoteVisuals->noteColor.a);
-  if (color == Sombrero::FastColor(_colorNoteVisuals->noteColor)) {
+  Sombrero::FastColor const& color = getColor().Alpha(_colorNoteVisuals->_noteColor.a);
+  if (color == Sombrero::FastColor(_colorNoteVisuals->_noteColor)) {
     return;
   }
 
@@ -105,8 +105,8 @@ void NoteColorizer::Refresh() {
   static auto SetColor = FPtrWrapper<static_cast<void (UnityEngine::MaterialPropertyBlock::*)(int, UnityEngine::Color)>(
       &UnityEngine::MaterialPropertyBlock::SetColor)>::get();
 
-  _colorNoteVisuals->noteColor = color;
-  for (auto* materialPropertyBlockController : _materialPropertyBlockControllers) {
+  _colorNoteVisuals->_noteColor = color;
+  for (auto materialPropertyBlockController : _materialPropertyBlockControllers) {
     if (materialPropertyBlockController == nullptr) {
       continue;
     }

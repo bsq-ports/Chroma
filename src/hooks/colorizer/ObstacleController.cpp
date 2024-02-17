@@ -61,8 +61,8 @@ MAKE_HOOK_MATCH(ObstacleController_ManualUpdate, &ObstacleController::ManualUpda
     if (!tracks.empty() || pathPointDefinition) {
       float jumpDuration = self->move2Duration;
       float elapsedTime =
-          ChromaTimeSourceHelper::getSongTimeChroma(self->audioTimeSyncController) - self->startTimeOffset;
-      float normalTime = (elapsedTime - self->move1Duration) / (jumpDuration + self->obstacleDuration);
+          ChromaTimeSourceHelper::getSongTimeChroma(self->_audioTimeSyncController) - self->_startTimeOffset;
+      float normalTime = (elapsedTime - self->move1Duration) / (jumpDuration + self->_obstacleDuration);
 
       [[maybe_unused]] bool updated = 0;
       std::optional<Sombrero::FastColor> colorOffset =

@@ -198,10 +198,10 @@ void EnvironmentEnhancementManager::GetAllGameObjects() {
 
   auto gameObjectsAll = UnityEngine::Resources::FindObjectsOfTypeAll<UnityEngine::GameObject*>();
   std::vector<UnityEngine::GameObject*> gameObjectsVec;
-  gameObjectsVec.reserve(gameObjectsAll.Length());
+  gameObjectsVec.reserve(gameObjectsAll.size());
 
   // I'll probably revist this formula for getting objects by only grabbing the root objects and adding all the children
-  for (int i = 0; i < gameObjectsAll.Length(); i++) {
+  for (int i = 0; i < gameObjectsAll.size(); i++) {
     auto* gameObject = gameObjectsAll.get(i);
     if (gameObject == nullptr) {
       continue;
@@ -228,7 +228,7 @@ void EnvironmentEnhancementManager::GetAllGameObjects() {
     GetChildRecursive(gameObject->get_transform(), allChildren);
 
     for (auto& transform : allChildren) {
-      auto* childGameObject = transform->get_gameObject();
+      auto* childGameObject = transform->get_gameObject().ptr();
       if (std::find(gameObjectsVec.begin(), gameObjectsVec.end(), childGameObject) == gameObjectsVec.end()) {
         gameObjectsVec2.push_back(childGameObject);
       }
@@ -441,8 +441,8 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
           profiler.mark("Duplicating [" + gameObjectInfo.FullID + "]:", false);
         }
 
-        auto* gameObject = gameObjectInfo.GameObject;
-        auto* parent = gameObject->get_transform()->get_parent();
+        auto gameObject = gameObjectInfo.GameObject;
+        auto parent = gameObject->get_transform()->get_parent();
         auto scene = gameObject->get_scene();
 
         for (int i = 0; i < dupeAmount.value(); i++) {
@@ -485,7 +485,7 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
         gameObject->SetActive(active.value());
       }
 
-      auto* transform = gameObject->get_transform();
+      auto transform = gameObject->get_transform();
 
       spawnData.Apply(transform, leftHanded);
       auto const& position = spawnData.position;
@@ -504,18 +504,18 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
       auto* trackLaneRing = gameObject->GetComponentInChildren<GlobalNamespace::TrackLaneRing*>();
       if (trackLaneRing != nullptr) {
         if (position || localPosition) {
-          trackLaneRing->positionOffset = trackLaneRing->get_transform()->get_localPosition();
-          trackLaneRing->posZ = 0;
+          trackLaneRing->_positionOffset = trackLaneRing->get_transform()->get_localPosition();
+          trackLaneRing->_posZ = 0;
         }
 
         if (rotation || localRotation) {
           RingRotationOffsets[trackLaneRing] = trackLaneRing->get_transform()->get_localRotation();
-          trackLaneRing->rotZ = 0;
+          trackLaneRing->_rotZ = 0;
         }
       }
 
       // Handle ParametricBoxController
-      auto* parametricBoxController = gameObject->GetComponentInChildren<GlobalNamespace::ParametricBoxController*>();
+      auto parametricBoxController = gameObject->GetComponentInChildren<GlobalNamespace::ParametricBoxController*>();
       if (parametricBoxController != nullptr) {
         if (position || localPosition) {
           ParametricBoxControllerParameters::SetTransformPosition(
@@ -558,9 +558,9 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
         controllerData.RotationUpdate +=
             [=]() { RingRotationOffsets[trackLaneRing] = trackLaneRing->transform->get_localRotation(); };
         controllerData.PositionUpdate +=
-            [=]() { trackLaneRing->positionOffset = trackLaneRing->transform->get_localPosition(); };
+            [=]() { trackLaneRing->_positionOffset = trackLaneRing->transform->get_localPosition(); };
       } else if (parametricBoxController != nullptr) {
-        auto* parametricBoxControllerTransform = parametricBoxController->get_transform();
+        auto parametricBoxControllerTransform = parametricBoxController->get_transform().ptr();
         controllerData.ScaleUpdate += [=]() {
           ParametricBoxControllerParameters::SetTransformScale(parametricBoxController,
                                                                parametricBoxControllerTransform->get_localScale());
@@ -620,7 +620,7 @@ void EnvironmentEnhancementManager::GetChildRecursive(UnityEngine::Transform* ga
   children.reserve(children.size() + gameObject->get_childCount());
   auto gameObjectChildCount = gameObject->get_childCount();
   for (int i = 0; i < gameObjectChildCount; i++) {
-    auto* child = gameObject->GetChild(i);
+    auto* child = gameObject->GetChild(i).ptr();
     children.push_back(child);
     GetChildRecursive(child, children);
   }

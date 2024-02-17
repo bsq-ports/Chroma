@@ -32,7 +32,7 @@ private:
   GlobalNamespace::NoteControllerBase* _noteController;
 
   GlobalNamespace::ColorNoteVisuals* _colorNoteVisuals;
-  ArrayW<GlobalNamespace::MaterialPropertyBlockController*> _materialPropertyBlockControllers;
+  ArrayW<UnityW<GlobalNamespace::MaterialPropertyBlockController>> _materialPropertyBlockControllers;
 
   NoteColorizer(GlobalNamespace::NoteControllerBase* noteController);
 

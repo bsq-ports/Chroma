@@ -1,5 +1,5 @@
-#include "questui/shared/QuestUI.hpp"
-#include "questui/shared/BeatSaberUI.hpp"
+//#include "questui/shared/QuestUI.hpp"
+//#include "questui/shared/BeatSaberUI.hpp"
 #include "main.hpp"
 
 #include "Chroma.hpp"
@@ -14,19 +14,17 @@
 
 #include "pinkcore/shared/RequirementAPI.hpp"
 
-#include "questui_components/shared/components/ScrollableContainer.hpp"
-#include "questui_components/shared/components/Text.hpp"
 #include "ui/ModifierViewController.hpp"
 
 #include "environment_enhancements/EnvironmentMaterialManager.hpp"
 
-#include "GlobalNamespace/SharedCoroutineStarter.hpp"
+#include "bsml/shared/BSML/SharedCoroutineStarter.hpp"
 
-#include "questui/shared/CustomTypes/Components/MainThreadScheduler.hpp"
+#include "bsml/shared/BSML/MainThreadScheduler.hpp"
 
 using namespace Chroma;
-using namespace QuestUI;
-using namespace QUC;
+//using namespace QuestUI;
+//using namespace QUC;
 
 Configuration& getConfig() {
   static Configuration config(modInfo);
@@ -50,7 +48,7 @@ void setChromaEnv() {
   PinkCore::RequirementAPI::RegisterInstalled("Chroma Lighting Events");
 }
 
-void DidActivate(HMUI::ViewController* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
+/*void DidActivate(HMUI::ViewController* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
   getLogger().info("DidActivate: %p, %d, %d, %d", self, static_cast<int>(firstActivation),
                    static_cast<int>(addedToHierarchy), static_cast<int>(screenSystemEnabling));
 
@@ -66,25 +64,25 @@ void DidActivate(HMUI::ViewController* self, bool firstActivation, bool addedToH
   }
 
   detail::renderSingle(container, ctx);
-}
+}*/
 
-extern "C" void setup(ModInfo& info) {
-  info.id = modName;
-  info.version = VERSION;
-  modInfo = info;
+extern "C" void setup(CModInfo* info) {
+  info->id = modName.c_str();
+  info->version = VERSION;
+  info->version_long = 0;
 
   getConfig().Load();
 
-  getChromaConfig().Init(info);
+  getChromaConfig().Init({modName, VERSION, 0});
 
   getLogger().info("Completed Chroma setup!");
 }
 
-extern "C" void load() {
+extern "C" void late_load() {
   il2cpp_functions::Init();
-  QuestUI::Init();
-  QuestUI::Register::RegisterModSettingsViewController(modInfo, DidActivate);
-  QuestUI::Register::RegisterGameplaySetupMenu<ModifierViewController*>(modInfo, Register::Solo | Register::Online);
+  //QuestUI::Init();
+  //QuestUI::Register::RegisterModSettingsViewController(modInfo, DidActivate);
+  //QuestUI::Register::RegisterGameplaySetupMenu<ModifierViewController*>(modInfo, Register::Solo | Register::Online);
 
 #if DEBUGB == 1
 #warning "Removing debug messages"

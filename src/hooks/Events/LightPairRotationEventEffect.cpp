@@ -7,7 +7,6 @@
 #include "GlobalNamespace/BeatmapEventData.hpp"
 #include "GlobalNamespace/BasicBeatmapEventType.hpp"
 #include "GlobalNamespace/LightPairRotationEventEffect.hpp"
-#include "GlobalNamespace/LightPairRotationEventEffect_RotationData.hpp"
 #include "UnityEngine/Quaternion.hpp"
 #include "UnityEngine/Transform.hpp"
 #include "lighting/ChromaEventData.hpp"
@@ -29,8 +28,8 @@ MAKE_HOOK_MATCH(LightPairRotationEventEffect_HandleBeatmapObjectCallbackControll
     return;
   }
 
-  if (beatmapEventData->basicBeatmapEventType == self->eventL ||
-      beatmapEventData->basicBeatmapEventType == self->eventR) {
+  if (beatmapEventData->basicBeatmapEventType == self->_eventL ||
+      beatmapEventData->basicBeatmapEventType == self->_eventR) {
     LastLightPairRotationEventEffectData = beatmapEventData;
   }
 
@@ -64,10 +63,10 @@ MAKE_HOOK_MATCH(LightPairRotationEventEffect_UpdateRotationData, &LightPairRotat
 
   auto const& chromaData = chromaIt->second;
 
-  bool isLeftEvent = beatmapEventData->basicBeatmapEventType == self->eventL;
+  bool isLeftEvent = beatmapEventData->basicBeatmapEventType == self->_eventL;
   // rotationData
   LightPairRotationEventEffect::RotationData* customRotationData =
-      isLeftEvent ? self->rotationDataL : self->rotationDataR;
+      isLeftEvent ? self->_rotationDataL : self->_rotationDataR;
 
   bool lockPosition = chromaData.LockPosition;
   float precisionSpeed = chromaData.Speed.value_or(beatmapEventData->value);
@@ -95,7 +94,7 @@ MAKE_HOOK_MATCH(LightPairRotationEventEffect_UpdateRotationData, &LightPairRotat
       customRotationData->rotationAngle = customRotationData->startRotationAngle;
       customRotationData->transform->set_localRotation(Sombrero::QuaternionMultiply(
           customRotationData->startRotation, QuaternionEulerMPtr(Sombrero::vector3multiply(
-                                                 self->rotationVector, customRotationData->startRotationAngle))));
+                                                 self->_rotationVector, customRotationData->startRotationAngle))));
     }
   } else if (beatmapEventData->value > 0) {
     customRotationData->enabled = true;
@@ -106,7 +105,7 @@ MAKE_HOOK_MATCH(LightPairRotationEventEffect_UpdateRotationData, &LightPairRotat
       customRotationData->rotationAngle = rotationAngle;
       customRotationData->transform->set_localRotation(Sombrero::QuaternionMultiply(
           customRotationData->startRotation,
-          QuaternionEulerMPtr(Sombrero::vector3multiply(self->rotationVector, rotationAngle))));
+          QuaternionEulerMPtr(Sombrero::vector3multiply(self->_rotationVector, rotationAngle))));
     }
   }
 }

@@ -48,7 +48,7 @@ void ChromaEvents::parseEventData(TracksAD::BeatmapAssociatedData& beatmapAD,
     auto trackIt = eventData.FindMember((v2 ? Chroma::NewConstants::V2_TRACK : Chroma::NewConstants::TRACK).data());
 
     if (trackIt == eventData.MemberEnd() || trackIt->value.IsNull() || !trackIt->value.IsString()) {
-      getLogger().debug("Track data is missing for Chroma custom event %f", customEventData->time);
+      getLogger().debug("Track data is missing for Chroma custom event %f", customEventData->____time_k__BackingField);
       return;
     }
 
@@ -62,7 +62,7 @@ void ChromaEvents::parseEventData(TracksAD::BeatmapAssociatedData& beatmapAD,
     auto trackIt = eventData.FindMember((v2 ? Chroma::NewConstants::V2_TRACK : Chroma::NewConstants::TRACK).data());
 
     if (trackIt == eventData.MemberEnd() || trackIt->value.IsNull() || !trackIt->value.IsString()) {
-      getLogger().debug("Track data is missing for Chroma custom event %f", customEventData->time);
+      getLogger().debug("Track data is missing for Chroma custom event %f", customEventData->____time_k__BackingField);
       return;
     }
 
@@ -158,7 +158,7 @@ void CustomEventCallback(BeatmapCallbacksController* callbackController,
 
       // fail safe, idek why this needs to be done smh
       // CJD you bugger
-      auto* customBeatmapData = (CustomJSONData::CustomBeatmapData*)callbackController->beatmapData;
+      auto* customBeatmapData = (CustomJSONData::CustomBeatmapData*)callbackController->_beatmapData;
       if (!ad.parsed) {
         TracksAD::BeatmapAssociatedData& beatmapAD = TracksAD::getBeatmapAD(customBeatmapData->customData);
         ChromaEvents::parseEventData(beatmapAD, customEventData, customBeatmapData->v2orEarlier);

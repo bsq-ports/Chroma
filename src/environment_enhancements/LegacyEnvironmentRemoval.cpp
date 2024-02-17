@@ -33,7 +33,7 @@ void Chroma::LegacyEnvironmentRemoval::Init(CustomJSONData::CustomBeatmapData* /
         std::u16string s = oValue.GetString();
         if (s == u"TrackLaneRing" || s == u"BigTrackLaneRing") {
 
-          for (int i = 0; i < gameObjects.Length(); i++) {
+          for (int i = 0; i < gameObjects.size(); i++) {
             UnityEngine::GameObject* n = gameObjects.get(i);
 
             if (n == nullptr) {
@@ -50,7 +50,7 @@ void Chroma::LegacyEnvironmentRemoval::Init(CustomJSONData::CustomBeatmapData* /
           }
 
         } else {
-          for (int i = 0; i < gameObjects.Length(); i++) {
+          for (int i = 0; i < gameObjects.size(); i++) {
             UnityEngine::GameObject* n = gameObjects.get(i);
 
             if (n == nullptr) {

@@ -3,25 +3,29 @@
 #include <vector>
 #include <optional>
 #include <functional>
+#include <concepts>
 
 #include "UnityEngine/Color.hpp"
 #include "sombrero/shared/ColorUtils.hpp"
-#include "questui_components/shared/concepts.hpp"
 
 namespace Chroma {
+
+template<typename T, typename U>
+concept IsConvertible = std::is_convertible_v<T, U>;
+
 template <typename T>
 concept ObjectColorizerMethods = requires(T t, std::optional<Sombrero::FastColor> const& color) {
   t.Colorize(color);
-  { t.getColor() } -> QUC::IsQUCConvertible<Sombrero::FastColor>;
-  { t.getSelfColor() } -> QUC::IsQUCConvertible<std::optional<Sombrero::FastColor>>;
+  { t.getColor() } -> IsConvertible<Sombrero::FastColor>;
+  { t.getSelfColor() } -> IsConvertible<std::optional<Sombrero::FastColor>>;
 };
 
 template <typename T>
 concept ObjectColorizerInternalMethods = ObjectColorizerMethods<T> && requires(T t) {
   t.Refresh();
-  { t.GlobalColorGetter() } -> QUC::IsQUCConvertible<std::optional<Sombrero::FastColor>>;
-  { t.OriginalColorGetter() } -> QUC::IsQUCConvertible<std::optional<Sombrero::FastColor>>;
-  { t.OriginalColor } -> QUC::IsQUCConvertible<std::optional<Sombrero::FastColor>>;
+  { t.GlobalColorGetter() } -> IsConvertible<std::optional<Sombrero::FastColor>>;
+  { t.OriginalColorGetter() } -> IsConvertible<std::optional<Sombrero::FastColor>>;
+  { t.OriginalColor } -> IsConvertible<std::optional<Sombrero::FastColor>>;
 };
 
 template <typename T> class ObjectColorizer {

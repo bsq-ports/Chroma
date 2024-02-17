@@ -14,7 +14,7 @@ MAKE_HOOK_MATCH(BloomFogEnvironment_Awake, &BloomFogEnvironment::OnEnable, void,
     return;
   }
 
-  self->fogParams = Object::Instantiate(self->fogParams);
+  self->_fogParams = Object::Instantiate(self->fogParams);
 }
 
 void BloomFogEnvironmentHook(Logger& logger) {

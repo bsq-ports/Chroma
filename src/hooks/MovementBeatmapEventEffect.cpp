@@ -11,7 +11,6 @@
 
 #include "GlobalNamespace/ColorExtensions.hpp"
 #include "GlobalNamespace/BeatEffectSpawner.hpp"
-#include "GlobalNamespace/BeatEffectSpawner_InitData.hpp"
 #include "GlobalNamespace/MemoryPoolContainer_1.hpp"
 #include "GlobalNamespace/LazyCopyHashSet_1.hpp"
 

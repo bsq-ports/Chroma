@@ -49,8 +49,8 @@ public:
     return getChromaConfig().customColorEventsEnabled.GetValue() && (ChromaRequired());
   }
 
-  static void AddForceDoHooks(ModInfo const& otherModInfo);
-  static void RemoveForceDoHooks(ModInfo const& otherModInfo);
+  static void AddForceDoHooks(modloader::ModInfo const& otherModInfo);
+  static void RemoveForceDoHooks(modloader::ModInfo const& otherModInfo);
 
   // Quest internal stuff
   static void SetChromaLegacy(bool v);

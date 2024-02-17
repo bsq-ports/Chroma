@@ -47,9 +47,9 @@ MAKE_HOOK_MATCH(SaberBurnMarkArea_Start, &SaberBurnMarkArea::Start, void, SaberB
     return;
   }
 
-  if (self->lineRenderers && self->lineRenderers.Length() >= 2) {
-    lineRenderers[0] = self->lineRenderers.get(0);
-    lineRenderers[1] = self->lineRenderers.get(1);
+  if (self->_lineRenderers && self->_lineRenderers.size() >= 2) {
+    lineRenderers[0] = self->_lineRenderers.get(0);
+    lineRenderers[1] = self->_lineRenderers.get(1);
   }
 
   if (saberBurnMarkCount == 0) {

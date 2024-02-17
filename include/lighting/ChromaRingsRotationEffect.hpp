@@ -52,23 +52,23 @@ public:
     public:
         float GetFirstRingRotationAngleCpp() {
             static auto GetRotation = FPtrWrapper<&GlobalNamespace::TrackLaneRing::GetRotation>::get();
-                if (!trackLaneRingsManager->rings) {
-                getLogger().warning("Rings is null why! %p ", trackLaneRingsManager);
-                trackLaneRingsManager->rings = Array<GlobalNamespace::TrackLaneRing *>::New();
+                if (!_trackLaneRingsManager->_rings) {
+                getLogger().warning("Rings is null why! %p ", _trackLaneRingsManager.ptr());
+                _trackLaneRingsManager->_rings = Array<GlobalNamespace::TrackLaneRing *>::New();
             }
 
-            return GetRotation(trackLaneRingsManager->rings.get(0));
+            return GetRotation(_trackLaneRingsManager->_rings.get(0));
         }
 
         float GetFirstRingDestinationRotationAngleCpp() {
             static auto GetDestinationRotation = FPtrWrapper<&GlobalNamespace::TrackLaneRing::GetDestinationRotation>::get();
 
-            if (!trackLaneRingsManager->rings) {
-                getLogger().warning("Rings is null why! %p ", trackLaneRingsManager);
-                trackLaneRingsManager->rings = Array<GlobalNamespace::TrackLaneRing *>::New();
+            if (!_trackLaneRingsManager->_rings) {
+                getLogger().warning("Rings is null why! %p ", _trackLaneRingsManager.ptr());
+                _trackLaneRingsManager->_rings = Array<GlobalNamespace::TrackLaneRing *>::New();
             }
 
-            return GetDestinationRotation(trackLaneRingsManager->rings.get(0));
+            return GetDestinationRotation(_trackLaneRingsManager->_rings.get(0));
         }
 
         DECLARE_INSTANCE_METHOD(void, AddRingRotationEffectF, float angle, float step, float propagationSpeed, float flexySpeed);

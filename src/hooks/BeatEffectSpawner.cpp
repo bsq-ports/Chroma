@@ -9,12 +9,12 @@
 #include "colorizer/BombColorizer.hpp"
 #include "colorizer/NoteColorizer.hpp"
 
+#include "GlobalNamespace/BeatEffect.hpp"
 #include "GlobalNamespace/ColorExtensions.hpp"
 #include "GlobalNamespace/BeatEffectSpawner.hpp"
-#include "GlobalNamespace/BeatEffectSpawner_InitData.hpp"
 #include "GlobalNamespace/MemoryPoolContainer_1.hpp"
+#include "GlobalNamespace/ILazyCopyHashSet_1.hpp"
 #include "GlobalNamespace/LazyCopyHashSet_1.hpp"
-
 #include "GlobalNamespace/AudioTimeSyncController.hpp"
 
 #include "custom-json-data/shared/CustomBeatmapData.h"
@@ -47,24 +47,24 @@ MAKE_HOOK_MATCH(BeatEffectSpawner_HandleNoteDidStartJump, &BeatEffectSpawner::Ha
 
   /// TRANSPILE HERE
   //    if (self->initData->hideNoteSpawnEffect)
-  if (BeatEffectForce(self->initData->hideNoteSpawnEffect, noteController)) {
+  if (BeatEffectForce(self->_initData->hideNoteSpawnEffect, noteController)) {
     return;
   }
   if (noteController->hidden) {
     return;
   }
-  if (noteController->noteData->time + 0.1F < self->audioTimeSyncController->songTime) {
+  if (noteController->noteData->time + 0.1F < self->_audioTimeSyncController->songTime) {
     return;
   }
   ColorType colorType = noteController->noteData->colorType;
   Sombrero::FastColor a =
-      (colorType != ColorType::None) ? self->colorManager->ColorForType(colorType) : self->bombColorEffect;
-  auto* beatEffect = self->beatEffectPoolContainer->Spawn();
-  beatEffect->didFinishEvent->Add(self->i_IBeatEffectDidFinishEvent());
+      (colorType != ColorType::None) ? self->_colorManager->ColorForType(colorType) : self->_bombColorEffect;
+  auto beatEffect = self->_beatEffectPoolContainer->Spawn();
+  beatEffect->didFinishEvent->Add(self->i___GlobalNamespace__IBeatEffectDidFinishEvent());
   beatEffect->get_transform()->SetPositionAndRotation(
-      noteController->get_worldRotation() * noteController->get_jumpStartPos() - Sombrero::FastVector3(0.F, 0.15F, 0.F),
+      Sombrero::FastQuaternion(noteController->get_worldRotation()) * noteController->get_jumpStartPos() - Sombrero::FastVector3(0.F, 0.15F, 0.F),
       Sombrero::FastQuaternion::identity());
-  beatEffect->Init(a * 1.F, self->effectDuration, noteController->get_worldRotation());
+  beatEffect->Init(a * 1.F, self->_effectDuration, noteController->get_worldRotation());
 }
 
 void BeatEffectSpawnerHook(Logger& logger) {

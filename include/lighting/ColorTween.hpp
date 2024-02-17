@@ -71,7 +71,7 @@ static void SetColor(GlobalNamespace::ILightWithId* lightWithId,
   if (!lightWithId->get_isRegistered()) {
     return;
   }
-  lightWithIdManager->didChangeSomeColorsThisFrame = true;
+  lightWithIdManager->_didChangeSomeColorsThisFrame = true;
   lightWithId->ColorWasSet(color);
 }
 

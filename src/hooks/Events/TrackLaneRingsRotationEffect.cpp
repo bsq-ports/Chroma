@@ -60,7 +60,7 @@ MAKE_HOOK_MATCH(TrackLaneRingsRotationEffect_FixedUpdate, &TrackLaneRingsRotatio
 
 void TrackLaneRingsRotationEffectHook(Logger& /*logger*/) {
   INSTALL_HOOK_ORIG(getLogger(), TrackLaneRingsRotationEffect_AddRingRotationEffect);
-  INSTALL_HOOK_ORIG(getLogger(), ChromaRingsRotationEffect_AddRingRotationEffect);
+  //INSTALL_HOOK_ORIG(getLogger(), ChromaRingsRotationEffect_AddRingRotationEffect);
   INSTALL_HOOK_ORIG(getLogger(), TrackLaneRingsRotationEffect_FixedUpdate);
 }
 

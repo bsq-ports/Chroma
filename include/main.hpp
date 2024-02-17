@@ -1,6 +1,6 @@
 #pragma once
 
-#include "modloader/shared/modloader.hpp"
+#include "scotland2/shared/loader.hpp"
 
 #include "beatsaber-hook/shared/config/rapidjson-utils.hpp"
 #include "beatsaber-hook/shared/utils/logging.hpp"
@@ -22,4 +22,4 @@ void setChromaEnv();
 
 inline const std::string modName = "Chroma";
 
-static ModInfo modInfo;
+static modloader::ModInfo modInfo = {modName, VERSION, 0};

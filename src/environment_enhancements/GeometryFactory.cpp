@@ -8,6 +8,7 @@
 #include "UnityEngine/MeshCollider.hpp"
 #include "UnityEngine/MeshFilter.hpp"
 #include "UnityEngine/Mesh.hpp"
+#include "UnityEngine/Resources.hpp"
 #include "UnityEngine/Rendering/ShadowCastingMode.hpp"
 
 #include "GlobalNamespace/TubeBloomPrePassLight.hpp"
@@ -49,14 +50,14 @@ GeometryType geometryTypeFromString(std::string_view str) {
 
 GeometryFactory::GeometryFactory(MaterialsManager& materialsManager, bool v2)
     : materialsManager(materialsManager), v2(v2) {
-  auto* tube = CRASH_UNLESS(Resources::FindObjectsOfTypeAll<TubeBloomPrePassLight*>()).FirstOrDefault();
+  auto* tube = CRASH_UNLESS(Resources::FindObjectsOfTypeAll<TubeBloomPrePassLight*>())->FirstOrDefault();
 
   if (tube != nullptr) {
     _originalTubeBloomPrePassLight = tube;
   }
 
   instantiator = reinterpret_cast<Zenject::IInstantiator*>(
-      Resources::FindObjectsOfTypeAll<SaberModelContainer*>().FirstOrDefault()->container);
+      Resources::FindObjectsOfTypeAll<SaberModelContainer*>()->FirstOrDefault()->_container);
 }
 
 GameObject* Chroma::GeometryFactory::Create(rapidjson::Value const& data) {
@@ -103,7 +104,7 @@ GameObject* Chroma::GeometryFactory::Create(rapidjson::Value const& data) {
   }
 
   UnityEngine::GameObject* go = UnityEngine::GameObject::CreatePrimitive(primitiveType);
-  go->set_name(geometryStr.value_or("") + materialInfo.ShaderTypeStr);
+  go->set_name(std::string(geometryStr.value_or("")) + materialInfo.ShaderTypeStr);
   go->set_layer(14);
 
   auto* meshRenderer = go->GetComponent<MeshRenderer*>();
@@ -147,25 +148,25 @@ GameObject* Chroma::GeometryFactory::Create(rapidjson::Value const& data) {
       parametricBoxController, parametricBoxController->get_transform()->get_localPosition());
   ParametricBoxControllerParameters::SetTransformScale(parametricBoxController,
                                                        parametricBoxController->get_transform()->get_localScale());
-  parametricBoxController->meshRenderer = meshRenderer;
+  parametricBoxController->_meshRenderer = meshRenderer;
 
   if (_originalTubeBloomPrePassLight) {
     auto* origTube = *_originalTubeBloomPrePassLight;
 
-    tubeBloomPrePassLight->mainEffectPostProcessEnabled = origTube->mainEffectPostProcessEnabled;
-    tubeBloomPrePassLight->lightType = origTube->lightType;
-    tubeBloomPrePassLight->registeredWithLightType = origTube->registeredWithLightType;
+    tubeBloomPrePassLight->_mainEffectPostProcessEnabled = origTube->_mainEffectPostProcessEnabled;
+    tubeBloomPrePassLight->_lightType = origTube->_lightType;
+    tubeBloomPrePassLight->_registeredWithLightType = origTube->_registeredWithLightType;
   } else {
     CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("[{{nameof(_originalTubeBloomPrePassLight)}}] was null.");
     throw std::runtime_error("[{nameof(_originalTubeBloomPrePassLight)}] was null.");
   }
 
-  tubeBloomPrePassLight->parametricBoxController = parametricBoxController;
+  tubeBloomPrePassLight->_parametricBoxController = parametricBoxController;
 
   auto* tubeBloomPrePassLightWithId = instantiator->InstantiateComponent<TubeBloomPrePassLightWithId*>(go);
-  tubeBloomPrePassLightWithId->tubeBloomPrePassLight = tubeBloomPrePassLight;
+  tubeBloomPrePassLightWithId->_tubeBloomPrePassLight = tubeBloomPrePassLight;
 
-  LightIdRegisterer::MarkForTableRegister(tubeBloomPrePassLightWithId->i_ILightWithId());
+  LightIdRegisterer::MarkForTableRegister(tubeBloomPrePassLightWithId->i___GlobalNamespace__ILightWithId());
 
   go->SetActive(true);
 

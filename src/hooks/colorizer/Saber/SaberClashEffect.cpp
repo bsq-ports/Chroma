@@ -12,8 +12,6 @@
 
 #include "UnityEngine/GameObject.hpp"
 #include "UnityEngine/ParticleSystem.hpp"
-#include "UnityEngine/ParticleSystem_MainModule.hpp"
-#include "UnityEngine/ParticleSystem_MinMaxGradient.hpp"
 
 #include "colorizer/Monobehaviours/ChromaClashEffectController.hpp"
 #include "colorizer/SaberColorizer.hpp"
@@ -32,7 +30,7 @@ MAKE_HOOK_MATCH(SaberClashEffect_Start, &SaberClashEffect::Start, void, SaberCla
   }
 
   self->get_gameObject()->AddComponent<ChromaClashEffectController*>()->Init(
-      self->sparkleParticleSystem, self->glowParticleSystem, self->colorManager);
+      self->_sparkleParticleSystem, self->_glowParticleSystem, self->_colorManager);
 }
 
 void SaberClashEffect() {

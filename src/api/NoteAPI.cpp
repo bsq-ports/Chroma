@@ -12,7 +12,7 @@ using namespace Sombrero;
 
 // TODO: unsure of this
 EXPOSE_API(getGlobalNoteColorSafe, OptColor, int colorType) {
-  CRASH_UNLESS(colorType >= ColorType::ColorA && colorType <= ColorType::ColorB);
+  CRASH_UNLESS(colorType >= ColorType::ColorA.value__ && colorType <= ColorType::ColorB.value__);
   auto optional = NoteColorizer::GlobalColor[colorType];
 
   if (optional) {

@@ -13,8 +13,6 @@
 #include "GlobalNamespace/SaberBurnMarkArea.hpp"
 
 #include "UnityEngine/ParticleSystem.hpp"
-#include "UnityEngine/ParticleSystem_MainModule.hpp"
-#include "UnityEngine/ParticleSystem_MinMaxGradient.hpp"
 
 #include "colorizer/SaberColorizer.hpp"
 #include "utils/ChromaUtils.hpp"
@@ -36,7 +34,7 @@ void OnSaberColorChanged(int saberType, GlobalNamespace::SaberModelController* /
   Sombrero::FastColor::RGBToHSV(color, h, s, _);
   Sombrero::FastColor effectColor = Sombrero::FastColor::HSVToRGB(h, s, 1);
   ParticleSystem::MainModule main = burnMarksPS[saberType]->get_main();
-  main.set_startColor(effectColor);
+  main.set_startColor(ParticleSystem::MinMaxGradient::op_Implicit___UnityEngine____ParticleSystem__MinMaxGradient(effectColor));
 }
 
 MAKE_HOOK_MATCH(SaberBurnMarkSparkles_Start, &SaberBurnMarkSparkles::Start, void, SaberBurnMarkSparkles* self) {
@@ -46,9 +44,9 @@ MAKE_HOOK_MATCH(SaberBurnMarkSparkles_Start, &SaberBurnMarkSparkles::Start, void
   if (!ChromaController::DoChromaHooks() || (self == nullptr)) {
     return;
   }
-  if (self->burnMarksPS && self->burnMarksPS.Length() >= 2) {
-    burnMarksPS[0] = self->burnMarksPS.get(0);
-    burnMarksPS[1] = self->burnMarksPS.get(1);
+  if (self->_burnMarksPS && self->_burnMarksPS.size() >= 2) {
+    burnMarksPS[0] = self->_burnMarksPS.get(0);
+    burnMarksPS[1] = self->_burnMarksPS.get(1);
   }
 
   if (subCount == 0) {

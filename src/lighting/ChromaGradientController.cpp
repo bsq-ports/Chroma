@@ -51,11 +51,11 @@ void ChromaGradientController::OnDestroy() {
 }
 
 bool Chroma::ChromaGradientController::IsGradientActive(GlobalNamespace::BasicBeatmapEventType eventType) {
-  return getInstance()->Gradients.contains(eventType);
+  return getInstance()->Gradients.contains(eventType.value__);
 }
 
 void ChromaGradientController::CancelGradient(GlobalNamespace::BasicBeatmapEventType eventType) {
-  getInstance()->Gradients.erase(eventType);
+  getInstance()->Gradients.erase(eventType.value__);
 }
 
 Sombrero::FastColor ChromaGradientController::AddGradient(ChromaEventData::GradientObjectData const& gradientObject,
@@ -67,7 +67,7 @@ Sombrero::FastColor ChromaGradientController::AddGradient(ChromaEventData::Gradi
   Sombrero::FastColor const& endcolor = gradientObject.EndColor;
   Functions easing = gradientObject.Easing;
 
-  auto it = getInstance()->Gradients.try_emplace(id.value,
+  auto it = getInstance()->Gradients.try_emplace(id.value__,
                                                  ChromaGradientEvent(initcolor, endcolor, time, duration, id, easing));
   // Grab by reference since assignment copies to the map
   // This way calling interpolate actually modifies the struct itself.

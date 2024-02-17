@@ -54,16 +54,16 @@ MAKE_HOOK_MATCH(TrackLaneRingsPositionStepEffectSpawner_HandleBeatmapObjectCallb
     return;
   }
 
-  float num = (beatmapEventData->sameTypeIndex % 2 == 0) ? self->maxPositionStep : self->minPositionStep;
+  float num = (beatmapEventData->sameTypeIndex % 2 == 0) ? self->_maxPositionStep : self->_minPositionStep;
 
   num = GetPrecisionStep(num, beatmapEventData);
 
-  auto rings = self->trackLaneRingsManager->rings;
+  auto rings = self->_trackLaneRingsManager->_rings;
   for (int i = 0; i < rings.size(); i++) {
     float destPosZ = static_cast<float>(i) * num;
     static auto SetPosition = FPtrWrapper<&GlobalNamespace::TrackLaneRing::SetPosition>::get();
 
-    float moveSpeed = GetPrecisionSpeed(self->moveSpeed, beatmapEventData);
+    float moveSpeed = GetPrecisionSpeed(self->_moveSpeed, beatmapEventData);
     SetPosition(rings[i], destPosZ, moveSpeed);
   }
 }

@@ -22,7 +22,7 @@ MAKE_HOOK_MATCH(SaberModelContainer_Start, &SaberModelContainer::Start, void, Sa
     return;
   }
 
-  self->get_gameObject()->AddComponent<ChromaSaberController*>()->Init(self->saber);
+  self->get_gameObject()->AddComponent<ChromaSaberController*>()->Init(self->_saber);
 }
 
 void SaberModelContainerHook(Logger& logger) {

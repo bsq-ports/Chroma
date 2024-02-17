@@ -117,7 +117,7 @@ bool SceneTransitionHelper::BasicPatch(GlobalNamespace::IDifficultyBeatmap* cust
   bool legacyOverride = false;
 
   if (customBeatmapDifficultyData != nullptr) {
-    auto* environmentInfo = BeatmapEnvironmentHelper::GetEnvironmentInfo(customBeatmapDifficultyData);
+    auto environmentInfo = BeatmapEnvironmentHelper::GetEnvironmentInfo(customBeatmapDifficultyData);
 
     LightIDTableManager::SetEnvironment(static_cast<std::string>(environmentInfo->serializedName));
 
@@ -150,8 +150,8 @@ bool SceneTransitionHelper::BasicPatch(GlobalNamespace::IDifficultyBeatmap* cust
     }
 
     if (customBeatmapDataCustom->isV2) {
-      auto beatmapEvents = customBeatmapDataCustom->basicBeatmapEvents->items;
-      auto length = beatmapEvents.Length();
+      auto beatmapEvents = customBeatmapDataCustom->basicBeatmapEvents->_items;
+      auto length = beatmapEvents.size();
       getLogger().debug("Checking at most %d for ChromaLite notes", static_cast<int>(length));
       for (auto* event : beatmapEvents) {
         if (event == nullptr) {

@@ -32,10 +32,10 @@ MAKE_HOOK_MATCH(BaseNoteVisuals_Awake, &BaseNoteVisuals::Awake, void, BaseNoteVi
     return;
   }
 
-  if (IsBombType(self->noteController)) {
-    BombColorizer::New(self->noteController);
+  if (IsBombType(self->_noteController)) {
+    BombColorizer::New(self->_noteController);
   } else {
-    NoteColorizer::New(self->noteController);
+    NoteColorizer::New(self->_noteController);
   }
 
   BaseNoteVisuals_Awake(self);
@@ -48,10 +48,10 @@ MAKE_HOOK_MATCH(BaseNoteVisuals_OnDestroy, &BaseNoteVisuals::OnDestroy, void, Ba
     return;
   }
 
-  if (IsBombType(self->noteController)) {
-    BombColorizer::Colorizers.erase(self->noteController);
+  if (IsBombType(self->_noteController)) {
+    BombColorizer::Colorizers.erase(self->_noteController);
   } else {
-    NoteColorizer::Colorizers.erase(self->noteController);
+    NoteColorizer::Colorizers.erase(self->_noteController);
   }
 }
 

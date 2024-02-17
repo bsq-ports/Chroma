@@ -11,10 +11,4 @@ DECLARE_CONFIG(ChromaConfig,
                             "Controls whether notes will be colored or not");
                CONFIG_VALUE(environmentEnhancementsEnabled, bool, "Environment Enhancements", true,
                             "Toggles whether Chroma should modify the environment as specified by a map.");
-
-               CONFIG_INIT_FUNCTION(
-
-                   CONFIG_INIT_VALUE(PrintEnvironmentEnhancementDebug); CONFIG_INIT_VALUE(customColorEventsEnabled);
-                   CONFIG_INIT_VALUE(customNoteColors); CONFIG_INIT_VALUE(environmentEnhancementsEnabled);
-
-                   ))
+)
