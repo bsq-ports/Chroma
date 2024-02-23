@@ -15,6 +15,7 @@
 #include "GlobalNamespace/ParametricBoxController.hpp"
 #include "GlobalNamespace/SaberModelContainer.hpp"
 #include "GlobalNamespace/TubeBloomPrePassLightWithId.hpp"
+#include "Zenject/DiContainer.hpp"
 #include "hooks/LightWithIdManager.hpp"
 
 using namespace Chroma;
@@ -55,9 +56,7 @@ GeometryFactory::GeometryFactory(MaterialsManager& materialsManager, bool v2)
   if (tube != nullptr) {
     _originalTubeBloomPrePassLight = tube;
   }
-
-  instantiator = reinterpret_cast<Zenject::IInstantiator*>(
-      Resources::FindObjectsOfTypeAll<SaberModelContainer*>()->FirstOrDefault()->_container);
+  lightWithIDManager = Resources::FindObjectsOfTypeAll<SaberModelContainer*>()->FirstOrDefault()->_container->Resolve<LightWithIdManager*>();
 }
 
 GameObject* Chroma::GeometryFactory::Create(rapidjson::Value const& data) {
@@ -163,7 +162,8 @@ GameObject* Chroma::GeometryFactory::Create(rapidjson::Value const& data) {
 
   tubeBloomPrePassLight->_parametricBoxController = parametricBoxController;
 
-  auto* tubeBloomPrePassLightWithId = instantiator->InstantiateComponent<TubeBloomPrePassLightWithId*>(go);
+  auto* tubeBloomPrePassLightWithId = go->AddComponent<TubeBloomPrePassLightWithId*>();
+  tubeBloomPrePassLightWithId->_lightManager = lightWithIDManager.ptr();
   tubeBloomPrePassLightWithId->_tubeBloomPrePassLight = tubeBloomPrePassLight;
 
   LightIdRegisterer::MarkForTableRegister(tubeBloomPrePassLightWithId->i___GlobalNamespace__ILightWithId());

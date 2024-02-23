@@ -9,8 +9,8 @@
 #include "sombrero/shared/FastColor.hpp"
 
 #include "UnityEngine/Material.hpp"
-#include "Zenject/IInstantiator.hpp"
 #include "GlobalNamespace/TubeBloomPrePassLight.hpp"
+#include "GlobalNamespace/LightWithIdManager.hpp"
 #include "MaterialsManager.hpp"
 
 namespace Chroma {
@@ -28,6 +28,6 @@ public:
 
 private:
   std::optional<GlobalNamespace::TubeBloomPrePassLight*> _originalTubeBloomPrePassLight = std::nullopt;
-  SafePtr<Zenject::IInstantiator> instantiator;
+  SafePtrUnity<GlobalNamespace::LightWithIdManager> lightWithIDManager;
 };
 } // namespace Chroma

@@ -191,22 +191,26 @@ template <typename T> inline static constexpr std::optional<T*> ptrToOpt(T* t) {
 /// https://answers.unity.com/questions/1594750/is-there-a-premade-triangle-asset.html
 /// </summary>
 static UnityEngine::Mesh* CreateTriangleMesh() {
-  ArrayW<Sombrero::FastVector3> vertices =
-      std::initializer_list<Sombrero::FastVector3>({ { -0.5f, -0.5f, 0 }, { 0.5f, -0.5f, 0 }, { 0.0f, 0.5f, 0 } });
+  static SafePtrUnity<UnityEngine::Mesh> mesh;
+  if(!mesh)
+  {
+    ArrayW<Sombrero::FastVector3> vertices =
+        std::initializer_list<Sombrero::FastVector3>({ { -0.5f, -0.5f, 0 }, { 0.5f, -0.5f, 0 }, { 0.0f, 0.5f, 0 } });
 
-  ArrayW<Sombrero::FastVector2> uv = std::initializer_list<Sombrero::FastVector2>({ { 0, 0 }, { 1, 0 }, { 0.5f, 1 } });
+    ArrayW<Sombrero::FastVector2> uv = std::initializer_list<Sombrero::FastVector2>({ { 0, 0 }, { 1, 0 }, { 0.5f, 1 } });
 
-  ArrayW<int> triangles = { 0, 1, 2 };
+    ArrayW<int> triangles = { 0, 1, 2 };
 
-  UnityEngine::Mesh* mesh = UnityEngine::Mesh::New_ctor();
-  mesh->set_vertices(reinterpret_cast<Array<UnityEngine::Vector3>*>(vertices.convert()));
-  mesh->set_uv(reinterpret_cast<Array<UnityEngine::Vector2>*>(uv.convert()));
-  mesh->set_triangles(triangles);
+    mesh = UnityEngine::Mesh::New_ctor();
+    mesh->set_vertices(reinterpret_cast<Array<UnityEngine::Vector3>*>(vertices.convert()));
+    mesh->set_uv(reinterpret_cast<Array<UnityEngine::Vector2>*>(uv.convert()));
+    mesh->set_triangles(triangles);
 
-  mesh->RecalculateBounds();
-  mesh->RecalculateNormals();
-  mesh->RecalculateTangents();
-  return mesh;
+    mesh->RecalculateBounds();
+    mesh->RecalculateNormals();
+    mesh->RecalculateTangents();
+  }
+  return mesh.ptr();
 }
 
 //    static bool ColorEquals(Sombrero::FastColor c1, Sombrero::FastColor& c2) {

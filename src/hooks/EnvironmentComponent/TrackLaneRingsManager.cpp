@@ -35,7 +35,7 @@ static void FindTrackLaneRingManager(UnityEngine::Transform* transform, std::vec
 
 static TrackLaneRing* QueueInject(DiContainer* container, TrackLaneRing* prefab) {
   TrackLaneRing* trackLaneRing = UnityEngine::Object::Instantiate(prefab);
-  auto injectables = VList<UnityW<UnityEngine::MonoBehaviour>>();
+  auto injectables = VList<UnityW<UnityEngine::MonoBehaviour>>::New();
   ZenUtilInternal::GetInjectableMonoBehavioursUnderGameObject(trackLaneRing->get_gameObject(), injectables);
 
   for (auto const& i : injectables) {

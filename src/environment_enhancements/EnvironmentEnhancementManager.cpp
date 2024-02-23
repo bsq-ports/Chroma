@@ -241,13 +241,6 @@ void EnvironmentEnhancementManager::GetAllGameObjects() {
     }
 
     _globalGameObjectInfos.emplace_back(gameObject);
-
-    //        // seriously what the fuck beat games
-    //        // GradientBackground permanently yeeted because it looks awful and can ruin multi-colored chroma maps
-    //        if (gameObject->get_name() == "GradientBackground")
-    //        {
-    //            gameObject->SetActive(false);
-    //        }
   }
 
   // Shrink if necessary
@@ -287,6 +280,17 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
   AvoidancePosition.clear();
   RingRotationOffsets.clear();
   ParametricBoxControllerParameters::TransformParameters.clear();
+
+  if (getChromaConfig().environmentEnhancementsEnabled.GetValue())
+  {
+    // seriously what the fuck beat games
+    // GradientBackground permanently yeeted because it looks awful and can ruin multi-colored chroma maps
+    auto gradientBackground = UnityEngine::GameObject::Find("/Environment/GradientBackground");
+    if (gradientBackground)
+    {
+      gradientBackground->SetActive(false);
+    }
+  }
 
   if (!customDynWrapper) {
     if (v2) {
