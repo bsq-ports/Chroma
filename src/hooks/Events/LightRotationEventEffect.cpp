@@ -78,8 +78,8 @@ MAKE_HOOK_MATCH(LightRotationEventEffect_HandleBeatmapObjectCallbackControllerBe
   }
 }
 
-void LightRotationEventEffectHook(Logger& logger) {
-  INSTALL_HOOK(logger, LightRotationEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger);
+void LightRotationEventEffectHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, LightRotationEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger);
 }
 
 ChromaInstallHooks(LightRotationEventEffectHook)

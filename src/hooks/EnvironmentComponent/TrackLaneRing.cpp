@@ -70,10 +70,10 @@ MAKE_HOOK_MATCH(TrackLaneRing_LateUpdateRing, &TrackLaneRing::LateUpdateRing, vo
   self->transform->set_localPosition(pos);
 }
 
-void TrackLaneRingHook(Logger& logger) {
-  INSTALL_HOOK(logger, TrackLaneRing_Init);
-  INSTALL_HOOK(logger, TrackLaneRing_FixedUpdateRing);
-  INSTALL_HOOK(logger, TrackLaneRing_LateUpdateRing);
+void TrackLaneRingHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, TrackLaneRing_Init);
+  INSTALL_HOOK(ChromaLogger::Logger, TrackLaneRing_FixedUpdateRing);
+  INSTALL_HOOK(ChromaLogger::Logger, TrackLaneRing_LateUpdateRing);
 }
 
 ChromaInstallHooks(TrackLaneRingHook)

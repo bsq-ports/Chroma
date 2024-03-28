@@ -63,12 +63,12 @@ void ChromaFogController::Awake() {
 
 void Chroma::ChromaFogController::Update() {
   if (_track == nullptr) {
-    getLogger().error("Track is null");
+    ChromaLogger::Logger.error("Track is null");
     CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Fog track is null!");
     return;
   }
   if (_transitionFogParams == nullptr) {
-    getLogger().error("ChromaFog TransitionFogParams is null");
+    ChromaLogger::Logger.error("ChromaFog TransitionFogParams is null");
     CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("ChromaFog TransitionFogParams is null!");
     return;
   }

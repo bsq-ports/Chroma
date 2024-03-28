@@ -63,17 +63,10 @@ MAKE_HOOK_MATCH(ParametricBoxController_Refresh, &ParametricBoxController::Refre
     pos = GetTransformPosition(pos, it->second);
   }
 
-  static auto const* transformProp = il2cpp_utils::FindProperty(classof(UnityEngine::Component*), "transform");
+  auto transform = self->get_transform();
 
-  //        auto transform = self->get_transform();
-
-  auto* transform = CRASH_UNLESS(il2cpp_utils::GetPropertyValue<UnityEngine::Transform*>(self, transformProp));
-
-  static auto const* localScaleProp = il2cpp_utils::FindProperty(classof(UnityEngine::Transform*), "localScale");
-  static auto const* localPosProp = il2cpp_utils::FindProperty(classof(UnityEngine::Transform*), "localPosition");
-
-  CRASH_UNLESS(il2cpp_utils::SetPropertyValue(transform, localScaleProp, scale));
-  CRASH_UNLESS(il2cpp_utils::SetPropertyValue(transform, localPosProp, pos));
+  transform->set_localScale(scale);
+  transform->set_localPosition(pos);
 
   static auto* materialPropertyBlock = ParametricBoxController::getStaticF__materialPropertyBlock();
 
@@ -130,8 +123,8 @@ MAKE_HOOK_MATCH(ParametricBoxController_Refresh, &ParametricBoxController::Refre
   //    self->meshRenderer->SetPropertyBlock(materialPropertyBlock);
 }
 
-void ParametricBoxControllerHook(Logger& logger) {
-  INSTALL_HOOK_ORIG(logger, ParametricBoxController_Refresh);
+void ParametricBoxControllerHook() {
+  INSTALL_HOOK_ORIG(ChromaLogger::Logger, ParametricBoxController_Refresh);
 }
 
 ChromaInstallHooks(ParametricBoxControllerHook)

@@ -36,8 +36,8 @@ MAKE_HOOK_MATCH(MirroredObstacleController_UpdatePositionAndRotation,
                                       ObstacleColorizer::GetObstacleColorizer(self->_followedObstacle)->getColor());
 }
 
-void MirroredObstacleControllerHook(Logger& logger) {
-  INSTALL_HOOK(logger, MirroredObstacleController_UpdatePositionAndRotation);
+void MirroredObstacleControllerHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, MirroredObstacleController_UpdatePositionAndRotation);
 }
 
 ChromaInstallHooks(MirroredObstacleControllerHook)

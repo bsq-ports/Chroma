@@ -10,7 +10,6 @@
 using namespace ChromaUtils;
 
 void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapData* beatmapData) {
-  static auto contextLogger = getLogger().WithContext(ChromaLogger::ObjectDataDeserialize);
   ChromaEventDatas.clear();
 
   auto* beatmapDataCast = beatmapData;
@@ -29,7 +28,7 @@ void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapDa
 
     std::optional<ChromaEventData::GradientObjectData> gradientObject = std::nullopt;
 
-    debugSpamLog(contextLogger, "Light gradient");
+    debugSpamLog("Light gradient");
 
     // ASSIGN
     ChromaEventData chromaEventData;
@@ -96,7 +95,7 @@ void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapDa
                 propIds.push_back(static_cast<int>(propId));
               }
             } else {
-              getLogger().error("Prop id type is not array or number!");
+              ChromaLogger::Logger.error("Prop id type is not array or number!");
             }
           }
 
@@ -134,7 +133,7 @@ void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapDa
         chromaEventData.LerpType = lerpType;
       }
 
-      debugSpamLog(contextLogger, "Light ID");
+      debugSpamLog("Light ID");
       auto lightId = unwrappedData.FindMember(v2 ? NewConstants::V2_LIGHT_ID.data() : NewConstants::LIGHT_ID.data());
 
       if (lightId != unwrappedData.MemberEnd()) {
@@ -153,7 +152,7 @@ void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapDa
             lightIds.push_back(lightId.GetInt());
           }
         } else {
-          getLogger().error("Light id type is not array or number!");
+          ChromaLogger::Logger.error("Light id type is not array or number!");
         }
 
         chromaEventData.LightID = lightIds;

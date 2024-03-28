@@ -101,9 +101,9 @@ MAKE_HOOK_MATCH(SceneDecoratorContext_InitializeRings, &SceneDecoratorContext::I
   SceneDecoratorContext_InitializeRings(self, container);
 }
 
-void TrackLaneRingsManagerHook(Logger& logger) {
-  INSTALL_HOOK(logger, SceneDecoratorContext_InitializeRings);
-  INSTALL_HOOK(logger, TrackLaneRingsManager_Start);
+void TrackLaneRingsManagerHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, SceneDecoratorContext_InitializeRings);
+  INSTALL_HOOK(ChromaLogger::Logger, TrackLaneRingsManager_Start);
 }
 
 ChromaInstallHooks(TrackLaneRingsManagerHook)

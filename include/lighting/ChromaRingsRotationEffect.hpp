@@ -53,7 +53,7 @@ public:
         float GetFirstRingRotationAngleCpp() {
             static auto GetRotation = FPtrWrapper<&GlobalNamespace::TrackLaneRing::GetRotation>::get();
                 if (!_trackLaneRingsManager->_rings) {
-                getLogger().warning("Rings is null why! %p ", _trackLaneRingsManager.ptr());
+                ChromaLogger::Logger.warn("Rings is null why! {} ", fmt::ptr(_trackLaneRingsManager.ptr()));
                 _trackLaneRingsManager->_rings = Array<GlobalNamespace::TrackLaneRing *>::New();
             }
 
@@ -64,7 +64,7 @@ public:
             static auto GetDestinationRotation = FPtrWrapper<&GlobalNamespace::TrackLaneRing::GetDestinationRotation>::get();
 
             if (!_trackLaneRingsManager->_rings) {
-                getLogger().warning("Rings is null why! %p ", _trackLaneRingsManager.ptr());
+                ChromaLogger::Logger.warn("Rings is null why! {} ", fmt::ptr(_trackLaneRingsManager.ptr()));
                 _trackLaneRingsManager->_rings = Array<GlobalNamespace::TrackLaneRing *>::New();
             }
 

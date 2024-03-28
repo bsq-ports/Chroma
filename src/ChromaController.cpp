@@ -1,5 +1,6 @@
 #include "main.hpp"
 #include "ChromaConfig.hpp"
+#include "ChromaLogger.hpp"
 #include "ChromaController.hpp"
 
 #include "GlobalNamespace/BeatmapObjectManager.hpp"
@@ -54,7 +55,7 @@ ChromaController::DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnCont
         IReadonlyBeatmapData* beatmapData = coreSetup->_beatmapData;
 
         if (!beatmapData) {
-          getLogger().debug("Beatmap is null, oh no what will we do now?");
+          ChromaLogger::Logger.debug("Beatmap is null, oh no what will we do now?");
           co_return;
           //            CRASH_UNLESS(beatmapData);
         }
@@ -79,16 +80,16 @@ ChromaController::DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnCont
               // please let me kill legacy
               LegacyLightHelper::Activate(list);
             } catch (const Il2CppException& e) {
-              getLogger().error("Unable to run legacy due to exception?");
+              ChromaLogger::Logger.error("Unable to run legacy due to exception?");
             }
           }
         } else {
-          getLogger().debug(
-              "Beatmap class %s",
+          ChromaLogger::Logger.debug(
+              "Beatmap class {}",
               il2cpp_utils::ClassStandardName(reinterpret_cast<Il2CppObject*>(beatmapData)->klass).c_str());
         }
       } catch (std::exception& e) {
-        getLogger().debug("Chroma controller failed: %s!", e.what());
+        ChromaLogger::Logger.debug("Chroma controller failed: {}!", e.what());
         throw;
       })
 
@@ -96,7 +97,7 @@ ChromaController::DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnCont
 }
 
 void ChromaController::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene current) {
-  getLogger().debug("Clear scene");
+  ChromaLogger::Logger.debug("Clear scene");
 
   if (current.IsValid() && current.get_name() == "MainMenu") {
     Chroma::MaterialsManager::LoadShader();
@@ -119,20 +120,20 @@ void ChromaController::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene 
 }
 
 void ChromaController::SetChromaLegacy(bool v) {
-  getLogger().debug("Set chroma legacy to %s", v ? "true" : "false");
+  ChromaLogger::Logger.debug("Set chroma legacy to {}", v ? "true" : "false");
   ChromaLegacy = v && getChromaConfig().customColorEventsEnabled.GetValue();
 }
 
 void ChromaController::setChromaRequired(bool chromaMap) {
   ChromaMap = chromaMap && getChromaConfig().customColorEventsEnabled.GetValue();
-  getLogger().debug("Set chroma required/suggested to %s", ChromaMap ? "true" : "false");
+  ChromaLogger::Logger.debug("Set chroma required/suggested to {}", ChromaMap ? "true" : "false");
 }
 
 void ChromaController::AddForceDoHooks(modloader::ModInfo const& otherModInfo) {
-  getLogger().info("Adding force do hooks, ID: %s", otherModInfo.id.c_str());
+  ChromaLogger::Logger.info("Adding force do hooks, ID: {}", otherModInfo.id.c_str());
   ModsForcingDoHooks.emplace(otherModInfo.id);
 }
 void ChromaController::RemoveForceDoHooks(modloader::ModInfo const& otherModInfo) {
-  getLogger().info("Removing force do hooks, ID: %s", otherModInfo.id.c_str());
+  ChromaLogger::Logger.info("Removing force do hooks, ID: {}", otherModInfo.id.c_str());
   ModsForcingDoHooks.erase(otherModInfo.id);
 }

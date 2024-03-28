@@ -45,9 +45,9 @@ Chroma::EnvironmentEnhancementManager::LookupId(std::string_view const id, Chrom
           ret.emplace_back(o);
         }
       } catch (std::exception& e) {
-        getLogger().error("Failed to match (%s) for lookup (%s) with id (%s)", o.FullID.c_str(), lookupMethodStr,
+        ChromaLogger::Logger.error("Failed to match ({}) for lookup ({}) with id ({})", o.FullID.c_str(), lookupMethodStr,
                           id.data());
-        getLogger().error("Error: %s", e.what());
+        ChromaLogger::Logger.error("Error: {}", e.what());
       }
     }
   };
@@ -96,8 +96,8 @@ Chroma::EnvironmentEnhancementManager::LookupId(std::string_view const id, Chrom
     }
     }
   } catch (std::exception const& e) {
-    getLogger().error("Failed to create match for lookup (%s) with id (%s)", lookupMethodStr.data(), id.data());
-    getLogger().error("Error: %s", e.what());
+    ChromaLogger::Logger.error("Failed to create match for lookup ({}) with id ({})", lookupMethodStr.data(), id.data());
+    ChromaLogger::Logger.error("Error: {}", e.what());
   }
 
   ret.shrink_to_fit();
@@ -261,15 +261,15 @@ void EnvironmentEnhancementManager::GetAllGameObjects() {
         ss << o.FullID << std::endl;
       }
 
-      getLogger().info("Objects found in environment:\n%s", ss.str().c_str());
+      ChromaLogger::Logger.info("Objects found in environment:\n{}", ss.str().c_str());
     }).detach();
   }
 }
 
 void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* customBeatmapData) {
   float noteLinesDistance = 0.6F;
-  getLogger().debug("Custom beat map %p", customBeatmapData);
-  getLogger().debug("Custom beat map custom data %p", customBeatmapData->customData);
+  ChromaLogger::Logger.debug("Custom beat map {}", fmt::ptr(customBeatmapData));
+  ChromaLogger::Logger.debug("Custom beat map custom data {}", fmt::ptr(customBeatmapData->customData));
   auto const& customDynWrapper = customBeatmapData->customData->value;
   bool v2 = customBeatmapData->v2orEarlier;
   CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Is environment v2 {}", v2);
@@ -377,7 +377,7 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
                       << lookupString;
 
       if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {
-        getLogger().info("ID [\"%s\"] using method [%s] found:", id.data(), lookupString.c_str());
+        ChromaLogger::Logger.info("ID [\"{}\"] using method [{}] found:", id.data(), lookupString.c_str());
       }
 
       profiler.mark(foundObjectsLog.str());
@@ -400,10 +400,10 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
 
     if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {
       for (auto const& o : foundObjects) {
-        getLogger().info("%s", o.heldRef.FullID.c_str());
+        ChromaLogger::Logger.info("{}", o.heldRef.FullID.c_str());
       }
 
-      getLogger().info("=====================================");
+      ChromaLogger::Logger.info("=====================================");
     }
 
     TransformData spawnData(gameObjectDataVal, v2, noteLinesDistance);
@@ -595,10 +595,10 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
     // Log all objects
     for (auto const& profile : profileData) {
       profile.printMarks();
-      getLogger().info("=====================================\n");
+      ChromaLogger::Logger.info("=====================================\n");
     }
 
-    getLogger().info("Finished environment enhancements took %lldms", millisElapsed);
+    ChromaLogger::Logger.info("Finished environment enhancements took {}ldms", millisElapsed);
   }).detach();
 
   ///  Handle materials

@@ -13,10 +13,8 @@ using namespace System::Collections;
 LegacyLightHelper::ColorMap LegacyLightHelper::LegacyColorEvents = LegacyLightHelper::ColorMap();
 
 void LegacyLightHelper::Activate(std::span<GlobalNamespace::BasicBeatmapEventData*> eventData) {
-  static auto contextLogger = getLogger().WithContext(ChromaLogger::LegacyLightColor);
-
   LegacyColorEvents = LegacyLightHelper::ColorMap(eventData.size());
-  debugSpamLog(contextLogger, "Got the events, checking for legacy %zu", eventData.size());
+  debugSpamLog("Got the events, checking for legacy %zu", eventData.size());
   for (auto& d : eventData) {
     // TODO: Should we do this or find the root of the nullptr and fix that instead?
     if (d == nullptr) {
@@ -24,11 +22,11 @@ void LegacyLightHelper::Activate(std::span<GlobalNamespace::BasicBeatmapEventDat
     }
 
     if (!ASSIGNMENT_CHECK(classof(BeatmapEventData*), d->klass)) {
-      getLogger().debug("Beatmap data: %s not what expected", il2cpp_utils::ClassStandardName(d->klass).c_str());
+      ChromaLogger::Logger.debug("Beatmap data: {} not what expected", il2cpp_utils::ClassStandardName(d->klass).c_str());
       continue;
     }
 
-    debugSpamLog(contextLogger, "Checking d %d %s", d->value, d->value >= RGB_INT_OFFSET ? "true" : "false");
+    debugSpamLog("Checking d {} {}", d->value, d->value >= RGB_INT_OFFSET ? "true" : "false");
     if (d->value >= RGB_INT_OFFSET) {
       auto& list = LegacyColorEvents.try_emplace(d->basicBeatmapEventType.value__).first->second;
       list.emplace_back(d->time, ColorFromInt(d->value));

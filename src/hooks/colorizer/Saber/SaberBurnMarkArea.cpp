@@ -72,9 +72,9 @@ MAKE_HOOK_MATCH(SaberBurnMarkArea_OnDestroy, &SaberBurnMarkArea::OnDestroy, void
   }
 }
 
-void SaberBurnMarkAreaHook(Logger& logger) {
-  INSTALL_HOOK(logger, SaberBurnMarkArea_Start);
-  INSTALL_HOOK(logger, SaberBurnMarkArea_OnDestroy);
+void SaberBurnMarkAreaHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, SaberBurnMarkArea_Start);
+  INSTALL_HOOK(ChromaLogger::Logger, SaberBurnMarkArea_OnDestroy);
 }
 
 ChromaInstallHooks(SaberBurnMarkAreaHook)

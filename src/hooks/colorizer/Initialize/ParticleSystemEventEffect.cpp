@@ -65,9 +65,9 @@ MAKE_HOOK_MATCH(ParticleSystemEventEffect_HandleBeatmapObjectCallbackControllerB
   ParticleSystemEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);
 }
 
-void ParticleSystemEventEffectHook(Logger& logger) {
-  INSTALL_HOOK(logger, ParticleSystemEventEffect_Start);
-  INSTALL_HOOK(logger, ParticleSystemEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger);
+void ParticleSystemEventEffectHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, ParticleSystemEventEffect_Start);
+  INSTALL_HOOK(ChromaLogger::Logger, ParticleSystemEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger);
 }
 
 ChromaInstallHooks(ParticleSystemEventEffectHook)

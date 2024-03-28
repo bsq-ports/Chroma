@@ -72,12 +72,12 @@ MAKE_HOOK_MATCH(MirroredNoteController_UpdatePositionAndRotationCubeGeneric,
   UpdateMirror(self, reinterpret_cast<NoteControllerBase*>(self->followedNote));
 }
 
-void MirroredNoteControllerHook(Logger& logger) {
+void MirroredNoteControllerHook() {
   auto* iNoteGeneric = classof(GlobalNamespace::MirroredNoteController_1<INoteMirrorable*>*);
   auto* iNoteCubeGeneric = classof(GlobalNamespace::MirroredNoteController_1<IGameNoteMirrorable*>*);
 
-  INSTALL_HOOK(logger, MirroredNoteController_UpdatePositionAndRotationGeneric);
-  INSTALL_HOOK(logger, MirroredNoteController_UpdatePositionAndRotationCubeGeneric);
+  INSTALL_HOOK(ChromaLogger::Logger, MirroredNoteController_UpdatePositionAndRotationGeneric);
+  INSTALL_HOOK(ChromaLogger::Logger, MirroredNoteController_UpdatePositionAndRotationCubeGeneric);
 }
 
 ChromaInstallHooks(MirroredNoteControllerHook)

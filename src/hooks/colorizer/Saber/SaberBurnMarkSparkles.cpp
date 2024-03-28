@@ -69,9 +69,9 @@ MAKE_HOOK_MATCH(SaberBurnMarkSparkles_OnDestroy, &SaberBurnMarkSparkles::OnDestr
   }
 }
 
-void SaberBurnMarkSparklesHook(Logger& logger) {
-  INSTALL_HOOK(logger, SaberBurnMarkSparkles_Start);
-  INSTALL_HOOK(logger, SaberBurnMarkSparkles_OnDestroy);
+void SaberBurnMarkSparklesHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, SaberBurnMarkSparkles_Start);
+  INSTALL_HOOK(ChromaLogger::Logger, SaberBurnMarkSparkles_OnDestroy);
 }
 
 ChromaInstallHooks(SaberBurnMarkSparklesHook)

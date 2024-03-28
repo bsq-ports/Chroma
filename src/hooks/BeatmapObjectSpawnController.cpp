@@ -23,8 +23,8 @@ MAKE_HOOK_MATCH(BeatmapObjectSpawnController_Start, &BeatmapObjectSpawnControlle
   self->StartCoroutine(delayedStartCoro);
 }
 
-void BeatmapObjectSpawnControllerHook(Logger& logger) {
-  INSTALL_HOOK(logger, BeatmapObjectSpawnController_Start);
+void BeatmapObjectSpawnControllerHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, BeatmapObjectSpawnController_Start);
 }
 
 ChromaInstallHooks(BeatmapObjectSpawnControllerHook)

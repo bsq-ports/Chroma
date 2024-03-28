@@ -17,8 +17,8 @@ MAKE_HOOK_MATCH(BloomFogEnvironment_Awake, &BloomFogEnvironment::OnEnable, void,
   self->_fogParams = Object::Instantiate(self->fogParams);
 }
 
-void BloomFogEnvironmentHook(Logger& logger) {
-  INSTALL_HOOK(logger, BloomFogEnvironment_Awake);
+void BloomFogEnvironmentHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, BloomFogEnvironment_Awake);
 }
 
 ChromaInstallHooks(BloomFogEnvironmentHook)

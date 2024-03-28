@@ -6,7 +6,6 @@
 #include "GlobalNamespace/ColorScheme.hpp"
 #include "GlobalNamespace/GameplayModifiers.hpp"
 #include "GlobalNamespace/PlayerSpecificSettings.hpp"
-#include "GlobalNamespace/IDifficultyBeatmap.hpp"
 #include "GlobalNamespace/NoteController.hpp"
 #include "GlobalNamespace/BeatmapLevelSO.hpp"
 #include "colorizer/NoteColorizer.hpp"
@@ -20,22 +19,29 @@ using namespace GlobalNamespace;
 using namespace UnityEngine;
 using namespace Chroma;
 
-MAKE_HOOK_MATCH(MissionLevelScenesTransitionSetupDataSO_Init, &MissionLevelScenesTransitionSetupDataSO::Init, void,
-                MissionLevelScenesTransitionSetupDataSO* self, StringW missionId,
-                GlobalNamespace::IDifficultyBeatmap* difficultyBeatmap,
-                GlobalNamespace::IPreviewBeatmapLevel* previewBeatmapLevel,
-                ::ArrayW<GlobalNamespace::MissionObjective*> missionObjectives,
-                GlobalNamespace::ColorScheme* overrideColorScheme,
-                GlobalNamespace::GameplayModifiers* gameplayModifiers,
-                GlobalNamespace::PlayerSpecificSettings* playerSpecificSettings, StringW backButtonText) {
-  MissionLevelScenesTransitionSetupDataSO_Init(self, missionId, difficultyBeatmap, previewBeatmapLevel,
-                                               missionObjectives, overrideColorScheme, gameplayModifiers,
-                                               playerSpecificSettings, backButtonText);
-  SceneTransitionHelper::Patch(difficultyBeatmap);
+
+MAKE_HOOK_MATCH(MissionLevelScenesTransitionSetupDataSO_Init, static_cast<void(MissionLevelScenesTransitionSetupDataSO::*)(StringW, ByRef<BeatmapKey>, BeatmapLevel*, ArrayW<MissionObjective*>, ColorScheme*, GameplayModifiers*, PlayerSpecificSettings*, EnvironmentsListModel*, BeatmapLevelsModel*, AudioClipAsyncLoader*, ::BeatmapDataLoader*, StringW)>(&MissionLevelScenesTransitionSetupDataSO::Init),
+                    void, MissionLevelScenesTransitionSetupDataSO* self, 
+                    StringW missionId, 
+                    ByRef<BeatmapKey> beatmapKey,
+                    BeatmapLevel* beatmapLevel, 
+                    ArrayW<MissionObjective*> missionObjectives, 
+                    ColorScheme* overrideColorScheme,
+                    GameplayModifiers* gameplayModifiers, 
+                    PlayerSpecificSettings* playerSpecificSettings, 
+                    EnvironmentsListModel* environmentsListModel, 
+                    BeatmapLevelsModel* beatmapLevelsModel, 
+                    AudioClipAsyncLoader* audioClipAsyncLoader, 
+                    BeatmapDataLoader* beatmapDataLoader, 
+                    StringW backButtonText) {
+  MissionLevelScenesTransitionSetupDataSO_Init(self, missionId, beatmapKey, beatmapLevel, missionObjectives, overrideColorScheme,
+                                               gameplayModifiers, playerSpecificSettings, environmentsListModel, beatmapLevelsModel, 
+                                               audioClipAsyncLoader, beatmapDataLoader, backButtonText);
+  //SceneTransitionHelper::Patch(difficultyBeatmap);
 }
 
-void MissionLevelScenesTransitionSetupDataSOHook(Logger& logger) {
-  INSTALL_HOOK(logger, MissionLevelScenesTransitionSetupDataSO_Init);
+void MissionLevelScenesTransitionSetupDataSOHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, MissionLevelScenesTransitionSetupDataSO_Init);
 }
 
 ChromaInstallHooks(MissionLevelScenesTransitionSetupDataSOHook)

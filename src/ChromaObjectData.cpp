@@ -15,12 +15,10 @@ using namespace GlobalNamespace;
 void Chroma::ChromaObjectDataManager::deserialize(CustomJSONData::CustomBeatmapData* beatmapData) {
   ChromaObjectDatas.clear();
 
-  static auto contextLogger = getLogger().WithContext(ChromaLogger::ObjectDataDeserialize);
-
   auto* beatmapDataCast = beatmapData;
   bool v2 = beatmapDataCast->v2orEarlier;
 
-  debugSpamLog(contextLogger, "Array klass: %s", il2cpp_utils::ClassStandardName(beatmapLines->klass).c_str());
+  debugSpamLog("Array klass: {}", il2cpp_utils::ClassStandardName(beatmapLines->klass).c_str());
 
   TracksAD::BeatmapAssociatedData& beatmapAD = TracksAD::getBeatmapAD(beatmapDataCast->customData);
 
@@ -39,7 +37,7 @@ void Chroma::ChromaObjectDataManager::deserialize(CustomJSONData::CustomBeatmapD
     CustomJSONData::JSONWrapper* objectDynData = nullptr;
 
     if (ASSIGNMENT_CHECK(CustomNoteDataKlass, beatmapObjectData->klass)) {
-      debugSpamLog(contextLogger, "Custom note %s", il2cpp_utils::ClassStandardName(beatmapObjectData->klass).c_str());
+      debugSpamLog("Custom note {}", il2cpp_utils::ClassStandardName(beatmapObjectData->klass).c_str());
       auto* customNoteData = reinterpret_cast<CustomJSONData::CustomNoteData*>(beatmapObjectData);
 
       objectDynData = customNoteData->customData;
@@ -50,7 +48,7 @@ void Chroma::ChromaObjectDataManager::deserialize(CustomJSONData::CustomBeatmapD
               .value_or(
                   !getIfExistsOpt<bool>(objectDynData->value, NewConstants::V2_DISABLE_SPAWN_EFFECT).value_or(true));
     } else if (ASSIGNMENT_CHECK(CustomSliderDataKlass, beatmapObjectData->klass)) {
-      debugSpamLog(contextLogger, "Custom note %s", il2cpp_utils::ClassStandardName(beatmapObjectData->klass).c_str());
+      debugSpamLog("Custom note {}", il2cpp_utils::ClassStandardName(beatmapObjectData->klass).c_str());
       auto* customNoteData = reinterpret_cast<CustomJSONData::CustomSliderData*>(beatmapObjectData);
 
       objectDynData = customNoteData->customData;
@@ -67,7 +65,7 @@ void Chroma::ChromaObjectDataManager::deserialize(CustomJSONData::CustomBeatmapD
       chromaObjectData.Color = ChromaUtilities::GetColorFromData(objectDynData->value, v2);
     }
     //                else if (false && ASSIGNMENT_CHECK(CustomWaypointDataKlass,beatmapObjectData->klass)) {
-    //                    debugSpamLog(contextLogger, "Custom waypoint");
+    //                    debugSpamLog("Custom waypoint");
     //                    auto *customBeatmapEvent =
     //                    il2cpp_utils::cast<CustomJSONData::CustomWaypointData>(beatmapObjectData);
     //

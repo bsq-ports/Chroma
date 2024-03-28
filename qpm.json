@@ -14,7 +14,7 @@
   "dependencies": [
     {
       "id": "beatsaber-hook",
-      "versionRange": "^5.0.9",
+      "versionRange": "^5.1.3",
       "additionalData": {
         "extraFiles": [
           "src/inline-hook"
@@ -23,7 +23,7 @@
     },
     {
       "id": "custom-types",
-      "versionRange": "^0.16.18",
+      "versionRange": "^0.17.0",
       "additionalData": {
         "includeQmod": true,
         "private": true
@@ -31,7 +31,7 @@
     },
     {
       "id": "bs-cordl",
-      "versionRange": "^3402.*",
+      "versionRange": "3500.*",
       "additionalData": {
         "includeQmod": true,
         "private": true
@@ -46,7 +46,7 @@
     },
     {
       "id": "config-utils",
-      "versionRange": "^1.3.0",
+      "versionRange": "^1.4.0",
       "additionalData": {
         "private": true
       }
@@ -77,14 +77,6 @@
       }
     },
     {
-      "id": "pinkcore",
-      "versionRange": "^1.9.0",
-      "additionalData": {
-        "includeQmod": true,
-        "private": true
-      }
-    },
-    {
       "id": "boost-regex",
       "versionRange": "*",
       "additionalData": {
@@ -107,8 +99,8 @@
       "additionalData": {}
     },
     {
-      "id": "songloader",
-      "versionRange": "^0.11.2",
+      "id": "songcore",
+      "versionRange": "^0.2.0",
       "additionalData": {
         "includeQmod": true,
         "private": true

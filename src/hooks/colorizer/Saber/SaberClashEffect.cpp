@@ -34,5 +34,5 @@ MAKE_HOOK_MATCH(SaberClashEffect_Start, &SaberClashEffect::Start, void, SaberCla
 }
 
 void SaberClashEffect() {
-  INSTALL_HOOK(getLogger(), SaberClashEffect_Start);
+  INSTALL_HOOK(ChromaLogger::Logger, SaberClashEffect_Start);
 }

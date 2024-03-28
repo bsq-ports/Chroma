@@ -23,7 +23,6 @@ using namespace Chroma;
 LightColorizer::LightColorizer(ChromaLightSwitchEventEffect* lightSwitchEventEffect, LightWithIdManager* lightManager)
     : _lightSwitchEventEffect(lightSwitchEventEffect), lightId(lightSwitchEventEffect->_lightsID), _colors(COLOR_FIELDS),
       _originalColors(), _simpleColorSOs(COLOR_FIELDS) {
-  static auto contextLogger = getLogger().WithContext(ChromaLogger::LightColorizer);
 
   auto Initialize = [this](UnityW<ColorSO> colorSO, int index) {
     if (auto mColor = il2cpp_utils::try_cast<MultipliedColorSO>(colorSO.ptr())) {

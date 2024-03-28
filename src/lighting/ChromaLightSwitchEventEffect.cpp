@@ -106,8 +106,6 @@ void Chroma::ChromaLightSwitchEventEffect::HandleEvent(GlobalNamespace::BasicBea
 
   // fun fun chroma stuff
 
-  static auto contextLogger = getLogger().WithContext(ChromaLogger::ColorLightSwitch);
-
   auto chromaIt = ChromaEventDataManager::ChromaEventDatas.find(beatmapEventData);
 
   // Aero thinks legacy was a mistake. I think a Quest port was a bigger mistake.
@@ -116,7 +114,7 @@ void Chroma::ChromaLightSwitchEventEffect::HandleEvent(GlobalNamespace::BasicBea
   if (chromaIt == ChromaEventDataManager::ChromaEventDatas.end()) {
     color = LegacyLightHelper::GetLegacyColor(beatmapEventData);
   } else {
-    debugSpamLog(contextLogger, "Color is legacy? %s", color ? "true" : "false");
+    debugSpamLog("Color is legacy? {}", color ? "true" : "false");
 
     auto const& chromaData = chromaIt->second;
 

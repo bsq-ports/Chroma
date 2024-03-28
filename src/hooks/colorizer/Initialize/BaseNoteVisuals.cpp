@@ -55,9 +55,9 @@ MAKE_HOOK_MATCH(BaseNoteVisuals_OnDestroy, &BaseNoteVisuals::OnDestroy, void, Ba
   }
 }
 
-void BaseNoteVisualsHook(Logger& logger) {
-  INSTALL_HOOK(logger, BaseNoteVisuals_Awake);
-  INSTALL_HOOK(logger, BaseNoteVisuals_OnDestroy);
+void BaseNoteVisualsHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, BaseNoteVisuals_Awake);
+  INSTALL_HOOK(ChromaLogger::Logger, BaseNoteVisuals_OnDestroy);
 }
 
 ChromaInstallHooks(BaseNoteVisualsHook)

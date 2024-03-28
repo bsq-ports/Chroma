@@ -75,9 +75,9 @@ MAKE_HOOK_MATCH(ObstacleController_ManualUpdate, &ObstacleController::ManualUpda
   }
 }
 
-void ObstacleControllerHook(Logger& /*logger*/) {
-  INSTALL_HOOK(getLogger(), ObstacleController_Init);
-  INSTALL_HOOK(getLogger(), ObstacleController_ManualUpdate);
+void ObstacleControllerHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, ObstacleController_Init);
+  INSTALL_HOOK(ChromaLogger::Logger, ObstacleController_ManualUpdate);
 }
 
 ChromaInstallHooks(ObstacleControllerHook)

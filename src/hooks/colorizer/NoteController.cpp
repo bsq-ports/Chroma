@@ -80,9 +80,9 @@ MAKE_HOOK_MATCH(NoteController_Update, &NoteController::ManualUpdate, void, Note
   }
 }
 
-void NoteControllerHook(Logger& /*logger*/) {
-  INSTALL_HOOK(getLogger(), NoteController_Init);
-  INSTALL_HOOK(getLogger(), NoteController_Update);
+void NoteControllerHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, NoteController_Init);
+  INSTALL_HOOK(ChromaLogger::Logger, NoteController_Update);
 }
 
 ChromaInstallHooks(NoteControllerHook)

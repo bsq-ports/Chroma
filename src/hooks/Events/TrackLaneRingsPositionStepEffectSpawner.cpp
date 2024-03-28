@@ -68,10 +68,10 @@ MAKE_HOOK_MATCH(TrackLaneRingsPositionStepEffectSpawner_HandleBeatmapObjectCallb
   }
 }
 
-void TrackLaneRingsPositionStepEffectSpawnerHook(Logger& logger) {
-  INSTALL_HOOK(logger,
+void TrackLaneRingsPositionStepEffectSpawnerHook() {
+  INSTALL_HOOK(ChromaLogger::Logger,
                TrackLaneRingsPositionStepEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger);
-  //    INSTALL_HOOK_OFFSETLESS(getLogger(), SaberManager_Finalize, il2cpp_utils::FindMethodUnsafe("System", "Object",
+  //    INSTALL_HOOK_OFFSETLESS(ChromaLogger::Logger, SaberManager_Finalize, il2cpp_utils::FindMethodUnsafe("System", "Object",
   //    "Finalize", 0));
 }
 

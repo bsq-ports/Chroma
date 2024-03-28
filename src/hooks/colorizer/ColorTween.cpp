@@ -35,8 +35,8 @@ MAKE_HOOK_MATCH(ColorTween_GetColor, &ColorTween::GetValue, UnityEngine::Color, 
   return ColorTween_GetColor(self, t);
 }
 
-void ColorTweenHook(Logger& logger) {
-  INSTALL_HOOK(logger, ColorTween_GetColor);
+void ColorTweenHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, ColorTween_GetColor);
 }
 
 ChromaInstallHooks(ColorTweenHook)

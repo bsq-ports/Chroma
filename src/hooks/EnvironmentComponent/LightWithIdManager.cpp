@@ -131,11 +131,11 @@ MAKE_HOOK_MATCH(LightWithIdManager_SetColorForId, &LightWithIdManager::SetColorF
   }
 }
 
-void LightWithIdManagerHook(Logger& logger) {
-  INSTALL_HOOK(logger, LightWithIdManager_LateUpdate);
-  INSTALL_HOOK(logger, LightWithIdManager_UnregisterLight);
-  INSTALL_HOOK(logger, LightWithIdManager_SetColorForId);
-  INSTALL_HOOK(logger, LightWithIdManager_RegisterLight);
+void LightWithIdManagerHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, LightWithIdManager_LateUpdate);
+  INSTALL_HOOK(ChromaLogger::Logger, LightWithIdManager_UnregisterLight);
+  INSTALL_HOOK(ChromaLogger::Logger, LightWithIdManager_SetColorForId);
+  INSTALL_HOOK(ChromaLogger::Logger, LightWithIdManager_RegisterLight);
 }
 
 ChromaInstallHooks(LightWithIdManagerHook)

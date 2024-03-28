@@ -56,7 +56,7 @@ requires(std::is_convertible_v<F, std::function<void(T*, T*)>>) static void cons
     initializeDelegate(rootComponents.get(i), originalComponents.get(i));
 
     if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {
-      getLogger().info("Initialized %s", il2cpp_utils::ClassStandardName(classof(T*)).c_str());
+      ChromaLogger::Logger.info("Initialized {}", il2cpp_utils::ClassStandardName(classof(T*)).c_str());
     }
   }
 }

@@ -45,7 +45,7 @@ GeometryType geometryTypeFromString(std::string_view str) {
     return GeometryType::Triangle;
   }
 
-  getLogger().error("Unknown geometry type %s", str.data());
+  ChromaLogger::Logger.error("Unknown geometry type {}", str.data());
   return Chroma::GeometryType::Cube;
 }
 

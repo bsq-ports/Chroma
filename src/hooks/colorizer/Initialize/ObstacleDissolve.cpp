@@ -45,9 +45,9 @@ MAKE_HOOK_MATCH(ObstacleDissolve_OnDestroy, &ObstacleDissolve::OnDestroy, void, 
   ObstacleColorizer::Colorizers.erase(self->_obstacleController);
 }
 
-void ObstacleDissolveHook(Logger& logger) {
-  INSTALL_HOOK(logger, ObstacleDissolve_Awake);
-  INSTALL_HOOK(logger, ObstacleDissolve_OnDestroy);
+void ObstacleDissolveHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, ObstacleDissolve_Awake);
+  INSTALL_HOOK(ChromaLogger::Logger, ObstacleDissolve_OnDestroy);
 }
 
 ChromaInstallHooks(ObstacleDissolveHook)
