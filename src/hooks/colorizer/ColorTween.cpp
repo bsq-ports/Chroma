@@ -24,7 +24,7 @@ MAKE_HOOK_MATCH(ColorTween_GetColor, &ColorTween::GetValue, UnityEngine::Color, 
   }
 
   // discriminator set in ColorTween.makeTween()
-  if ((self != nullptr) && self->easeType == Chroma::Tween::ChromaTweenDiscriminator) {
+  if ((self != nullptr) && self->easeType.value__ == Chroma::Tween::ChromaTweenDiscriminator) {
     // Set in ChromaLightSwitchEventEffect
     // fast access
     Chroma::Tween::ChromaColorTweenData const& tweenData =
@@ -35,8 +35,8 @@ MAKE_HOOK_MATCH(ColorTween_GetColor, &ColorTween::GetValue, UnityEngine::Color, 
   return ColorTween_GetColor(self, t);
 }
 
-void ColorTweenHook(Logger& logger) {
-  INSTALL_HOOK(logger, ColorTween_GetColor);
+void ColorTweenHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, ColorTween_GetColor);
 }
 
 ChromaInstallHooks(ColorTweenHook)

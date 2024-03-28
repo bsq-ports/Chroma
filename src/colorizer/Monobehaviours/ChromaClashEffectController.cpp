@@ -4,8 +4,7 @@
 #include <cmath>
 #include "colorizer/SaberColorizer.hpp"
 
-#include "UnityEngine/ParticleSystem_MainModule.hpp"
-#include "UnityEngine/ParticleSystem_MinMaxGradient.hpp"
+#include "UnityEngine/ParticleSystem.hpp"
 
 DEFINE_TYPE(Chroma, ChromaClashEffectController);
 
@@ -38,9 +37,9 @@ void ChromaClashEffectController::OnSaberColorChanged(int saberType,
 
   Sombrero::FastColor average = Sombrero::FastColor::Lerp(_colors[0], _colors[1], 0.5F);
   auto sparkleMain = _sparkleParticleSystem->get_main();
-  sparkleMain.set_startColor(ParticleSystem::MinMaxGradient(average));
+  sparkleMain.set_startColor(ParticleSystem::MinMaxGradient::op_Implicit___UnityEngine____ParticleSystem__MinMaxGradient(average));
   auto glowMain = _glowParticleSystem->get_main();
-  glowMain.set_startColor(ParticleSystem::MinMaxGradient(average));
+  glowMain.set_startColor(ParticleSystem::MinMaxGradient::op_Implicit___UnityEngine____ParticleSystem__MinMaxGradient(average));
 }
 
 void ChromaClashEffectController::OnDestroy() {

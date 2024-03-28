@@ -45,9 +45,9 @@ Chroma::EnvironmentEnhancementManager::LookupId(std::string_view const id, Chrom
           ret.emplace_back(o);
         }
       } catch (std::exception& e) {
-        getLogger().error("Failed to match (%s) for lookup (%s) with id (%s)", o.FullID.c_str(), lookupMethodStr,
+        ChromaLogger::Logger.error("Failed to match ({}) for lookup ({}) with id ({})", o.FullID.c_str(), lookupMethodStr,
                           id.data());
-        getLogger().error("Error: %s", e.what());
+        ChromaLogger::Logger.error("Error: {}", e.what());
       }
     }
   };
@@ -96,8 +96,8 @@ Chroma::EnvironmentEnhancementManager::LookupId(std::string_view const id, Chrom
     }
     }
   } catch (std::exception const& e) {
-    getLogger().error("Failed to create match for lookup (%s) with id (%s)", lookupMethodStr.data(), id.data());
-    getLogger().error("Error: %s", e.what());
+    ChromaLogger::Logger.error("Failed to create match for lookup ({}) with id ({})", lookupMethodStr.data(), id.data());
+    ChromaLogger::Logger.error("Error: {}", e.what());
   }
 
   ret.shrink_to_fit();
@@ -198,10 +198,10 @@ void EnvironmentEnhancementManager::GetAllGameObjects() {
 
   auto gameObjectsAll = UnityEngine::Resources::FindObjectsOfTypeAll<UnityEngine::GameObject*>();
   std::vector<UnityEngine::GameObject*> gameObjectsVec;
-  gameObjectsVec.reserve(gameObjectsAll.Length());
+  gameObjectsVec.reserve(gameObjectsAll.size());
 
   // I'll probably revist this formula for getting objects by only grabbing the root objects and adding all the children
-  for (int i = 0; i < gameObjectsAll.Length(); i++) {
+  for (int i = 0; i < gameObjectsAll.size(); i++) {
     auto* gameObject = gameObjectsAll.get(i);
     if (gameObject == nullptr) {
       continue;
@@ -228,7 +228,7 @@ void EnvironmentEnhancementManager::GetAllGameObjects() {
     GetChildRecursive(gameObject->get_transform(), allChildren);
 
     for (auto& transform : allChildren) {
-      auto* childGameObject = transform->get_gameObject();
+      auto* childGameObject = transform->get_gameObject().ptr();
       if (std::find(gameObjectsVec.begin(), gameObjectsVec.end(), childGameObject) == gameObjectsVec.end()) {
         gameObjectsVec2.push_back(childGameObject);
       }
@@ -241,13 +241,6 @@ void EnvironmentEnhancementManager::GetAllGameObjects() {
     }
 
     _globalGameObjectInfos.emplace_back(gameObject);
-
-    //        // seriously what the fuck beat games
-    //        // GradientBackground permanently yeeted because it looks awful and can ruin multi-colored chroma maps
-    //        if (gameObject->get_name() == "GradientBackground")
-    //        {
-    //            gameObject->SetActive(false);
-    //        }
   }
 
   // Shrink if necessary
@@ -268,15 +261,15 @@ void EnvironmentEnhancementManager::GetAllGameObjects() {
         ss << o.FullID << std::endl;
       }
 
-      getLogger().info("Objects found in environment:\n%s", ss.str().c_str());
+      ChromaLogger::Logger.info("Objects found in environment:\n{}", ss.str().c_str());
     }).detach();
   }
 }
 
 void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* customBeatmapData) {
   float noteLinesDistance = 0.6F;
-  getLogger().debug("Custom beat map %p", customBeatmapData);
-  getLogger().debug("Custom beat map custom data %p", customBeatmapData->customData);
+  ChromaLogger::Logger.debug("Custom beat map {}", fmt::ptr(customBeatmapData));
+  ChromaLogger::Logger.debug("Custom beat map custom data {}", fmt::ptr(customBeatmapData->customData));
   auto const& customDynWrapper = customBeatmapData->customData->value;
   bool v2 = customBeatmapData->v2orEarlier;
   CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Is environment v2 {}", v2);
@@ -287,6 +280,17 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
   AvoidancePosition.clear();
   RingRotationOffsets.clear();
   ParametricBoxControllerParameters::TransformParameters.clear();
+
+  if (getChromaConfig().environmentEnhancementsEnabled.GetValue())
+  {
+    // seriously what the fuck beat games
+    // GradientBackground permanently yeeted because it looks awful and can ruin multi-colored chroma maps
+    auto gradientBackground = UnityEngine::GameObject::Find("/Environment/GradientBackground");
+    if (gradientBackground)
+    {
+      gradientBackground->SetActive(false);
+    }
+  }
 
   if (!customDynWrapper) {
     if (v2) {
@@ -373,7 +377,7 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
                       << lookupString;
 
       if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {
-        getLogger().info("ID [\"%s\"] using method [%s] found:", id.data(), lookupString.c_str());
+        ChromaLogger::Logger.info("ID [\"{}\"] using method [{}] found:", id.data(), lookupString.c_str());
       }
 
       profiler.mark(foundObjectsLog.str());
@@ -396,10 +400,10 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
 
     if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {
       for (auto const& o : foundObjects) {
-        getLogger().info("%s", o.heldRef.FullID.c_str());
+        ChromaLogger::Logger.info("{}", o.heldRef.FullID.c_str());
       }
 
-      getLogger().info("=====================================");
+      ChromaLogger::Logger.info("=====================================");
     }
 
     TransformData spawnData(gameObjectDataVal, v2, noteLinesDistance);
@@ -441,8 +445,8 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
           profiler.mark("Duplicating [" + gameObjectInfo.FullID + "]:", false);
         }
 
-        auto* gameObject = gameObjectInfo.GameObject;
-        auto* parent = gameObject->get_transform()->get_parent();
+        auto gameObject = gameObjectInfo.GameObject;
+        auto parent = gameObject->get_transform()->get_parent();
         auto scene = gameObject->get_scene();
 
         for (int i = 0; i < dupeAmount.value(); i++) {
@@ -485,7 +489,7 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
         gameObject->SetActive(active.value());
       }
 
-      auto* transform = gameObject->get_transform();
+      auto transform = gameObject->get_transform();
 
       spawnData.Apply(transform, leftHanded);
       auto const& position = spawnData.position;
@@ -504,18 +508,18 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
       auto* trackLaneRing = gameObject->GetComponentInChildren<GlobalNamespace::TrackLaneRing*>();
       if (trackLaneRing != nullptr) {
         if (position || localPosition) {
-          trackLaneRing->positionOffset = trackLaneRing->get_transform()->get_localPosition();
-          trackLaneRing->posZ = 0;
+          trackLaneRing->_positionOffset = trackLaneRing->get_transform()->get_localPosition();
+          trackLaneRing->_posZ = 0;
         }
 
         if (rotation || localRotation) {
           RingRotationOffsets[trackLaneRing] = trackLaneRing->get_transform()->get_localRotation();
-          trackLaneRing->rotZ = 0;
+          trackLaneRing->_rotZ = 0;
         }
       }
 
       // Handle ParametricBoxController
-      auto* parametricBoxController = gameObject->GetComponentInChildren<GlobalNamespace::ParametricBoxController*>();
+      auto parametricBoxController = gameObject->GetComponentInChildren<GlobalNamespace::ParametricBoxController*>();
       if (parametricBoxController != nullptr) {
         if (position || localPosition) {
           ParametricBoxControllerParameters::SetTransformPosition(
@@ -558,9 +562,9 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
         controllerData.RotationUpdate +=
             [=]() { RingRotationOffsets[trackLaneRing] = trackLaneRing->transform->get_localRotation(); };
         controllerData.PositionUpdate +=
-            [=]() { trackLaneRing->positionOffset = trackLaneRing->transform->get_localPosition(); };
+            [=]() { trackLaneRing->_positionOffset = trackLaneRing->transform->get_localPosition(); };
       } else if (parametricBoxController != nullptr) {
-        auto* parametricBoxControllerTransform = parametricBoxController->get_transform();
+        auto parametricBoxControllerTransform = parametricBoxController->get_transform().ptr();
         controllerData.ScaleUpdate += [=]() {
           ParametricBoxControllerParameters::SetTransformScale(parametricBoxController,
                                                                parametricBoxControllerTransform->get_localScale());
@@ -591,10 +595,10 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
     // Log all objects
     for (auto const& profile : profileData) {
       profile.printMarks();
-      getLogger().info("=====================================\n");
+      ChromaLogger::Logger.info("=====================================\n");
     }
 
-    getLogger().info("Finished environment enhancements took %lldms", millisElapsed);
+    ChromaLogger::Logger.info("Finished environment enhancements took {}ldms", millisElapsed);
   }).detach();
 
   ///  Handle materials
@@ -620,7 +624,7 @@ void EnvironmentEnhancementManager::GetChildRecursive(UnityEngine::Transform* ga
   children.reserve(children.size() + gameObject->get_childCount());
   auto gameObjectChildCount = gameObject->get_childCount();
   for (int i = 0; i < gameObjectChildCount; i++) {
-    auto* child = gameObject->GetChild(i);
+    auto* child = gameObject->GetChild(i).ptr();
     children.push_back(child);
     GetChildRecursive(child, children);
   }

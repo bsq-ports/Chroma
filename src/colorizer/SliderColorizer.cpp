@@ -37,11 +37,11 @@ GlobalNamespace::ColorType SliderColorizer::getColorType() {
 }
 
 std::optional<Sombrero::FastColor> SliderColorizer::GlobalColorGetter() {
-  return NoteColorizer::GlobalColor[(int)getColorType()];
+  return NoteColorizer::GlobalColor[getColorType().value__];
 }
 
 std::optional<Sombrero::FastColor> SliderColorizer::OriginalColorGetter() {
-  return _sliderController->colorManager->ColorForType(getColorType());
+  return _sliderController->_colorManager->ColorForType(getColorType());
 }
 
 void SliderColorizer::Reset() {
@@ -50,5 +50,5 @@ void SliderColorizer::Reset() {
 }
 
 void SliderColorizer::Refresh() {
-  _sliderController->initColor = getColor();
+  _sliderController->_initColor = getColor();
 }

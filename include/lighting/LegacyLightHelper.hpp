@@ -19,7 +19,7 @@ namespace Chroma {
 // Please let me delete this whole class
 class LegacyLightHelper {
 public:
-  typedef std::unordered_map<int, std::vector<pair<float, Sombrero::FastColor>>> ColorMap;
+  typedef std::unordered_map<int, std::vector<std::pair<float, Sombrero::FastColor>>> ColorMap;
 
   // internal
   inline const static int RGB_INT_OFFSET = 2000000000;

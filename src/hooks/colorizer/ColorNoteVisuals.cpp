@@ -36,8 +36,8 @@ MAKE_HOOK_MATCH(ColorNoteVisuals_HandleNoteControllerDidInit, &ColorNoteVisuals:
   }
 }
 
-void ColorNoteVisualsHook(Logger& logger) {
-  INSTALL_HOOK(logger, ColorNoteVisuals_HandleNoteControllerDidInit);
+void ColorNoteVisualsHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, ColorNoteVisuals_HandleNoteControllerDidInit);
 }
 
 ChromaInstallHooks(ColorNoteVisualsHook)

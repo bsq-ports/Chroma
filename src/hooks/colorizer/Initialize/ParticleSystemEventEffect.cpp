@@ -42,7 +42,7 @@ MAKE_HOOK_MATCH(ParticleSystemEventEffect_Start, &ParticleSystemEventEffect::Sta
     UnityEngine::Object::Destroy(oldController);
   }
 
-  auto coro = custom_types::Helpers::CoroutineHelper::New(WaitThenStartParticle(self, self->colorEvent));
+  auto coro = custom_types::Helpers::CoroutineHelper::New(WaitThenStartParticle(self, self->_colorEvent));
 
   self->StartCoroutine(coro);
 }
@@ -56,8 +56,8 @@ MAKE_HOOK_MATCH(ParticleSystemEventEffect_HandleBeatmapObjectCallbackControllerB
     return;
   }
 
-  if (beatmapEventData->basicBeatmapEventType == self->colorEvent) {
-    for (auto const& colorizer : ParticleColorizer::GetParticleColorizers(self->colorEvent)) {
+  if (beatmapEventData->basicBeatmapEventType == self->_colorEvent) {
+    for (auto const& colorizer : ParticleColorizer::GetParticleColorizers(self->_colorEvent)) {
       colorizer->PreviousValue = beatmapEventData->value;
     }
   }
@@ -65,9 +65,9 @@ MAKE_HOOK_MATCH(ParticleSystemEventEffect_HandleBeatmapObjectCallbackControllerB
   ParticleSystemEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);
 }
 
-void ParticleSystemEventEffectHook(Logger& logger) {
-  INSTALL_HOOK(logger, ParticleSystemEventEffect_Start);
-  INSTALL_HOOK(logger, ParticleSystemEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger);
+void ParticleSystemEventEffectHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, ParticleSystemEventEffect_Start);
+  INSTALL_HOOK(ChromaLogger::Logger, ParticleSystemEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger);
 }
 
 ChromaInstallHooks(ParticleSystemEventEffectHook)

@@ -35,7 +35,7 @@ private:
   GlobalNamespace::ParametricBoxFakeGlowController* _obstacleFakeGlow;
   float _addColorMultiplier;
   float _obstacleCoreLerpToWhiteFactor;
-  ArrayW<GlobalNamespace::MaterialPropertyBlockController*> _materialPropertyBlockControllers;
+  ArrayW<UnityW<GlobalNamespace::MaterialPropertyBlockController>> _materialPropertyBlockControllers;
   GlobalNamespace::ObstacleControllerBase* obstacleController;
 
   explicit ObstacleColorizer(GlobalNamespace::ObstacleControllerBase* obstacleController);
@@ -47,7 +47,8 @@ protected:
 
   void Refresh() {
     Sombrero::FastColor const& color = getColor();
-    if (color == Sombrero::FastColor(_obstacleFrame->color)) {
+    auto frameColor = Sombrero::FastColor(_obstacleFrame->color);
+    if (color == frameColor) {
       return;
     }
 
@@ -71,7 +72,7 @@ protected:
         FPtrWrapper<static_cast<void (UnityEngine::MaterialPropertyBlock::*)(int, UnityEngine::Color)>(
             &UnityEngine::MaterialPropertyBlock::SetColor)>::get();
 
-    for (auto& materialPropertyBlockController : _materialPropertyBlockControllers) {
+    for (auto materialPropertyBlockController : _materialPropertyBlockControllers) {
       if (!materialPropertyBlockController->materialPropertyBlock) {
         continue;
       }

@@ -58,10 +58,10 @@ MAKE_HOOK_MATCH(TrackLaneRingsRotationEffect_FixedUpdate, &TrackLaneRingsRotatio
   TrackLaneRingsRotationEffect_FixedUpdate(self);
 }
 
-void TrackLaneRingsRotationEffectHook(Logger& /*logger*/) {
-  INSTALL_HOOK_ORIG(getLogger(), TrackLaneRingsRotationEffect_AddRingRotationEffect);
-  INSTALL_HOOK_ORIG(getLogger(), ChromaRingsRotationEffect_AddRingRotationEffect);
-  INSTALL_HOOK_ORIG(getLogger(), TrackLaneRingsRotationEffect_FixedUpdate);
+void TrackLaneRingsRotationEffectHook() {
+  INSTALL_HOOK_ORIG(ChromaLogger::Logger, TrackLaneRingsRotationEffect_AddRingRotationEffect);
+  //INSTALL_HOOK_ORIG(ChromaLogger::Logger, ChromaRingsRotationEffect_AddRingRotationEffect);
+  INSTALL_HOOK_ORIG(ChromaLogger::Logger, TrackLaneRingsRotationEffect_FixedUpdate);
 }
 
 ChromaInstallHooks(TrackLaneRingsRotationEffectHook)

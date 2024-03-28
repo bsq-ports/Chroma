@@ -62,7 +62,7 @@ public:
   // extensions
   inline static std::unordered_set<std::shared_ptr<ParticleColorizer>>&
   GetParticleColorizers(GlobalNamespace::BasicBeatmapEventType BasicBeatmapEventType) {
-    return Colorizers[BasicBeatmapEventType];
+    return Colorizers[BasicBeatmapEventType.value__];
   }
 };
 } // namespace Chroma

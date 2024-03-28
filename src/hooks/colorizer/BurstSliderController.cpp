@@ -66,10 +66,10 @@ MAKE_HOOK_MATCH(BurstSliderGameNoteController_Init, &BurstSliderGameNoteControll
     NoteColorizer::ColorizeNote(self, color);
   }
 }
-void BurstSliderControllerHook(Logger& /*logger*/) {
-  INSTALL_HOOK(getLogger(), BurstSliderGameNoteController_Init);
-  INSTALL_HOOK(getLogger(), BurstSliderGameNoteController_Awake);
-  INSTALL_HOOK(getLogger(), BurstSliderGameNoteController_OnDestroy);
+void BurstSliderControllerHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, BurstSliderGameNoteController_Init);
+  INSTALL_HOOK(ChromaLogger::Logger, BurstSliderGameNoteController_Awake);
+  INSTALL_HOOK(ChromaLogger::Logger, BurstSliderGameNoteController_OnDestroy);
 }
 
 ChromaInstallHooks(BurstSliderControllerHook)

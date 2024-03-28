@@ -29,9 +29,9 @@ MAKE_HOOK_MATCH(SliderController_OnDestroy, &SliderController::OnDestroy, void, 
   SliderColorizer::Colorizers.erase(self);
 }
 
-void SliderControllerInitHook(Logger& logger) {
-  INSTALL_HOOK(logger, SliderController_Awake);
-  INSTALL_HOOK(logger, SliderController_OnDestroy);
+void SliderControllerInitHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, SliderController_Awake);
+  INSTALL_HOOK(ChromaLogger::Logger, SliderController_OnDestroy);
 }
 
 ChromaInstallHooks(SliderControllerInitHook)

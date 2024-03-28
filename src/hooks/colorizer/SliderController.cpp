@@ -73,9 +73,9 @@ MAKE_HOOK_MATCH(SliderController_Update, &SliderController::ManualUpdate, void, 
   }
 }
 
-void SliderControllerHook(Logger& /*logger*/) {
-  INSTALL_HOOK(getLogger(), SliderController_Init);
-  INSTALL_HOOK(getLogger(), SliderController_Update);
+void SliderControllerHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, SliderController_Init);
+  INSTALL_HOOK(ChromaLogger::Logger, SliderController_Update);
 }
 
 ChromaInstallHooks(SliderControllerHook)

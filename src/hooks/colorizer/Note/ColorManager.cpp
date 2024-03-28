@@ -33,8 +33,8 @@ MAKE_HOOK_MATCH(ColorManager_ColorForType,
   return *ColorManagerColorForType::_noteColorOverride;
 }
 
-void ColorManagerHook(Logger& logger) {
-  INSTALL_HOOK(logger, ColorManager_ColorForType);
+void ColorManagerHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, ColorManager_ColorForType);
 }
 
 ChromaInstallHooks(ColorManagerHook)

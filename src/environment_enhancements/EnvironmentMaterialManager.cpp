@@ -30,7 +30,7 @@ custom_types::Helpers::Coroutine Chroma::EnvironmentMaterialManager::Activate() 
   auto environmentMaterials = UnityEngine::Resources::FindObjectsOfTypeAll<UnityEngine::Material*>();
 
   auto Save = [&](ShaderType key, std::string_view matName) {
-    auto* material = environmentMaterials.FirstOrDefault([&](auto const& e) { return e->get_name() == matName; });
+    auto* material = environmentMaterials->FirstOrDefault([&](auto const& e) { return e->get_name() == matName; });
     if (material != nullptr) {
       EnvironmentMaterials[key] = material;
       CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Saving [{}] to [{}].", matName, static_cast<int>(key));
@@ -46,7 +46,7 @@ custom_types::Helpers::Coroutine Chroma::EnvironmentMaterialManager::Activate() 
   Save(ShaderType::InterscopeCar, "Car");
 
   for (auto const& environment : environments) {
-    UnityEngine::SceneManagement::SceneManager::UnloadSceneAsync(environment);
+    //UnityEngine::SceneManagement::SceneManager::UnloadSceneAsync(environment);
   }
 }
 

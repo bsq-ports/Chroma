@@ -48,7 +48,7 @@ void ChromaFogController::AssignTrack(Track* track) {
 void ChromaFogController::Awake() {
   ArrayW<BloomFogSO*> fogs = Resources::FindObjectsOfTypeAll<BloomFogSO*>();
 
-  if (fogs && fogs.Length() > 0) {
+  if (fogs && fogs.size() > 0) {
     bloomFog = fogs.get(0);
   }
 
@@ -63,12 +63,12 @@ void ChromaFogController::Awake() {
 
 void Chroma::ChromaFogController::Update() {
   if (_track == nullptr) {
-    getLogger().error("Track is null");
+    ChromaLogger::Logger.error("Track is null");
     CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Fog track is null!");
     return;
   }
   if (_transitionFogParams == nullptr) {
-    getLogger().error("ChromaFog TransitionFogParams is null");
+    ChromaLogger::Logger.error("ChromaFog TransitionFogParams is null");
     CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("ChromaFog TransitionFogParams is null!");
     return;
   }

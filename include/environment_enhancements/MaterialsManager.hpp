@@ -44,6 +44,7 @@ struct MaterialsManager {
   std::unordered_map<std::string_view, const MaterialInfo>
       materialsJSON; // if two materials have the same JSON, they are the same material
   TracksAD::BeatmapAssociatedData& beatmapAD;
+  static SafePtrUnity<UnityEngine::Shader> standardLightingShader;
 
   bool const v2;
 
@@ -56,6 +57,8 @@ public:
   inline static std::vector<SafePtrUnity<UnityEngine::Material>> createdMaterials;
 
   static void Reset();
+
+  static void LoadShader();
 
   MaterialsManager(rapidjson::Value const& customData, TracksAD::BeatmapAssociatedData& beatmapAD, bool v2);
 

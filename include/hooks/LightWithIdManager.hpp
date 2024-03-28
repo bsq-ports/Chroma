@@ -34,7 +34,7 @@ struct LightIdRegisterer {
 
   static void ForceUnregister(GlobalNamespace::ILightWithId* lightWithId) {
     int lightId = lightWithId->get_lightId();
-    auto lights = VList(lightWithIdManager->lights.get(lightId));
+    auto lights = VList<GlobalNamespace::ILightWithId*>(lightWithIdManager->_lights.get(lightId));
     int index = -1;
 
     for (auto i = 0; i < lights.size(); i++) {

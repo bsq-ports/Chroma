@@ -4,7 +4,7 @@
 
 #include "GlobalNamespace/BeatmapDataTransformHelper.hpp"
 #include "GlobalNamespace/IReadonlyBeatmapData.hpp"
-#include "GlobalNamespace/IPreviewBeatmapLevel.hpp"
+#include "GlobalNamespace/BeatmapLevel.hpp"
 #include "GlobalNamespace/GameplayModifiers.hpp"
 #include "GlobalNamespace/PracticeSettings.hpp"
 #include "GlobalNamespace/EnvironmentEffectsFilterPreset.hpp"
@@ -22,7 +22,7 @@ using namespace Chroma;
 MAKE_HOOK_MATCH(BeatmapDataTransformHelper_CreateTransformedBeatmapData,
                 &BeatmapDataTransformHelper::CreateTransformedBeatmapData, GlobalNamespace::IReadonlyBeatmapData*,
                 ::GlobalNamespace::IReadonlyBeatmapData* beatmapData,
-                ::GlobalNamespace::IPreviewBeatmapLevel* beatmapLevel,
+                ::GlobalNamespace::BeatmapLevel* beatmapLevel,
                 ::GlobalNamespace::GameplayModifiers* gameplayModifiers, bool leftHanded,
                 ::GlobalNamespace::EnvironmentEffectsFilterPreset environmentEffectsFilterPreset,
                 ::GlobalNamespace::EnvironmentIntensityReductionOptions* environmentIntensityReductionOptions,
@@ -50,7 +50,7 @@ MAKE_HOOK_MATCH(BeatmapDataTransformHelper_CreateTransformedBeatmapData,
 
   //    auto* stackTrace = System::Diagnostics::StackTrace::New_ctor();
   //
-  //    getLogger().debug("Frames: %d", stackTrace->frames->Length());
+  //    ChromaLogger::Logger.debug("Frames: {}", stackTrace->frames->Length());
 
   //    if
   //    (!stackTrace->GetFrame(2)->GetMethod()->get_Name()->Contains(il2cpp_utils::newcsstr("MultiplayerConnectedPlayerInstaller")))
@@ -61,8 +61,8 @@ MAKE_HOOK_MATCH(BeatmapDataTransformHelper_CreateTransformedBeatmapData,
   return result;
 }
 
-void BeatmapDataTransformHelperHook(Logger& /*logger*/) {
-  INSTALL_HOOK(getLogger(), BeatmapDataTransformHelper_CreateTransformedBeatmapData);
+void BeatmapDataTransformHelperHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, BeatmapDataTransformHelper_CreateTransformedBeatmapData);
 }
 
 ChromaInstallHooks(BeatmapDataTransformHelperHook)

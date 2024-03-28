@@ -6,16 +6,16 @@
 namespace Chroma {
 class Hooks {
 private:
-  inline static std::vector<void (*)(Logger& logger)> installFuncs;
+  inline static std::vector<void (*)()> installFuncs;
 
 public:
-  static void AddInstallFunc(void (*installFunc)(Logger& logger)) {
+  static void AddInstallFunc(void (*installFunc)()) {
     installFuncs.push_back(installFunc);
   }
 
-  static void InstallHooks(Logger& logger) {
+  static void InstallHooks() {
     for (auto installFunc : installFuncs) {
-      installFunc(logger);
+      installFunc();
     }
   }
 };

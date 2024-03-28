@@ -1,11 +1,25 @@
 #include "environment_enhancements/MaterialsManager.hpp"
 #include "Chroma.hpp"
 #include "utils/ChromaUtils.hpp"
-#include "UnityEngine/MaterialGlobalIlluminationFlags.hpp"
 #include "environment_enhancements/EnvironmentMaterialManager.hpp"
+
+#include "assets.hpp"
+#include "UnityEngine/AssetBundle.hpp"
+#include "UnityEngine/Shader.hpp"
+#include "UnityEngine/AssetBundleRequest.hpp"
+#include "UnityEngine/AsyncOperation.hpp"
+#include "UnityEngine/AssetBundleCreateRequest.hpp"
+#include "UnityEngine/MaterialGlobalIlluminationFlags.hpp"
+#include "UnityEngine/WaitForSeconds.hpp"
+#include "UnityEngine/GameObject.hpp"
+#include "UnityEngine/MeshRenderer.hpp"
+#include "custom-types/shared/coroutine.hpp"
+#include "bsml/shared/BSML/SharedCoroutineStarter.hpp"
 
 using namespace Chroma;
 using namespace UnityEngine;
+
+SafePtrUnity<UnityEngine::Shader> Chroma::MaterialsManager::standardLightingShader;
 
 ShaderType shaderTypeFromString(std::string_view str) {
 #define READ_ENUM(m)                                                                                                   \
@@ -21,8 +35,58 @@ ShaderType shaderTypeFromString(std::string_view str) {
   READ_ENUM(InterscopeCar)
   READ_ENUM(WaterfallMirror)
 
-  getLogger().error("Unknown shader type %s", str.data());
+  ChromaLogger::Logger.error("Unknown shader type {}", str.data());
   return Chroma::ShaderType::Standard;
+}
+
+//Fixes Standard Shader on 1.29.4+
+/*custom_types::Helpers::Coroutine SetupShader() {
+  co_yield reinterpret_cast<System::Collections::IEnumerator*>(UnityEngine::WaitForSeconds::New_ctor(0.5f));
+  using AssetBundle_LoadFromMemoryAsync = function_ptr_t<UnityEngine::AssetBundleCreateRequest*, ArrayW<uint8_t>, int>;
+  static AssetBundle_LoadFromMemoryAsync assetBundle_LoadFromMemoryAsync = reinterpret_cast<AssetBundle_LoadFromMemoryAsync>(il2cpp_functions::resolve_icall("UnityEngine.AssetBundle::LoadFromMemoryAsync_Internal"));
+
+  if (!assetBundle_LoadFromMemoryAsync)
+  {
+    ChromaLogger::Logger.error("LoadFromMemoryAsync icall invalid... ):");
+    co_return;
+  }
+
+  auto bundleReq = SafePtr(assetBundle_LoadFromMemoryAsync(IncludedAssets::standard_shader_bundle, 0));
+  bundleReq->set_allowSceneActivation(true);
+
+  co_yield reinterpret_cast<System::Collections::IEnumerator*>(bundleReq.ptr());
+
+  auto bundle = SafePtrUnity(bundleReq->get_assetBundle().ptr());
+  if (!bundle)
+  {
+    ChromaLogger::Logger.error("Failed to load AssetBundle... ):");
+    co_return;
+  }
+
+  auto assetReq = SafePtr(bundle->LoadAssetAsync("Assets/lighting/Cube.prefab", csTypeOf(GameObject*)));
+  assetReq->set_allowSceneActivation(true);
+
+  co_yield reinterpret_cast<System::Collections::IEnumerator*>(assetReq.ptr());
+
+  auto asset = SafePtrUnity(assetReq->get_asset().try_cast<GameObject>().value_or(nullptr).ptr());
+  if (!asset)
+  {
+    ChromaLogger::Logger.error("Failed to load Asset... ):");
+    co_return;
+  }
+
+  auto object = Object::Instantiate(asset.ptr());
+  auto shader = object->GetComponentInChildren<MeshRenderer*>()->get_material()->shader;
+  Object::DontDestroyOnLoad(shader);
+  MaterialsManager::standardLightingShader = shader;
+
+  //ChromaLogger::Logger.info("Loaded Standard Shader! %p", MaterialsManager::standardLightingShader.ptr());
+}*/
+
+void Chroma::MaterialsManager::LoadShader()
+{
+  if(MaterialsManager::standardLightingShader) return;
+  //BSML::SharedCoroutineStarter::get_instance()->StartCoroutine(custom_types::Helpers::CoroutineHelper::New(SetupShader()));
 }
 
 Chroma::MaterialsManager::MaterialsManager(rapidjson::Value const& customData,
@@ -85,8 +149,7 @@ UnityEngine::Material* Chroma::MaterialsManager::InstantiateSharedMaterial(Shade
           "_WHITEBOOSTTYPE_NONE", "_ZWRITE_ON" }));
     break;
   }
-
-  auto* shader = Shader::Find(shaderName);
+  auto shader = shaderName == "REPLACE" ? standardLightingShader.ptr() : Shader::Find(shaderName).ptr();
   auto* material = Material::New_ctor(shader);
 
   material->set_globalIlluminationFlags(globalIlluminationFlags);

@@ -22,8 +22,8 @@ MAKE_HOOK_MATCH(BeatmapObjectManager_NoteCutEvent, &BeatmapObjectManager::Handle
   BeatmapObjectManager_NoteCutEvent(self, noteController, noteCutInfo);
 }
 
-void BeatmapObjectManagerHook(Logger& logger) {
-  INSTALL_HOOK(logger, BeatmapObjectManager_NoteCutEvent);
+void BeatmapObjectManagerHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, BeatmapObjectManager_NoteCutEvent);
 }
 
 ChromaInstallHooks(BeatmapObjectManagerHook)

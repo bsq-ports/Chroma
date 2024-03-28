@@ -12,7 +12,7 @@ using namespace UnityEngine;
 using namespace Sombrero;
 
 EXPOSE_API(getGlobalSaberColorSafe, OptColor, int saberType) {
-  CRASH_UNLESS(saberType >= SaberType::SaberA && saberType <= SaberType::SaberB);
+  CRASH_UNLESS(saberType >= SaberType::SaberA.value__ && saberType <= SaberType::SaberB.value__);
 
   auto optional = SaberColorizer::GlobalColor[saberType];
 
@@ -51,8 +51,8 @@ EXPOSE_API(setSaberColorSafe, void, GlobalNamespace::SaberModelController* saber
 }
 
 EXPOSE_API(getGlobalSabersColorSafe, SaberAPI::ColorOptPair) {
-  auto colorA = SaberColorizer::GlobalColor[SaberType::SaberA];
-  auto colorB = SaberColorizer::GlobalColor[SaberType::SaberB];
+  auto colorA = SaberColorizer::GlobalColor[SaberType::SaberA.value__];
+  auto colorB = SaberColorizer::GlobalColor[SaberType::SaberB.value__];
 
   return SaberAPI::ColorOptPair{ OptColorFromColor(colorA), OptColorFromColor(colorB) };
 }

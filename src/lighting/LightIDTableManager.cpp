@@ -14,7 +14,7 @@ std::optional<EnvironmentLightDataT> LightIDTableManager::activeTable = std::nul
 
 void Chroma::LightIDTableManager::InitTable() {
   for (auto& data : environmentsToInstall) {
-    getLogger().info("Initializing environment data for %s", data.first.data());
+    ChromaLogger::Logger.info("Initializing environment data for {}", data.first.data());
     lightIdTable.emplace(data);
   }
   installed = true;
@@ -24,13 +24,13 @@ void LightIDTableManager::SetEnvironment(std::string_view environmentName) {
   auto it = lightIdTable.find(environmentName);
 
   if (it == lightIdTable.end()) {
-    getLogger().warning("Table not found for %s", environmentName.data());
+    ChromaLogger::Logger.warn("Table not found for {}", environmentName.data());
     activeTable = EnvironmentLightDataT();
     for (int i = 0; i < 10; i++) {
       activeTable.value()[i] = {};
     }
   } else {
-    getLogger().debug("Set the environment as %s", environmentName.data());
+    ChromaLogger::Logger.debug("Set the environment as {}", environmentName.data());
     auto map = it->second;
     activeTable = EnvironmentLightDataT(map.begin(), map.end());
   }
@@ -63,12 +63,12 @@ void LightIDTableManager::RegisterIndex(int lightId, int index, std::optional<in
   }
 
   dictioanry[key] = index;
-  getLogger().info("Registered key [%d] to type [%d]", key, lightId);
+  ChromaLogger::Logger.info("Registered key [{}] to type [{}]", key, lightId);
 }
 
 void LightIDTableManager::AddEnvironment(InstallEnvironmentFunc environmentData) {
   if (installed) {
-    getLogger().info("Initializing environment data for %s", environmentData.first.data());
+    ChromaLogger::Logger.info("Initializing environment data for {}", environmentData.first.data());
     lightIdTable.try_emplace(environmentData.first, environmentData.second);
   } else {
     environmentsToInstall.try_emplace(environmentData.first, environmentData.second);
@@ -90,7 +90,7 @@ void LightIDTableManager::UnregisterIndex(int lightID, int index) {
   for (auto const [key, n] : map) {
     if (n == index) {
       map.erase(key);
-      getLogger().info("Unregistered key [%d] from lightid [%d]", key, lightID);
+      ChromaLogger::Logger.info("Unregistered key [{}] from lightid [{}]", key, lightID);
       return;
     }
   }

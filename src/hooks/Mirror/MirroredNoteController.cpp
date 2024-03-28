@@ -20,7 +20,7 @@ using namespace UnityEngine;
 template <>
 struct ::il2cpp_utils::il2cpp_type_check::MetadataGetter<
     &GlobalNamespace::MirroredNoteController_1<IGameNoteMirrorable*>::UpdatePositionAndRotation> {
-  static MethodInfo const* get() {
+  static MethodInfo const* methodInfo() {
     return il2cpp_utils::FindMethod(classof(GlobalNamespace::MirroredNoteController_1<IGameNoteMirrorable*>*),
                                     "UpdatePositionAndRotation");
   }
@@ -29,7 +29,7 @@ struct ::il2cpp_utils::il2cpp_type_check::MetadataGetter<
 template <>
 struct ::il2cpp_utils::il2cpp_type_check::MetadataGetter<
     &GlobalNamespace::MirroredNoteController_1<INoteMirrorable*>::UpdatePositionAndRotation> {
-  static MethodInfo const* get() {
+  static MethodInfo const* methodInfo() {
     return il2cpp_utils::FindMethod(classof(GlobalNamespace::MirroredNoteController_1<INoteMirrorable*>*),
                                     "UpdatePositionAndRotation");
   }
@@ -72,12 +72,12 @@ MAKE_HOOK_MATCH(MirroredNoteController_UpdatePositionAndRotationCubeGeneric,
   UpdateMirror(self, reinterpret_cast<NoteControllerBase*>(self->followedNote));
 }
 
-void MirroredNoteControllerHook(Logger& logger) {
+void MirroredNoteControllerHook() {
   auto* iNoteGeneric = classof(GlobalNamespace::MirroredNoteController_1<INoteMirrorable*>*);
   auto* iNoteCubeGeneric = classof(GlobalNamespace::MirroredNoteController_1<IGameNoteMirrorable*>*);
 
-  INSTALL_HOOK(logger, MirroredNoteController_UpdatePositionAndRotationGeneric);
-  INSTALL_HOOK(logger, MirroredNoteController_UpdatePositionAndRotationCubeGeneric);
+  INSTALL_HOOK(ChromaLogger::Logger, MirroredNoteController_UpdatePositionAndRotationGeneric);
+  INSTALL_HOOK(ChromaLogger::Logger, MirroredNoteController_UpdatePositionAndRotationCubeGeneric);
 }
 
 ChromaInstallHooks(MirroredNoteControllerHook)

@@ -57,5 +57,5 @@ void deserialize(CustomJSONData::CustomBeatmapData* readOnlyBeatmap);
 void parseEventData(TracksAD::BeatmapAssociatedData& beatmapAD, CustomJSONData::CustomEventData const* customEventData,
                     bool v2);
 
-void AddEventCallbacks(Logger& logger);
+void AddEventCallbacks();
 } // namespace ChromaEvents

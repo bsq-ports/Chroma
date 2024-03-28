@@ -6,8 +6,6 @@
 
 #include <string_view>
 
-#define GET_FIND_METHOD(mPtr) il2cpp_utils::il2cpp_type_check::MetadataGetter<mPtr>::get()
-
 template <auto val> using FPtrWrapper = il2cpp_utils::il2cpp_type_check::FPtrWrapper<val>;
 
 inline void PrintJSONValue(rapidjson::Value const& json) {
@@ -20,7 +18,7 @@ inline void PrintJSONValue(rapidjson::Value const& json) {
   PrettyWriter<StringBuffer> writer(sb);
   json.Accept(writer);
   auto str = sb.GetString();
-  getLogger().info("%s", str);
+  ChromaLogger::Logger.info("{}", str);
 }
 
 inline void PrintJSONValue(rapidjson::Value const* json) {
@@ -33,21 +31,12 @@ inline void PrintJSONValue(rapidjson::Value const* json) {
   PrettyWriter<StringBuffer> writer(sb);
   json->Accept(writer);
   auto str = sb.GetString();
-  getLogger().info("json %s", str);
+  ChromaLogger::Logger.info("json {}", str);
 }
 
 namespace Chroma {
-namespace ChromaLogger {
-inline static char const* ColorLightSwitch = "ColorLightSwitch";
-inline static char const* EnvironmentRemoval = "EnvironmentRemoval";
-inline static char const* LightColorizer = "LightColorizer";
-inline static char const* TrackLaneRings = "TrackLaneRings";
-inline static char const* LegacyLightColor = "LegacyLightColor";
-inline static char const* ObjectDataDeserialize = "ObjectDataDeserialize";
-inline static char const* TrackController = "GameObjectTrackController";
-} // namespace ChromaLogger
 
-inline static const std::u16string_view REQUIREMENTNAME = u"Chroma";
+inline static const std::string REQUIREMENTNAME = "Chroma";
 
 namespace NewConstants {
 using namespace TracksAD::Constants;
