@@ -163,6 +163,12 @@ UnityEngine::Material* Chroma::MaterialsManager::InstantiateSharedMaterial(Shade
   return material;
 }
 
+int _metallicID() {
+  static int metallicID = UnityEngine::Shader::PropertyToID("_Metallic");
+
+  return metallicID;
+}
+
 MaterialInfo Chroma::MaterialsManager::CreateMaterialInfo(rapidjson::Value const& data) {
   ArrayW<StringW> shaderKeywords;
   auto shaderKeywordsIt =
@@ -202,6 +208,9 @@ MaterialInfo Chroma::MaterialsManager::CreateMaterialInfo(rapidjson::Value const
   createdMaterials.emplace_back(material);
   if (color) {
     material->set_color(*color);
+    if (shaderType == ShaderType::Standard) {
+      material->SetFloat(_metallicID(), 0);
+    }
   }
   if (shaderKeywords) {
     material->set_shaderKeywords(shaderKeywords);
