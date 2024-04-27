@@ -242,10 +242,17 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, std::optional<std::vector<
       if (nextSameTypesDict == nullptr) {
         nextSameTypeEvent = static_cast<BasicBeatmapEventData*>(previousEvent->nextSameTypeEventData);
       } else if (nextSameTypesDict->contains(tweenData->id)) {
-        auto [anextSameTypeEvent, anextEventData] = nextSameTypesDict->at(tweenData->id);
-        nextSameTypeEvent = il2cpp_utils::try_cast<BasicBeatmapEventData>(anextSameTypeEvent).value_or(nullptr);
+        auto [tempNextSameTypeEvent, tempNextEventData] = nextSameTypesDict->at(tweenData->id);
         // optimization, grab early
-        nextEventData = anextEventData;
+        nextEventData = tempNextEventData;
+
+        nextSameTypeEvent = il2cpp_utils::try_cast<BasicBeatmapEventData>(tempNextSameTypeEvent).value_or(nullptr);
+
+      } else if (nextSameTypesDict->contains(-1)) {
+        auto [tempNextSameTypeEvent, tempNextEventData] = nextSameTypesDict->at(-1);
+        // optimization, grab early
+        nextEventData = tempNextEventData;
+        nextSameTypeEvent = il2cpp_utils::try_cast<BasicBeatmapEventData>(tempNextSameTypeEvent).value_or(nullptr);
       }
 
       if ((nextSameTypeEvent == nullptr) ||

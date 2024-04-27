@@ -17,7 +17,9 @@ void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapDa
 
   bool v2 = beatmapDataCast->v2orEarlier;
 
-  for (auto* beatmapEvent : beatmapDataCast->beatmapEventDatas) {
+  auto const& beatmapEventDatas = beatmapDataCast->beatmapEventDatas;
+
+  for (auto* beatmapEvent : beatmapEventDatas) {
 
     if (beatmapEvent->klass != CustomBasicBeatmapEventDataKlass) {
       continue;
@@ -196,90 +198,38 @@ void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapDa
     ChromaEventDatas.try_emplace(customBeatmapEvent, std::move(chromaEventData));
   }
 
-  std::vector<int> allUsedIds;
-  allUsedIds.reserve(beatmapDataCast->beatmapEventDatas.size());
+  // Horrible stupid logic to get next same type event per light id
+  // what am i even doing anymore
+  std::unordered_map<int, std::unordered_map<int, GlobalNamespace::BasicBeatmapEventData*>> allNextSameTypes;
+  for (int i = beatmapEventDatas.size() - 1; i >= 0; i--) {
+    auto const& beatmapEventData = beatmapEventDatas[i];
+    auto const& basicBeatmapEventDataOpt =
+        il2cpp_utils::try_cast<GlobalNamespace::BasicBeatmapEventData>(beatmapEventData);
+    if (!basicBeatmapEventDataOpt) continue;
+    auto const& basicBeatmapEventData = *basicBeatmapEventDataOpt;
 
-  for (auto const& event : beatmapDataCast->beatmapEventDatas) {
-    auto const& dataIt = ChromaEventDatas.find(event);
-    if (dataIt == ChromaEventDatas.end()) {
-      continue;
-    }
+    auto eventDataIt = ChromaEventDatas.find(beatmapEventData);
+    if (eventDataIt == ChromaEventDatas.end()) continue;
+    auto& currentEventData = eventDataIt->second;
 
-    auto const& d = dataIt->second;
+    int type = (int)basicBeatmapEventData->basicBeatmapEventType.value__;
+    auto& nextSameTypes = allNextSameTypes[type];
 
-    if (!d.LightID) {
-      continue;
-    }
-
-    for (auto const& l : *d.LightID) {
-      if (std::find(allUsedIds.begin(), allUsedIds.end(), l) == allUsedIds.end()) {
-        continue;
+    if (currentEventData.NextSameTypeEvent.empty()) {
+      for (auto const& [k, v] : nextSameTypes) {
+        currentEventData.NextSameTypeEvent[k] = std::pair(v, &ChromaEventDatas.at(v));
       }
-      allUsedIds.push_back(l);
-    }
-  }
-
-  // start at 0
-  int i = -1;
-  auto beatmapEventsLength = beatmapDataCast->beatmapEventDatas.size();
-
-  for (auto* beatmapEventData : beatmapDataCast->beatmapEventDatas) {
-    i++;
-
-    auto tryCast = il2cpp_utils::try_cast<GlobalNamespace::BasicBeatmapEventData>(beatmapEventData);
-    if (!tryCast) {
-      continue;
     }
 
-    auto* basicBeatmapEventData = *tryCast;
-    auto chromaEventDataIt = ChromaEventDatas.find(basicBeatmapEventData);
-
-    if (chromaEventDataIt == ChromaEventDatas.end()) {
-      continue;
-    }
-
-    auto* customBeatmapEvent = static_cast<CustomJSONData::CustomBeatmapEventData*>(basicBeatmapEventData);
-    auto& currentEventData = chromaEventDataIt->second;
-    // Horrible stupid logic to get next same type event per light id
-
-    auto type = customBeatmapEvent->basicBeatmapEventType;
-    auto& nextSameTypeEvent = currentEventData.NextSameTypeEvent;
-
-    auto const& ids = currentEventData.LightID.value_or(allUsedIds);
-
-    for (int id : ids) {
-      if (i >= beatmapEventsLength - 1) {
-        continue;
+    auto const& ids = currentEventData.LightID;
+    if (ids == std::nullopt) {
+      nextSameTypes[-1] = basicBeatmapEventData;
+      for (auto [key, _] : nextSameTypes) {
+        nextSameTypes[key] = basicBeatmapEventData;
       }
-
-      int nextIndex = FindIndex(
-          beatmapDataCast->beatmapEventDatas,
-          [type, id](GlobalNamespace::BeatmapEventData* n) {
-            auto tryCast = il2cpp_utils::try_cast<GlobalNamespace::BasicBeatmapEventData>(n);
-            if (!tryCast) {
-              return false;
-            }
-
-            if (tryCast.value()->basicBeatmapEventType != type) {
-              return false;
-            }
-
-            auto it = ChromaEventDatas.find(n);
-
-            if (it == ChromaEventDatas.end()) {
-              return false;
-            }
-
-            ChromaEventData const& nextEventData = it->second;
-            auto const& lightId = nextEventData.LightID;
-
-            return !lightId || std::find(lightId->begin(), lightId->end(), id) != lightId->end();
-          },
-          i + 1);
-
-      if (nextIndex != -1) {
-        auto* beatmapEvent = beatmapDataCast->beatmapEventDatas[nextIndex];
-        currentEventData.NextSameTypeEvent[id] = { beatmapEvent, &ChromaEventDatas.at(beatmapEvent) };
+    } else {
+      for (auto id : *ids) {
+        nextSameTypes[id] = basicBeatmapEventData;
       }
     }
   }
