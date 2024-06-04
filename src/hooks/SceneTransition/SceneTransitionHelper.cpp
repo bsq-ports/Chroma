@@ -38,7 +38,7 @@ bool SceneTransitionHelper::BasicPatch(SongCore::SongLoader::CustomBeatmapLevel*
   ChromaLogger::Logger.debug("Basic Patch {}", fmt::ptr(beatmapLevel));
   ChromaController::TutorialMode = false;
 
-  bool chromaRequirement = false;
+
   ChromaController::infoDatCopy = std::nullopt;
 
   bool legacyOverride = false;
@@ -66,6 +66,9 @@ bool SceneTransitionHelper::BasicPatch(SongCore::SongLoader::CustomBeatmapLevel*
   
   auto requirements = diff->get().requirements;
   auto suggestions = diff->get().suggestions;
+  
+  bool chromaRequirement = false;
+
   chromaRequirement |= std::find(requirements.begin(), requirements.end(), REQUIREMENTNAME) != requirements.end();
   chromaRequirement |= std::find(suggestions.begin(), suggestions.end(), REQUIREMENTNAME) != suggestions.end();
 

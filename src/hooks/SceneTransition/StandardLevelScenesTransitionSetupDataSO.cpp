@@ -28,16 +28,14 @@ MAKE_HOOK_MATCH(StandardLevelScenesTransitionSetupDataSO_Init,
                 ::GlobalNamespace::PlayerSpecificSettings* playerSpecificSettings, ::StringW backButtonText,
                 bool startPaused) {
   auto customBeatmapLevel = il2cpp_utils::try_cast<SongCore::SongLoader::CustomBeatmapLevel>(self->get_beatmapLevel());
-  if(!customBeatmapLevel) {
-    StandardLevelScenesTransitionSetupDataSO_Init(
-      self, playerSpecificSettings, backButtonText, startPaused);
+  if (!customBeatmapLevel) {
+    StandardLevelScenesTransitionSetupDataSO_Init(self, playerSpecificSettings, backButtonText, startPaused);
   }
 
   // TODO: Fix environment override
   SceneTransitionHelper::Patch(customBeatmapLevel.value(), self->beatmapKey, self->environmentInfo);
 
-    StandardLevelScenesTransitionSetupDataSO_Init(
-      self, playerSpecificSettings, backButtonText, startPaused);
+  StandardLevelScenesTransitionSetupDataSO_Init(self, playerSpecificSettings, backButtonText, startPaused);
 }
 
 void StandardLevelScenesTransitionSetupDataSOHook() {
