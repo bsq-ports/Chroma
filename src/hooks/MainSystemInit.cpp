@@ -8,15 +8,16 @@
 using namespace GlobalNamespace;
 using namespace Chroma;
 
-MAKE_HOOK_MATCH(MainSystemInit_Init, &MainSystemInit::Init, void, MainSystemInit* self) {
-  static bool loaded = true;
+MAKE_HOOK_MATCH(MainSystemInit_Init, &MainSystemInit::Init, void, MainSystemInit* self,
+                ::GlobalNamespace::SettingsApplicatorSO* settingsApplicator) {
+  static bool loaded = false;
   if (!loaded) {
     loaded = true;
     self->MonoBehaviour::StartCoroutine(
         custom_types::Helpers::CoroutineHelper::New(EnvironmentMaterialManager::Activate));
   }
 
-  return MainSystemInit_Init(self);
+  return MainSystemInit_Init(self, settingsApplicator);
 }
 
 void MainSystemInitHook() {

@@ -22,7 +22,9 @@ custom_types::Helpers::Coroutine Chroma::EnvironmentMaterialManager::Activate() 
   auto loads = environments | Select([&](std::string_view s) { return Load(s); });
 
   for (auto const& n : loads) {
-    while (n->get_isDone()) {
+    if (!n) continue;
+
+    while (!n->get_isDone()) {
       co_yield nullptr;
     }
   }
@@ -48,6 +50,8 @@ custom_types::Helpers::Coroutine Chroma::EnvironmentMaterialManager::Activate() 
   for (auto const& environment : environments) {
     //UnityEngine::SceneManagement::SceneManager::UnloadSceneAsync(environment);
   }
+
+  co_return;
 }
 
 std::optional<UnityEngine::Material*> Chroma::EnvironmentMaterialManager::getMaterial(Chroma::ShaderType shaderType) {
