@@ -2,16 +2,7 @@
 
 #include "custom-json-data/shared/CustomBeatmapData.h"
 #include "GlobalNamespace/MultiplayerLevelScenesTransitionSetupDataSO.hpp"
-#include "GlobalNamespace/OverrideEnvironmentSettings.hpp"
-#include "GlobalNamespace/ColorScheme.hpp"
-#include "GlobalNamespace/GameplayModifiers.hpp"
-#include "GlobalNamespace/PlayerSpecificSettings.hpp"
-#include "GlobalNamespace/PracticeSettings.hpp"
-#include "GlobalNamespace/NoteController.hpp"
 #include "GlobalNamespace/BeatmapLevelSO.hpp"
-#include "colorizer/NoteColorizer.hpp"
-#include "UnityEngine/Space.hpp"
-#include "UnityEngine/Transform.hpp"
 
 #include "hooks/SceneTransition/SceneTransitionHelper.hpp"
 
@@ -20,23 +11,19 @@ using namespace GlobalNamespace;
 using namespace UnityEngine;
 using namespace Chroma;
 
-MAKE_HOOK_MATCH(MultiplayerLevelScenesTransitionSetupDataSO_Init, &MultiplayerLevelScenesTransitionSetupDataSO::Init,
-                void, MultiplayerLevelScenesTransitionSetupDataSO* self, 
-                StringW gameMode, 
-                ByRef<BeatmapKey> beatmapKey,
-                BeatmapLevel* beatmapLevel, 
-                IBeatmapLevelData* beatmapLevelData, 
-                ColorScheme* overrideColorScheme, 
-                GameplayModifiers* gameplayModifiers, 
-                PlayerSpecificSettings* playerSpecificSettings, 
-                PracticeSettings* practiceSettings, 
-                AudioClipAsyncLoader* audioClipAsyncLoader, 
-                BeatmapDataLoader* beatmapDataLoader, 
-                bool useTestNoteCutSoundEffects) {
-  MultiplayerLevelScenesTransitionSetupDataSO_Init(
-      self, gameMode, beatmapKey, beatmapLevel, beatmapLevelData, overrideColorScheme, gameplayModifiers, 
-      playerSpecificSettings, practiceSettings, audioClipAsyncLoader, beatmapDataLoader, useTestNoteCutSoundEffects);
-  //SceneTransitionHelper::Patch(difficultyBeatmap);
+MAKE_HOOK_MATCH(MultiplayerLevelScenesTransitionSetupDataSO_Init, &MultiplayerLevelScenesTransitionSetupDataSO::InitAndSetupScenes,
+                void, MultiplayerLevelScenesTransitionSetupDataSO* self) {
+
+  
+  auto customBeatmapLevel = il2cpp_utils::try_cast<SongCore::SongLoader::CustomBeatmapLevel>(self->get_beatmapLevel());
+  if (!customBeatmapLevel) {
+    MultiplayerLevelScenesTransitionSetupDataSO_Init(self);
+  }
+
+  // TODO: Fix environment override
+  SceneTransitionHelper::Patch(customBeatmapLevel.value(), self->beatmapKey, self->GetOrLoadMultiplayerEnvironmentInfo());
+
+  MultiplayerLevelScenesTransitionSetupDataSO_Init(self);
 }
 
 void MultiplayerLevelScenesTransitionSetupDataSOHook() {

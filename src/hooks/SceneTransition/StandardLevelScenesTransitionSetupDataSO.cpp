@@ -22,44 +22,22 @@ using namespace UnityEngine;
 using namespace Chroma;
 using namespace System;
 
-MAKE_HOOK_MATCH(StandardLevelScenesTransitionSetupDataSO_Init, static_cast<void(StandardLevelScenesTransitionSetupDataSO::*)(StringW, ByRef<BeatmapKey>, BeatmapLevel*, OverrideEnvironmentSettings*, ColorScheme*, ColorScheme*, GameplayModifiers*, PlayerSpecificSettings*, PracticeSettings*, EnvironmentsListModel*, AudioClipAsyncLoader*, ::BeatmapDataLoader*, StringW, BeatmapLevelsModel*, bool, bool, Nullable_1<RecordingToolManager::SetupData>)>(&StandardLevelScenesTransitionSetupDataSO::Init),
-                    void, StandardLevelScenesTransitionSetupDataSO* self, 
-                    StringW gameMode, 
-                    ByRef<BeatmapKey> beatmapKey,
-                    BeatmapLevel* beatmapLevel, 
-                    OverrideEnvironmentSettings* overrideEnvironmentSettings, 
-                    ColorScheme* overrideColorScheme, 
-                    ColorScheme* beatmapOverrideColorScheme, 
-                    GameplayModifiers* gameplayModifiers, 
-                    PlayerSpecificSettings* playerSpecificSettings, 
-                    PracticeSettings* practiceSettings, 
-                    EnvironmentsListModel* environmentsListModel, 
-                    AudioClipAsyncLoader* audioClipAsyncLoader, 
-                    BeatmapDataLoader* beatmapDataLoader, 
-                    StringW backButtonText,
-                    BeatmapLevelsModel* beatmapLevelsModel, 
-                    bool useTestNoteCutSoundEffects, bool startPaused, 
-                    Nullable_1<RecordingToolManager::SetupData> recordingToolData) {
-  auto customBeatmapLevel = il2cpp_utils::try_cast<SongCore::SongLoader::CustomBeatmapLevel>(beatmapLevel);
+MAKE_HOOK_MATCH(StandardLevelScenesTransitionSetupDataSO_Init,
+                &StandardLevelScenesTransitionSetupDataSO::InitAndSetupScenes, void,
+                StandardLevelScenesTransitionSetupDataSO* self,
+                ::GlobalNamespace::PlayerSpecificSettings* playerSpecificSettings, ::StringW backButtonText,
+                bool startPaused) {
+  auto customBeatmapLevel = il2cpp_utils::try_cast<SongCore::SongLoader::CustomBeatmapLevel>(self->get_beatmapLevel());
   if(!customBeatmapLevel) {
     StandardLevelScenesTransitionSetupDataSO_Init(
-      self, gameMode, beatmapKey, beatmapLevel, overrideEnvironmentSettings, overrideColorScheme, beatmapOverrideColorScheme, gameplayModifiers,
-      playerSpecificSettings, practiceSettings, environmentsListModel, audioClipAsyncLoader, beatmapDataLoader, backButtonText, beatmapLevelsModel, useTestNoteCutSoundEffects, startPaused, recordingToolData);
+      self, playerSpecificSettings, backButtonText, startPaused);
   }
 
-  auto* settings = overrideEnvironmentSettings;
-  self->set_gameMode(gameMode);
-  self->set_beatmapKey(beatmapKey.heldRef);
-  self->set_beatmapLevel(beatmapLevel);
-  self->set_practiceSettings(practiceSettings);
-  self->set_gameplayModifiers(gameplayModifiers);
-  self->InitEnvironmentInfo(overrideEnvironmentSettings, environmentsListModel);  
+  // TODO: Fix environment override
+  SceneTransitionHelper::Patch(customBeatmapLevel.value(), self->beatmapKey, self->environmentInfo);
 
-  SceneTransitionHelper::Patch(customBeatmapLevel.value(), beatmapKey.heldRef, self->get_environmentInfo().ptr(), settings);
-
-  StandardLevelScenesTransitionSetupDataSO_Init(
-      self, gameMode, beatmapKey, beatmapLevel, overrideEnvironmentSettings, overrideColorScheme, beatmapOverrideColorScheme, gameplayModifiers,
-      playerSpecificSettings, practiceSettings, environmentsListModel, audioClipAsyncLoader, beatmapDataLoader, backButtonText, beatmapLevelsModel, useTestNoteCutSoundEffects, startPaused, recordingToolData);
+    StandardLevelScenesTransitionSetupDataSO_Init(
+      self, playerSpecificSettings, backButtonText, startPaused);
 }
 
 void StandardLevelScenesTransitionSetupDataSOHook() {

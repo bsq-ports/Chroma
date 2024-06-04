@@ -31,7 +31,7 @@
     },
     {
       "id": "bs-cordl",
-      "versionRange": "3500.*",
+      "versionRange": "3602.*",
       "additionalData": {
         "includeQmod": true,
         "private": true
@@ -100,7 +100,7 @@
     },
     {
       "id": "songcore",
-      "versionRange": "^0.2.0",
+      "versionRange": "^1.0.0",
       "additionalData": {
         "includeQmod": true,
         "private": true

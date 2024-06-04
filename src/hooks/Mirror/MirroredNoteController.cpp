@@ -20,6 +20,9 @@ using namespace UnityEngine;
 template <>
 struct ::il2cpp_utils::il2cpp_type_check::MetadataGetter<
     &GlobalNamespace::MirroredNoteController_1<IGameNoteMirrorable*>::UpdatePositionAndRotation> {
+  static constexpr std::size_t size = 0xFABC; // random garbage
+  constexpr static std::size_t addrs = 0x260faf4; // random garbage
+
   static MethodInfo const* methodInfo() {
     return il2cpp_utils::FindMethod(classof(GlobalNamespace::MirroredNoteController_1<IGameNoteMirrorable*>*),
                                     "UpdatePositionAndRotation");
@@ -29,6 +32,9 @@ struct ::il2cpp_utils::il2cpp_type_check::MetadataGetter<
 template <>
 struct ::il2cpp_utils::il2cpp_type_check::MetadataGetter<
     &GlobalNamespace::MirroredNoteController_1<INoteMirrorable*>::UpdatePositionAndRotation> {
+  static constexpr std::size_t size = 0xFABC;     // random garbage
+  constexpr static std::size_t addrs = 0x260faf4; // random garbage
+
   static MethodInfo const* methodInfo() {
     return il2cpp_utils::FindMethod(classof(GlobalNamespace::MirroredNoteController_1<INoteMirrorable*>*),
                                     "UpdatePositionAndRotation");

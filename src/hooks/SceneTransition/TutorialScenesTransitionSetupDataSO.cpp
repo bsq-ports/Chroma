@@ -2,11 +2,7 @@
 
 #include "ChromaController.hpp"
 
-#include "custom-json-data/shared/CustomBeatmapData.h"
 #include "GlobalNamespace/TutorialScenesTransitionSetupDataSO.hpp"
-#include "colorizer/NoteColorizer.hpp"
-#include "UnityEngine/Space.hpp"
-#include "UnityEngine/Transform.hpp"
 
 using namespace CustomJSONData;
 using namespace GlobalNamespace;

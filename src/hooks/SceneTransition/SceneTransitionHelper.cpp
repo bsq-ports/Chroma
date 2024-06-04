@@ -47,19 +47,18 @@ bool SceneTransitionHelper::BasicPatch(SongCore::SongLoader::CustomBeatmapLevel*
 
   ChromaLogger::Logger.debug("Getting Save Data");
 
-  auto saveData = beatmapLevel->get_standardLevelInfoSaveData();
+  auto saveData = beatmapLevel->standardLevelInfoSaveDataV2;
 
-  if(saveData == nullptr) return false;
+  if(!saveData) return false;
 
-  ChromaLogger::Logger.debug("Getting Characteristic");
+  auto customSaveInfo = saveData.value()->CustomSaveDataInfo;
 
-  auto chara = saveData->TryGetCharacteristic(key.beatmapCharacteristic->get_serializedName());
+  if (!customSaveInfo) return false;
 
-  if(!chara) return false;
+  ChromaLogger::Logger.debug("Getting Characteristic and diff");
 
-  ChromaLogger::Logger.debug("Getting Difficulty");
-
-  auto diff = chara->get().TryGetDifficulty(key.difficulty);
+  auto diff = customSaveInfo.value().get().TryGetCharacteristicAndDifficulty(
+      key.beatmapCharacteristic->get_serializedName(), key.difficulty);
 
   if(!diff) return false;
 
@@ -72,7 +71,11 @@ bool SceneTransitionHelper::BasicPatch(SongCore::SongLoader::CustomBeatmapLevel*
 
   ChromaLogger::Logger.debug("Setting environment. Chroma Required: {}", chromaRequirement);
 
-  if(environment == nullptr) return false;
+  if (environment == nullptr) {
+    ChromaLogger::Logger.debug("Environment is null, this is not right!", chromaRequirement);
+
+    return false;
+  }
 
   LightIDTableManager::SetEnvironment(static_cast<std::string>(environment->get_serializedName()));
 

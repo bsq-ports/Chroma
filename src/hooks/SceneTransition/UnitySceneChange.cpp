@@ -1,11 +1,9 @@
 #include "Chroma.hpp"
 #include "ChromaController.hpp"
 
-#include "GlobalNamespace/GameScenesManager.hpp"
 #include "UnityEngine/SceneManagement/SceneManager.hpp"
 #include "UnityEngine/SceneManagement/Scene.hpp"
 #include "UnityEngine/SceneManagement/LoadSceneMode.hpp"
-#include "System/Action.hpp"
 #include "custom-json-data/shared/CustomBeatmapData.h"
 
 using namespace CustomJSONData;

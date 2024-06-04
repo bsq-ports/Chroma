@@ -6,7 +6,6 @@
 #include "GlobalNamespace/IReadonlyBeatmapData.hpp"
 #include "GlobalNamespace/BeatmapLevel.hpp"
 #include "GlobalNamespace/GameplayModifiers.hpp"
-#include "GlobalNamespace/PracticeSettings.hpp"
 #include "GlobalNamespace/EnvironmentEffectsFilterPreset.hpp"
 #include "GlobalNamespace/EnvironmentIntensityReductionOptions.hpp"
 
@@ -14,22 +13,19 @@
 #include "ChromaEvents.hpp"
 #include "ChromaObjectData.hpp"
 
-#include "System/Diagnostics/StackTrace.hpp"
-
 using namespace GlobalNamespace;
 using namespace Chroma;
 
 MAKE_HOOK_MATCH(BeatmapDataTransformHelper_CreateTransformedBeatmapData,
                 &BeatmapDataTransformHelper::CreateTransformedBeatmapData, GlobalNamespace::IReadonlyBeatmapData*,
-                ::GlobalNamespace::IReadonlyBeatmapData* beatmapData,
-                ::GlobalNamespace::BeatmapLevel* beatmapLevel,
+                ::GlobalNamespace::IReadonlyBeatmapData* beatmapData, ::GlobalNamespace::BeatmapLevel* beatmapLevel,
                 ::GlobalNamespace::GameplayModifiers* gameplayModifiers, bool leftHanded,
                 ::GlobalNamespace::EnvironmentEffectsFilterPreset environmentEffectsFilterPreset,
                 ::GlobalNamespace::EnvironmentIntensityReductionOptions* environmentIntensityReductionOptions,
-                ::GlobalNamespace::MainSettingsModelSO* mainSettingsModel) {
+                ::BeatSaber::PerformancePresets::PerformancePreset* performancePreset) {
   auto* result = BeatmapDataTransformHelper_CreateTransformedBeatmapData(
       beatmapData, beatmapLevel, gameplayModifiers, leftHanded, environmentEffectsFilterPreset,
-      environmentIntensityReductionOptions, mainSettingsModel);
+      environmentIntensityReductionOptions, performancePreset);
 
   // Essentially, here we cancel the original method. DO NOT call it IF it's a Chroma map
   if (!ChromaController::DoChromaHooks() || MultiplayerConnectedPlayerInstallerHookHolder::MultiplayerInvoked) {
