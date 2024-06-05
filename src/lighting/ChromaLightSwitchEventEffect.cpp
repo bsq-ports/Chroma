@@ -35,16 +35,22 @@ constexpr static GlobalNamespace::EnvironmentColorType GetLightColorTypeFromEven
 }
 
 Sombrero::FastColor GetNormalColorOld(ChromaLightSwitchEventEffect* l, int beatmapEventValue, bool colorBoost) {
-  if (colorBoost) {
-    if (!Chroma::ChromaLightSwitchEventEffect::IsColor0(beatmapEventValue)) {
-      return l->_lightColor1Boost->get_color();
+  switch (GetLightColorTypeFromEventDataValue(beatmapEventValue)) {
+  case EnvironmentColorType::Color0:
+    if (!colorBoost) {
+      return l->_lightColor0->color;
     }
-    return l->_lightColor0Boost->get_color();
+    return l->_lightColor0Boost->color;
+  case EnvironmentColorType::Color1:
+    if (!colorBoost) {
+      return l->_lightColor1->color;
+    }
+    return l->_lightColor1Boost->color;
+  case EnvironmentColorType::ColorW:
+    return l->_colorManager->ColorForType(EnvironmentColorType::ColorW, colorBoost);
+  default:
+    return l->_lightColor0->color;
   }
-  if (!Chroma::ChromaLightSwitchEventEffect::IsColor0(beatmapEventValue)) {
-    return l->_lightColor1->get_color();
-  }
-  return l->_lightColor0->get_color();
 }
 
 void Chroma::ChromaLightSwitchEventEffect::CopyValues(GlobalNamespace::LightSwitchEventEffect* lightSwitchEventEffect) {
@@ -72,7 +78,7 @@ void Chroma::ChromaLightSwitchEventEffect::CopyValues(GlobalNamespace::LightSwit
   _originalLightColor1 = _lightColor1;
   _originalLightColor1Boost = _lightColor1Boost;
 
-  auto Initialize = [](UnityW<ColorSO>& so, Sombrero::FastColor& color) {
+  auto Initialize = [](UnityW<ColorSO> so, Sombrero::FastColor& color) {
     if (auto multi = il2cpp_utils::try_cast<MultipliedColorSO>(so.ptr())) {
       color = multi.value()->_multiplierColor;
     } else {
@@ -179,16 +185,6 @@ void Chroma::ChromaLightSwitchEventEffect::OnDestroy() {
 
   CRASH_UNLESS(&LightColorizer::Colorizers.at(_event.value__) == lightColorizer);
   LightColorizer::Colorizers.erase(_event.value__);
-}
-
-Sombrero::FastColor Chroma::ChromaLightSwitchEventEffect::GetOriginalColor(int beatmapEventValue,
-                                                                           bool colorBoost) const {
-  if (colorBoost) {
-    return !IsColor0(beatmapEventValue) ? _originalLightColor1Boost->get_color()
-                                        : _originalLightColor0Boost->get_color();
-  }
-
-  return !IsColor0(beatmapEventValue) ? _originalLightColor1->get_color() : _originalLightColor0->get_color();
 }
 
 void ChromaLightSwitchEventEffect::Refresh(bool hard, std::optional<std::vector<ILightWithId*>> const& selectLights,
