@@ -99,10 +99,6 @@ ChromaController::DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnCont
 void ChromaController::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene current) {
   ChromaLogger::Logger.debug("Clear scene");
 
-  if (current.IsValid() && current.get_name() == "MainMenu") {
-    Chroma::MaterialsManager::LoadShader();
-  }
-
   if (current.IsValid() && current.get_name() == "GameCore") {
     CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Clearing all data");
     ChromaGradientController::clearInstance();
