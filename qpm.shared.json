@@ -26,7 +26,7 @@
     "dependencies": [
       {
         "id": "beatsaber-hook",
-        "versionRange": "^5.1.3",
+        "versionRange": ">5.1.0, <5.1.7",
         "additionalData": {
           "extraFiles": [
             "src/inline-hook"
@@ -173,13 +173,13 @@
     {
       "dependency": {
         "id": "sombrero",
-        "versionRange": "=0.1.40",
+        "versionRange": "=0.1.42",
         "additionalData": {
           "headersOnly": true,
-          "branchName": "version/v0_1_40"
+          "branchName": "version/v0_1_42"
         }
       },
-      "version": "0.1.40"
+      "version": "0.1.42"
     },
     {
       "dependency": {
