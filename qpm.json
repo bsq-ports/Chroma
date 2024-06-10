@@ -109,9 +109,9 @@
   ],
   "workspace": {
     "scripts": {
-      "build": [
-        "pwsh ./build.ps1"
-      ]
-    }
+      "build": ["pwsh ./build.ps1"]
+    },
+    "qmodIncludeDirs": ["./build", "./extern/libs"],
+    "qmodOutput": "Chroma.qmod"
   }
 }
