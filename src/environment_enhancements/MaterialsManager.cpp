@@ -1,5 +1,6 @@
 #include "environment_enhancements/MaterialsManager.hpp"
 #include "Chroma.hpp"
+#include "ChromaLogger.hpp"
 #include "UnityEngine/Resources.hpp"
 #include "utils/ChromaUtils.hpp"
 #include "environment_enhancements/EnvironmentMaterialManager.hpp"
@@ -90,6 +91,7 @@ UnityEngine::Material* Chroma::MaterialsManager::InstantiateSharedMaterial(Shade
         { "ENABLE_HEIGHT_FOG", "MULTIPLY_COLOR_WITH_ALPHA", "_ENABLE_MAIN_EFFECT_WHITE_BOOST" }));
     break;
   case ShaderType::BaseWater:
+    // TODO: Fix water shader
     shaderName = water;
     shaderKeywords = ArrayW<StringW>(std::initializer_list<StringW>(
         { "FOG", "HEIGHT_FOG", "INVERT_RIMLIGHT", "MASK_RED_IS_ALPHA", "NOISE_DITHERING", "NORMAL_MAP",
@@ -98,8 +100,18 @@ UnityEngine::Material* Chroma::MaterialsManager::InstantiateSharedMaterial(Shade
           "_WHITEBOOSTTYPE_NONE", "_ZWRITE_ON" }));
     break;
   }
-  auto shader = Resources::FindObjectsOfTypeAll<Shader*>()->First([&](auto const& e) { return e->get_name() == shaderName; });
-  auto* material = Material::New_ctor(shader);
+  auto shader =
+      Resources::FindObjectsOfTypeAll<Shader*>().front([&](auto const& e) { return e->get_name() == shaderName; });
+  if (!shader) {
+    ChromaLogger::Logger.error("Unable to find shader {}", shaderName);
+    // fallback
+    if (shaderType != ShaderType::Standard) {
+      return InstantiateSharedMaterial(ShaderType::Standard);
+    } else {
+      ChromaLogger::Logger.fmtThrowError("Unable to find shader {}", shaderName);
+    }
+  }
+  auto* material = Material::New_ctor(shader.value());
 
   material->set_globalIlluminationFlags(globalIlluminationFlags);
   material->set_enableInstancing(true);
