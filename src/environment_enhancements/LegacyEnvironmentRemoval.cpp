@@ -11,71 +11,61 @@ using namespace Chroma;
 
 void Chroma::LegacyEnvironmentRemoval::Init(CustomJSONData::CustomBeatmapData* /*customBeatmap*/) {
 
-  auto& dynDataWrapper = ChromaController::infoDatCopy;
+  auto const& objectsToKillOpt = ChromaController::environmentObjectsRemovalV2;
 
-  ChromaLogger::Logger.debug("Environment data: {}", dynDataWrapper ? "true" : "false");
+  ChromaLogger::Logger.debug("Environment data: {}", objectsToKillOpt ? "true" : "false");
 
-  if (dynDataWrapper) {
-    DocumentUTF16& dynData = *dynDataWrapper;
-    auto objectsToKillIt = dynData.FindMember(Chroma::NewConstants::V2_ENVIRONMENT_REMOVAL.data());
+  if (objectsToKillOpt) {
+    auto const& objectsToKill = *objectsToKillOpt;
 
-    if (objectsToKillIt != dynData.MemberEnd()) {
+    ChromaLogger::Logger.warn("Legacy Environment Removal Detected...");
+    ChromaLogger::Logger.warn("Please do not use Legacy Environment Removal for new maps as it is deprecated and its "
+                              "functionality in future versions of Chroma cannot be guaranteed");
 
-      auto objectsToKill = objectsToKillIt->value.GetArray();
-      ChromaLogger::Logger.warn("Legacy Environment Removal Detected...");
-      ChromaLogger::Logger.warn("Please do not use Legacy Environment Removal for new maps as it is deprecated and its "
-                          "functionality in future versions of Chroma cannot be guaranteed");
+    auto gameObjects = UnityEngine::Resources::FindObjectsOfTypeAll<UnityEngine::GameObject*>();
 
-      auto gameObjects = UnityEngine::Resources::FindObjectsOfTypeAll<UnityEngine::GameObject*>();
+    for (auto const& s : objectsToKill) {
+      if (s == "TrackLaneRing" || s == "BigTrackLaneRing") {
 
-      for (auto& oValue : objectsToKill) {
-        std::u16string s = oValue.GetString();
-        if (s == u"TrackLaneRing" || s == u"BigTrackLaneRing") {
-
-          for (int i = 0; i < gameObjects.size(); i++) {
-            UnityEngine::GameObject* n = gameObjects.get(i);
-
-            if (n == nullptr) {
-              continue;
-            }
-
-            auto nName = static_cast<std::u16string>(n->get_name());
-            if (nName.find(s) != std::string::npos) {
-              if (s == u"TrackLaneRing" && nName.find(u"Big") != std::string::npos) continue;
-
-              debugSpamLog("Setting {} to disabled", nName);
-              n->SetActive(false);
-            }
+        for (auto const& n : gameObjects) {
+          if (n == nullptr || UnityW(n) == nullptr) {
+            continue;
           }
 
-        } else {
-          for (int i = 0; i < gameObjects.size(); i++) {
-            UnityEngine::GameObject* n = gameObjects.get(i);
+          auto nName = static_cast<std::string>(n->get_name());
+          if (nName.find(s) != std::string::npos) {
+            if (s == "TrackLaneRing" && nName.find("Big") != std::string::npos) continue;
 
-            if (n == nullptr) {
-              continue;
-            }
+            debugSpamLog("Setting {} to disabled", nName);
+            n->SetActive(false);
+          }
+        }
 
-            auto gStrIl2 = n->get_name();
-            std::u16string gStr = gStrIl2 != nullptr ? std::u16string(static_cast<std::u16string>(gStrIl2)) : u"";
+      } else {
+        for (auto const& n : gameObjects) {
+          if (n == nullptr || UnityW(n) == nullptr) {
+            continue;
+          }
 
-            auto scene = n->get_scene();
+          auto gStrIl2 = n->get_name();
+          std::string gStr = gStrIl2 != nullptr ? static_cast<std::string>(gStrIl2) : "";
 
-            if (!scene.IsValid()) {
-              continue;
-            }
+          auto scene = n->get_scene();
 
-            auto sceneNameIl2 = scene.get_name();
-            std::string sceneName = sceneNameIl2 != nullptr ? sceneNameIl2 : "";
+          if (!scene.IsValid()) {
+            continue;
+          }
 
-            bool sceneEnvironment = !sceneName.empty() && sceneName.find("Environment") != std::string::npos;
+          auto sceneNameIl2 = scene.get_name();
+          std::string sceneName = sceneNameIl2 != nullptr ? sceneNameIl2 : "";
 
-            bool sceneMenu = !sceneName.empty() && sceneName.find("Menu") != std::string::npos;
+          bool sceneEnvironment = !sceneName.empty() && sceneName.find("Environment") != std::string::npos;
 
-            if (sceneEnvironment && !sceneMenu && gStr.find(s) != std::string::npos) {
-              debugSpamLog("Setting {} to disabled else check", gStr.c_str());
-              n->SetActive(false);
-            }
+          bool sceneMenu = !sceneName.empty() && sceneName.find("Menu") != std::string::npos;
+
+          if (sceneEnvironment && !sceneMenu && gStr.find(s) != std::string::npos) {
+            debugSpamLog("Setting {} to disabled else check", gStr.c_str());
+            n->SetActive(false);
           }
         }
       }

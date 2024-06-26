@@ -7,17 +7,24 @@
 #include "lighting/LightIDTableManager.hpp"
 
 #include "GlobalNamespace/BeatmapCharacteristicSO.hpp"
+#include "GlobalNamespace/BeatmapDifficultySerializedMethods.hpp"
 
 #include "utils/ChromaUtils.hpp"
+
+#include "sombrero/shared/linq_functional.hpp"
+
+#include "paper/shared/string_convert.hpp"
 
 using namespace CustomJSONData;
 using namespace Chroma;
 using namespace GlobalNamespace;
 using namespace UnityEngine;
 using namespace System::Collections;
+using namespace Sombrero::Linq::Functional;
 
-void SceneTransitionHelper::Patch(SongCore::SongLoader::CustomBeatmapLevel* beatmapLevel, GlobalNamespace::BeatmapKey key, GlobalNamespace::EnvironmentInfoSO* environment) {
-  if(beatmapLevel == nullptr) {
+void SceneTransitionHelper::Patch(SongCore::SongLoader::CustomBeatmapLevel* beatmapLevel,
+                                  GlobalNamespace::BeatmapKey key, GlobalNamespace::EnvironmentInfoSO* environment) {
+  if (beatmapLevel == nullptr) {
     BasicPatch(nullptr, key, nullptr);
     return;
   }
@@ -25,8 +32,10 @@ void SceneTransitionHelper::Patch(SongCore::SongLoader::CustomBeatmapLevel* beat
   BasicPatch(beatmapLevel, key, environment);
 }
 
-void SceneTransitionHelper::Patch(SongCore::SongLoader::CustomBeatmapLevel* beatmapLevel, GlobalNamespace::BeatmapKey key, GlobalNamespace::EnvironmentInfoSO* environment, OverrideEnvironmentSettings*& overrideEnvironmentSettings) {
-  if(beatmapLevel == nullptr) {
+void SceneTransitionHelper::Patch(SongCore::SongLoader::CustomBeatmapLevel* beatmapLevel,
+                                  GlobalNamespace::BeatmapKey key, GlobalNamespace::EnvironmentInfoSO* environment,
+                                  OverrideEnvironmentSettings*& overrideEnvironmentSettings) {
+  if (beatmapLevel == nullptr) {
     BasicPatch(nullptr, key, nullptr);
     return;
   }
@@ -34,22 +43,22 @@ void SceneTransitionHelper::Patch(SongCore::SongLoader::CustomBeatmapLevel* beat
   BasicPatch(beatmapLevel, key, environment);
 }
 
-bool SceneTransitionHelper::BasicPatch(SongCore::SongLoader::CustomBeatmapLevel* beatmapLevel, GlobalNamespace::BeatmapKey key, GlobalNamespace::EnvironmentInfoSO* environment) {
+bool SceneTransitionHelper::BasicPatch(SongCore::SongLoader::CustomBeatmapLevel* beatmapLevel,
+                                       GlobalNamespace::BeatmapKey key,
+                                       GlobalNamespace::EnvironmentInfoSO* environment) {
   ChromaLogger::Logger.debug("Basic Patch {}", fmt::ptr(beatmapLevel));
   ChromaController::TutorialMode = false;
-
-
-  ChromaController::infoDatCopy = std::nullopt;
+  ChromaController::environmentObjectsRemovalV2 = std::nullopt;
 
   bool legacyOverride = false;
 
-  if(beatmapLevel == nullptr) return false;
+  if (beatmapLevel == nullptr) return false;
 
   ChromaLogger::Logger.debug("Getting Save Data");
 
   auto saveData = beatmapLevel->standardLevelInfoSaveDataV2;
 
-  if(!saveData) return false;
+  if (!saveData) return false;
 
   auto customSaveInfo = saveData.value()->CustomSaveDataInfo;
 
@@ -60,19 +69,51 @@ bool SceneTransitionHelper::BasicPatch(SongCore::SongLoader::CustomBeatmapLevel*
   auto diff = customSaveInfo.value().get().TryGetCharacteristicAndDifficulty(
       key.beatmapCharacteristic->get_serializedName(), key.difficulty);
 
-  if(!diff) return false;
+  if (!diff) return false;
 
   ChromaLogger::Logger.debug("Getting Requirements & Suggestions");
-  
+
   auto requirements = diff->get().requirements;
   auto suggestions = diff->get().suggestions;
-  
+
   bool chromaRequirement = false;
 
   chromaRequirement |= std::find(requirements.begin(), requirements.end(), REQUIREMENTNAME) != requirements.end();
   chromaRequirement |= std::find(suggestions.begin(), suggestions.end(), REQUIREMENTNAME) != suggestions.end();
 
   ChromaLogger::Logger.debug("Setting environment. Chroma Required: {}", chromaRequirement);
+
+  auto diffSaveMap =
+      saveData.value()->difficultyBeatmapSets | Select([&](auto&& x) {
+        return x->difficultyBeatmaps | FirstOrDefault([&](auto&& y) {
+                 BeatmapDifficulty mapDifficulty;
+                 GlobalNamespace::BeatmapDifficultySerializedMethods::BeatmapDifficultyFromSerializedName(
+                     y->difficulty, byref(mapDifficulty));
+
+                 return mapDifficulty == key.difficulty &&
+                        x->beatmapCharacteristicName == key.beatmapCharacteristic->get_serializedName();
+               });
+      }) |
+      First([](auto x) { return x != nullptr; });
+  ChromaLogger::Logger.debug("Savemap", fmt::ptr(diffSaveMap.value_or(nullptr)));
+  auto saveMap = diffSaveMap.value_or(nullptr);
+  auto customDifficultyBeatmap =
+      il2cpp_utils::try_cast<SongCore::CustomJSONData::CustomDifficultyBeatmap>(saveMap).value_or(nullptr);
+  
+  // handle environment v2 removal
+  if (customDifficultyBeatmap) {
+    auto customData = customDifficultyBeatmap->customData.value();
+    auto objectsToKillIt = customData.get().FindMember(Chroma::NewConstants::V2_ENVIRONMENT_REMOVAL.data());
+
+    if (objectsToKillIt != customData.get().MemberEnd()) {
+      ChromaController::environmentObjectsRemovalV2 = std::vector<std::string>();
+      
+      auto objectsToKill = objectsToKillIt->value.GetArray();
+      for (auto const& object : objectsToKill) {
+        ChromaController::environmentObjectsRemovalV2->emplace_back(Paper::StringConvert::from_utf16(object.GetString()));
+      }
+    }
+  }
 
   if (environment == nullptr) {
     ChromaLogger::Logger.debug("Environment is null, this is not right!", chromaRequirement);
