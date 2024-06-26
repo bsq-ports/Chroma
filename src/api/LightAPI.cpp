@@ -62,7 +62,7 @@ EXPOSE_API(setAllLightingColorsSafe, void, bool refresh, std::optional<LightAPI:
 using LightMap = std::vector<GlobalNamespace::ILightWithId*>;
 
 EXPOSE_API(getLightsSafe, LightMap*, GlobalNamespace::LightSwitchEventEffect* lse) {
-  auto vectorOrg = VList<ILightWithId*>(LightColorizer::GetLightColorizer(lse->event)->Lights);
+  auto vectorOrg = VList<ILightWithId*>(LightColorizer::GetLightColorizer(lse->_event)->Lights);
   auto* vectorPtr = new LightMap(vectorOrg.begin(), vectorOrg.end());
 
   return vectorPtr;
@@ -76,7 +76,7 @@ using LightPropMap = std::unordered_map<int, std::vector<GlobalNamespace::ILight
 // EXPOSE_API(, std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId *>>,
 // GlobalNamespace::LightSwitchEventEffect *lse) {
 EXPOSE_API(getLightsPropagationGroupedSafe, LightPropMap*, GlobalNamespace::LightSwitchEventEffect* lse) {
-  auto mapOrg = LightColorizer::GetLightColorizer(lse->event)->getLightsPropagationGrouped();
+  auto mapOrg = LightColorizer::GetLightColorizer(lse->_event)->getLightsPropagationGrouped();
   auto* mapPtr = new std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId*>>(std::move(mapOrg));
 
   return mapPtr;

@@ -49,8 +49,8 @@ public:
     return getChromaConfig().customColorEventsEnabled.GetValue() && (ChromaRequired());
   }
 
-  static void AddForceDoHooks(ModInfo const& otherModInfo);
-  static void RemoveForceDoHooks(ModInfo const& otherModInfo);
+  static void AddForceDoHooks(modloader::ModInfo const& otherModInfo);
+  static void RemoveForceDoHooks(modloader::ModInfo const& otherModInfo);
 
   // Quest internal stuff
   static void SetChromaLegacy(bool v);
@@ -69,6 +69,6 @@ public:
   DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnController* beatmapObjectSpawnController);
 
   // Since level data is freed on scene load, we copy it before we load.
-  inline static std::optional<DocumentUTF16> infoDatCopy = std::nullopt;
+  inline static std::optional<std::vector<std::string>> environmentObjectsRemovalV2 = std::nullopt;
 };
 } // namespace Chroma

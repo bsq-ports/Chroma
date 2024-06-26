@@ -1,6 +1,7 @@
 #pragma once
 
 #include "main.hpp"
+#include "ChromaLogger.hpp"
 
 #include <unordered_map>
 #include <optional>
@@ -37,7 +38,7 @@ public:
       auto typeTableIt = table.find(lightId);
 
       if (typeTableIt == table.end()) {
-        getLogger().warning("Unable to find value for type %d", lightId);
+        ChromaLogger::Logger.warn("Unable to find value for type {}", lightId);
         return std::nullopt;
       }
 
@@ -47,11 +48,11 @@ public:
       if (it != typeTable.end()) {
         return it->second;
       } else {
-        getLogger().warning("Unable to find value for type %d and id %d.", lightId, id);
+        ChromaLogger::Logger.warn("Unable to find value for type {} and id {}.", lightId, id);
       }
     }
 
-    getLogger().warning("Return not found");
+    ChromaLogger::Logger.warn("Return not found");
     return std::nullopt;
   }
 
@@ -87,7 +88,7 @@ public:
 #define ChromaInstallEnvironment(environment)                                                                          \
   struct __ChromaRegisterEnvironment##environment {                                                                    \
     __ChromaRegisterEnvironment##environment() {                                                                       \
-      __android_log_print(Logging::INFO, "QuestHook[Chroma]", "Creating environment " #environment);                   \
+      ChromaLogger::Logger.info("Creating environment {}", #environment);                                              \
                                                                                                                        \
       Chroma::LightIDTableManager::AddEnvironment({ #environment, environment().getEnvironmentLights() });             \
     }                                                                                                                  \

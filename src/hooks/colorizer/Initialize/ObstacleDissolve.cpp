@@ -31,7 +31,7 @@ MAKE_HOOK_MATCH(ObstacleDissolve_Awake, &ObstacleDissolve::Awake, void, Obstacle
   if (!ChromaController::DoChromaHooks()) {
     return;
   }
-  ObstacleColorizer::New(self->obstacleController);
+  ObstacleColorizer::New(self->_obstacleController);
 }
 
 MAKE_HOOK_MATCH(ObstacleDissolve_OnDestroy, &ObstacleDissolve::OnDestroy, void, ObstacleDissolve* self) {
@@ -42,12 +42,12 @@ MAKE_HOOK_MATCH(ObstacleDissolve_OnDestroy, &ObstacleDissolve::OnDestroy, void, 
     return;
   }
 
-  ObstacleColorizer::Colorizers.erase(self->obstacleController);
+  ObstacleColorizer::Colorizers.erase(self->_obstacleController);
 }
 
-void ObstacleDissolveHook(Logger& logger) {
-  INSTALL_HOOK(logger, ObstacleDissolve_Awake);
-  INSTALL_HOOK(logger, ObstacleDissolve_OnDestroy);
+void ObstacleDissolveHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, ObstacleDissolve_Awake);
+  INSTALL_HOOK(ChromaLogger::Logger, ObstacleDissolve_OnDestroy);
 }
 
 ChromaInstallHooks(ObstacleDissolveHook)

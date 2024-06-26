@@ -2,12 +2,7 @@
 
 #include "ChromaController.hpp"
 
-#include "custom-json-data/shared/CustomBeatmapData.h"
 #include "GlobalNamespace/TutorialScenesTransitionSetupDataSO.hpp"
-#include "GlobalNamespace/IDifficultyBeatmap.hpp"
-#include "colorizer/NoteColorizer.hpp"
-#include "UnityEngine/Space.hpp"
-#include "UnityEngine/Transform.hpp"
 
 using namespace CustomJSONData;
 using namespace GlobalNamespace;
@@ -21,8 +16,8 @@ MAKE_HOOK_MATCH(TutorialScenesTransitionSetupDataSO_Init, &TutorialScenesTransit
   TutorialScenesTransitionSetupDataSO_Init(self, playerSpecificSettings);
 }
 
-void TutorialScenesTransitionSetupDataSOHook(Logger& /*logger*/) {
-  INSTALL_HOOK(getLogger(), TutorialScenesTransitionSetupDataSO_Init);
+void TutorialScenesTransitionSetupDataSOHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, TutorialScenesTransitionSetupDataSO_Init);
 }
 
 ChromaInstallHooks(TutorialScenesTransitionSetupDataSOHook)

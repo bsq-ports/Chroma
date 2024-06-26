@@ -6,180 +6,133 @@
 #include "ChromaController.hpp"
 #include "lighting/LightIDTableManager.hpp"
 
-#include "GlobalNamespace/BeatmapEnvironmentHelper.hpp"
-#include "GlobalNamespace/EnvironmentInfoSO.hpp"
-#include "GlobalNamespace/CustomDifficultyBeatmap.hpp"
+#include "GlobalNamespace/BeatmapCharacteristicSO.hpp"
+#include "GlobalNamespace/BeatmapDifficultySerializedMethods.hpp"
 
 #include "utils/ChromaUtils.hpp"
+
+#include "sombrero/shared/linq_functional.hpp"
+
+#include "paper/shared/string_convert.hpp"
 
 using namespace CustomJSONData;
 using namespace Chroma;
 using namespace GlobalNamespace;
 using namespace UnityEngine;
 using namespace System::Collections;
+using namespace Sombrero::Linq::Functional;
 
-void SceneTransitionHelper::Patch(GlobalNamespace::IDifficultyBeatmap* customBeatmapData) {
-  if (customBeatmapData == nullptr) {
-    BasicPatch(nullptr, nullptr);
+void SceneTransitionHelper::Patch(SongCore::SongLoader::CustomBeatmapLevel* beatmapLevel,
+                                  GlobalNamespace::BeatmapKey key, GlobalNamespace::EnvironmentInfoSO* environment) {
+  if (beatmapLevel == nullptr) {
+    BasicPatch(nullptr, key, nullptr);
     return;
   }
 
-  std::optional<GlobalNamespace::CustomDifficultyBeatmap*> customBeatmapDataCustom =
-      il2cpp_utils::try_cast<GlobalNamespace::CustomDifficultyBeatmap>(customBeatmapData);
-  if (customBeatmapDataCustom) {
-    SceneTransitionHelper::BasicPatch(customBeatmapData, il2cpp_utils::cast<CustomJSONData::v3::CustomBeatmapSaveData>(
-                                                             customBeatmapDataCustom.value()->beatmapSaveData));
-  } else {
-    BasicPatch(nullptr, nullptr);
-  }
+  BasicPatch(beatmapLevel, key, environment);
 }
 
-template <typename RValue = ValueUTF16, typename StringValue = std::u16string_view>
-static bool CheckIfInArrayOrKey(RValue const& val, const StringValue stringToCheck) {
-  if (val.IsArray()) {
-    for (auto& element : val.GetArray()) {
-      if (element.IsString() && element.GetString() == stringToCheck) {
-        return true;
+void SceneTransitionHelper::Patch(SongCore::SongLoader::CustomBeatmapLevel* beatmapLevel,
+                                  GlobalNamespace::BeatmapKey key, GlobalNamespace::EnvironmentInfoSO* environment,
+                                  OverrideEnvironmentSettings*& overrideEnvironmentSettings) {
+  if (beatmapLevel == nullptr) {
+    BasicPatch(nullptr, key, nullptr);
+    return;
+  }
+
+  BasicPatch(beatmapLevel, key, environment);
+}
+
+bool SceneTransitionHelper::BasicPatch(SongCore::SongLoader::CustomBeatmapLevel* beatmapLevel,
+                                       GlobalNamespace::BeatmapKey key,
+                                       GlobalNamespace::EnvironmentInfoSO* environment) {
+  ChromaLogger::Logger.debug("Basic Patch {}", fmt::ptr(beatmapLevel));
+  ChromaController::TutorialMode = false;
+  ChromaController::environmentObjectsRemovalV2 = std::nullopt;
+
+  bool legacyOverride = false;
+
+  if (beatmapLevel == nullptr) return false;
+
+  ChromaLogger::Logger.debug("Getting Save Data");
+
+  auto saveData = beatmapLevel->standardLevelInfoSaveDataV2;
+
+  if (!saveData) return false;
+
+  auto customSaveInfo = saveData.value()->CustomSaveDataInfo;
+
+  if (!customSaveInfo) return false;
+
+  ChromaLogger::Logger.debug("Getting Characteristic and diff");
+
+  auto diff = customSaveInfo.value().get().TryGetCharacteristicAndDifficulty(
+      key.beatmapCharacteristic->get_serializedName(), key.difficulty);
+
+  if (!diff) return false;
+
+  ChromaLogger::Logger.debug("Getting Requirements & Suggestions");
+
+  auto requirements = diff->get().requirements;
+  auto suggestions = diff->get().suggestions;
+
+  bool chromaRequirement = false;
+
+  chromaRequirement |= std::find(requirements.begin(), requirements.end(), REQUIREMENTNAME) != requirements.end();
+  chromaRequirement |= std::find(suggestions.begin(), suggestions.end(), REQUIREMENTNAME) != suggestions.end();
+
+  ChromaLogger::Logger.debug("Setting environment. Chroma Required: {}", chromaRequirement);
+
+  auto diffSaveMap =
+      saveData.value()->difficultyBeatmapSets | Select([&](auto&& x) {
+        return x->difficultyBeatmaps | FirstOrDefault([&](auto&& y) {
+                 BeatmapDifficulty mapDifficulty;
+                 GlobalNamespace::BeatmapDifficultySerializedMethods::BeatmapDifficultyFromSerializedName(
+                     y->difficulty, byref(mapDifficulty));
+
+                 return mapDifficulty == key.difficulty &&
+                        x->beatmapCharacteristicName == key.beatmapCharacteristic->get_serializedName();
+               });
+      }) |
+      First([](auto x) { return x != nullptr; });
+  ChromaLogger::Logger.debug("Savemap", fmt::ptr(diffSaveMap.value_or(nullptr)));
+  auto saveMap = diffSaveMap.value_or(nullptr);
+  auto customDifficultyBeatmap =
+      il2cpp_utils::try_cast<SongCore::CustomJSONData::CustomDifficultyBeatmap>(saveMap).value_or(nullptr);
+  
+  // handle environment v2 removal
+  if (customDifficultyBeatmap) {
+    auto customData = customDifficultyBeatmap->customData.value();
+    auto objectsToKillIt = customData.get().FindMember(Chroma::NewConstants::V2_ENVIRONMENT_REMOVAL.data());
+
+    if (objectsToKillIt != customData.get().MemberEnd()) {
+      ChromaController::environmentObjectsRemovalV2 = std::vector<std::string>();
+      
+      auto objectsToKill = objectsToKillIt->value.GetArray();
+      for (auto const& object : objectsToKill) {
+        ChromaController::environmentObjectsRemovalV2->emplace_back(Paper::StringConvert::from_utf16(object.GetString()));
       }
     }
   }
 
-  if (val.IsObject()) {
-    for (auto const& element : val.GetObject()) {
-      if (element.name.IsString() && element.name.GetString() == stringToCheck) {
-        return true;
-      }
-    }
-  }
+  if (environment == nullptr) {
+    ChromaLogger::Logger.debug("Environment is null, this is not right!", chromaRequirement);
 
-  return false;
-}
-
-template <typename RValue = ValueUTF16, typename StringValue = std::u16string_view>
-inline static bool CheckIfInArrayOrKey(std::optional<std::reference_wrapper<const RValue>> const val,
-                                       const StringValue stringToCheck) {
-  if (!val) {
     return false;
   }
 
-  return CheckIfInArrayOrKey<RValue, StringValue>(val->get(), stringToCheck);
-}
+  LightIDTableManager::SetEnvironment(static_cast<std::string>(environment->get_serializedName()));
 
-void SceneTransitionHelper::Patch(GlobalNamespace::IDifficultyBeatmap* customBeatmapData,
-                                  OverrideEnvironmentSettings*& overrideEnvironmentSettings) {
-  if (customBeatmapData == nullptr) {
-    BasicPatch(nullptr, nullptr);
-    return;
-  }
+  ChromaLogger::Logger.debug("Environment set");
 
-  std::optional<GlobalNamespace::CustomDifficultyBeatmap*> customBeatmapDataCustomOpt =
-      il2cpp_utils::try_cast<GlobalNamespace::CustomDifficultyBeatmap>(customBeatmapData);
-  if (customBeatmapDataCustomOpt) {
-    auto* customBeatmapDataCustom = il2cpp_utils::cast<CustomJSONData::v3::CustomBeatmapSaveData>(
-        customBeatmapDataCustomOpt.value()->beatmapSaveData);
+  // TODO: Chromalite
 
-    bool chromaRequirement = SceneTransitionHelper::BasicPatch(customBeatmapData, customBeatmapDataCustom);
-    if (chromaRequirement && getChromaConfig().environmentEnhancementsEnabled.GetValue()) {
-
-      bool v2 = customBeatmapDataCustom->isV2;
-
-      if (v2 && (overrideEnvironmentSettings != nullptr) && customBeatmapDataCustom->levelCustomData &&
-          CheckIfInArrayOrKey(customBeatmapDataCustom->levelCustomData, Chroma::NewConstants::V2_ENVIRONMENT_REMOVAL)) {
-        overrideEnvironmentSettings = nullptr;
-      }
-      if ((overrideEnvironmentSettings != nullptr) && customBeatmapDataCustom->customData &&
-          CheckIfInArrayOrKey<rapidjson::Value>(customBeatmapDataCustom->customData,
-                                                v2 ? Chroma::NewConstants::V2_ENVIRONMENT
-                                                   : Chroma::NewConstants::ENVIRONMENT)) {
-        overrideEnvironmentSettings = nullptr;
-      }
-
-      if (overrideEnvironmentSettings == nullptr) {
-        getLogger().debug("Environment removal!");
-      }
-    }
-  } else {
-    CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Not a custom diff");
-    BasicPatch(nullptr, nullptr);
-  }
-}
-
-bool SceneTransitionHelper::BasicPatch(GlobalNamespace::IDifficultyBeatmap* customBeatmapDifficultyData,
-                                       CustomJSONData::v3::CustomBeatmapSaveData* customBeatmapDataCustom) {
-  CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Custom diff {} save data {}", fmt::ptr(customBeatmapDifficultyData),
-                                                 fmt::ptr(customBeatmapDataCustom));
-  ChromaController::TutorialMode = false;
-
-  bool chromaRequirement = false;
-  ChromaController::infoDatCopy = std::nullopt;
-
-  // please let me remove this shit
-  bool legacyOverride = false;
-
-  if (customBeatmapDifficultyData != nullptr) {
-    auto* environmentInfo = BeatmapEnvironmentHelper::GetEnvironmentInfo(customBeatmapDifficultyData);
-
-    LightIDTableManager::SetEnvironment(static_cast<std::string>(environmentInfo->serializedName));
-
-    if (customBeatmapDataCustom->levelCustomData) {
-      auto dynData = customBeatmapDataCustom->levelCustomData;
-
-      getLogger().debug("Level custom data value: %s", dynData ? "true" : "false");
-
-      if (dynData && dynData->get().IsObject()) {
-        ValueUTF16 const& rapidjsonData = *dynData;
-
-        // Copy this since it gets freed later on.
-        DocumentUTF16 doc;
-        doc.CopyFrom(rapidjsonData, doc.GetAllocator());
-
-        ChromaController::infoDatCopy = std::make_optional(std::move(doc));
-
-        auto requirements = rapidjsonData.FindMember(u"_requirements");
-
-        if (requirements != rapidjsonData.MemberEnd()) {
-          chromaRequirement |= CheckIfInArrayOrKey(requirements->value, REQUIREMENTNAME);
-        }
-
-        auto suggestions = rapidjsonData.FindMember(u"_suggestions");
-
-        if (suggestions != rapidjsonData.MemberEnd()) {
-          chromaRequirement |= CheckIfInArrayOrKey(suggestions->value, REQUIREMENTNAME);
-        }
-      }
-    }
-
-    if (customBeatmapDataCustom->isV2) {
-      auto beatmapEvents = customBeatmapDataCustom->basicBeatmapEvents->items;
-      auto length = beatmapEvents.Length();
-      getLogger().debug("Checking at most %d for ChromaLite notes", static_cast<int>(length));
-      for (auto* event : beatmapEvents) {
-        if (event == nullptr) {
-          continue;
-        }
-
-        if (event->get_value() >= LegacyLightHelper::RGB_INT_OFFSET) {
-          legacyOverride = true;
-        }
-
-        if (legacyOverride) {
-          break;
-        }
-      }
-
-      if (legacyOverride) {
-        getLogger().warning("Legacy Chroma Detected...");
-        getLogger().warning("Please do not use Legacy Chroma for new maps as it is deprecated and its functionality in "
-                            "future versions of Chroma cannot be guaranteed");
-      }
-    }
-  }
   ChromaController::SetChromaLegacy(legacyOverride);
   ChromaController::setChromaRequired(chromaRequirement);
 
-  // Reset the randomizer state
-  // This probably does nothing but whatever
   ChromaController::randomizerThing = XoshiroCpp::Xoshiro128PlusPlus();
+
+  ChromaLogger::Logger.debug("Scene Patch Finished");
 
   return ChromaController::ChromaRequired();
 }

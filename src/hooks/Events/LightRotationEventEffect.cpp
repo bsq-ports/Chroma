@@ -40,7 +40,7 @@ MAKE_HOOK_MATCH(LightRotationEventEffect_HandleBeatmapObjectCallbackControllerBe
 
   auto const& chromaData = chromaIt->second;
 
-  bool isLeftEvent = self->event == BasicBeatmapEventType::Event12;
+  bool isLeftEvent = self->_event == BasicBeatmapEventType::Event12;
 
   bool lockPosition = chromaData.LockPosition;
 
@@ -65,21 +65,21 @@ MAKE_HOOK_MATCH(LightRotationEventEffect_HandleBeatmapObjectCallbackControllerBe
   if (beatmapEventData->value == 0) {
     self->set_enabled(false);
     if (!lockPosition) {
-      self->get_transform()->set_localRotation(self->startRotation);
+      self->get_transform()->set_localRotation(self->_startRotation);
     }
   } else if (beatmapEventData->value > 0) {
     self->set_enabled(true);
-    self->rotationSpeed = precisionSpeed * 20.0F * direction;
+    self->_rotationSpeed = precisionSpeed * 20.0F * direction;
     if (!lockPosition) {
-      auto* transform = self->get_transform();
-      transform->set_localRotation(self->startRotation);
-      transform->Rotate(self->rotationVector, ChromaController::randomXoshiro(0.0F, 180.0F), Space::Self);
+      auto transform = self->get_transform();
+      transform->set_localRotation(self->_startRotation);
+      transform->Rotate(self->_rotationVector, ChromaController::randomXoshiro(0.0F, 180.0F), Space::Self);
     }
   }
 }
 
-void LightRotationEventEffectHook(Logger& logger) {
-  INSTALL_HOOK(logger, LightRotationEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger);
+void LightRotationEventEffectHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, LightRotationEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger);
 }
 
 ChromaInstallHooks(LightRotationEventEffectHook)

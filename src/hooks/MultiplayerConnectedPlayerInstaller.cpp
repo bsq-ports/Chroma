@@ -5,7 +5,6 @@
 #include "GlobalNamespace/MultiplayerConnectedPlayerInstaller.hpp"
 #include "GlobalNamespace/BeatmapDataTransformHelper.hpp"
 #include "GlobalNamespace/IReadonlyBeatmapData.hpp"
-#include "GlobalNamespace/IPreviewBeatmapLevel.hpp"
 #include "GlobalNamespace/GameplayModifiers.hpp"
 #include "GlobalNamespace/PracticeSettings.hpp"
 #include "GlobalNamespace/EnvironmentEffectsFilterPreset.hpp"
@@ -27,8 +26,8 @@ MAKE_HOOK_MATCH(MultiplayerConnectedPlayerInstaller_InstallBindings,
   MultiplayerConnectedPlayerInstallerHookHolder::MultiplayerInvoked = false;
 }
 
-void MultiplayerConnectedPlayerInstallerHook(Logger& /*logger*/) {
-  INSTALL_HOOK(getLogger(), MultiplayerConnectedPlayerInstaller_InstallBindings);
+void MultiplayerConnectedPlayerInstallerHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, MultiplayerConnectedPlayerInstaller_InstallBindings);
 }
 
 // ChromaInstallHooks(MultiplayerConnectedPlayerInstallerHook)

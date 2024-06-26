@@ -7,7 +7,6 @@
 #include "GlobalNamespace/BeatmapEventData.hpp"
 #include "GlobalNamespace/BasicBeatmapEventType.hpp"
 #include "GlobalNamespace/LightPairRotationEventEffect.hpp"
-#include "GlobalNamespace/LightPairRotationEventEffect_RotationData.hpp"
 #include "UnityEngine/Quaternion.hpp"
 #include "UnityEngine/Transform.hpp"
 #include "lighting/ChromaEventData.hpp"
@@ -29,14 +28,14 @@ MAKE_HOOK_MATCH(LightPairRotationEventEffect_HandleBeatmapObjectCallbackControll
     return;
   }
 
-  if (beatmapEventData->basicBeatmapEventType == self->eventL ||
-      beatmapEventData->basicBeatmapEventType == self->eventR) {
+  if (beatmapEventData->basicBeatmapEventType == self->_eventL ||
+      beatmapEventData->basicBeatmapEventType == self->_eventR) {
     LastLightPairRotationEventEffectData = beatmapEventData;
   }
 
-  //    getLogger().debug("Doing lights");
+  //    ChromaLogger::Logger.debug("Doing lights");
   LightPairRotationEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);
-  //    getLogger().debug("Did the custom lights");
+  //    ChromaLogger::Logger.debug("Did the custom lights");
 
   LastLightPairRotationEventEffectData = nullptr;
 }
@@ -64,10 +63,10 @@ MAKE_HOOK_MATCH(LightPairRotationEventEffect_UpdateRotationData, &LightPairRotat
 
   auto const& chromaData = chromaIt->second;
 
-  bool isLeftEvent = beatmapEventData->basicBeatmapEventType == self->eventL;
+  bool isLeftEvent = beatmapEventData->basicBeatmapEventType == self->_eventL;
   // rotationData
   LightPairRotationEventEffect::RotationData* customRotationData =
-      isLeftEvent ? self->rotationDataL : self->rotationDataR;
+      isLeftEvent ? self->_rotationDataL : self->_rotationDataR;
 
   bool lockPosition = chromaData.LockPosition;
   float precisionSpeed = chromaData.Speed.value_or(beatmapEventData->value);
@@ -88,32 +87,32 @@ MAKE_HOOK_MATCH(LightPairRotationEventEffect_UpdateRotationData, &LightPairRotat
   static auto QuaternionEulerMPtr = FPtrWrapper<static_cast<UnityEngine::Quaternion (*)(UnityEngine::Vector3)>(
       &UnityEngine::Quaternion::Euler)>::get();
 
-  // getLogger().debug("The time is: %d", beatmapEventData->time);
+  // ChromaLogger::Logger.debug("The time is: {}", beatmapEventData->time);
   if (beatmapEventData->value == 0) {
     customRotationData->enabled = false;
     if (!lockPosition) {
       customRotationData->rotationAngle = customRotationData->startRotationAngle;
       customRotationData->transform->set_localRotation(Sombrero::QuaternionMultiply(
           customRotationData->startRotation, QuaternionEulerMPtr(Sombrero::vector3multiply(
-                                                 self->rotationVector, customRotationData->startRotationAngle))));
+                                                 self->_rotationVector, customRotationData->startRotationAngle))));
     }
   } else if (beatmapEventData->value > 0) {
     customRotationData->enabled = true;
     customRotationData->rotationSpeed = precisionSpeed * 20.0F * direction;
-    // getLogger().debug("Doing rotation speed (%d) %d", beatmapEventData->value, customRotationData->rotationSpeed);
+    // ChromaLogger::Logger.debug("Doing rotation speed ({}) {}", beatmapEventData->value, customRotationData->rotationSpeed);
     if (!lockPosition) {
       float rotationAngle = startRotationOffset + customRotationData->startRotationAngle;
       customRotationData->rotationAngle = rotationAngle;
       customRotationData->transform->set_localRotation(Sombrero::QuaternionMultiply(
           customRotationData->startRotation,
-          QuaternionEulerMPtr(Sombrero::vector3multiply(self->rotationVector, rotationAngle))));
+          QuaternionEulerMPtr(Sombrero::vector3multiply(self->_rotationVector, rotationAngle))));
     }
   }
 }
 
-void LightPairRotationEventEffectHook(Logger& /*logger*/) {
-  INSTALL_HOOK(getLogger(), LightPairRotationEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger);
-  INSTALL_HOOK(getLogger(), LightPairRotationEventEffect_UpdateRotationData);
+void LightPairRotationEventEffectHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, LightPairRotationEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger);
+  INSTALL_HOOK(ChromaLogger::Logger, LightPairRotationEventEffect_UpdateRotationData);
 }
 
 ChromaInstallHooks(LightPairRotationEventEffectHook)

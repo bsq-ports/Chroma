@@ -34,8 +34,8 @@ MAKE_HOOK_MATCH(BeatmapObjectsAvoidance_Update, &BeatmapObjectsAvoidance::Update
   }
 }
 
-void BeatmapObjectsAvoidanceHook(Logger& logger) {
-  INSTALL_HOOK(logger, BeatmapObjectsAvoidance_Update);
+void BeatmapObjectsAvoidanceHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, BeatmapObjectsAvoidance_Update);
 }
 
 ChromaInstallHooks(BeatmapObjectsAvoidanceHook)

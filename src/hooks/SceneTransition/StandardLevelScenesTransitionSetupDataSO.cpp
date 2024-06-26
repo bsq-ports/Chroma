@@ -7,8 +7,8 @@
 #include "GlobalNamespace/GameplayModifiers.hpp"
 #include "GlobalNamespace/PlayerSpecificSettings.hpp"
 #include "GlobalNamespace/PracticeSettings.hpp"
-#include "GlobalNamespace/IDifficultyBeatmap.hpp"
 #include "GlobalNamespace/NoteController.hpp"
+#include "GlobalNamespace/RecordingToolManager.hpp"
 #include "GlobalNamespace/BeatmapLevelSO.hpp"
 #include "colorizer/NoteColorizer.hpp"
 #include "UnityEngine/Space.hpp"
@@ -20,26 +20,27 @@ using namespace CustomJSONData;
 using namespace GlobalNamespace;
 using namespace UnityEngine;
 using namespace Chroma;
+using namespace System;
 
-MAKE_HOOK_MATCH(StandardLevelScenesTransitionSetupDataSO_Init, &StandardLevelScenesTransitionSetupDataSO::Init, void,
-                StandardLevelScenesTransitionSetupDataSO* self, StringW gameMode,
-                ::GlobalNamespace::IDifficultyBeatmap* difficultyBeatmap,
-                ::GlobalNamespace::IPreviewBeatmapLevel* previewBeatmapLevel,
-                ::GlobalNamespace::OverrideEnvironmentSettings* overrideEnvironmentSettings,
-                ::GlobalNamespace::ColorScheme* overrideColorScheme,
-                ::GlobalNamespace::GameplayModifiers* gameplayModifiers,
-                ::GlobalNamespace::PlayerSpecificSettings* playerSpecificSettings,
-                ::GlobalNamespace::PracticeSettings* practiceSettings, ::StringW backButtonText,
-                bool useTestNoteCutSoundEffects, bool startPaused, BeatmapDataCache* cache) {
-  auto* settings = overrideEnvironmentSettings;
-  SceneTransitionHelper::Patch(difficultyBeatmap, settings);
-  StandardLevelScenesTransitionSetupDataSO_Init(
-      self, gameMode, difficultyBeatmap, previewBeatmapLevel, settings, overrideColorScheme, gameplayModifiers,
-      playerSpecificSettings, practiceSettings, backButtonText, useTestNoteCutSoundEffects, startPaused, cache);
+MAKE_HOOK_MATCH(StandardLevelScenesTransitionSetupDataSO_Init,
+                &StandardLevelScenesTransitionSetupDataSO::InitAndSetupScenes, void,
+                StandardLevelScenesTransitionSetupDataSO* self,
+                ::GlobalNamespace::PlayerSpecificSettings* playerSpecificSettings, ::StringW backButtonText,
+                bool startPaused) {
+  auto customBeatmapLevel = il2cpp_utils::try_cast<SongCore::SongLoader::CustomBeatmapLevel>(self->get_beatmapLevel());
+  if (!customBeatmapLevel) {
+    StandardLevelScenesTransitionSetupDataSO_Init(self, playerSpecificSettings, backButtonText, startPaused);
+    return;
+  }
+
+  // TODO: Fix environment override
+  SceneTransitionHelper::Patch(customBeatmapLevel.value(), self->beatmapKey, self->environmentInfo);
+
+  StandardLevelScenesTransitionSetupDataSO_Init(self, playerSpecificSettings, backButtonText, startPaused);
 }
 
-void StandardLevelScenesTransitionSetupDataSOHook(Logger& logger) {
-  INSTALL_HOOK(logger, StandardLevelScenesTransitionSetupDataSO_Init);
+void StandardLevelScenesTransitionSetupDataSOHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, StandardLevelScenesTransitionSetupDataSO_Init);
 }
 
 ChromaInstallHooks(StandardLevelScenesTransitionSetupDataSOHook)

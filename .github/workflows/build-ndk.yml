@@ -2,7 +2,7 @@ name: NDK build
 
 env:
   module_id: chroma
-  qmodName: chroma
+  qmodName: Chroma
 
 on:
   push:
@@ -48,13 +48,7 @@ jobs:
         run: |
           cd ${GITHUB_WORKSPACE}
           qpm-rust s build
-          qpm-rust restore
-          qpm-rust qmod build
-
-
-      - name: Create Qmod
-        run: |
-          pwsh -Command ./createqmod.ps1 ${{env.qmodName}}
+          qpm-rust qmod zip
 
       - name: Get Library Name
         id: libname

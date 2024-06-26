@@ -38,21 +38,6 @@ custom_types::Helpers::Coroutine WaitThenStartLight(LightSwitchEventEffect* inst
   co_return;
 }
 
-MAKE_HOOK_MATCH(LightSwitchEventEffect_Awake, &LightSwitchEventEffect::Awake, void, LightSwitchEventEffect* self) {
-  static auto* ChromaLightSwitchEventEffectKlass = classof(ChromaLightSwitchEventEffect*);
-
-  if (self->klass == ChromaLightSwitchEventEffectKlass) {
-    return;
-  }
-
-  // Do nothing if Chroma shouldn't run
-  if (!ChromaController::GetChromaLegacy() && !ChromaController::DoChromaHooks()) {
-    return LightSwitchEventEffect_Awake(self);
-  }
-
-  // override method to do nothing
-}
-
 MAKE_HOOK_MATCH(LightSwitchEventEffect_Start, &LightSwitchEventEffect::Start, void, LightSwitchEventEffect* self) {
   static auto* ChromaLightSwitchEventEffectKlass = classof(ChromaLightSwitchEventEffect*);
 
@@ -65,7 +50,7 @@ MAKE_HOOK_MATCH(LightSwitchEventEffect_Start, &LightSwitchEventEffect::Start, vo
     return LightSwitchEventEffect_Start(self);
   }
 
-  auto coro = custom_types::Helpers::CoroutineHelper::New(WaitThenStartLight(self, self->event));
+  auto coro = custom_types::Helpers::CoroutineHelper::New(WaitThenStartLight(self, self->_event));
 
   self->StartCoroutine(coro);
 }
@@ -100,18 +85,17 @@ MAKE_HOOK_MATCH(BeatmapCallbacksController_ManualUpdate, &BeatmapCallbacksContro
       }
     };
 
-    self->callbacksInTimes->get_Item(0)->AddCallback(basicEvents);
-    self->callbacksInTimes->get_Item(0)->AddCallback(boostEvents);
+    self->_callbacksInTimes->get_Item(0)->AddCallback(basicEvents);
+    self->_callbacksInTimes->get_Item(0)->AddCallback(boostEvents);
   }
 
   BeatmapCallbacksController_ManualUpdate(self, songTime);
 }
 
-void LightSwitchEventEffectHook(Logger& logger) {
-  INSTALL_HOOK(logger, BeatmapCallbacksController_ManualUpdate);
+void LightSwitchEventEffectHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, BeatmapCallbacksController_ManualUpdate);
 
-  INSTALL_HOOK(logger, LightSwitchEventEffect_Start);
-  INSTALL_HOOK(logger, LightSwitchEventEffect_Awake);
+  INSTALL_HOOK(ChromaLogger::Logger, LightSwitchEventEffect_Start);
 }
 
 ChromaInstallHooks(LightSwitchEventEffectHook)

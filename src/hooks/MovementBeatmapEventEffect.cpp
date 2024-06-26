@@ -11,7 +11,6 @@
 
 #include "GlobalNamespace/ColorExtensions.hpp"
 #include "GlobalNamespace/BeatEffectSpawner.hpp"
-#include "GlobalNamespace/BeatEffectSpawner_InitData.hpp"
 #include "GlobalNamespace/MemoryPoolContainer_1.hpp"
 #include "GlobalNamespace/LazyCopyHashSet_1.hpp"
 
@@ -74,9 +73,9 @@ using namespace GlobalNamespace;
 //    noteController->get_worldRotation());
 //}
 //
-// void BeatEffectSpawnerHook(Logger& logger) {
+// void BeatEffectSpawnerHook() {
 //    // TODO: DO TODO ABOVE
-//    INSTALL_HOOK_ORIG(logger, BeatEffectSpawner_HandleNoteDidStartJump);
+//    INSTALL_HOOK_ORIG(ChromaLogger::Logger, BeatEffectSpawner_HandleNoteDidStartJump);
 //}
 //
 // ChromaInstallHooks(BeatEffectSpawnerHook)

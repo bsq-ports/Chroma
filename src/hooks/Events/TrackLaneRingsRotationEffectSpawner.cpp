@@ -20,7 +20,6 @@ using namespace ChromaUtils;
 
 MAKE_HOOK_MATCH(TrackLaneRingsRotationEffectSpawner_Start, &TrackLaneRingsRotationEffectSpawner::Start, void,
                 GlobalNamespace::TrackLaneRingsRotationEffectSpawner* self) {
-  static auto contextLogger = getLogger().WithContext(Chroma::ChromaLogger::TrackLaneRings);
   if (!ChromaController::DoChromaHooks()) {
     TrackLaneRingsRotationEffectSpawner_Start(self);
     return;
@@ -28,16 +27,16 @@ MAKE_HOOK_MATCH(TrackLaneRingsRotationEffectSpawner_Start, &TrackLaneRingsRotati
 
   static auto* TrackLaneRingsRotationEffectKlass = classof(TrackLaneRingsRotationEffect*);
 
-  if (self->trackLaneRingsRotationEffect->klass == TrackLaneRingsRotationEffectKlass) {
-    auto* oldRotationEffect = self->trackLaneRingsRotationEffect;
-    debugSpamLog(contextLogger, "Adding component");
+  if (self->_trackLaneRingsRotationEffect->klass == TrackLaneRingsRotationEffectKlass) {
+    auto oldRotationEffect = self->_trackLaneRingsRotationEffect;
+    debugSpamLog("Adding component");
     auto* newRotationEffect = oldRotationEffect->get_gameObject()->AddComponent<ChromaRingsRotationEffect*>();
-    debugSpamLog(contextLogger, "Copyying values now");
+    debugSpamLog("Copyying values now");
     newRotationEffect->CopyValues(oldRotationEffect);
 
     UnityEngine::Object::Destroy(oldRotationEffect);
 
-    self->trackLaneRingsRotationEffect = newRotationEffect;
+    self->_trackLaneRingsRotationEffect = newRotationEffect;
   }
   TrackLaneRingsRotationEffectSpawner_Start(self);
 }
@@ -49,8 +48,7 @@ template <typename T> T getValueOrDefault(rapidjson::Value* val, std::string con
 
 void TriggerRotation(TrackLaneRingsRotationEffect* trackLaneRingsRotationEffect, bool rotRight, float rotation,
                      float rotationStep, float rotationPropagationSpeed, float rotationFlexySpeed) {
-  static auto contextLogger = getLogger().WithContext(Chroma::ChromaLogger::TrackLaneRings);
-  debugSpamLog(contextLogger, "DOING TRIGGER ROTATION %s", trackLaneRingsRotationEffect->klass->name);
+  debugSpamLog("DOING TRIGGER ROTATION {}", trackLaneRingsRotationEffect->klass->name);
 
   auto* chromaRingRotation = static_cast<ChromaRingsRotationEffect*>(trackLaneRingsRotationEffect);
 
@@ -65,40 +63,39 @@ void TriggerRotation(TrackLaneRingsRotationEffect* trackLaneRingsRotationEffect,
 // as limbo. Hopefully with time we can fix that and use that instead
 void origHandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(
     GlobalNamespace::TrackLaneRingsRotationEffectSpawner* self, BasicBeatmapEventData* beatmapEventData) {
-  static auto contextLogger = getLogger().WithContext(Chroma::ChromaLogger::TrackLaneRings);
-  if (beatmapEventData->basicBeatmapEventType != self->beatmapEventType) {
+  if (beatmapEventData->basicBeatmapEventType != self->_beatmapEventType) {
     return;
   }
   float step = 0.0F;
 
-  int originalRotationStepType = (int)self->rotationStepType;
+  int originalRotationStepType = self->_rotationStepType.value__;
 
-  if (originalRotationStepType == TrackLaneRingsRotationEffectSpawner::RotationStepType::Range0ToMax) {
-    step = ChromaController::randomXoshiro(0.0F, self->rotationStep);
-  } else if (originalRotationStepType == TrackLaneRingsRotationEffectSpawner::RotationStepType::Range) {
-    step = ChromaController::randomXoshiro(-self->rotationStep, self->rotationStep);
-  } else if (originalRotationStepType == TrackLaneRingsRotationEffectSpawner::RotationStepType::MaxOr0) {
-    step = (ChromaController::randomXoshiro() < 0.5F) ? self->rotationStep : 0.0F;
+  if (originalRotationStepType == TrackLaneRingsRotationEffectSpawner::RotationStepType::Range0ToMax.value__) {
+    step = ChromaController::randomXoshiro(0.0F, self->_rotationStep);
+  } else if (originalRotationStepType == TrackLaneRingsRotationEffectSpawner::RotationStepType::Range.value__) {
+    step = ChromaController::randomXoshiro(-self->_rotationStep, self->_rotationStep);
+  } else if (originalRotationStepType == TrackLaneRingsRotationEffectSpawner::RotationStepType::MaxOr0.value__) {
+    step = (ChromaController::randomXoshiro() < 0.5F) ? self->_rotationStep : 0.0F;
   }
-  debugSpamLog(contextLogger, "Track lane klass %s", self->trackLaneRingsRotationEffect->klass->name);
+  debugSpamLog("Track lane klass {}", self->_trackLaneRingsRotationEffect->klass->name);
 
   static auto* ChromaRingsRotationEffectKlass = classof(ChromaRingsRotationEffect*);
 
-  auto* rotationEffect = self->trackLaneRingsRotationEffect;
+  auto rotationEffect = self->_trackLaneRingsRotationEffect;
 
-  if (ASSIGNMENT_CHECK(ChromaRingsRotationEffectKlass, self->trackLaneRingsRotationEffect->klass)) {
+  if (ASSIGNMENT_CHECK(ChromaRingsRotationEffectKlass, rotationEffect->klass)) {
 
-    auto* chromaRotation = reinterpret_cast<ChromaRingsRotationEffect*>(rotationEffect);
+    auto* chromaRotation = reinterpret_cast<ChromaRingsRotationEffect*>(rotationEffect.ptr());
 
     chromaRotation->AddRingRotationEffectF(
         chromaRotation->GetFirstRingDestinationRotationAngleCpp() +
-            self->rotation * static_cast<float>((ChromaController::randomXoshiro() < 0.5F) ? 1 : -1),
-        step, static_cast<float>(self->rotationPropagationSpeed), self->rotationFlexySpeed);
+            self->_rotation * static_cast<float>((ChromaController::randomXoshiro() < 0.5F) ? 1 : -1),
+        step, static_cast<float>(self->_rotationPropagationSpeed), self->_rotationFlexySpeed);
   } else {
     rotationEffect->AddRingRotationEffect(
         rotationEffect->GetFirstRingDestinationRotationAngle() +
-            self->rotation * static_cast<float>((ChromaController::randomXoshiro() < 0.5F) ? 1 : -1),
-        step, self->rotationPropagationSpeed, self->rotationFlexySpeed);
+            self->_rotation * static_cast<float>((ChromaController::randomXoshiro() < 0.5F) ? 1 : -1),
+        step, self->_rotationPropagationSpeed, self->_rotationFlexySpeed);
   }
 }
 
@@ -111,14 +108,13 @@ MAKE_HOOK_MATCH(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCallbackC
     return;
   }
 
-  //    debugSpamLog(contextLogger, "Track lane rotation effect self %d beat %d and customData %d",
+  //    debugSpamLog("Track lane rotation effect self {} beat {} and customData {}",
   //    self->BasicBeatmapEventType.value,
   //                      beatmapEventData->type.value,
   //                      beatmapEventData->customData != nullptr && beatmapEventData->customData->value != nullptr ? 0
   //                      : 1);
-  static auto contextLogger = getLogger().WithContext(Chroma::ChromaLogger::TrackLaneRings);
 
-  if (beatmapEventData->basicBeatmapEventType == self->beatmapEventType) {
+  if (beatmapEventData->basicBeatmapEventType == self->_beatmapEventType) {
     auto chromaIt = ChromaEventDataManager::ChromaEventDatas.find(beatmapEventData);
 
     // Not found
@@ -129,31 +125,31 @@ MAKE_HOOK_MATCH(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCallbackC
 
     auto const& chromaData = chromaIt->second;
 
-    debugSpamLog(contextLogger, "Doing stuff with custom Data ring");
+    debugSpamLog("Doing stuff with custom Data ring");
 
     float rotationStep = 0.0F;
 
-    float originalRotationStep = self->rotationStep;
-    float originalRotation = self->rotation;
-    auto originalRotationPropagationSpeed = static_cast<float>(self->rotationPropagationSpeed);
-    float originalRotationFlexySpeed = self->rotationFlexySpeed;
-    int originalRotationStepType = (int)self->rotationStepType;
+    float originalRotationStep = self->_rotationStep;
+    float originalRotation = self->_rotation;
+    auto originalRotationPropagationSpeed = static_cast<float>(self->_rotationPropagationSpeed);
+    float originalRotationFlexySpeed = self->_rotationFlexySpeed;
+    int originalRotationStepType = self->_rotationStepType.value__;
 
-    if (originalRotationStepType == TrackLaneRingsRotationEffectSpawner::RotationStepType::Range0ToMax) {
+    if (originalRotationStepType == TrackLaneRingsRotationEffectSpawner::RotationStepType::Range0ToMax.value__) {
       rotationStep = ChromaController::randomXoshiro(0.0F, rotationStep);
-    } else if (originalRotationStepType == TrackLaneRingsRotationEffectSpawner::RotationStepType::Range) {
+    } else if (originalRotationStepType == TrackLaneRingsRotationEffectSpawner::RotationStepType::Range.value__) {
       rotationStep = ChromaController::randomXoshiro(-originalRotationStep, originalRotationStep);
-    } else if (originalRotationStepType == TrackLaneRingsRotationEffectSpawner::RotationStepType::MaxOr0) {
+    } else if (originalRotationStepType == TrackLaneRingsRotationEffectSpawner::RotationStepType::MaxOr0.value__) {
       rotationStep = (ChromaController::randomXoshiro() < 0.5F) ? originalRotationStep : 0.0F;
     }
 
-    debugSpamLog(contextLogger, "Got the data");
+    debugSpamLog("Got the data");
     std::string selfName = self->get_name();
 
     auto nameFilter = chromaData.NameFilter;
     // If not equal with ignore case
     if (nameFilter && stringCompare(selfName, nameFilter.value()) != 0) {
-      debugSpamLog(contextLogger, "Name filter ignored");
+      debugSpamLog("Name filter ignored");
       return;
     }
 
@@ -176,12 +172,12 @@ MAKE_HOOK_MATCH(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCallbackC
 
     auto reset = chromaData.Reset;
     if (reset && reset.value()) {
-      debugSpamLog(contextLogger, "Reset spawn, returning");
-      TriggerRotation(self->trackLaneRingsRotationEffect, rotRight, originalRotation, 0, 50, 50);
+      debugSpamLog("Reset spawn, returning");
+      TriggerRotation(self->_trackLaneRingsRotationEffect, rotRight, originalRotation, 0, 50, 50);
       return;
     }
 
-    debugSpamLog(contextLogger, "Getting the last values");
+    debugSpamLog("Getting the last values");
 
     float step = chromaData.Step.value_or(rotationStep);
     float prop = chromaData.Prop.value_or(originalRotationPropagationSpeed);
@@ -192,23 +188,23 @@ MAKE_HOOK_MATCH(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCallbackC
     float propMult = chromaData.PropMult;
     float speedMult = chromaData.SpeedMult;
 
-    TriggerRotation(self->trackLaneRingsRotationEffect, rotRight, rotation, step * stepMult, prop * propMult,
+    TriggerRotation(self->_trackLaneRingsRotationEffect, rotRight, rotation, step * stepMult, prop * propMult,
                     speed * speedMult);
-    debugSpamLog(contextLogger, "Finished spawn, returning");
+    debugSpamLog("Finished spawn, returning");
     return;
   }
 
-  debugSpamLog(contextLogger, "Not a custom beat map");
+  debugSpamLog("Not a custom beat map");
   origHandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(
       self,
       beatmapEventData); //        TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self,
                          //        beatmapEventData);
 }
 
-void TrackLaneRingsRotationEffectSpawnerHook(Logger& logger) {
-  INSTALL_HOOK(logger, TrackLaneRingsRotationEffectSpawner_Start);
-  INSTALL_HOOK(logger, TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger);
-  //    INSTALL_HOOK_OFFSETLESS(getLogger(), SaberManager_Finalize, il2cpp_utils::FindMethodUnsafe("System", "Object",
+void TrackLaneRingsRotationEffectSpawnerHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, TrackLaneRingsRotationEffectSpawner_Start);
+  INSTALL_HOOK(ChromaLogger::Logger, TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger);
+  //    INSTALL_HOOK_OFFSETLESS(ChromaLogger::Logger, SaberManager_Finalize, il2cpp_utils::FindMethodUnsafe("System", "Object",
   //    "Finalize", 0));
 }
 

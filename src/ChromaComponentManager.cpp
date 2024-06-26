@@ -79,7 +79,7 @@ void animateTubeBloom(std::string_view propName, std::span<UnityEngine::Componen
   };
   if (propName == Chroma::NewConstants::COLOR_ALPHA_MULTIPLIER) {
     handleTube([&](GlobalNamespace::TubeBloomPrePassLight* tube) {
-      tube->colorAlphaMultiplier = val;
+      tube->_colorAlphaMultiplier = val;
       tube->MarkDirty();
     });
   }

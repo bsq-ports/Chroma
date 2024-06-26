@@ -11,8 +11,6 @@
 #include "GlobalNamespace/SaberBurnMarkArea.hpp"
 
 #include "UnityEngine/ParticleSystem.hpp"
-#include "UnityEngine/ParticleSystem_MainModule.hpp"
-#include "UnityEngine/ParticleSystem_MinMaxGradient.hpp"
 
 #include "colorizer/ObstacleColorizer.hpp"
 #include "utils/ChromaUtils.hpp"
@@ -30,16 +28,16 @@ MAKE_HOOK_MATCH(MirroredObstacleController_UpdatePositionAndRotation,
     return;
   }
 
-  if (self->followedObstacle == nullptr) {
+  if (self->_followedObstacle == nullptr) {
     return;
   }
 
   ObstacleColorizer::ColorizeObstacle(self,
-                                      ObstacleColorizer::GetObstacleColorizer(self->followedObstacle)->getColor());
+                                      ObstacleColorizer::GetObstacleColorizer(self->_followedObstacle)->getColor());
 }
 
-void MirroredObstacleControllerHook(Logger& logger) {
-  INSTALL_HOOK(logger, MirroredObstacleController_UpdatePositionAndRotation);
+void MirroredObstacleControllerHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, MirroredObstacleController_UpdatePositionAndRotation);
 }
 
 ChromaInstallHooks(MirroredObstacleControllerHook)

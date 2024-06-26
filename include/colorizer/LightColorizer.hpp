@@ -137,7 +137,7 @@ public:
 
   // extensions
   inline static LightColorizer* GetLightColorizer(GlobalNamespace::BasicBeatmapEventType BasicBeatmapEventType) {
-    auto it = Colorizers.find(BasicBeatmapEventType.value);
+    auto it = Colorizers.find(BasicBeatmapEventType.value__);
     if (it == Colorizers.end()) {
       return nullptr;
     }

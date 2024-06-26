@@ -71,6 +71,5 @@ DECLARE_CLASS_CODEGEN(
     void CopyValues(LightSwitchEventEffect* lightSwitchEventEffect); public
     : void RegisterLight(GlobalNamespace::ILightWithId* lightWithId, int id);
     void UnregisterLight(GlobalNamespace::ILightWithId* lightWithId);
-    Sombrero::FastColor GetOriginalColor(int beatmapEventValue, bool colorBoost) const;
 
 )

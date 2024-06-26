@@ -4,6 +4,7 @@
 #include <optional>
 
 #include "UnityEngine/Vector3.hpp"
+#include "UnityEngine/SceneManagement/SceneManager.hpp"
 
 #include "GlobalNamespace/TrackLaneRing.hpp"
 #include "GlobalNamespace/BeatmapObjectsAvoidance.hpp"
@@ -59,10 +60,10 @@ public:
       if (point.showTime) {
         auto difference = time - before;
         auto millisElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(difference).count();
-        getLogger().debug("%s took %lldms", name.c_str(), millisElapsed);
+        ChromaLogger::Logger.debug("{} took %lldms", name.c_str(), millisElapsed);
         before = time;
       } else {
-        getLogger().debug("%s", name.c_str());
+        ChromaLogger::Logger.debug("{}", name.c_str());
       }
     }
 
@@ -70,7 +71,7 @@ public:
 
     auto finishTime = std::chrono::duration_cast<std::chrono::milliseconds>(endMark - start).count();
 
-    getLogger().debug("Finished! Took %lldms", finishTime);
+    ChromaLogger::Logger.debug("Finished! Took %lldms", finishTime);
   }
 
   [[nodiscard]] auto elapsedTimeSinceNow() const {

@@ -1,4 +1,5 @@
 {
+  "version": "0.1.2",
   "sharedDir": "shared",
   "dependenciesDir": "extern",
   "info": {
@@ -11,10 +12,23 @@
       "overrideSoName": "libchroma.so"
     }
   },
+  "workspace": {
+    "scripts": {
+      "build": [
+        "pwsh ./build.ps1"
+      ]
+    },
+    "qmodIncludeDirs": [
+      "./build",
+      "./extern/libs"
+    ],
+    "qmodIncludeFiles": [],
+    "qmodOutput": "Chroma.qmod"
+  },
   "dependencies": [
     {
       "id": "beatsaber-hook",
-      "versionRange": "^3.14.0",
+      "versionRange": "^5.1.7",
       "additionalData": {
         "extraFiles": [
           "src/inline-hook"
@@ -23,15 +37,15 @@
     },
     {
       "id": "custom-types",
-      "versionRange": "^0.15.0",
+      "versionRange": "^0.17.0",
       "additionalData": {
         "includeQmod": true,
         "private": true
       }
     },
     {
-      "id": "codegen",
-      "versionRange": "^0.33.0",
+      "id": "bs-cordl",
+      "versionRange": "^3700.0.0",
       "additionalData": {
         "includeQmod": true,
         "private": true
@@ -39,21 +53,21 @@
     },
     {
       "id": "custom-json-data",
-      "versionRange": "^0.20.0",
+      "versionRange": "^0.21.0",
       "additionalData": {
         "private": true
       }
     },
     {
       "id": "config-utils",
-      "versionRange": "^0.8.0",
+      "versionRange": "^1.4.0",
       "additionalData": {
         "private": true
       }
     },
     {
-      "id": "questui",
-      "versionRange": "^0.17.0",
+      "id": "bsml",
+      "versionRange": "^0.4.8",
       "additionalData": {
         "includeQmod": true,
         "private": true
@@ -66,27 +80,12 @@
     },
     {
       "id": "sombrero",
-      "versionRange": "^0.1.26",
+      "versionRange": "^0.1.37",
       "additionalData": {}
     },
     {
       "id": "tracks",
-      "versionRange": "^0.9.0",
-      "additionalData": {
-        "private": true
-      }
-    },
-    {
-      "id": "pinkcore",
-      "versionRange": "*",
-      "additionalData": {
-        "includeQmod": true,
-        "private": true
-      }
-    },
-    {
-      "id": "questui_components",
-      "versionRange": "^2.0.1",
+      "versionRange": "^1.0.0",
       "additionalData": {
         "private": true
       }
@@ -99,34 +98,27 @@
       }
     },
     {
-      "id": "modloader",
+      "id": "scotland2",
       "versionRange": "*",
       "additionalData": {}
     },
     {
       "id": "libil2cpp",
-      "versionRange": "^0.2.3",
+      "versionRange": "^0.3.1",
       "additionalData": {}
     },
     {
       "id": "paper",
-      "versionRange": "^1.0.5",
+      "versionRange": "^3.6.0",
       "additionalData": {}
     },
     {
-      "id": "songloader",
-      "versionRange": "^0.10.0",
+      "id": "songcore",
+      "versionRange": "^1.0.0",
       "additionalData": {
         "includeQmod": true,
         "private": true
       }
     }
-  ],
-  "workspace": {
-    "scripts": {
-      "build": [
-        "pwsh ./build.ps1"
-      ]
-    }
-  }
+  ]
 }

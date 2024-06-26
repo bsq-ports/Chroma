@@ -58,9 +58,9 @@ MAKE_HOOK_MATCH(NoteController_Update, &NoteController::ManualUpdate, void, Note
     auto const& tracks = chromaData->second.Tracks;
     auto pathPointDefinition = chromaData->second.LocalPathColor;
     if (!tracks.empty() || pathPointDefinition) {
-      NoteJump* noteJump = self->noteMovement->jump;
+      NoteJump* noteJump = self->_noteMovement->_jump;
       float jumpDuration = noteJump->jumpDuration;
-      float elapsedTime = ChromaTimeSourceHelper::getSongTimeChroma(noteJump->audioTimeSyncController) -
+      float elapsedTime = ChromaTimeSourceHelper::getSongTimeChroma(noteJump->_audioTimeSyncController) -
                           (self->noteData->time - (jumpDuration * 0.5F));
       float normalTime = elapsedTime / jumpDuration;
 
@@ -80,9 +80,9 @@ MAKE_HOOK_MATCH(NoteController_Update, &NoteController::ManualUpdate, void, Note
   }
 }
 
-void NoteControllerHook(Logger& /*logger*/) {
-  INSTALL_HOOK(getLogger(), NoteController_Init);
-  INSTALL_HOOK(getLogger(), NoteController_Update);
+void NoteControllerHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, NoteController_Init);
+  INSTALL_HOOK(ChromaLogger::Logger, NoteController_Update);
 }
 
 ChromaInstallHooks(NoteControllerHook)

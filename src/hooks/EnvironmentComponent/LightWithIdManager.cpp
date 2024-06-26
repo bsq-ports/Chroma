@@ -1,5 +1,6 @@
 #include "ChromaController.hpp"
 
+#include "System/Nullable_1.hpp"
 #include "GlobalNamespace/LightWithIdManager.hpp"
 #include "colorizer/LightColorizer.hpp"
 #include "custom-json-data/shared/VList.h"
@@ -38,15 +39,15 @@ MAKE_HOOK_MATCH(LightWithIdManager_RegisterLight, &LightWithIdManager::RegisterL
   }
 
   // [] does not bound check, use get()
-  auto& lights = self->lights.get(lightId);
+  auto& lights = self->_lights.get(lightId);
   if (lights == nullptr) {
     lights = System::Collections::Generic::List_1<::GlobalNamespace::ILightWithId*>::New_ctor(10);
   }
 
   lightWithId->__SetIsRegistered();
 
-  auto* lightWithIdIt = std::find(lights->items.begin(), lights->items.end(), lightWithId);
-  if (lightWithIdIt != lights->items.end()) {
+  auto* lightWithIdIt = std::find(lights->_items.begin(), lights->_items.end(), lightWithId);
+  if (lightWithIdIt != lights->_items.end()) {
     return;
   }
 
@@ -117,9 +118,9 @@ MAKE_HOOK_MATCH(LightWithIdManager_SetColorForId, &LightWithIdManager::SetColorF
     return LightWithIdManager_SetColorForId(self, lightId, color);
   }
 
-  self->colors[lightId] = { color, true };
-  self->didChangeSomeColorsThisFrame = true;
-  auto list = VList(self->lights.get(lightId));
+  self->_colors[lightId] = System::Nullable_1( true, color );
+  self->_didChangeSomeColorsThisFrame = true;
+  auto list = VList<GlobalNamespace::ILightWithId*>(self->_lights.get(lightId));
   if (list == nullptr) {
     return;
   }
@@ -130,11 +131,11 @@ MAKE_HOOK_MATCH(LightWithIdManager_SetColorForId, &LightWithIdManager::SetColorF
   }
 }
 
-void LightWithIdManagerHook(Logger& logger) {
-  INSTALL_HOOK(logger, LightWithIdManager_LateUpdate);
-  INSTALL_HOOK(logger, LightWithIdManager_UnregisterLight);
-  INSTALL_HOOK(logger, LightWithIdManager_SetColorForId);
-  INSTALL_HOOK(logger, LightWithIdManager_RegisterLight);
+void LightWithIdManagerHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, LightWithIdManager_LateUpdate);
+  INSTALL_HOOK(ChromaLogger::Logger, LightWithIdManager_UnregisterLight);
+  INSTALL_HOOK(ChromaLogger::Logger, LightWithIdManager_SetColorForId);
+  INSTALL_HOOK(ChromaLogger::Logger, LightWithIdManager_RegisterLight);
 }
 
 ChromaInstallHooks(LightWithIdManagerHook)

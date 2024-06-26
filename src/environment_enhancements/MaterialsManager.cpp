@@ -1,8 +1,22 @@
 #include "environment_enhancements/MaterialsManager.hpp"
 #include "Chroma.hpp"
+#include "ChromaLogger.hpp"
+#include "UnityEngine/Resources.hpp"
 #include "utils/ChromaUtils.hpp"
-#include "UnityEngine/MaterialGlobalIlluminationFlags.hpp"
 #include "environment_enhancements/EnvironmentMaterialManager.hpp"
+
+#include "assets.hpp"
+#include "UnityEngine/AssetBundle.hpp"
+#include "UnityEngine/Shader.hpp"
+#include "UnityEngine/AssetBundleRequest.hpp"
+#include "UnityEngine/AsyncOperation.hpp"
+#include "UnityEngine/AssetBundleCreateRequest.hpp"
+#include "UnityEngine/MaterialGlobalIlluminationFlags.hpp"
+#include "UnityEngine/WaitForSeconds.hpp"
+#include "UnityEngine/GameObject.hpp"
+#include "UnityEngine/MeshRenderer.hpp"
+#include "custom-types/shared/coroutine.hpp"
+#include "bsml/shared/BSML/SharedCoroutineStarter.hpp"
 
 using namespace Chroma;
 using namespace UnityEngine;
@@ -21,7 +35,7 @@ ShaderType shaderTypeFromString(std::string_view str) {
   READ_ENUM(InterscopeCar)
   READ_ENUM(WaterfallMirror)
 
-  getLogger().error("Unknown shader type %s", str.data());
+  ChromaLogger::Logger.error("Unknown shader type {}", str.data());
   return Chroma::ShaderType::Standard;
 }
 
@@ -77,6 +91,7 @@ UnityEngine::Material* Chroma::MaterialsManager::InstantiateSharedMaterial(Shade
         { "ENABLE_HEIGHT_FOG", "MULTIPLY_COLOR_WITH_ALPHA", "_ENABLE_MAIN_EFFECT_WHITE_BOOST" }));
     break;
   case ShaderType::BaseWater:
+    // TODO: Fix water shader
     shaderName = water;
     shaderKeywords = ArrayW<StringW>(std::initializer_list<StringW>(
         { "FOG", "HEIGHT_FOG", "INVERT_RIMLIGHT", "MASK_RED_IS_ALPHA", "NOISE_DITHERING", "NORMAL_MAP",
@@ -85,13 +100,26 @@ UnityEngine::Material* Chroma::MaterialsManager::InstantiateSharedMaterial(Shade
           "_WHITEBOOSTTYPE_NONE", "_ZWRITE_ON" }));
     break;
   }
-
-  auto* shader = Shader::Find(shaderName);
-  auto* material = Material::New_ctor(shader);
+  auto shader =
+      Resources::FindObjectsOfTypeAll<Shader*>().front([&](auto const& e) { return e->get_name() == shaderName; });
+  if (!shader) {
+    ChromaLogger::Logger.error("Unable to find shader {}", shaderName);
+    // fallback
+    if (shaderType != ShaderType::Standard) {
+      return InstantiateSharedMaterial(ShaderType::Standard);
+    } else {
+      ChromaLogger::Logger.fmtThrowError("Unable to find shader {}", shaderName);
+    }
+  }
+  auto* material = Material::New_ctor(shader.value());
 
   material->set_globalIlluminationFlags(globalIlluminationFlags);
   material->set_enableInstancing(true);
   material->set_color({ 0, 0, 0, 0 });
+
+  if (shaderType == ShaderType::Standard) {
+    material->SetFloat("_Metallic", 0);
+  }
 
   if (shaderKeywords) {
     material->set_shaderKeywords(shaderKeywords);
@@ -99,6 +127,7 @@ UnityEngine::Material* Chroma::MaterialsManager::InstantiateSharedMaterial(Shade
 
   return material;
 }
+
 
 MaterialInfo Chroma::MaterialsManager::CreateMaterialInfo(rapidjson::Value const& data) {
   ArrayW<StringW> shaderKeywords;

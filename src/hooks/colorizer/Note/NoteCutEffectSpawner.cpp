@@ -34,8 +34,8 @@ MAKE_HOOK_MATCH(NoteCutEffectSpawner_SpawnNoteCutEffect, &NoteCutCoreEffectsSpaw
   ColorManagerColorForType::DisableColorOverride();
 }
 
-void NoteCutEffectSpawnerHook(Logger& /*logger*/) {
-  INSTALL_HOOK(getLogger(), NoteCutEffectSpawner_SpawnNoteCutEffect);
+void NoteCutEffectSpawnerHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, NoteCutEffectSpawner_SpawnNoteCutEffect);
 }
 
 ChromaInstallHooks(NoteCutEffectSpawnerHook)

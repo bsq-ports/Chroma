@@ -48,7 +48,7 @@ void ChromaEvents::parseEventData(TracksAD::BeatmapAssociatedData& beatmapAD,
     auto trackIt = eventData.FindMember((v2 ? Chroma::NewConstants::V2_TRACK : Chroma::NewConstants::TRACK).data());
 
     if (trackIt == eventData.MemberEnd() || trackIt->value.IsNull() || !trackIt->value.IsString()) {
-      getLogger().debug("Track data is missing for Chroma custom event %f", customEventData->time);
+      ChromaLogger::Logger.debug("Track data is missing for Chroma custom event {}", customEventData->____time_k__BackingField);
       return;
     }
 
@@ -62,7 +62,7 @@ void ChromaEvents::parseEventData(TracksAD::BeatmapAssociatedData& beatmapAD,
     auto trackIt = eventData.FindMember((v2 ? Chroma::NewConstants::V2_TRACK : Chroma::NewConstants::TRACK).data());
 
     if (trackIt == eventData.MemberEnd() || trackIt->value.IsNull() || !trackIt->value.IsString()) {
-      getLogger().debug("Track data is missing for Chroma custom event %f", customEventData->time);
+      ChromaLogger::Logger.debug("Track data is missing for Chroma custom event {}", customEventData->____time_k__BackingField);
       return;
     }
 
@@ -158,13 +158,13 @@ void CustomEventCallback(BeatmapCallbacksController* callbackController,
 
       // fail safe, idek why this needs to be done smh
       // CJD you bugger
-      auto* customBeatmapData = (CustomJSONData::CustomBeatmapData*)callbackController->beatmapData;
+      auto* customBeatmapData = (CustomJSONData::CustomBeatmapData*)callbackController->_beatmapData;
       if (!ad.parsed) {
         TracksAD::BeatmapAssociatedData& beatmapAD = TracksAD::getBeatmapAD(customBeatmapData->customData);
         ChromaEvents::parseEventData(beatmapAD, customEventData, customBeatmapData->v2orEarlier);
       }
 
-      if (typeHash == jsonNameHash_ASSIGNFOGTRACK && customBeatmapData->v2orEarlier) {
+      if (typeHash == jsonNameHash_ASSIGNFOGTRACK) {
         Chroma::ChromaFogController::getInstance()->AssignTrack(
             std::get<ChromaEvents::AssignBloomFogTrack>(ad.data).track);
         CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Assigned fog controller to track");
@@ -177,6 +177,6 @@ void CustomEventCallback(BeatmapCallbacksController* callbackController,
   )
 }
 
-void ChromaEvents::AddEventCallbacks(Logger& /*logger*/) {
+void ChromaEvents::AddEventCallbacks() {
   CustomJSONData::CustomEventCallbacks::AddCustomEventCallback(&CustomEventCallback);
 }

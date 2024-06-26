@@ -11,4 +11,4 @@ if (-not ($PSVersionTable.PSEdition -eq "Core")) {
 }
 
 
-Get-Content ./log.log | & $stackScript -sym ./build/debug/ > log_unstripped.log
+Get-Content ./log.txt | & $stackScript -sym ./build/debug/ > log_unstripped.log

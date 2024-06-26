@@ -29,7 +29,7 @@ MAKE_HOOK_MATCH(BeatmapObjectCallbackController_Start, &BeatmapCallbacksControll
   }
 }
 
-void InstallBeatmapObjectCallbackControllerHooks(Logger& logger) {
-  INSTALL_HOOK(logger, BeatmapObjectCallbackController_Start);
+void InstallBeatmapObjectCallbackControllerHooks() {
+  INSTALL_HOOK(ChromaLogger::Logger, BeatmapObjectCallbackController_Start);
 }
 ChromaInstallHooks(InstallBeatmapObjectCallbackControllerHooks)

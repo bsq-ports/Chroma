@@ -1,8 +1,8 @@
-#include "questui/shared/QuestUI.hpp"
-#include "questui/shared/BeatSaberUI.hpp"
+#include "bsml/shared/BSML.hpp"
 #include "main.hpp"
 
 #include "Chroma.hpp"
+#include "ChromaLogger.hpp"
 #include "ChromaEvents.hpp"
 #include "custom-types/shared/register.hpp"
 #include "ChromaController.hpp"
@@ -12,21 +12,19 @@
 #include <cstdlib>
 #include "lighting/LightIDTableManager.hpp"
 
-#include "pinkcore/shared/RequirementAPI.hpp"
+#include "songcore/shared/Capabilities.hpp"
 
-#include "questui_components/shared/components/ScrollableContainer.hpp"
-#include "questui_components/shared/components/Text.hpp"
 #include "ui/ModifierViewController.hpp"
 
 #include "environment_enhancements/EnvironmentMaterialManager.hpp"
 
-#include "GlobalNamespace/SharedCoroutineStarter.hpp"
+#include "bsml/shared/BSML/SharedCoroutineStarter.hpp"
 
-#include "questui/shared/CustomTypes/Components/MainThreadScheduler.hpp"
+#include "bsml/shared/BSML/MainThreadScheduler.hpp"
 
 using namespace Chroma;
-using namespace QuestUI;
-using namespace QUC;
+//using namespace QuestUI;
+//using namespace QUC;
 
 Configuration& getConfig() {
   static Configuration config(modInfo);
@@ -34,86 +32,52 @@ Configuration& getConfig() {
   return config;
 }
 
-Logger& getLogger() {
-  static auto* logger = new Logger(modInfo, LoggerOptions(false, true));
-  return *logger;
-}
-
 void setChromaEnv() {
   setenv("DisableChromaReq", getChromaConfig().customColorEventsEnabled.GetValue() ? "0" : "1", true);
   if (getChromaConfig().customColorEventsEnabled.GetValue()) {
-    PinkCore::RequirementAPI::RegisterInstalled("Chroma");
+    SongCore::API::Capabilities::RegisterCapability("Chroma");
   } else {
-    PinkCore::RequirementAPI::RemoveInstalled("Chroma");
+    SongCore::API::Capabilities::UnregisterCapability("Chroma");
   }
 
-  PinkCore::RequirementAPI::RegisterInstalled("Chroma Lighting Events");
+  SongCore::API::Capabilities::RegisterCapability("Chroma Lighting Events");
 }
 
 void DidActivate(HMUI::ViewController* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
-  getLogger().info("DidActivate: %p, %d, %d, %d", self, static_cast<int>(firstActivation),
+  ChromaLogger::Logger.info("DidActivate: {}, {}, {}, {}", fmt::ptr(self), static_cast<int>(firstActivation),
                    static_cast<int>(addedToHierarchy), static_cast<int>(screenSystemEnabling));
 
-  static QUC::RenderContext ctx{ nullptr };
-
-  static QUC::ScrollableContainer container(Text("Chroma settings."), Text("Settings are saved when changed."),
-                                            Text("Not all settings have been tested or implemented."),
-                                            Text("Please use with caution."), Chroma::UIUtils::buildMainUI<false>());
-
-  if (firstActivation) {
-    ctx.destroyTree();
-    ctx = RenderContext(self->get_transform());
-  }
-
-  detail::renderSingle(container, ctx);
 }
 
-extern "C" void setup(ModInfo& info) {
-  info.id = modName;
-  info.version = VERSION;
-  modInfo = info;
+extern "C" void setup(CModInfo* info) {
+  info->id = modName.c_str();
+  info->version = VERSION;
+  info->version_long = 0;
 
   getConfig().Load();
 
-  getChromaConfig().Init(info);
+  getChromaConfig().Init({modName, VERSION, 0});
 
-  getLogger().info("Completed Chroma setup!");
+  ChromaLogger::Logger.info("Completed Chroma setup!");
 }
 
-extern "C" void load() {
+extern "C" void late_load() {
   il2cpp_functions::Init();
-  QuestUI::Init();
-  QuestUI::Register::RegisterModSettingsViewController(modInfo, DidActivate);
-  QuestUI::Register::RegisterGameplaySetupMenu<ModifierViewController*>(modInfo, Register::Solo | Register::Online);
 
-#if DEBUGB == 1
-#warning "Removing debug messages"
-#else
-#warning "Debug messages hooray"
-#endif
+  //QuestUI::Init();
+  BSML::Register::RegisterSettingsMenu(modName, DidActivate, false);
+  //QuestUI::Register::RegisterGameplaySetupMenu<ModifierViewController*>(modInfo, Register::Solo | Register::Online);
 
-  // TODO: This might be redundant now because of the macro, keep it to be safe?
-  //  This disables the useless debug logs on the release build
-#if DEBUGB == 1
-  getLogger().debug("Disabling annoying loggers in release build");
-  getLogger().DisableContext(Chroma::ChromaLogger::LightColorizer);
-  getLogger().DisableContext(Chroma::ChromaLogger::ColorLightSwitch);
-  getLogger().DisableContext(Chroma::ChromaLogger::EnvironmentRemoval);
-  getLogger().DisableContext(Chroma::ChromaLogger::TrackLaneRings);
-  getLogger().DisableContext(Chroma::ChromaLogger::ColorLightSwitch);
-  getLogger().DisableContext(Chroma::ChromaLogger::ObjectDataDeserialize);
-#endif
-
-  getLogger().info("Installing types...");
+  ChromaLogger::Logger.info("Installing types...");
 
   custom_types::Register::AutoRegister();
 
-  getLogger().info("Installed types");
+  ChromaLogger::Logger.info("Installed types");
 
-  getLogger().info("Installing Chroma hooks...");
-  Chroma::Hooks::InstallHooks(getLogger());
-  ChromaEvents::AddEventCallbacks(getLogger());
-  getLogger().info("Installed Chroma hooks!");
+  ChromaLogger::Logger.info("Installing Chroma hooks...");
+  Chroma::Hooks::InstallHooks();
+  ChromaEvents::AddEventCallbacks();
+  ChromaLogger::Logger.info("Installed Chroma hooks!");
 
   LightIDTableManager::InitTable();
 

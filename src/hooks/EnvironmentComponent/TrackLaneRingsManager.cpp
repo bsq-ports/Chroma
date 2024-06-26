@@ -28,14 +28,14 @@ static void FindTrackLaneRingManager(UnityEngine::Transform* transform, std::vec
   auto childCount = transform->GetChildCount();
 
   for (int i = 0; i < childCount; i++) {
-    auto* child = transform->GetChild(i);
+    auto child = transform->GetChild(i);
     FindTrackLaneRingManager(child, managers);
   }
 }
 
 static TrackLaneRing* QueueInject(DiContainer* container, TrackLaneRing* prefab) {
   TrackLaneRing* trackLaneRing = UnityEngine::Object::Instantiate(prefab);
-  auto injectables = VList<UnityEngine::MonoBehaviour*>();
+  auto injectables = VList<UnityW<UnityEngine::MonoBehaviour>>::New();
   ZenUtilInternal::GetInjectableMonoBehavioursUnderGameObject(trackLaneRing->get_gameObject(), injectables);
 
   for (auto const& i : injectables) {
@@ -52,40 +52,40 @@ MAKE_HOOK_MATCH(TrackLaneRingsManager_Start, &TrackLaneRingsManager::Start, void
     return;
   }
 
-  if (self->rings) {
+  if (self->_rings) {
     return;
   }
 
-  self->rings = ArrayW<GlobalNamespace::TrackLaneRing*>(self->ringCount);
-  auto* transform = self->get_transform();
+  self->_rings = ArrayW<UnityW<GlobalNamespace::TrackLaneRing>>(self->_ringCount);
+  auto transform = self->get_transform();
   Sombrero::FastVector3 forward = transform->get_forward();
-  if (self->spawnAsChildren) {
-    for (int i = 0; i < self->rings.size(); i++) {
-      self->rings[i] = QueueInject(self->container, self->trackLaneRingPrefab);
-      self->rings[i]->get_transform()->set_parent(transform);
+  if (self->_spawnAsChildren) {
+    for (int i = 0; i < self->_rings.size(); i++) {
+      self->_rings[i] = QueueInject(self->_container, self->_trackLaneRingPrefab);
+      self->_rings[i]->get_transform()->set_parent(transform);
       Sombrero::FastVector3 position = { 0.0F, 0.0F, static_cast<float>(i) * self->ringPositionStep };
-      self->rings[i]->Init(position, { 0, 0, 0 });
+      self->_rings[i]->Init(position, { 0, 0, 0 });
     }
     return;
   }
   auto position = transform->get_position();
-  for (int j = 0; j < self->rings.size(); j++) {
-    self->rings[j] = QueueInject(self->container, self->trackLaneRingPrefab);
+  for (int j = 0; j < self->_rings.size(); j++) {
+    self->_rings[j] = QueueInject(self->_container, self->_trackLaneRingPrefab);
     Sombrero::FastVector3 position2 = forward * (static_cast<float>(j) * self->ringPositionStep);
-    self->rings[j]->Init(position2, position);
+    self->_rings[j]->Init(position2, position);
   }
 }
 
 MAKE_HOOK_MATCH(SceneDecoratorContext_InitializeRings, &SceneDecoratorContext::Initialize, void,
                 SceneDecoratorContext* self, Zenject::DiContainer* container) {
   // Do nothing if Chroma shouldn't run
-  if (!ChromaController::DoChromaHooks() || self->decoratedContractName != "Environment") {
+  if (!ChromaController::DoChromaHooks() || self->____decoratedContractName != "Environment") {
     SceneDecoratorContext_InitializeRings(self, container);
     return;
   }
 
   std::vector<TrackLaneRingsManager*> managers;
-  for (auto const& n : self->get_gameObject()->get_scene().GetRootGameObjects()) {
+  for (auto n : self->get_gameObject()->get_scene().GetRootGameObjects()) {
     FindTrackLaneRingManager(n->get_transform(), managers);
   }
 
@@ -94,16 +94,16 @@ MAKE_HOOK_MATCH(SceneDecoratorContext_InitializeRings, &SceneDecoratorContext::I
       continue;
     }
 
-    manager->container = container;
+    manager->_container = container;
     manager->Start();
   }
 
   SceneDecoratorContext_InitializeRings(self, container);
 }
 
-void TrackLaneRingsManagerHook(Logger& logger) {
-  INSTALL_HOOK(logger, SceneDecoratorContext_InitializeRings);
-  INSTALL_HOOK(logger, TrackLaneRingsManager_Start);
+void TrackLaneRingsManagerHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, SceneDecoratorContext_InitializeRings);
+  INSTALL_HOOK(ChromaLogger::Logger, TrackLaneRingsManager_Start);
 }
 
 ChromaInstallHooks(TrackLaneRingsManagerHook)

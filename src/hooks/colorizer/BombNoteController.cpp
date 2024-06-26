@@ -30,8 +30,8 @@ MAKE_HOOK_MATCH(BombNoteController_Init, &BombNoteController::Init, void, BombNo
   }
 }
 
-void BombNoteControllerHook(Logger& logger) {
-  INSTALL_HOOK(logger, BombNoteController_Init);
+void BombNoteControllerHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, BombNoteController_Init);
 }
 
 ChromaInstallHooks(BombNoteControllerHook)

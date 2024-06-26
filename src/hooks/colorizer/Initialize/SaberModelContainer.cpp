@@ -22,11 +22,11 @@ MAKE_HOOK_MATCH(SaberModelContainer_Start, &SaberModelContainer::Start, void, Sa
     return;
   }
 
-  self->get_gameObject()->AddComponent<ChromaSaberController*>()->Init(self->saber);
+  self->get_gameObject()->AddComponent<ChromaSaberController*>()->Init(self->_saber);
 }
 
-void SaberModelContainerHook(Logger& logger) {
-  INSTALL_HOOK(logger, SaberModelContainer_Start);
+void SaberModelContainerHook() {
+  INSTALL_HOOK(ChromaLogger::Logger, SaberModelContainer_Start);
 }
 
 ChromaInstallHooks(SaberModelContainerHook)

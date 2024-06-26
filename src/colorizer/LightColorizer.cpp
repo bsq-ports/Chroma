@@ -21,40 +21,39 @@ using namespace Sombrero;
 using namespace Chroma;
 
 LightColorizer::LightColorizer(ChromaLightSwitchEventEffect* lightSwitchEventEffect, LightWithIdManager* lightManager)
-    : _lightSwitchEventEffect(lightSwitchEventEffect), lightId(lightSwitchEventEffect->lightsID), _colors(COLOR_FIELDS),
+    : _lightSwitchEventEffect(lightSwitchEventEffect), lightId(lightSwitchEventEffect->_lightsID), _colors(COLOR_FIELDS),
       _originalColors(), _simpleColorSOs(COLOR_FIELDS) {
-  static auto contextLogger = getLogger().WithContext(ChromaLogger::LightColorizer);
 
-  auto Initialize = [this](ColorSO*& colorSO, int index) {
-    if (auto mColor = il2cpp_utils::try_cast<MultipliedColorSO>(colorSO)) {
-      auto* lightSO = mColor.value()->baseColor;
+  auto Initialize = [this](UnityW<ColorSO> colorSO, int index) {
+    if (auto mColor = il2cpp_utils::try_cast<MultipliedColorSO>(colorSO.ptr())) {
+      auto lightSO = mColor.value()->_baseColor;
       _originalColors[index] = lightSO->color;
-    } else if (auto sColor = il2cpp_utils::try_cast<SimpleColorSO>(colorSO)) {
+    } else if (auto sColor = il2cpp_utils::try_cast<SimpleColorSO>(colorSO.ptr())) {
       _originalColors[index] = sColor.value()->color;
     }
   };
 
-  Initialize(lightSwitchEventEffect->lightColor0, 0);
-  Initialize(lightSwitchEventEffect->lightColor1, 1);
-  Initialize(lightSwitchEventEffect->lightColor0Boost, 2);
-  Initialize(lightSwitchEventEffect->lightColor1Boost, 3);
+  Initialize(lightSwitchEventEffect->_lightColor0, 0);
+  Initialize(lightSwitchEventEffect->_lightColor1, 1);
+  Initialize(lightSwitchEventEffect->_lightColor0Boost, 2);
+  Initialize(lightSwitchEventEffect->_lightColor1Boost, 3);
 
   // AAAAAA PROPAGATION STUFFF
-  Lights = lightManager->lights.get(lightSwitchEventEffect->lightsID);
+  Lights = lightManager->_lights.get(lightSwitchEventEffect->_lightsID);
 
   if (Lights == nullptr) {
-    Lights = lightManager->lights.get(lightSwitchEventEffect->lightsID) =
+    Lights = lightManager->_lights.get(lightSwitchEventEffect->_lightsID) =
         System::Collections::Generic::List_1<::GlobalNamespace::ILightWithId*>::New_ctor(10);
   }
 
-  LightsSafePtr.emplace(Lights.getInner());
+  LightsSafePtr.emplace(reinterpret_cast<List<GlobalNamespace::ILightWithId*>*>(Lights.getPtr()));
 }
 
 LightColorizer& LightColorizer::New(ChromaLightSwitchEventEffect* lightSwitchEventEffect,
                                     GlobalNamespace::LightWithIdManager* lightManager) {
-  auto& light = Colorizers.emplace(lightSwitchEventEffect->event, LightColorizer(lightSwitchEventEffect, lightManager))
+  auto& light = Colorizers.emplace(lightSwitchEventEffect->_event.value__, LightColorizer(lightSwitchEventEffect, lightManager))
                     .first->second;
-  ColorizersByLightID[lightSwitchEventEffect->lightsID] = &light;
+  ColorizersByLightID[lightSwitchEventEffect->_lightsID] = &light;
   return light;
 }
 
@@ -94,7 +93,7 @@ void LightColorizer::InitializeSO(ColorSO*& lightColor0, ColorSO*& /*highlightCo
                                   ColorSO*& /*highlightColor1Boost*/) {
   auto Initialize = [this](ColorSO*& colorSO, int index) {
     if (auto mColor = il2cpp_utils::try_cast<MultipliedColorSO>(colorSO)) {
-      auto* lightSO = mColor.value()->baseColor;
+      auto lightSO = mColor.value()->_baseColor;
       _originalColors[index] = lightSO->color;
     } else if (auto sColor = il2cpp_utils::try_cast<SimpleColorSO>(colorSO)) {
       _originalColors[index] = sColor.value()->color;
@@ -182,12 +181,12 @@ void LightColorizer::CreateLightColorizerContractByLightID(int lightId,
 
 void LightColorizer::CreateLightColorizerContract(BasicBeatmapEventType type,
                                                   std::function<void(LightColorizer&)> const& callback) {
-  auto it = Colorizers.find(type);
+  auto it = Colorizers.find(type.value__);
 
   if (it != Colorizers.end()) {
     callback(it->second);
   } else {
-    _contracts.emplace_back(type, callback);
+    _contracts.emplace_back(type.value__, callback);
   }
 }
 
@@ -195,7 +194,7 @@ void LightColorizer::CompleteContracts(ChromaLightSwitchEventEffect* chromaLight
   // complete open contracts
   for (auto it = _contracts.begin(); it != _contracts.end();) {
     auto const& [type, callback] = *it;
-    if (type != chromaLightSwitchEventEffect->EventType) {
+    if (type != chromaLightSwitchEventEffect->EventType.value__) {
       it++;
       continue;
     }
@@ -206,7 +205,7 @@ void LightColorizer::CompleteContracts(ChromaLightSwitchEventEffect* chromaLight
 
   for (auto it = _contractsByLightID.begin(); it != _contractsByLightID.end();) {
     auto const& [lightId, callback] = *it;
-    if (lightId != chromaLightSwitchEventEffect->lightsID) {
+    if (lightId != chromaLightSwitchEventEffect->_lightsID) {
       it++;
       continue;
     }
@@ -242,12 +241,12 @@ LightColorizer::getLightsPropagationGrouped() {
     auto* ring = (*monoBehaviour)->GetComponentInParent<TrackLaneRing*>();
 
     if (ring != nullptr) {
-      TrackLaneRingsManager* mngr = managers.FirstOrDefault([&](TrackLaneRingsManager* it) -> bool {
-        return (it != nullptr) && std::find(it->rings.begin(), it->rings.end(), ring) != it->rings.end();
+      TrackLaneRingsManager* mngr = managers->FirstOrDefault([&](TrackLaneRingsManager* it) -> bool {
+        return (it != nullptr) && std::find(it->_rings.begin(), it->_rings.end(), UnityW(ring)) != it->_rings.end();
       });
 
       if (mngr != nullptr) {
-        z = 1000 + mngr->rings.IndexOf(ring);
+        z = 1000 + mngr->_rings->IndexOf(ring);
       }
     }
 
