@@ -24,7 +24,7 @@ UnityEngine::Sprite* UIUtils::configToIcon(ConfigUtils::ConfigValue<bool> const&
 
   auto& sprite = spriteMap[name];
 
-  if ((sprite == nullptr) || (sprite->m_CachedPtr == nullptr)) {
+  if (UnityW(sprite) == nullptr) {
     sprite = Resources::FindObjectsOfTypeAll<Sprite*>()->First(
                                        [&name](Sprite* x) { return x->get_name() == name; });
   }

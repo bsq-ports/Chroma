@@ -44,5 +44,6 @@ struct IncludedAsset {
 namespace IncludedAssets {
 
 	DECLARE_FILE(standard_shader_bundle)
+	DECLARE_FILE(ui_bsml)
 
 }

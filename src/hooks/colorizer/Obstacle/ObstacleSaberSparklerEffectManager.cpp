@@ -15,6 +15,7 @@
 #include "UnityEngine/Color.hpp"
 
 #include "UnityEngine/XR/XRNode.hpp"
+#include "UnityEngine/Pose.hpp"
 
 #include "colorizer/ObstacleColorizer.hpp"
 
@@ -40,60 +41,38 @@ MAKE_HOOK_MATCH(ObstacleSaberSparkleEffectManager_Update, &ObstacleSaberSparkleE
     ObstacleSaberSparkleEffectManager_Update(self);
     return;
   }
-
-  self->_wasSystemActive.get(0) = self->_isSystemActive.get(0);
-  self->_wasSystemActive.get(1) = self->_isSystemActive.get(1);
-  self->_isSystemActive.get(0) = false;
-  self->_isSystemActive.get(1) = false;
-
-  auto* obstacleControllers = self->_beatmapObjectManager->get_activeObstacleControllers();
-
-  for (auto const& obstacleController : VList<GlobalNamespace::ObstacleController*>(obstacleControllers)) {
-    if (obstacleController == nullptr) {
-      continue;
-    }
-
-    auto const& bounds = obstacleController->bounds;
-    for (int i = 0; i < 2; i++) {
-      Vector3 vector;
-      if (self->_sabers.get(i)->get_isActiveAndEnabled() &&
-          self->GetBurnMarkPos(bounds, obstacleController->get_transform(), self->_sabers.get(i)->saberBladeBottomPos,
-                               self->_sabers.get(i)->saberBladeTopPos, vector)) {
-        self->_isSystemActive.get(i) = true;
-        self->_burnMarkPositions.get(i) = vector;
-        self->_effects.get(i)->SetPositionAndRotation(
-            vector, self->GetEffectRotation(vector, obstacleController->get_transform(), bounds));
-
-        // TRANSPILE IS HERE
-        SetObstacleSaberSparkleColor(self->_effects.get(i), obstacleController);
-        // TRANSPILE IS HERE
-
-        self->_hapticFeedbackManager->PlayHapticFeedback(
-            SaberTypeExtensions::Node(self->_sabers.get(i)->get_saberType()), self->_rumblePreset);
-        if (!self->_wasSystemActive.get(i)) {
-          self->_effects.get(i)->StartEmission();
-          auto* action = self->sparkleEffectDidStartEvent;
-          if (action != nullptr) {
-            action->Invoke(self->_sabers.get(i)->get_saberType());
-          }
+  auto activeObstacleControllers = self->_beatmapObjectManager->activeObstacleControllers;
+  Pose identity = Pose::get_identity();
+  for (int i = 0; i < 2; i++) {
+    bool flag = self->_effects[i]->IsEmitting();
+    if (ObstacleSaberSparkleEffectManager::IntersectSaberWithObstacles(self->_sabers[i], activeObstacleControllers,
+                                                                      byref(identity))) {
+      self->_effects[i]->SetPositionAndRotation(identity.position, identity.rotation);
+      // TRANSPILE IS HERE
+      // TODO: Reimplement
+      // SetObstacleSaberSparkleColor(self->_effects.get(i), obstacleController);
+      // TRANSPILE IS HERE
+      self->_hapticFeedbackManager->PlayHapticFeedback(SaberTypeExtensions::Node(self->_sabers[i]->saberType),
+                                                      self->_rumblePreset);
+      if (!flag) {
+        self->_effects[i]->StartEmission();
+        auto action = self->sparkleEffectDidStartEvent;
+        if (action != nullptr) {
+          action->Invoke(self->_sabers[i]->saberType);
         }
       }
-    }
-  }
-#pragma unroll
-  for (int j = 0; j < 2; j++) {
-    if (!self->_isSystemActive.get(j) && self->_wasSystemActive.get(j)) {
-      self->_effects.get(j)->StopEmission();
-      auto* action2 = self->sparkleEffectDidEndEvent;
+    } else if (flag) {
+      self->_effects[i]->StopEmission();
+      auto action2 = self->sparkleEffectDidEndEvent;
       if (action2 != nullptr) {
-        action2->Invoke(self->_sabers.get(j)->get_saberType());
+        action2->Invoke(self->_sabers[i]->saberType);
       }
     }
   }
 }
 
 void ObstacleSaberSparkleEffectManagerHook() {
-  INSTALL_HOOK_ORIG(ChromaLogger::Logger, ObstacleSaberSparkleEffectManager_Update);
+  // INSTALL_HOOK_ORIG(ChromaLogger::Logger, ObstacleSaberSparkleEffectManager_Update);
 }
 
 ChromaInstallHooks(ObstacleSaberSparkleEffectManagerHook)
