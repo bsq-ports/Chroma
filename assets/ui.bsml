@@ -1,0 +1,8 @@
+<bg xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:noNamespaceSchemaLocation='https://raw.githubusercontent.com/RedBrumbler/Quest-BSML-Docs/gh-pages/schema.xsd'>
+    <vertical pref-width='60' pref-height='30'
+    vertical-fit='PreferredSize' pad='2'>
+        <modifier src="#GlobalIcon" text="Environment Enhancements" hover-hint="Toggles whether Chroma should modify the environment as specified by a map." value="environmentEnhancementsEnabled" bind-value="true" apply-on-change="true" />
+        <modifier src="#LightIcon" text="Custom Color Events" hover-hint="Disables custom colors for Chroma maps. In other words, disables Chroma." value="customColorEventsEnabled" bind-value="true" apply-on-change="true" />
+        <modifier src="#DisappearingArrows" text="Note coloring" hover-hint="Controls whether notes will be colored or not." value="customNoteColors" bind-value="true" apply-on-change="true" />
+    </vertical>
+</bg>
