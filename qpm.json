@@ -14,7 +14,7 @@
   "dependencies": [
     {
       "id": "beatsaber-hook",
-      "versionRange": ">5.1.0<5.1.7",
+      "versionRange": "^5.1.7",
       "additionalData": {
         "extraFiles": [
           "src/inline-hook"
@@ -31,7 +31,7 @@
     },
     {
       "id": "bs-cordl",
-      "versionRange": "3602.*",
+      "versionRange": "^3700.0.0",
       "additionalData": {
         "includeQmod": true,
         "private": true
