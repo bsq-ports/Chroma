@@ -1,6 +1,6 @@
 {
   "config": {
-    "version": "0.1.0",
+    "version": "0.4.0",
     "sharedDir": "shared",
     "dependenciesDir": "extern",
     "info": {
@@ -100,8 +100,10 @@
       },
       {
         "id": "scotland2",
-        "versionRange": "*",
-        "additionalData": {}
+        "versionRange": "^0.1.0",
+        "additionalData": {
+          "includeQmod": false
+        }
       },
       {
         "id": "libil2cpp",

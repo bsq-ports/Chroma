@@ -10,6 +10,7 @@
   "packageVersion": "1.37.0_9064817954",
   "description": "Colors!",
   "modFiles": [],
+  "lateModFiles": ["${binary}"],
   "dependencies": [],
   "libraryFiles": [],
   "fileCopies": [],
