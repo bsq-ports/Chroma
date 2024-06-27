@@ -4,6 +4,7 @@
 #include "Chroma.hpp"
 #include "ChromaLogger.hpp"
 #include "ChromaEvents.hpp"
+#include "bsml/shared/BSML/GameplaySetup/MenuType.hpp"
 #include "custom-types/shared/register.hpp"
 #include "ChromaController.hpp"
 
@@ -12,7 +13,7 @@
 #include <cstdlib>
 #include "lighting/LightIDTableManager.hpp"
 
-#include "songcore/shared/Capabilities.hpp"
+#include "songcore/shared/capabilities.hpp"
 
 #include "ui/ModifierViewController.hpp"
 
@@ -23,8 +24,6 @@
 #include "bsml/shared/BSML/MainThreadScheduler.hpp"
 
 using namespace Chroma;
-//using namespace QuestUI;
-//using namespace QUC;
 
 Configuration& getConfig() {
   static Configuration config(modInfo);
@@ -43,12 +42,6 @@ void setChromaEnv() {
   SongCore::API::Capabilities::RegisterCapability("Chroma Lighting Events");
 }
 
-void DidActivate(HMUI::ViewController* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
-  ChromaLogger::Logger.info("DidActivate: {}, {}, {}, {}", fmt::ptr(self), static_cast<int>(firstActivation),
-                   static_cast<int>(addedToHierarchy), static_cast<int>(screenSystemEnabling));
-
-}
-
 extern "C" void setup(CModInfo* info) {
   info->id = modName.c_str();
   info->version = VERSION;
@@ -64,9 +57,8 @@ extern "C" void setup(CModInfo* info) {
 extern "C" void late_load() {
   il2cpp_functions::Init();
 
-  //QuestUI::Init();
-  BSML::Register::RegisterSettingsMenu(modName, DidActivate, false);
-  //QuestUI::Register::RegisterGameplaySetupMenu<ModifierViewController*>(modInfo, Register::Solo | Register::Online);
+  BSML::Register::RegisterMainMenu<ModifierViewController*>("Chroma", "Chroma", "Colors!");
+  //BSML::Register::RegisterGameplaySetupTab<ModifierViewController*>("Chroma", BSML::MenuType::Solo);
 
   ChromaLogger::Logger.info("Installing types...");
 
