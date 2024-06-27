@@ -83,34 +83,45 @@ bool SceneTransitionHelper::BasicPatch(SongCore::SongLoader::CustomBeatmapLevel*
 
   ChromaLogger::Logger.debug("Setting environment. Chroma Required: {}", chromaRequirement);
 
-  auto diffSaveMap =
-      saveData.value()->difficultyBeatmapSets | Select([&](auto&& x) {
-        return x->difficultyBeatmaps | FirstOrDefault([&](auto&& y) {
-                 BeatmapDifficulty mapDifficulty;
-                 GlobalNamespace::BeatmapDifficultySerializedMethods::BeatmapDifficultyFromSerializedName(
-                     y->difficulty, byref(mapDifficulty));
+  // Legacy environment grab from info.dat
+  if (saveData.value()->difficultyBeatmapSets) {
+    auto diffSaveMap =
+        saveData.value()->difficultyBeatmapSets |
+        Select([&](auto&& x) -> ::GlobalNamespace::__StandardLevelInfoSaveData__DifficultyBeatmap* {
+          // short circuit
+          if (x == nullptr || !x->difficultyBeatmaps) return nullptr;
 
-                 return mapDifficulty == key.difficulty &&
-                        x->beatmapCharacteristicName == key.beatmapCharacteristic->get_serializedName();
-               });
-      }) |
-      First([](auto x) { return x != nullptr; });
-  ChromaLogger::Logger.debug("Savemap", fmt::ptr(diffSaveMap.value_or(nullptr)));
-  auto saveMap = diffSaveMap.value_or(nullptr);
-  auto customDifficultyBeatmap =
-      il2cpp_utils::try_cast<SongCore::CustomJSONData::CustomDifficultyBeatmap>(saveMap).value_or(nullptr);
-  
-  // handle environment v2 removal
-  if (customDifficultyBeatmap) {
-    auto customData = customDifficultyBeatmap->customData.value();
-    auto objectsToKillIt = customData.get().FindMember(Chroma::NewConstants::V2_ENVIRONMENT_REMOVAL.data());
+          return x->difficultyBeatmaps | FirstOrDefault([&](auto&& y) {
+                   // short circuit
+                   if (y == nullptr || y->difficulty == nullptr) return false;
 
-    if (objectsToKillIt != customData.get().MemberEnd()) {
-      ChromaController::environmentObjectsRemovalV2 = std::vector<std::string>();
-      
-      auto objectsToKill = objectsToKillIt->value.GetArray();
-      for (auto const& object : objectsToKill) {
-        ChromaController::environmentObjectsRemovalV2->emplace_back(Paper::StringConvert::from_utf16(object.GetString()));
+                   BeatmapDifficulty mapDifficulty;
+                   GlobalNamespace::BeatmapDifficultySerializedMethods::BeatmapDifficultyFromSerializedName(
+                       y->difficulty, byref(mapDifficulty));
+
+                   return mapDifficulty == key.difficulty && key.beatmapCharacteristic.isAlive() &&
+                          x->beatmapCharacteristicName == key.beatmapCharacteristic->get_serializedName();
+                 });
+        }) |
+        First([](auto x) { return x != nullptr; });
+    auto saveMap = diffSaveMap.value_or(nullptr);
+    ChromaLogger::Logger.debug("Savemap", fmt::ptr(saveMap));
+    auto customDifficultyBeatmap =
+        il2cpp_utils::try_cast<SongCore::CustomJSONData::CustomDifficultyBeatmap>(saveMap).value_or(nullptr);
+
+    // handle environment v2 removal
+    if (customDifficultyBeatmap) {
+      auto customData = customDifficultyBeatmap->customData.value();
+      auto objectsToKillIt = customData.get().FindMember(Chroma::NewConstants::V2_ENVIRONMENT_REMOVAL.data());
+
+      if (objectsToKillIt != customData.get().MemberEnd()) {
+        ChromaController::environmentObjectsRemovalV2 = std::vector<std::string>();
+
+        auto objectsToKill = objectsToKillIt->value.GetArray();
+        for (auto const& object : objectsToKill) {
+          ChromaController::environmentObjectsRemovalV2->emplace_back(
+              Paper::StringConvert::from_utf16(object.GetString()));
+        }
       }
     }
   }
