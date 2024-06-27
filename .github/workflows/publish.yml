@@ -61,7 +61,7 @@ jobs:
         run: |
           cd ${GITHUB_WORKSPACE}
           qpm-rust s build
-          qpm-rust zip
+          qpm-rust qmod zip
 
       - name: Get Library Name
         id: libname
