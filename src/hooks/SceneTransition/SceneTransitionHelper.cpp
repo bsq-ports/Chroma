@@ -93,7 +93,7 @@ bool SceneTransitionHelper::BasicPatch(SongCore::SongLoader::CustomBeatmapLevel*
 
           return x->difficultyBeatmaps | FirstOrDefault([&](auto&& y) {
                    // short circuit
-                   if (y == nullptr || y->difficulty == nullptr) return false;
+                   if (y == nullptr || !y->difficulty) return false;
 
                    BeatmapDifficulty mapDifficulty;
                    GlobalNamespace::BeatmapDifficultySerializedMethods::BeatmapDifficultyFromSerializedName(
