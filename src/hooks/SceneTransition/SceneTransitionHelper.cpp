@@ -110,7 +110,7 @@ bool SceneTransitionHelper::BasicPatch(SongCore::SongLoader::CustomBeatmapLevel*
         il2cpp_utils::try_cast<SongCore::CustomJSONData::CustomDifficultyBeatmap>(saveMap).value_or(nullptr);
 
     // handle environment v2 removal
-    if (customDifficultyBeatmap) {
+    if (customDifficultyBeatmap && customDifficultyBeatmap->customData.has_value()) {
       auto customData = customDifficultyBeatmap->customData.value();
       auto objectsToKillIt = customData.get().FindMember(Chroma::NewConstants::V2_ENVIRONMENT_REMOVAL.data());
 
