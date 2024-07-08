@@ -96,7 +96,7 @@ jobs:
         id: qmod-release
         uses: QuestPackageManager/qmod-repo-publish-action@main
         with:
-          token: ${{secrets.GITHUB_TOKEN}}
+          token: ${{secrets.REPO_TOKEN}}
           # first asset URL
           qmod_url: ${{ fromJSON(steps.upload_file_release.outputs.assets)[0].browser_download_url }}
           qmod_repo_owner: 'dantheman827'
