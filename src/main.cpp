@@ -13,7 +13,7 @@
 #include <cstdlib>
 #include "lighting/LightIDTableManager.hpp"
 
-#include "songcore/shared/capabilities.hpp"
+#include "songcore/shared/Capabilities.hpp"
 
 #include "ui/ModifierViewController.hpp"
 
