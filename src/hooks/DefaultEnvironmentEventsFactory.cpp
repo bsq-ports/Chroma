@@ -32,7 +32,7 @@ MAKE_HOOK_MATCH(DefaultEnvironmentEventsFactory_InsertDefaultEvents,
 }
 
 void DefaultEnvironmentEventsFactoryHook() {
-  INSTALL_HOOK(ChromaLogger::Logger, DefaultEnvironmentEventsFactory_InsertDefaultEvents);
+  // INSTALL_HOOK(ChromaLogger::Logger, DefaultEnvironmentEventsFactory_InsertDefaultEvents);
 }
 
 ChromaInstallHooks(DefaultEnvironmentEventsFactoryHook)
