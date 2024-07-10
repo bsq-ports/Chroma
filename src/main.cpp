@@ -66,6 +66,12 @@ extern "C" void late_load() {
 
   ChromaLogger::Logger.info("Installed types");
 
+  // Force load to ensure order
+  auto cjdModInfo = CustomJSONData::modInfo.to_c();
+  auto tracksModInfo = CModInfo{ .id = "Tracks" };
+  modloader_require_mod(&cjdModInfo, CMatchType::MatchType_IdOnly);
+  modloader_require_mod(&tracksModInfo, CMatchType::MatchType_IdOnly);
+
   ChromaLogger::Logger.info("Installing Chroma hooks...");
   Chroma::Hooks::InstallHooks();
   ChromaEvents::AddEventCallbacks();
