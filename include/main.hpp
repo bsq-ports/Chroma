@@ -11,7 +11,6 @@
 
 #include <string>
 
-Configuration& getConfig();
 void setChromaEnv();
 
 #if DEBUGB == 0

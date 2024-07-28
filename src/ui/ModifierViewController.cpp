@@ -47,4 +47,5 @@ bool Chroma::ModifierViewController::get_customColorEventsEnabled() {
 }
 void Chroma::ModifierViewController::set_customColorEventsEnabled(bool value) {
     getChromaConfig().customColorEventsEnabled.SetValue(value, true);
+    setChromaEnv();
 }

@@ -25,12 +25,6 @@
 
 using namespace Chroma;
 
-Configuration& getConfig() {
-  static Configuration config(modInfo);
-  config.Load();
-  return config;
-}
-
 void setChromaEnv() {
   setenv("DisableChromaReq", getChromaConfig().customColorEventsEnabled.GetValue() ? "0" : "1", true);
   if (getChromaConfig().customColorEventsEnabled.GetValue()) {
@@ -46,8 +40,6 @@ extern "C" void setup(CModInfo* info) {
   info->id = modName.c_str();
   info->version = VERSION;
   info->version_long = 0;
-
-  getConfig().Load();
 
   getChromaConfig().Init({modName, VERSION, 0});
 
