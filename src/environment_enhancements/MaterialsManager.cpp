@@ -77,7 +77,11 @@ UnityEngine::Material* Chroma::MaterialsManager::InstantiateSharedMaterial(Shade
 
           // Added in BS 1.30
           "_ACES_APPROACH_AFTER_EMISSIVE", "_DECALBLEND_ALPHABLEND", "_DISSOLVEAXIS_LOCALX", "_EMISSIONCOLORTYPE_FLAT",
-          "EMISSIONTEXTURE_NONE", "_ROTATE_UV_NONE", "_VERTEXMODE_NONE", "WHITEBOOSTTYPE_NONE", "ZWRITE_ON" }));
+          "EMISSIONTEXTURE_NONE", "_ROTATE_UV_NONE", "_VERTEXMODE_NONE", "WHITEBOOSTTYPE_NONE", "ZWRITE_ON",
+          
+          // added at some point idk
+          "MULTIPLY_REFLECTIONS"
+        }));
     break;
   case ShaderType::OpaqueLight:
     shaderName = opaqueLight;
@@ -91,7 +95,6 @@ UnityEngine::Material* Chroma::MaterialsManager::InstantiateSharedMaterial(Shade
         { "ENABLE_HEIGHT_FOG", "MULTIPLY_COLOR_WITH_ALPHA", "_ENABLE_MAIN_EFFECT_WHITE_BOOST" }));
     break;
   case ShaderType::BaseWater:
-    // TODO: Fix water shader
     shaderName = water;
     shaderKeywords = ArrayW<StringW>(std::initializer_list<StringW>(
         { "FOG", "HEIGHT_FOG", "INVERT_RIMLIGHT", "MASK_RED_IS_ALPHA", "NOISE_DITHERING", "NORMAL_MAP",
@@ -104,11 +107,18 @@ UnityEngine::Material* Chroma::MaterialsManager::InstantiateSharedMaterial(Shade
       Resources::FindObjectsOfTypeAll<Shader*>().front([&](auto const& e) { return e->get_name() == shaderName; });
   if (!shader) {
     ChromaLogger::Logger.error("Unable to find shader {}", shaderName);
-    // fallback
-    if (shaderType != ShaderType::Standard) {
-      return InstantiateSharedMaterial(ShaderType::Standard);
-    } else {
-      ChromaLogger::Logger.fmtThrowError("Unable to find shader {}", shaderName);
+    if (shaderType == ShaderType::BaseWater) {
+      ChromaLogger::Logger.info("Grabbing Water");
+      shader = EnvironmentMaterialManager::waterLit.ptr();
+    }
+    else {
+      ChromaLogger::Logger.error("Unable to find shader {}", shaderName);
+      // fallback
+      if (shaderType != ShaderType::Standard) {
+        return InstantiateSharedMaterial(ShaderType::Standard);
+      } else {
+        ChromaLogger::Logger.fmtThrowError("Unable to find shader {}", shaderName);
+      }
     }
   }
   auto* material = Material::New_ctor(shader.value());

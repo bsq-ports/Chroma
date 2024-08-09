@@ -1,5 +1,13 @@
 #include "environment_enhancements/EnvironmentMaterialManager.hpp"
 
+#include "UnityEngine/AddressableAssets/Addressables.hpp"
+#include "UnityEngine/Material.hpp"
+#include "UnityEngine/Object.hpp"
+#include "UnityEngine/ResourceManagement/AsyncOperations/AsyncOperationHandle_1.hpp"
+#include "UnityEngine/ResourceManagement/ResourceProviders/SceneInstance.hpp"
+
+SafePtrUnity<UnityEngine::Shader> Chroma::EnvironmentMaterialManager::waterLit;
+
 custom_types::Helpers::Coroutine Chroma::EnvironmentMaterialManager::Activate() {
   using namespace Sombrero::Linq::Functional;
 
@@ -13,20 +21,20 @@ custom_types::Helpers::Coroutine Chroma::EnvironmentMaterialManager::Activate() 
 
   auto Load = [](std::string_view environmentName) {
     CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Loading environment [{}].", environmentName);
-    return UnityEngine::SceneManagement::SceneManager::LoadSceneAsync(
-        environmentName, UnityEngine::SceneManagement::LoadSceneMode::Additive);
+      return UnityEngine::AddressableAssets::Addressables::LoadSceneAsync(reinterpret_cast<System::String*>(static_cast<Il2CppString*>(StringW(environmentName))), UnityEngine::SceneManagement::LoadSceneMode::Additive, true, 100);
   };
 
   auto environments =
       std::array<std::string_view, 3>({ "BTSEnvironment", "BillieEnvironment", "InterscopeEnvironment" });
   auto loads = environments | Select([&](std::string_view s) { return Load(s); });
+  std::vector<UnityEngine::SceneManagement::Scene> scenes;
+  for (auto n : loads) {
+    if (!n.m_InternalOp) continue;
 
-  for (auto const& n : loads) {
-    if (!n) continue;
-
-    while (!n->get_isDone()) {
+    while (!n.IsDone) {
       co_yield nullptr;
     }
+    scenes.push_back(n.Result.Scene);
   }
 
   auto environmentMaterials = UnityEngine::Resources::FindObjectsOfTypeAll<UnityEngine::Material*>();
@@ -34,7 +42,7 @@ custom_types::Helpers::Coroutine Chroma::EnvironmentMaterialManager::Activate() 
   auto Save = [&](ShaderType key, std::string_view matName) {
     auto* material = environmentMaterials->FirstOrDefault([&](auto const& e) { return e->get_name() == matName; });
     if (material != nullptr) {
-      EnvironmentMaterials[key] = material;
+      EnvironmentMaterials[key] = UnityEngine::Material::New_ctor(material);
       CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Saving [{}] to [{}].", matName, static_cast<int>(key));
     } else {
       CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Could not find [{}].", matName);
@@ -47,8 +55,10 @@ custom_types::Helpers::Coroutine Chroma::EnvironmentMaterialManager::Activate() 
   Save(ShaderType::InterscopeConcrete, "Concrete2");
   Save(ShaderType::InterscopeCar, "Car");
 
-  for (auto const& environment : environments) {
-    //UnityEngine::SceneManagement::SceneManager::UnloadSceneAsync(environment);
+  EnvironmentMaterialManager::waterLit = UnityEngine::Object::Instantiate(UnityEngine::Resources::FindObjectsOfTypeAll<UnityEngine::Shader*>().front([&](auto const& e) { CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("shader:!!! [{}].", e->get_name()); return e->get_name() == "Custom/WaterLit"; }).value_or(nullptr));
+
+  for (auto const& scene : scenes) {
+    UnityEngine::SceneManagement::SceneManager::UnloadSceneAsync(scene);
   }
 
   co_return;

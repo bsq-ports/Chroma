@@ -322,6 +322,9 @@ static void InitializeTubeBloomPrePassLights(rapidjson::Value const& data, std::
       ChromaUtils::getIfExists<float>(*tubeBloomPrePassLightJSON, Chroma::NewConstants::BLOOM_FOG_INTENSITY_MULTIPLIER);
 
   auto SetColorAlphaMultiplier = [](TubeBloomPrePassLight * tubeBloomPrePassLight, float value) constexpr {
+    tubeBloomPrePassLight->_parametricBoxControllerOnceParInitialized = false;
+    tubeBloomPrePassLight->_bakedGlowOnceParInitialized = false;
+    
     tubeBloomPrePassLight->_colorAlphaMultiplier = value;
     tubeBloomPrePassLight->MarkDirty();
   };
