@@ -35,8 +35,10 @@ void OnSaberColorChanged_SaberBurnMarkArea(int saberType,
   Sombrero::FastColor::RGBToHSV(color, h, s, _);
   Sombrero::FastColor effectColor = Sombrero::FastColor::HSVToRGB(h, s, 1);
   int intType = saberType;
-  lineRenderers[intType]->set_startColor(effectColor);
-  lineRenderers[intType]->set_endColor(effectColor);
+  if (lineRenderers[intType]) {
+    lineRenderers[intType]->set_startColor(effectColor);
+    lineRenderers[intType]->set_endColor(effectColor);
+  }
 }
 
 MAKE_HOOK_MATCH(SaberBurnMarkArea_Start, &SaberBurnMarkArea::Start, void, SaberBurnMarkArea* self) {
