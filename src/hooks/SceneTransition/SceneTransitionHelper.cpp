@@ -13,7 +13,7 @@
 
 #include "sombrero/shared/linq_functional.hpp"
 
-#include "paper/shared/string_convert.hpp"
+#include "paper2_scotland2/shared/string_convert.hpp"
 
 using namespace CustomJSONData;
 using namespace Chroma;
@@ -87,7 +87,7 @@ bool SceneTransitionHelper::BasicPatch(SongCore::SongLoader::CustomBeatmapLevel*
   if (saveData.value()->difficultyBeatmapSets) {
     auto diffSaveMap =
         saveData.value()->difficultyBeatmapSets |
-        Select([&](auto&& x) -> ::GlobalNamespace::__StandardLevelInfoSaveData__DifficultyBeatmap* {
+        Select([&](auto&& x) -> ::GlobalNamespace::StandardLevelInfoSaveData::DifficultyBeatmap* {
           // short circuit
           if (x == nullptr || !x->difficultyBeatmaps) return nullptr;
 

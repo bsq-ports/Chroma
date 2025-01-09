@@ -8,6 +8,7 @@
 #include "GlobalNamespace/SliderController.hpp"
 #include "GlobalNamespace/SliderData.hpp"
 #include "GlobalNamespace/SliderMovement.hpp"
+#include "GlobalNamespace/VariableMovementDataProvider.hpp"
 
 #include "utils/ChromaUtils.hpp"
 
@@ -20,14 +21,10 @@ using namespace Chroma;
 using namespace ChromaUtils;
 
 MAKE_HOOK_MATCH(SliderController_Init, &SliderController::Init, void, SliderController* self,
-                ::GlobalNamespace::SliderController::LengthType lengthType, ::GlobalNamespace::SliderData* sliderData,
-                float worldRotation, ::UnityEngine::Vector3 headNoteJumpStartPos,
-                ::UnityEngine::Vector3 tailNoteJumpStartPos, ::UnityEngine::Vector3 headNoteJumpEndPos,
-                ::UnityEngine::Vector3 tailNoteJumpEndPos, float jumpDuration, float startNoteJumpGravity,
-                float endNoteJumpGravity, float noteUniformScale) {
-  SliderController_Init(self, lengthType, sliderData, worldRotation, headNoteJumpStartPos, tailNoteJumpStartPos,
-                        headNoteJumpEndPos, tailNoteJumpEndPos, jumpDuration, startNoteJumpGravity, endNoteJumpGravity,
-                        noteUniformScale);
+                ::GlobalNamespace::SliderController_LengthType lengthType, ::GlobalNamespace::SliderData* sliderData,
+                ::ByRef<::GlobalNamespace::SliderSpawnData> sliderSpawnData, float_t noteUniformScale,
+                float_t randomValue) {
+  SliderController_Init(self, lengthType, sliderData, sliderSpawnData, noteUniformScale, randomValue);
 
   if (!ChromaController::DoChromaHooks() || !ChromaController::DoColorizerSabers()) {
     return;
@@ -56,7 +53,7 @@ MAKE_HOOK_MATCH(SliderController_Update, &SliderController::ManualUpdate, void, 
     auto const& tracks = chromaData->second.Tracks;
     auto pathPointDefinition = chromaData->second.LocalPathColor;
     if (!tracks.empty() || pathPointDefinition) {
-      float jumpDuration = self->sliderMovement->jumpDuration;
+      float jumpDuration = self->sliderMovement->_variableMovementDataProvider->jumpDuration;
 
       float duration = (jumpDuration * 0.75F) + (self->sliderData->tailTime - self->sliderData->time);
       float normalTime = self->sliderMovement->timeSinceHeadNoteJump / (jumpDuration + duration);

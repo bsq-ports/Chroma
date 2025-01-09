@@ -37,7 +37,7 @@ SaberColorizer::SaberColorizer(GlobalNamespace::Saber* saber, SaberModelControll
   _saberType = saber->get_saberType();
 
   _saberTrail = _saberModelController->_saberTrail;
-  _trailTintColor = _saberModelController->_initData->trailTintColor;
+  _trailTintColor = _saberModelController->_saberTrail->_color;
   _saberLight = _saberModelController->_saberLight;
 
   _lastColor = _saberModelController->_colorManager->ColorForSaberType(_saberType);

@@ -37,9 +37,9 @@ void ChromaClashEffectController::OnSaberColorChanged(int saberType,
 
   Sombrero::FastColor average = Sombrero::FastColor::Lerp(_colors[0], _colors[1], 0.5F);
   auto sparkleMain = _sparkleParticleSystem->get_main();
-  sparkleMain.set_startColor(ParticleSystem::MinMaxGradient::op_Implicit___UnityEngine____ParticleSystem__MinMaxGradient(average));
+  sparkleMain.set_startColor(ParticleSystem::MinMaxGradient::op_Implicit___UnityEngine__ParticleSystem_MinMaxGradient(average));
   auto glowMain = _glowParticleSystem->get_main();
-  glowMain.set_startColor(ParticleSystem::MinMaxGradient::op_Implicit___UnityEngine____ParticleSystem__MinMaxGradient(average));
+  glowMain.set_startColor(ParticleSystem::MinMaxGradient::op_Implicit___UnityEngine__ParticleSystem_MinMaxGradient(average));
 }
 
 void ChromaClashEffectController::OnDestroy() {

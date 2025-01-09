@@ -22,10 +22,10 @@ MAKE_HOOK_MATCH(BeatmapDataTransformHelper_CreateTransformedBeatmapData,
                 ::GlobalNamespace::GameplayModifiers* gameplayModifiers, bool leftHanded,
                 ::GlobalNamespace::EnvironmentEffectsFilterPreset environmentEffectsFilterPreset,
                 ::GlobalNamespace::EnvironmentIntensityReductionOptions* environmentIntensityReductionOptions,
-                ::BeatSaber::PerformancePresets::PerformancePreset* performancePreset) {
+                ::ByRef<::BeatSaber::Settings::Settings> settings) {
   auto* result = BeatmapDataTransformHelper_CreateTransformedBeatmapData(
       beatmapData, beatmapLevel, gameplayModifiers, leftHanded, environmentEffectsFilterPreset,
-      environmentIntensityReductionOptions, performancePreset);
+      environmentIntensityReductionOptions, settings);
 
   // Essentially, here we cancel the original method. DO NOT call it IF it's a Chroma map
   if (!ChromaController::DoChromaHooks() || MultiplayerConnectedPlayerInstallerHookHolder::MultiplayerInvoked) {

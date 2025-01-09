@@ -6,11 +6,10 @@
 
 #include "custom-types/shared/macros.hpp"
 
-DECLARE_CLASS_CODEGEN(Chroma, MaterialAnimator, UnityEngine::MonoBehaviour, public
-                      : std::vector<MaterialInfo>
-                          materials;
-                      uint32_t lastCheckedTime;
+DECLARE_CLASS_CODEGEN(Chroma, MaterialAnimator, UnityEngine::MonoBehaviour) {
+public:
+  std::vector<MaterialInfo> materials;
+  uint32_t lastCheckedTime;
 
-                      DECLARE_INSTANCE_METHOD(void, Update);
-
-)
+  DECLARE_INSTANCE_METHOD(void, Update);
+};

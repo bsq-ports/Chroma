@@ -28,22 +28,26 @@ constexpr float fogAttenuationFix(float attenuation) {
 }
 } // namespace Chroma
 
-DECLARE_CLASS_CODEGEN(Chroma, ChromaFogController, UnityEngine::MonoBehaviour, private
-                      : static Chroma::ChromaFogController* _instance;
+DECLARE_CLASS_CODEGEN(Chroma, ChromaFogController, UnityEngine::MonoBehaviour) {
+private:
+  static Chroma::ChromaFogController* _instance;
 
-                      Track * _track;
+  Track* _track;
 
-                      // nullable
-                      DECLARE_INSTANCE_FIELD(GlobalNamespace::BloomFogSO*, bloomFog);
-                      DECLARE_INSTANCE_FIELD(GlobalNamespace::BloomFogEnvironmentParams*, _transitionFogParams);
+  // nullable
+  DECLARE_INSTANCE_FIELD(GlobalNamespace::BloomFogSO*, bloomFog);
+  DECLARE_INSTANCE_FIELD(GlobalNamespace::BloomFogEnvironmentParams*, _transitionFogParams);
 
-                      public
-                      : DECLARE_DEFAULT_CTOR();
-                      DECLARE_INSTANCE_METHOD(void, Awake); DECLARE_INSTANCE_METHOD(void, Update);
-                      DECLARE_INSTANCE_METHOD(void, OnDestroy);
+public:
+  DECLARE_DEFAULT_CTOR();
+  DECLARE_INSTANCE_METHOD(void, Awake);
+  DECLARE_INSTANCE_METHOD(void, Update);
+  DECLARE_INSTANCE_METHOD(void, OnDestroy);
 
-                      DECLARE_STATIC_METHOD(Chroma::ChromaFogController*, getInstance);
-                      DECLARE_STATIC_METHOD(void, clearInstance); DECLARE_SIMPLE_DTOR();
+  DECLARE_STATIC_METHOD(Chroma::ChromaFogController*, getInstance);
+  DECLARE_STATIC_METHOD(void, clearInstance);
+  DECLARE_SIMPLE_DTOR();
 
-                      public
-                      : void AssignTrack(Track* track);)
+public:
+  void AssignTrack(Track * track);
+};

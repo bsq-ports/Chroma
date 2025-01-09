@@ -43,17 +43,17 @@ MAKE_HOOK_MATCH(ObstacleSaberSparkleEffectManager_Update, &ObstacleSaberSparkleE
   }
   auto activeObstacleControllers = self->_beatmapObjectManager->activeObstacleControllers;
   Pose identity = Pose::get_identity();
+  bool flag;
   for (int i = 0; i < 2; i++) {
-    bool flag = self->_effects[i]->IsEmitting();
     if (ObstacleSaberSparkleEffectManager::IntersectSaberWithObstacles(self->_sabers[i], activeObstacleControllers,
-                                                                      byref(identity))) {
+                                                                       byref(flag), byref(identity))) {
       self->_effects[i]->SetPositionAndRotation(identity.position, identity.rotation);
       // TRANSPILE IS HERE
       // TODO: Reimplement
       // SetObstacleSaberSparkleColor(self->_effects.get(i), obstacleController);
       // TRANSPILE IS HERE
       self->_hapticFeedbackManager->PlayHapticFeedback(SaberTypeExtensions::Node(self->_sabers[i]->saberType),
-                                                      self->_rumblePreset);
+                                                       self->_rumblePreset);
       if (!flag) {
         self->_effects[i]->StartEmission();
         auto action = self->sparkleEffectDidStartEvent;

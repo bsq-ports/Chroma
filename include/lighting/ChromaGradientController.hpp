@@ -47,19 +47,23 @@ struct ChromaGradientEvent {
 
 } // namespace Chroma
 
-DECLARE_CLASS_CODEGEN(Chroma, ChromaGradientController, UnityEngine::MonoBehaviour, private
-                      : static Chroma::ChromaGradientController* _instance;
-                      public
-                      :
-                      // internal
-                      gradientMap Gradients;
+DECLARE_CLASS_CODEGEN(Chroma, ChromaGradientController, UnityEngine::MonoBehaviour) {
+private:
+  static Chroma::ChromaGradientController* _instance;
 
-                      static Sombrero::FastColor AddGradient(ChromaEventData::GradientObjectData const& gradientObject,
-                                                             GlobalNamespace::BasicBeatmapEventType id, float time);
-                      DECLARE_STATIC_METHOD(Chroma::ChromaGradientController*, getInstance);
-                      DECLARE_STATIC_METHOD(void, clearInstance);
+public:
+  // internal
+  gradientMap Gradients;
 
-                      DECLARE_STATIC_METHOD(bool, IsGradientActive, GlobalNamespace::BasicBeatmapEventType eventType);
-                      DECLARE_STATIC_METHOD(void, CancelGradient, GlobalNamespace::BasicBeatmapEventType eventType);
-                      DECLARE_INSTANCE_METHOD(void, Update); DECLARE_CTOR(ctor);
-                      DECLARE_INSTANCE_METHOD(void, OnDestroy); DECLARE_SIMPLE_DTOR();)
+  static Sombrero::FastColor AddGradient(ChromaEventData::GradientObjectData const& gradientObject,
+                                         GlobalNamespace::BasicBeatmapEventType id, float time);
+  DECLARE_STATIC_METHOD(Chroma::ChromaGradientController*, getInstance);
+  DECLARE_STATIC_METHOD(void, clearInstance);
+
+  DECLARE_STATIC_METHOD(bool, IsGradientActive, GlobalNamespace::BasicBeatmapEventType eventType);
+  DECLARE_STATIC_METHOD(void, CancelGradient, GlobalNamespace::BasicBeatmapEventType eventType);
+  DECLARE_INSTANCE_METHOD(void, Update);
+  DECLARE_CTOR(ctor);
+  DECLARE_INSTANCE_METHOD(void, OnDestroy);
+  DECLARE_SIMPLE_DTOR();
+};

@@ -12,6 +12,7 @@
 #include "GlobalNamespace/NoteController.hpp"
 #include "GlobalNamespace/NoteJump.hpp"
 #include "GlobalNamespace/NoteMovement.hpp"
+#include "GlobalNamespace/VariableMovementDataProvider.hpp"
 
 #include "utils/ChromaUtils.hpp"
 
@@ -26,12 +27,10 @@ using namespace Chroma;
 using namespace ChromaUtils;
 
 MAKE_HOOK_MATCH(NoteController_Init, &NoteController::Init, void, NoteController* self,
-                ::GlobalNamespace::NoteData* noteData, float worldRotation, ::UnityEngine::Vector3 moveStartPos,
-                ::UnityEngine::Vector3 moveEndPos, ::UnityEngine::Vector3 jumpEndPos, float moveDuration,
-                float jumpDuration, float jumpGravity, float endRotation, float uniformScale, bool rotateTowardsPlayer,
-                bool useRandomRotation) {
-  NoteController_Init(self, noteData, worldRotation, moveStartPos, moveEndPos, jumpEndPos, moveDuration, jumpDuration,
-                      jumpGravity, endRotation, uniformScale, rotateTowardsPlayer, useRandomRotation);
+                ::GlobalNamespace::NoteData* noteData, ::ByRef<::GlobalNamespace::NoteSpawnData> noteSpawnData,
+                float_t endRotation, float_t uniformScale, bool rotateTowardsPlayer, bool useRandomRotation) {
+  NoteController_Init(self, noteData, noteSpawnData, endRotation, uniformScale, rotateTowardsPlayer,
+                      useRandomRotation);
 
   if (!ChromaController::DoChromaHooks() || !ChromaController::DoColorizerSabers()) {
     return;
@@ -59,7 +58,7 @@ MAKE_HOOK_MATCH(NoteController_Update, &NoteController::ManualUpdate, void, Note
     auto pathPointDefinition = chromaData->second.LocalPathColor;
     if (!tracks.empty() || pathPointDefinition) {
       NoteJump* noteJump = self->_noteMovement->_jump;
-      float jumpDuration = noteJump->jumpDuration;
+      float jumpDuration = noteJump->_variableMovementDataProvider->jumpDuration;
       float elapsedTime = ChromaTimeSourceHelper::getSongTimeChroma(noteJump->_audioTimeSyncController) -
                           (self->noteData->time - (jumpDuration * 0.5F));
       float normalTime = elapsedTime / jumpDuration;

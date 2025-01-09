@@ -48,12 +48,10 @@ MAKE_HOOK_MATCH(BurstSliderGameNoteController_OnDestroy, &BurstSliderGameNoteCon
 }
 
 MAKE_HOOK_MATCH(BurstSliderGameNoteController_Init, &BurstSliderGameNoteController::Init, void,
-                BurstSliderGameNoteController* self, ::GlobalNamespace::NoteData* noteData, float worldRotation,
-                ::UnityEngine::Vector3 moveStartPos, ::UnityEngine::Vector3 moveEndPos,
-                ::UnityEngine::Vector3 jumpEndPos, float moveDuration, float jumpDuration, float jumpGravity,
-                ::GlobalNamespace::NoteVisualModifierType noteVisualModifierType, float uniformScale) {
-  BurstSliderGameNoteController_Init(self, noteData, worldRotation, moveStartPos, moveEndPos, jumpEndPos, moveDuration,
-                                     jumpDuration, jumpGravity, noteVisualModifierType, uniformScale);
+                BurstSliderGameNoteController* self, ::GlobalNamespace::NoteData* noteData,
+                ::ByRef<::GlobalNamespace::NoteSpawnData> noteSpawnData,
+                ::GlobalNamespace::NoteVisualModifierType noteVisualModifierType, float_t uniformScale) {
+  BurstSliderGameNoteController_Init(self, noteData, noteSpawnData, noteVisualModifierType, uniformScale);
 
   if (!ChromaController::DoChromaHooks() || !ChromaController::DoColorizerSabers()) {
     return;

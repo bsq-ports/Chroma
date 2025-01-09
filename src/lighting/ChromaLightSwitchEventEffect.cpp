@@ -1,4 +1,6 @@
 #include "lighting/ChromaLightSwitchEventEffect.hpp"
+#include "GlobalNamespace/BeatmapDataItem.hpp"
+#include "System/Tuple_2.hpp"
 #include "lighting/ChromaEventData.hpp"
 #include "lighting/LegacyLightHelper.hpp"
 #include "lighting/ChromaGradientController.hpp"
@@ -302,8 +304,18 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, std::optional<std::vector<
         prevColor.a *= previousFloatValue; // MultAlpha
       }
 
-      tweenData->tween->___fromValue = prevColor;
-      tweenData->tween->___toValue = nextColor;
+      System::Collections::Generic::List_1<float>::New_ctor()->_items = ArrayW<float>::Empty();
+
+      auto x = System::Nullable_1<float>();
+      x.value = 5;
+
+      auto y = System::Tuple_2<float, float>::New_ctor(0, 0);
+      y->m_Item1 = 5;
+
+      Tweening::Tween_1<float>::New_ctor()->toValue = 2;
+
+      tweenData->tween->fromValue = prevColor;
+      tweenData->tween->toValue = nextColor;
       tweenData->tween->ForceOnUpdate();
 
       if (!hard) {
