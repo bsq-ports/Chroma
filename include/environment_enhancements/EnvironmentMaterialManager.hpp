@@ -8,6 +8,7 @@
 #include "UnityEngine/SceneManagement/SceneManager.hpp"
 #include "UnityEngine/AsyncOperation.hpp"
 #include "UnityEngine/Resources.hpp"
+#include "UnityEngine/Shader.hpp"
 
 namespace Chroma {
 struct EnvironmentMaterialManager {
@@ -17,5 +18,7 @@ struct EnvironmentMaterialManager {
   static std::optional<UnityEngine::Material*> getMaterial(ShaderType shaderType);
 
   static custom_types::Helpers::Coroutine Activate();
+
+  static SafePtrUnity<UnityEngine::Shader> waterLit;
 };
 } // namespace Chroma
