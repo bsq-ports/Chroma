@@ -33,14 +33,15 @@ struct CoroutineInfo {
 
   std::string_view componentName;
   std::vector<UnityEngine::Component*> component;
-  PointDefinitionW const points;
+  PointDefinitionW points;
   float duration;
   float startTime;
   Functions easing;
 };
 
 // PROPERTY NAME -> TRACKFORGAMEOBJECTS & CORO
-static std::unordered_map<std::string, std::unordered_map<TrackW, CoroutineInfo>> coroutines;
+// use Track* pointer here because I need hashing and I'm lazy
+static std::unordered_map<std::string, std::unordered_map<Tracks::ffi::Track*, CoroutineInfo>> coroutines;
 
 void animateBloomFog(std::string_view propName, std::span<UnityEngine::Component* const> components, float val) {
   if (components.empty()) {
