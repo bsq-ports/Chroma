@@ -91,9 +91,9 @@ void Chroma::ChromaObjectDataManager::deserialize(CustomJSONData::CustomBeatmapD
       auto const& animationObjectDyn = customData.FindMember(v2 ? Chroma::NewConstants::V2_ANIMATION.data()
                                                                 : Chroma::NewConstants::ANIMATION.data());
       if (animationObjectDyn != customData.MemberEnd()) {
-        PointDefinition* localColor =
+        PointDefinitionW localColor =
             beatmapAD.getPointDefinition(animationObjectDyn->value,
-                                         v2 ? Chroma::NewConstants::V2_COLOR : Chroma::NewConstants::COLOR);
+                                         v2 ? Chroma::NewConstants::V2_COLOR : Chroma::NewConstants::COLOR, Tracks::ffi::WrapBaseValueType::Vec4);
 
 
         chromaObjectData.LocalPathColor = localColor != nullptr ? std::make_optional(localColor) : std::nullopt;

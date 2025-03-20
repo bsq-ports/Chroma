@@ -38,7 +38,7 @@ struct ChromaGradientEvent {
 
   ChromaGradientEvent(Sombrero::FastColor const& initcolor, Sombrero::FastColor const& endcolor, float start,
                       float duration, GlobalNamespace::BasicBeatmapEventType eventType,
-                      Functions easing = Functions::easeLinear)
+                      Functions easing = Functions::EaseLinear)
       : _initcolor(initcolor), _endcolor(endcolor), _start(start),
         _duration(60.0f * duration / TracksStatic::bpmController->currentBpm), _event(eventType), _easing(easing) {}
 

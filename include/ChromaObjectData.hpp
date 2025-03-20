@@ -22,8 +22,8 @@ private:
 
 public:
   std::optional<Sombrero::FastColor> Color;
-  std::span<Track*> Tracks; // probably a bad idea
-  std::optional<PointDefinition*> LocalPathColor;
+  std::span<TrackW> Tracks; // probably a bad idea
+  std::optional<PointDefinitionW> LocalPathColor;
 
   // note
   std::optional<bool> DisableSpawnEffect;

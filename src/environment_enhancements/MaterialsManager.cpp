@@ -78,10 +78,9 @@ UnityEngine::Material* Chroma::MaterialsManager::InstantiateSharedMaterial(Shade
           // Added in BS 1.30
           "_ACES_APPROACH_AFTER_EMISSIVE", "_DECALBLEND_ALPHABLEND", "_DISSOLVEAXIS_LOCALX", "_EMISSIONCOLORTYPE_FLAT",
           "EMISSIONTEXTURE_NONE", "_ROTATE_UV_NONE", "_VERTEXMODE_NONE", "WHITEBOOSTTYPE_NONE", "ZWRITE_ON",
-          
+
           // added at some point idk
-          "MULTIPLY_REFLECTIONS"
-        }));
+          "MULTIPLY_REFLECTIONS" }));
     break;
   case ShaderType::OpaqueLight:
     shaderName = opaqueLight;
@@ -110,8 +109,7 @@ UnityEngine::Material* Chroma::MaterialsManager::InstantiateSharedMaterial(Shade
     if (shaderType == ShaderType::BaseWater) {
       ChromaLogger::Logger.info("Grabbing Water");
       shader = EnvironmentMaterialManager::waterLit.ptr();
-    }
-    else {
+    } else {
       ChromaLogger::Logger.error("Unable to find shader {}", shaderName);
       // fallback
       if (shaderType != ShaderType::Standard) {
@@ -138,7 +136,6 @@ UnityEngine::Material* Chroma::MaterialsManager::InstantiateSharedMaterial(Shade
   return material;
 }
 
-
 MaterialInfo Chroma::MaterialsManager::CreateMaterialInfo(rapidjson::Value const& data) {
   ArrayW<StringW> shaderKeywords;
   auto shaderKeywordsIt =
@@ -158,7 +155,7 @@ MaterialInfo Chroma::MaterialsManager::CreateMaterialInfo(rapidjson::Value const
                                                                            : NewConstants::SHADER_PRESET);
   ShaderType shaderType = shaderTypeStr ? shaderTypeFromString(shaderTypeStr->data()) : ShaderType::Standard;
 
-  std::optional<std::vector<Track*>> tracks;
+  std::optional<std::vector<TrackW>> tracks;
 
   auto tracksIt = data.FindMember(v2 ? NewConstants::V2_TRACK.data() : NewConstants::TRACK.data());
   if (tracksIt != data.MemberEnd()) {

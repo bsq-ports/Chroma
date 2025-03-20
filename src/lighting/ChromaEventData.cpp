@@ -25,7 +25,7 @@ void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapDa
       continue;
     }
     auto* customBeatmapEvent = reinterpret_cast<CustomJSONData::CustomBeatmapEventData*>(beatmapEvent);
-    if(!customBeatmapEvent->customData) continue;
+    if (!customBeatmapEvent->customData) continue;
     auto const& optionalDynData = customBeatmapEvent->customData->value;
 
     std::optional<ChromaEventData::GradientObjectData> gradientObject = std::nullopt;
@@ -58,7 +58,7 @@ void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapDa
           Functions easing;
 
           if (easingString.empty()) {
-            easing = Functions::easeLinear;
+            easing = Functions::EaseLinear;
           } else {
             easing = FunctionFromStr(easingString);
           }
@@ -112,7 +112,7 @@ void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapDa
         Functions easing;
 
         if (easingString->empty()) {
-          easing = Functions::easeLinear;
+          easing = Functions::EaseLinear;
         } else {
           easing = FunctionFromStr(*easingString);
         }

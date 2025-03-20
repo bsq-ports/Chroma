@@ -28,7 +28,7 @@ namespace Chroma::Tween {
 constexpr auto ChromaTweenDiscriminator = 521912; // random number
 
 struct ChromaColorTweenData {
-  Functions easing = Functions::easeLinear;
+  Functions easing = Functions::EaseLinear;
   Chroma::LerpType lerpType = LerpType::RGB;
   GlobalNamespace::BasicBeatmapEventData* PreviousEvent = nullptr;
 

@@ -323,7 +323,7 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, std::optional<std::vector<
       }
 
       tweenData->tween->SetStartTimeAndEndTime(previousEvent->time, nextSameTypeEvent->time);
-      tweenData->easing = easing.value_or(Functions::easeLinear);
+      tweenData->easing = easing.value_or(Functions::EaseLinear);
       tweenData->lerpType = lerpType.value_or(LerpType::RGB);
       _tweeningManager->ResumeTween(const_cast<Tweening::ColorTween*>(tween.ptr()), this, false);
     };
@@ -378,7 +378,7 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, std::optional<std::vector<
 
       if (hard) {
         tween->duration = 0.6F;
-        tweenData->easing = easing.value_or(Functions::easeOutCubic);
+        tweenData->easing = easing.value_or(Functions::EaseOutCubic);
         tweenData->lerpType = lerpType.value_or(LerpType::RGB);
         _tweeningManager->RestartTween(const_cast<Tweening::ColorTween*>(tween.ptr()), this, false);
       }
@@ -401,7 +401,7 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, std::optional<std::vector<
 
       if (hard) {
         tween->duration = 1.5F;
-        tweenData->easing = easing.value_or(Functions::easeOutExpo);
+        tweenData->easing = easing.value_or(Functions::EaseOutExpo);
         tweenData->lerpType = lerpType.value_or(LerpType::RGB);
         _tweeningManager->RestartTween(const_cast<Tweening::ColorTween*>(tween.ptr()), this, false);
       }

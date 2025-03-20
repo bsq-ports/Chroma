@@ -48,12 +48,13 @@ void ChromaEvents::parseEventData(TracksAD::BeatmapAssociatedData& beatmapAD,
     auto trackIt = eventData.FindMember((v2 ? Chroma::NewConstants::V2_TRACK : Chroma::NewConstants::TRACK).data());
 
     if (trackIt == eventData.MemberEnd() || trackIt->value.IsNull() || !trackIt->value.IsString()) {
-      ChromaLogger::Logger.debug("Track data is missing for Chroma custom event {}", customEventData->____time_k__BackingField);
+      ChromaLogger::Logger.debug("Track data is missing for Chroma custom event {}",
+                                 customEventData->____time_k__BackingField);
       return;
     }
 
     std::string trackName(trackIt->value.GetString());
-    Track* track = beatmapAD.getTrack(trackName);
+    TrackW track = beatmapAD.getTrack(trackName);
 
     eventAD.data.emplace<AssignBloomFogTrack>(track);
   }
@@ -62,14 +63,15 @@ void ChromaEvents::parseEventData(TracksAD::BeatmapAssociatedData& beatmapAD,
     auto trackIt = eventData.FindMember((v2 ? Chroma::NewConstants::V2_TRACK : Chroma::NewConstants::TRACK).data());
 
     if (trackIt == eventData.MemberEnd() || trackIt->value.IsNull() || !trackIt->value.IsString()) {
-      ChromaLogger::Logger.debug("Track data is missing for Chroma custom event {}", customEventData->____time_k__BackingField);
+      ChromaLogger::Logger.debug("Track data is missing for Chroma custom event {}",
+                                 customEventData->____time_k__BackingField);
       return;
     }
 
     float const duration = NEJSON::ReadOptionalFloat(eventData, Chroma::NewConstants::DURATION.data()).value_or(0);
 
     auto easing = static_cast<Functions>(NEJSON::ReadOptionalInt(eventData, Chroma::NewConstants::EASING.data())
-                                             .value_or(static_cast<int>(Functions::easeLinear)));
+                                             .value_or(static_cast<int>(Functions::EaseLinear)));
 
     auto tracks = NEJSON::ReadOptionalTracks(eventData, Chroma::NewConstants::TRACK, beatmapAD).value();
 
@@ -108,7 +110,7 @@ void ChromaEvents::parseEventData(TracksAD::BeatmapAssociatedData& beatmapAD,
       for (auto const& componentDataIt : component.GetObject()) {
         auto const& propName = componentDataIt.name.GetString();
         auto const& propData = componentDataIt.value.GetArray();
-        auto* point = beatmapAD.getPointDefinition(component, propName);
+        auto point = beatmapAD.getPointDefinition(component, propName, Tracks::ffi::WrapBaseValueType::Float);
 
         componentData.emplace_back(propName, point);
       }
@@ -150,9 +152,9 @@ void CustomEventCallback(BeatmapCallbacksController* callbackController,
   if (!isType && typeHash == (jsonNameHash_##varName)) isType = true;
 
       TYPE_GET(Chroma::OldConstants::ASSIGNFOGTRACK, ASSIGNFOGTRACK)
-      TYPE_GET(Chroma::NewConstants::ANIMATE_COMPONENT, ANIMATE_COMPONENT)
+          TYPE_GET(Chroma::NewConstants::ANIMATE_COMPONENT, ANIMATE_COMPONENT)
 
-      if (!isType) { return; }
+              if (!isType) { return; }
 
       auto const& ad = ChromaEvents::getEventAD(customEventData);
 

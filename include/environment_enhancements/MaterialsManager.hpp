@@ -26,7 +26,7 @@ bool IsLightType(ShaderType shaderType);
 
 struct MaterialInfo {
   MaterialInfo(ShaderType shaderType, std::string_view shaderTypeStr,
-               SafePtrUnity<UnityEngine::Material> const& material, std::optional<std::vector<Track*>> track)
+               SafePtrUnity<UnityEngine::Material> const& material, std::optional<std::vector<TrackW>> track)
       : ShaderType(shaderType), ShaderTypeStr(shaderTypeStr), Material(material), Track(std::move(track)) {
     CRASH_UNLESS(material.isAlive());
   }
@@ -36,12 +36,12 @@ struct MaterialInfo {
 
   SafePtrUnity<UnityEngine::Material> Material;
 
-  std::optional<std::vector<Track*>> Track;
+  std::optional<std::vector<TrackW>> Track;
 };
 
 struct MaterialsManager {
-  std::unordered_map<std::string, const MaterialInfo> materials;
-  std::unordered_map<std::string_view, const MaterialInfo>
+  std::unordered_map<std::string, MaterialInfo const> materials;
+  std::unordered_map<std::string_view, MaterialInfo const>
       materialsJSON; // if two materials have the same JSON, they are the same material
   TracksAD::BeatmapAssociatedData& beatmapAD;
 

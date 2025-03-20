@@ -41,7 +41,7 @@ void ChromaFogController::OnDestroy() {
   _instance = nullptr;
 }
 
-void ChromaFogController::AssignTrack(Track* track) {
+void ChromaFogController::AssignTrack(TrackW track) {
   this->_track = track;
 }
 
@@ -72,24 +72,24 @@ void Chroma::ChromaFogController::Update() {
     CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("ChromaFog TransitionFogParams is null!");
     return;
   }
-  auto attenuation = getPropertyNullable<float>(_track, _track->properties.attentuation);
+  auto attenuation = _track.GetPropertyNamed(PropertyNames::Attentuation).GetFloat();
   if (attenuation) {
     auto attenuationFloat = attenuation.value();
 
     _transitionFogParams->attenuation = fogAttenuationFix(attenuationFloat);
   }
 
-  auto offset = getPropertyNullable<float>(_track, _track->properties.fogOffset);
+  auto offset = _track.GetPropertyNamed(PropertyNames::FogOffset).GetFloat();
   if (offset) {
     _transitionFogParams->offset = offset.value();
   }
 
-  auto startY = getPropertyNullable<float>(_track, _track->properties.heightFogStartY);
+  auto startY = _track.GetPropertyNamed(PropertyNames::HeightFogStartY).GetFloat();
   if (startY) {
     _transitionFogParams->heightFogStartY = startY.value();
   }
 
-  auto height = getPropertyNullable<float>(_track, _track->properties.heightFogHeight);
+  auto height = _track.GetPropertyNamed(PropertyNames::HeightFogHeight).GetFloat();
   if (height) {
     _transitionFogParams->heightFogHeight = height.value();
   }

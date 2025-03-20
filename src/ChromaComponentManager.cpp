@@ -23,7 +23,7 @@
 
 struct CoroutineInfo {
   CoroutineInfo(std::string_view componentName, std::vector<UnityEngine::Component*> component,
-                PointDefinition* const points, float duration, float startTime, Functions easing)
+                PointDefinitionW const points, float duration, float startTime, Functions easing)
       : componentName(componentName), component(std::move(component)), points(points), duration(duration),
         startTime(startTime), easing(easing) {}
 
@@ -33,14 +33,14 @@ struct CoroutineInfo {
 
   std::string_view componentName;
   std::vector<UnityEngine::Component*> component;
-  PointDefinition* const points;
+  PointDefinitionW const points;
   float duration;
   float startTime;
   Functions easing;
 };
 
 // PROPERTY NAME -> TRACKFORGAMEOBJECTS & CORO
-static std::unordered_map<std::string, std::unordered_map<Track*, CoroutineInfo>> coroutines;
+static std::unordered_map<std::string, std::unordered_map<TrackW, CoroutineInfo>> coroutines;
 
 void animateBloomFog(std::string_view propName, std::span<UnityEngine::Component* const> components, float val) {
   if (components.empty()) {
@@ -107,7 +107,7 @@ static bool UpdateCoroutine(std::string_view propName, CoroutineInfo const& cont
 
   bool last = false;
 
-  float val = context.points->InterpolateLinear(time, last);
+  float val = context.points.InterpolateLinear(time, last);
 
   bool finished = last || context.duration <= 0;
 
@@ -144,11 +144,12 @@ void Chroma::Component::UpdateCoroutines(GlobalNamespace::BeatmapCallbacksContro
     }
   }
 }
-static std::vector<UnityEngine::Component*> getComponentsFromType(std::string_view componentName, Track* track) {
+static std::vector<UnityEngine::Component*> getComponentsFromType(std::string_view componentName, TrackW track) {
   std::vector<UnityEngine::Component*> components;
-  components.reserve(track->gameObjects.size());
+  auto gameObjects = track.GetGameObjects();
+  components.reserve(gameObjects.size());
 
-  for (auto const& go : track->gameObjects) {
+  for (auto const& go : gameObjects) {
     // fog
     if (componentName == Chroma::NewConstants::BLOOM_FOG_ENVIRONMENT) {
       auto fogs = go->GetComponentsInChildren<GlobalNamespace::BloomFogEnvironment*>();

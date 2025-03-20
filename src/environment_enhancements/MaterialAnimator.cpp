@@ -9,12 +9,12 @@ using namespace Chroma;
 void Chroma::MaterialAnimator::Update() {
   for (auto& materialInfo : materials) {
     bool updated = 0;
-    std::optional<Sombrero::FastColor> colorOffset =
-        AnimationHelper::GetColorOffset(std::nullopt, *materialInfo.Track, 0, updated, lastCheckedTime);
+    std::optional<Sombrero::FastColor> colorOffset = AnimationHelper::GetColorOffset(
+        std::nullopt, *materialInfo.Track, 0, updated, context->GetBaseProviderContext(), lastCheckedTime);
 
     if (colorOffset) {
       materialInfo.Material->set_color(*colorOffset);
     }
   }
-  lastCheckedTime = getCurrentTime();
+  lastCheckedTime = Animation::getCurrentTime();
 }

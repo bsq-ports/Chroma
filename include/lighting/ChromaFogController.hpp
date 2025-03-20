@@ -32,7 +32,7 @@ DECLARE_CLASS_CODEGEN(Chroma, ChromaFogController, UnityEngine::MonoBehaviour) {
 private:
   static Chroma::ChromaFogController* _instance;
 
-  Track* _track;
+  TrackW _track;
 
   // nullable
   DECLARE_INSTANCE_FIELD(GlobalNamespace::BloomFogSO*, bloomFog);
@@ -49,5 +49,5 @@ public:
   DECLARE_SIMPLE_DTOR();
 
 public:
-  void AssignTrack(Track * track);
+  void AssignTrack(TrackW track);
 };

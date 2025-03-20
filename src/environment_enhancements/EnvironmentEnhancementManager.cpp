@@ -15,7 +15,6 @@
 #include "environment_enhancements/ParametricBoxControllerParameters.hpp"
 #include "tracks/shared/Animation/GameObjectTrackController.hpp"
 
-
 #include "boost-regex/regex/include/boost/regex.hpp"
 
 #include "tracks/shared/Animation/PointDefinition.h"
@@ -45,8 +44,8 @@ Chroma::EnvironmentEnhancementManager::LookupId(std::string_view const id, Chrom
           ret.emplace_back(o);
         }
       } catch (std::exception& e) {
-        ChromaLogger::Logger.error("Failed to match ({}) for lookup ({}) with id ({})", o.FullID.c_str(), lookupMethodStr,
-                          id.data());
+        ChromaLogger::Logger.error("Failed to match ({}) for lookup ({}) with id ({})", o.FullID.c_str(),
+                                   lookupMethodStr, id.data());
         ChromaLogger::Logger.error("Error: {}", e.what());
       }
     }
@@ -96,7 +95,8 @@ Chroma::EnvironmentEnhancementManager::LookupId(std::string_view const id, Chrom
     }
     }
   } catch (std::exception const& e) {
-    ChromaLogger::Logger.error("Failed to create match for lookup ({}) with id ({})", lookupMethodStr.data(), id.data());
+    ChromaLogger::Logger.error("Failed to create match for lookup ({}) with id ({})", lookupMethodStr.data(),
+                               id.data());
     ChromaLogger::Logger.error("Error: {}", e.what());
   }
 
@@ -106,7 +106,7 @@ Chroma::EnvironmentEnhancementManager::LookupId(std::string_view const id, Chrom
 }
 
 static std::optional<Sombrero::FastVector3> GetVectorData(rapidjson::Value const& dynData,
-                                                          const std::string_view name) {
+                                                          std::string_view const name) {
   auto objectsValIt = dynData.FindMember(name.data());
 
   if (objectsValIt == dynData.MemberEnd()) {
@@ -281,13 +281,11 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
   RingRotationOffsets.clear();
   ParametricBoxControllerParameters::TransformParameters.clear();
 
-  if (getChromaConfig().environmentEnhancementsEnabled.GetValue())
-  {
+  if (getChromaConfig().environmentEnhancementsEnabled.GetValue()) {
     // seriously what the fuck beat games
     // GradientBackground permanently yeeted because it looks awful and can ruin multi-colored chroma maps
     auto gradientBackground = UnityEngine::GameObject::Find("/Environment/GradientBackground");
-    if (gradientBackground)
-    {
+    if (gradientBackground) {
       gradientBackground->SetActive(false);
     }
   }
@@ -418,7 +416,7 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
         gameObjectDataVal.FindMember(v2 ? Chroma::NewConstants::V2_TRACK.data() : Chroma::NewConstants::TRACK.data());
 
     std::optional<std::string_view> trackName;
-    std::vector<Track*> track;
+    std::vector<TrackW> track;
 
     if (trackNameIt != gameObjectDataVal.MemberEnd()) {
       auto const& trackJSON = trackNameIt->value;
@@ -547,10 +545,10 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
       ComponentInitializer::InitializeCustomComponents(gameObject, gameObjectDataVal, v2);
 
       GameObjectTrackController* controller = nullptr;
-      
+
       if (!track.empty()) {
-        controller =
-            GameObjectTrackController::HandleTrackData(gameObject, track, noteLinesDistance, v2, true).value_or(nullptr);
+        controller = GameObjectTrackController::HandleTrackData(gameObject, track, noteLinesDistance, v2, true)
+                         .value_or(nullptr);
       }
 
       if (controller == nullptr) {
@@ -614,8 +612,9 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
   }
 
   if (!animatedMaterials.empty()) {
-    UnityEngine::GameObject::New_ctor("MaterialAnimator")->AddComponent<MaterialAnimator*>()->materials =
-        std::move(animatedMaterials);
+    auto animated = UnityEngine::GameObject::New_ctor("MaterialAnimator")->AddComponent<MaterialAnimator*>();
+    animated->context = TracksAD::getBeatmapAD(customBeatmapData->customData).internal_tracks_context;
+    animated->materials = std::move(animatedMaterials);
   }
 }
 

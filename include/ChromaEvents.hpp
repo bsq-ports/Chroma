@@ -12,15 +12,15 @@
 // Custom events, not Beatmap Events
 namespace ChromaEvents {
 struct AssignBloomFogTrack {
-  explicit AssignBloomFogTrack(Track* track) : track(track) {}
-  Track* track;
+  explicit AssignBloomFogTrack(TrackW track) : track(track) {}
+  TrackW track;
 };
 
 struct AnimateComponentEventData {
   struct ComponentData {
-    ComponentData(std::string_view propertyName, PointDefinition* prop) : propertyName(propertyName), prop(prop) {}
+    ComponentData(std::string_view propertyName, PointDefinitionW prop) : propertyName(propertyName), prop(prop) {}
     std::string_view propertyName;
-    PointDefinition* prop;
+    PointDefinitionW prop;
   };
 
   AnimateComponentEventData(AnimateComponentEventData&&) = default;
