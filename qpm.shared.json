@@ -185,13 +185,13 @@
     {
       "dependency": {
         "id": "custom-json-data",
-        "versionRange": "=0.22.0",
+        "versionRange": "=0.22.1",
         "additionalData": {
-          "soLink": "https://github.com/StackDoubleFlow/CustomJSONData/releases/download/v0.22.0/libcustom-json-data.so",
-          "debugSoLink": "https://github.com/StackDoubleFlow/CustomJSONData/releases/download/v0.22.0/debug_libcustom-json-data.so",
+          "soLink": "https://github.com/StackDoubleFlow/CustomJSONData/releases/download/v0.22.1/libcustom-json-data.so",
+          "debugSoLink": "https://github.com/StackDoubleFlow/CustomJSONData/releases/download/v0.22.1/debug_libcustom-json-data.so",
           "overrideSoName": "libcustom-json-data.so",
-          "modLink": "https://github.com/StackDoubleFlow/CustomJSONData/releases/download/v0.22.0/custom-json-data.qmod",
-          "branchName": "version/v0_22_0",
+          "modLink": "https://github.com/StackDoubleFlow/CustomJSONData/releases/download/v0.22.1/custom-json-data.qmod",
+          "branchName": "version/v0_22_1",
           "compileOptions": {
             "cppFlags": [
               "-DRAPIDJSON_NEON"
@@ -200,7 +200,7 @@
           "cmake": true
         }
       },
-      "version": "0.22.0"
+      "version": "0.22.1"
     },
     {
       "dependency": {
