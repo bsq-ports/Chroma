@@ -22,16 +22,6 @@ jobs:
           lfs: true
 
       - uses: seanmiddleditch/gha-setup-ninja@v3
-
-      # Use canary NDK to avoid lesser known compile bugs
-      - name: Setup canary NDK
-        id: setup-ndk
-        uses: ./.github/actions/canary-ndk
-
-      - name: Create ndkpath.txt
-        run: |
-          echo ${{ steps.setup-ndk.outputs.ndk-path }} > ${GITHUB_WORKSPACE}/ndkpath.txt
-          cat ${GITHUB_WORKSPACE}/ndkpath.txt
       
       # - name: Create ndkpath.txt
       #   run: |
