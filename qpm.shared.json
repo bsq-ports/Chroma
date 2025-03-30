@@ -287,14 +287,16 @@
     {
       "dependency": {
         "id": "config-utils",
-        "versionRange": "=2.1.0",
+        "versionRange": "=2.0.2",
         "additionalData": {
           "headersOnly": true,
+          "soLink": "https://github.com/darknight1050/config-utils/releases/download/v2.0.2/libconfig-utils_test.so",
           "overrideSoName": "libconfig-utils_test.so",
+          "branchName": "version/v2_0_2",
           "cmake": true
         }
       },
-      "version": "2.1.0"
+      "version": "2.0.2"
     },
     {
       "dependency": {
