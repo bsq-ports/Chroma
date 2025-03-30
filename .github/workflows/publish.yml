@@ -40,7 +40,7 @@ jobs:
           echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/v}
 
       - name: QPM Rust Action
-        uses: Fernthedev/qpm-rust-action@main
+        uses: Fernthedev/qpm-rust-action@v1
         with:
           #required
           workflow_token: ${{secrets.GITHUB_TOKEN}}
@@ -48,7 +48,7 @@ jobs:
           restore: true # will run restore on download
           cache: true #will cache dependencies
 
-          publish: true
+          publish: "late"
           publish_token: ${{secrets.QPM_TOKEN}}
 
           version: ${{ steps.get_tag_version.outputs.VERSION }}

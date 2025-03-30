@@ -29,7 +29,7 @@ jobs:
       #     cat ${GITHUB_WORKSPACE}/ndkpath.txt
 
       - name: QPM Rust Action
-        uses: Fernthedev/qpm-rust-action@main
+        uses: Fernthedev/qpm-rust-action@v1
         with:
           #required
           workflow_token: ${{secrets.GITHUB_TOKEN}}
