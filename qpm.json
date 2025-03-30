@@ -18,6 +18,7 @@
         "pwsh ./build.ps1"
       ]
     },
+    "ndk": "^27.2.12479018",
     "qmodIncludeDirs": [
       "./build",
       "./extern/libs"
@@ -29,8 +30,7 @@
     {
       "id": "beatsaber-hook",
       "versionRange": "^6.1.7",
-      "additionalData": {
-      }
+      "additionalData": {}
     },
     {
       "id": "custom-types",
@@ -82,7 +82,7 @@
     },
     {
       "id": "tracks",
-      "versionRange": "^1.1.0",
+      "versionRange": "^2.0.0",
       "additionalData": {
         "private": true
       }

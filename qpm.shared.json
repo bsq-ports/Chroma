@@ -19,6 +19,7 @@
           "pwsh ./build.ps1"
         ]
       },
+      "ndk": "^27.2.12479018",
       "qmodIncludeDirs": [
         "./build",
         "./extern/libs"
@@ -82,7 +83,7 @@
       },
       {
         "id": "tracks",
-        "versionRange": "^1.1.0",
+        "versionRange": "^2.0.0",
         "additionalData": {
           "private": true
         }
@@ -151,13 +152,17 @@
     {
       "dependency": {
         "id": "tracks",
-        "versionRange": "=1.1.0",
+        "versionRange": "=2.1.0",
         "additionalData": {
+          "soLink": "https://github.com/StackDoubleFlow/Tracks/releases/download/v2.1.0/libtracks.so",
+          "debugSoLink": "https://github.com/StackDoubleFlow/Tracks/releases/download/v2.1.0/debug_libtracks.so",
           "overrideSoName": "libtracks.so",
+          "modLink": "https://github.com/StackDoubleFlow/Tracks/releases/download/v2.1.0/Tracks.qmod",
+          "branchName": "version/v2_1_0",
           "cmake": true
         }
       },
-      "version": "1.1.0"
+      "version": "2.1.0"
     },
     {
       "dependency": {
@@ -282,16 +287,14 @@
     {
       "dependency": {
         "id": "config-utils",
-        "versionRange": "=2.0.2",
+        "versionRange": "=2.1.0",
         "additionalData": {
           "headersOnly": true,
-          "soLink": "https://github.com/darknight1050/config-utils/releases/download/v2.0.2/libconfig-utils_test.so",
           "overrideSoName": "libconfig-utils_test.so",
-          "branchName": "version/v2_0_2",
           "cmake": true
         }
       },
-      "version": "2.0.2"
+      "version": "2.1.0"
     },
     {
       "dependency": {
