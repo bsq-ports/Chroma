@@ -30,7 +30,7 @@
     "dependencies": [
       {
         "id": "beatsaber-hook",
-        "versionRange": "^6.1.7",
+        "versionRange": "^6.4.1",
         "additionalData": {}
       },
       {
@@ -43,7 +43,7 @@
       },
       {
         "id": "bs-cordl",
-        "versionRange": "^4030.0.0",
+        "versionRange": "^4004.0.0",
         "additionalData": {
           "includeQmod": true,
           "private": true
@@ -58,14 +58,14 @@
       },
       {
         "id": "config-utils",
-        "versionRange": "^2.0.0",
+        "versionRange": "^2.0.2",
         "additionalData": {
           "private": true
         }
       },
       {
         "id": "bsml",
-        "versionRange": "^0.4.8",
+        "versionRange": "^0.4.51",
         "additionalData": {
           "includeQmod": true,
           "private": true
@@ -78,7 +78,7 @@
       },
       {
         "id": "sombrero",
-        "versionRange": "^0.1.37",
+        "versionRange": "^0.1.43",
         "additionalData": {}
       },
       {
@@ -97,14 +97,14 @@
       },
       {
         "id": "scotland2",
-        "versionRange": "^0.1.0",
+        "versionRange": "^0.1.6",
         "additionalData": {
           "includeQmod": false
         }
       },
       {
         "id": "songcore",
-        "versionRange": "^1.1.0",
+        "versionRange": "^1.1.20",
         "additionalData": {
           "includeQmod": true,
           "private": true
@@ -112,7 +112,7 @@
       },
       {
         "id": "paper2_scotland2",
-        "versionRange": "^4.4.1",
+        "versionRange": "^4.6.1",
         "additionalData": {}
       }
     ]
@@ -121,17 +121,17 @@
     {
       "dependency": {
         "id": "bsml",
-        "versionRange": "=0.4.50",
+        "versionRange": "=0.4.51",
         "additionalData": {
-          "soLink": "https://github.com/bsq-ports/Quest-BSML/releases/download/v0.4.50/libbsml.so",
-          "debugSoLink": "https://github.com/bsq-ports/Quest-BSML/releases/download/v0.4.50/debug_libbsml.so",
+          "soLink": "https://github.com/bsq-ports/Quest-BSML/releases/download/v0.4.51/libbsml.so",
+          "debugSoLink": "https://github.com/bsq-ports/Quest-BSML/releases/download/v0.4.51/debug_libbsml.so",
           "overrideSoName": "libbsml.so",
-          "modLink": "https://github.com/bsq-ports/Quest-BSML/releases/download/v0.4.50/BSML.qmod",
-          "branchName": "version/v0_4_50",
+          "modLink": "https://github.com/bsq-ports/Quest-BSML/releases/download/v0.4.51/BSML.qmod",
+          "branchName": "version/v0_4_51",
           "cmake": true
         }
       },
-      "version": "0.4.50"
+      "version": "0.4.51"
     },
     {
       "dependency": {
@@ -154,11 +154,7 @@
         "id": "tracks",
         "versionRange": "=2.1.0",
         "additionalData": {
-          "soLink": "https://github.com/StackDoubleFlow/Tracks/releases/download/v2.1.0/libtracks.so",
-          "debugSoLink": "https://github.com/StackDoubleFlow/Tracks/releases/download/v2.1.0/debug_libtracks.so",
           "overrideSoName": "libtracks.so",
-          "modLink": "https://github.com/StackDoubleFlow/Tracks/releases/download/v2.1.0/Tracks.qmod",
-          "branchName": "version/v2_1_0",
           "cmake": true
         }
       },
@@ -190,13 +186,9 @@
     {
       "dependency": {
         "id": "custom-json-data",
-        "versionRange": "=0.22.1",
+        "versionRange": "=0.22.0",
         "additionalData": {
-          "soLink": "https://github.com/StackDoubleFlow/CustomJSONData/releases/download/v0.22.1/libcustom-json-data.so",
-          "debugSoLink": "https://github.com/StackDoubleFlow/CustomJSONData/releases/download/v0.22.1/debug_libcustom-json-data.so",
           "overrideSoName": "libcustom-json-data.so",
-          "modLink": "https://github.com/StackDoubleFlow/CustomJSONData/releases/download/v0.22.1/custom-json-data.qmod",
-          "branchName": "version/v0_22_1",
           "compileOptions": {
             "cppFlags": [
               "-DRAPIDJSON_NEON"
@@ -205,7 +197,7 @@
           "cmake": true
         }
       },
-      "version": "0.22.1"
+      "version": "0.22.0"
     },
     {
       "dependency": {
@@ -222,17 +214,17 @@
     {
       "dependency": {
         "id": "songcore",
-        "versionRange": "=1.1.19",
+        "versionRange": "=1.1.20",
         "additionalData": {
-          "soLink": "https://github.com/raineaeternal/Quest-SongCore/releases/download/v1.1.19/libsongcore.so",
-          "debugSoLink": "https://github.com/raineaeternal/Quest-SongCore/releases/download/v1.1.19/debug_libsongcore.so",
+          "soLink": "https://github.com/raineaeternal/Quest-SongCore/releases/download/v1.1.20/libsongcore.so",
+          "debugSoLink": "https://github.com/raineaeternal/Quest-SongCore/releases/download/v1.1.20/debug_libsongcore.so",
           "overrideSoName": "libsongcore.so",
-          "modLink": "https://github.com/raineaeternal/Quest-SongCore/releases/download/v1.1.19/SongCore.qmod",
-          "branchName": "version/v1_1_19",
+          "modLink": "https://github.com/raineaeternal/Quest-SongCore/releases/download/v1.1.20/SongCore.qmod",
+          "branchName": "version/v1_1_20",
           "cmake": true
         }
       },
-      "version": "1.1.19"
+      "version": "1.1.20"
     },
     {
       "dependency": {
@@ -252,12 +244,12 @@
     {
       "dependency": {
         "id": "paper2_scotland2",
-        "versionRange": "=4.6.1",
+        "versionRange": "=4.6.2",
         "additionalData": {
-          "soLink": "https://github.com/Fernthedev/paperlog/releases/download/v4.6.1/libpaper2_scotland2.so",
+          "soLink": "https://github.com/Fernthedev/paperlog/releases/download/v4.6.2/libpaper2_scotland2.so",
           "overrideSoName": "libpaper2_scotland2.so",
-          "modLink": "https://github.com/Fernthedev/paperlog/releases/download/v4.6.1/paper2_scotland2.qmod",
-          "branchName": "version/v4_6_1",
+          "modLink": "https://github.com/Fernthedev/paperlog/releases/download/v4.6.2/paper2_scotland2.qmod",
+          "branchName": "version/v4_6_2",
           "compileOptions": {
             "systemIncludes": [
               "shared/utfcpp/source"
@@ -266,7 +258,7 @@
           "cmake": false
         }
       },
-      "version": "4.6.1"
+      "version": "4.6.2"
     },
     {
       "dependency": {
@@ -287,16 +279,16 @@
     {
       "dependency": {
         "id": "config-utils",
-        "versionRange": "=2.0.2",
+        "versionRange": "=2.0.3",
         "additionalData": {
           "headersOnly": true,
-          "soLink": "https://github.com/darknight1050/config-utils/releases/download/v2.0.2/libconfig-utils_test.so",
+          "soLink": "https://github.com/darknight1050/config-utils/releases/download/v2.0.3/libconfig-utils_test.so",
           "overrideSoName": "libconfig-utils_test.so",
-          "branchName": "version/v2_0_2",
+          "branchName": "version/v2_0_3",
           "cmake": true
         }
       },
-      "version": "2.0.2"
+      "version": "2.0.3"
     },
     {
       "dependency": {
@@ -321,10 +313,10 @@
     {
       "dependency": {
         "id": "bs-cordl",
-        "versionRange": "=4030.0.0",
+        "versionRange": "=4004.0.0",
         "additionalData": {
           "headersOnly": true,
-          "branchName": "version/v4030_0_0",
+          "branchName": "version/v4004_0_0",
           "compileOptions": {
             "includePaths": [
               "include"
@@ -340,7 +332,7 @@
           }
         }
       },
-      "version": "4030.0.0"
+      "version": "4004.0.0"
     },
     {
       "dependency": {
