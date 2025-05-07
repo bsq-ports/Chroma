@@ -82,7 +82,7 @@
     },
     {
       "id": "tracks",
-      "versionRange": "^2.1.0",
+      "versionRange": "^2.2.0",
       "additionalData": {
         "private": true
       }
