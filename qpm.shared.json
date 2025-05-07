@@ -51,7 +51,7 @@
       },
       {
         "id": "custom-json-data",
-        "versionRange": "^0.22.0",
+        "versionRange": "^0.23.0",
         "additionalData": {
           "private": true
         }
@@ -83,7 +83,7 @@
       },
       {
         "id": "tracks",
-        "versionRange": "^2.0.0",
+        "versionRange": "^2.2.0",
         "additionalData": {
           "private": true
         }
@@ -152,13 +152,17 @@
     {
       "dependency": {
         "id": "tracks",
-        "versionRange": "=2.1.0",
-        "additionalData": {
+        "versionRange": "=2.2.0",
+         "additionalData": {
+          "soLink": "https://github.com/StackDoubleFlow/Tracks/releases/download/v2.2.0/libtracks.so",
+          "debugSoLink": "https://github.com/StackDoubleFlow/Tracks/releases/download/v2.2.0/debug_libtracks.so",
           "overrideSoName": "libtracks.so",
+          "modLink": "https://github.com/StackDoubleFlow/Tracks/releases/download/v2.2.0/Tracks.qmod",
+          "branchName": "version/v2_2_0",
           "cmake": true
         }
       },
-      "version": "2.1.0"
+      "version": "2.2.0"
     },
     {
       "dependency": {
@@ -186,9 +190,13 @@
     {
       "dependency": {
         "id": "custom-json-data",
-        "versionRange": "=0.22.0",
+        "versionRange": "=0.23.0",
         "additionalData": {
+          "soLink": "https://github.com/StackDoubleFlow/CustomJSONData/releases/download/v0.23.0/libcustom-json-data.so",
+          "debugSoLink": "https://github.com/StackDoubleFlow/CustomJSONData/releases/download/v0.23.0/debug_libcustom-json-data.so",
           "overrideSoName": "libcustom-json-data.so",
+          "modLink": "https://github.com/StackDoubleFlow/CustomJSONData/releases/download/v0.23.0/custom-json-data.qmod",
+          "branchName": "version/v0_23_0",
           "compileOptions": {
             "cppFlags": [
               "-DRAPIDJSON_NEON"
@@ -197,7 +205,7 @@
           "cmake": true
         }
       },
-      "version": "0.22.0"
+      "version": "0.23.0"
     },
     {
       "dependency": {
