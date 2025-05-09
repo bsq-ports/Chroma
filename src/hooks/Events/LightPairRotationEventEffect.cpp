@@ -1,15 +1,18 @@
 #include "Chroma.hpp"
 #include "ChromaController.hpp"
-
+#include "ChromaLogger.hpp"
 #include "utils/ChromaUtils.hpp"
+#include "lighting/ChromaEventData.hpp"
 
 #include "custom-json-data/shared/CustomBeatmapData.h"
+
 #include "GlobalNamespace/BeatmapEventData.hpp"
 #include "GlobalNamespace/BasicBeatmapEventType.hpp"
 #include "GlobalNamespace/LightPairRotationEventEffect.hpp"
+
 #include "UnityEngine/Quaternion.hpp"
 #include "UnityEngine/Transform.hpp"
-#include "lighting/ChromaEventData.hpp"
+
 
 using namespace CustomJSONData;
 using namespace GlobalNamespace;

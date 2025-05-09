@@ -1,13 +1,24 @@
 #include "ChromaObjectData.hpp"
 
+// Third-party includes
+#include "custom-json-data/shared/CustomBeatmapData.h"
+#include "tracks/shared/Animation/Animation.h"
+#include "tracks/shared/AssociatedData.h"                   
+#include "beatsaber-hook/shared/config/rapidjson-utils.hpp" 
+
+// Game includes
 #include "GlobalNamespace/BeatmapData.hpp"
 #include "GlobalNamespace/BeatmapLineData.hpp"
+#include "GlobalNamespace/BeatmapObjectData.hpp"
 
-#include "custom-json-data/shared/CustomBeatmapData.h"
-
-#include "tracks/shared/Animation/Animation.h"
-
+// Project includes
 #include "utils/ChromaUtils.hpp"
+#include "main.hpp"   // For debugSpamLog
+#include "Chroma.hpp" // For NewConstants namespace
+
+using namespace ChromaUtils;
+using namespace GlobalNamespace;
+using namespace TracksAD::Constants;
 
 using namespace ChromaUtils;
 using namespace GlobalNamespace;

@@ -1,15 +1,28 @@
 #pragma once
 
 #include "ChromaConfig.hpp"
+#include <random>
+#include <unordered_set>
+#include <string>
+
+// Forward declarations
+class ChromaConfig;
+
+// Third-party includes
 #include "utils/XoshiroCpp.hpp"
 
 #include "custom-types/shared/coroutine.hpp"
 #include "beatsaber-hook/shared/config/rapidjson-utils.hpp"
 
-#include "GlobalNamespace/BeatmapObjectSpawnController.hpp"
-#include "UnityEngine/SceneManagement/Scene.hpp"
+// Forward declarations for Unity/Game types
+namespace GlobalNamespace {
+class BeatmapObjectSpawnController;
+class BeatmapCallbacksController;
+}
 
-#include <random>
+namespace UnityEngine::SceneManagement {
+class Scene;
+}
 
 namespace Chroma {
 typedef rapidjson::GenericDocument<rapidjson::UTF16<char16_t>> DocumentUTF16;

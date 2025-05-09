@@ -2,6 +2,8 @@
 #include "environment_enhancements/LegacyEnvironmentRemoval.hpp"
 #include "Chroma.hpp"
 #include "ChromaController.hpp"
+#include "ChromaLogger.hpp"
+
 
 #include "UnityEngine/Resources.hpp"
 #include "UnityEngine/GameObject.hpp"

@@ -1,11 +1,16 @@
 #include "main.hpp"
 #include "ChromaConfig.hpp"
-#include "ChromaLogger.hpp"
 #include "ChromaController.hpp"
+
+#include "beatsaber-hook/shared/utils/logging.hpp"
+#include "ChromaLogger.hpp"
+
 
 #include "GlobalNamespace/BeatmapObjectManager.hpp"
 #include "GlobalNamespace/IReadonlyBeatmapData.hpp"
+#include "GlobalNamespace/BeatmapObjectSpawnController.hpp" // Include actual header since we use it
 #include "UnityEngine/WaitForEndOfFrame.hpp"
+#include "UnityEngine/SceneManagement/Scene.hpp" // Include actual header since we use it
 
 #include "custom-types/shared/coroutine.hpp"
 
@@ -79,7 +84,7 @@ ChromaController::DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnCont
 
               // please let me kill legacy
               LegacyLightHelper::Activate(list);
-            } catch (const Il2CppException& e) {
+            } catch (Il2CppException const& e) {
               ChromaLogger::Logger.error("Unable to run legacy due to exception?");
             }
           }

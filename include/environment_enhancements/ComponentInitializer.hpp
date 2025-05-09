@@ -1,5 +1,7 @@
 #pragma once
 
+#include "beatsaber-hook/shared/config/rapidjson-utils.hpp"
+
 #include "UnityEngine/Transform.hpp"
 
 #include "GameObjectInfo.hpp"

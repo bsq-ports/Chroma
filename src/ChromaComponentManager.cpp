@@ -1,25 +1,24 @@
-#include <unordered_map>
-
-#include "Chroma.hpp"
-#include "ChromaEvents.hpp"
 #include "ChromaComponentManager.hpp"
+#include "Chroma.hpp"
 #include "lighting/ChromaFogController.hpp"
 
 #include "tracks/shared/Animation/Track.h"
 #include "tracks/shared/Animation/Easings.h"
 #include "tracks/shared/Animation/PointDefinition.h"
-
 #include "tracks/shared/StaticHolders.hpp"
-
+#include "tracks/shared/bindings.h" // Correct include for Functions enum
 #include "custom-json-data/shared/CustomBeatmapData.h"
 
 #include "UnityEngine/Component.hpp"
-
 #include "GlobalNamespace/BeatmapCallbacksController.hpp"
 #include "GlobalNamespace/BloomFogSO.hpp"
 #include "GlobalNamespace/BloomFogEnvironment.hpp"
 #include "GlobalNamespace/BloomFogEnvironmentParams.hpp"
 #include "GlobalNamespace/TubeBloomPrePassLight.hpp"
+
+#include <unordered_map>
+#include <span>
+#include <string_view>
 
 struct CoroutineInfo {
   CoroutineInfo(std::string_view componentName, std::vector<UnityEngine::Component*> component,

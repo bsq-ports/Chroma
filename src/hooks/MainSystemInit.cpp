@@ -1,5 +1,5 @@
-#include "Chroma.hpp"
 #include "ChromaHooks.hpp"
+#include "ChromaLogger.hpp"
 
 #include "environment_enhancements/EnvironmentMaterialManager.hpp"
 

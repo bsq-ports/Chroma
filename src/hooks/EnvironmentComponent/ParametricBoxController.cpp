@@ -1,20 +1,21 @@
 #include "Chroma.hpp"
 #include "ChromaController.hpp"
-
 #include "environment_enhancements/ParametricBoxControllerParameters.hpp"
-
 #include "colorizer/ObstacleColorizer.hpp"
-#include "GlobalNamespace/ColorManager.hpp"
+#include "utils/ChromaUtils.hpp"
+#include "ChromaObjectData.hpp"
+
 #include "custom-json-data/shared/CustomBeatmapData.h"
+
+#include "GlobalNamespace/ColorManager.hpp"
 #include "GlobalNamespace/ObstacleController.hpp"
 #include "GlobalNamespace/ParametricBoxController.hpp"
+
 #include "UnityEngine/Vector3.hpp"
 #include "UnityEngine/MaterialPropertyBlock.hpp"
 #include "UnityEngine/MeshRenderer.hpp"
 #include "UnityEngine/GameObject.hpp"
-#include "utils/ChromaUtils.hpp"
 
-#include "ChromaObjectData.hpp"
 
 using namespace CustomJSONData;
 using namespace GlobalNamespace;

@@ -1,6 +1,8 @@
 #include "main.hpp"
 #include "Chroma.hpp"
 #include "ChromaController.hpp"
+#include "ChromaLogger.hpp"
+
 #include "utils/ChromaUtils.hpp"
 
 #include "hooks/TrackLaneRingsManager.hpp"

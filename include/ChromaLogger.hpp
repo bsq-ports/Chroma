@@ -1,6 +1,6 @@
 #pragma once
-#include "beatsaber-hook/shared/utils/logging.hpp"
-#include "custom-json-data/shared/CJDLogger.h"
+
+#include "paper2_scotland2/shared/paperlog.hpp"
 
 class ChromaLogger {
 public:

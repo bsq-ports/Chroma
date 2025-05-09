@@ -16,6 +16,7 @@
 #include "UnityEngine/Mesh.hpp"
 #include "UnityEngine/Transform.hpp"
 
+
 namespace ChromaUtils {
 struct ChromaUtilities {
   inline static std::optional<Sombrero::FastColor> GetColorFromData(rapidjson::Value const& data,

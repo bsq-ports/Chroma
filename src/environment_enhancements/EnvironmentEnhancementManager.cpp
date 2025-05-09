@@ -3,25 +3,31 @@
 
 #include "main.hpp"
 #include "environment_enhancements/EnvironmentEnhancementManager.hpp"
+#include "environment_enhancements/GeometryFactory.hpp"
+#include "environment_enhancements/MaterialAnimator.hpp"
+#include "environment_enhancements/LegacyEnvironmentRemoval.hpp"
+#include "environment_enhancements/ComponentInitializer.hpp"
+#include "environment_enhancements/ParametricBoxControllerParameters.hpp"
+#include "hooks/LightWithIdManager.hpp"
+#include "hooks/TrackLaneRingsManager.hpp"
+#include "utils/ChromaUtils.hpp"
 
 #include "UnityEngine/Resources.hpp"
 #include "UnityEngine/SceneManagement/Scene.hpp"
 #include "UnityEngine/Transform.hpp"
 #include "UnityEngine/SceneManagement/SceneManager.hpp"
 
-#include "utils/ChromaUtils.hpp"
-#include "environment_enhancements/LegacyEnvironmentRemoval.hpp"
-#include "environment_enhancements/ComponentInitializer.hpp"
-#include "environment_enhancements/ParametricBoxControllerParameters.hpp"
+#include "GlobalNamespace/BeatmapObjectsAvoidance.hpp"
+#include "GlobalNamespace/TrackLaneRing.hpp"
+
 #include "tracks/shared/Animation/GameObjectTrackController.hpp"
+#include "tracks/shared/AssociatedData.h"
+#include "tracks/shared/Animation/PointDefinition.h"
 
 #include "boost-regex/regex/include/boost/regex.hpp"
 
-#include "tracks/shared/Animation/PointDefinition.h"
-#include "tracks/shared/AssociatedData.h"
-#include "environment_enhancements/MaterialAnimator.hpp"
-#include "hooks/LightWithIdManager.hpp"
-#include "hooks/TrackLaneRingsManager.hpp"
+#include "paper2_scotland2/shared/Profiler.hpp"
+
 
 using namespace Chroma;
 using namespace ChromaUtils;
@@ -316,7 +322,7 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
   auto rings = UnityEngine::Resources::FindObjectsOfTypeAll<GlobalNamespace::TrackLaneRingsManager*>();
   Chroma::TrackLaneRingsManagerHolder::RingManagers = { rings.begin(), rings.end() };
 
-  std::vector<Profiler> profileData;
+  std::vector<Paper::Profiler<std::chrono::milliseconds>> profileData;
   auto environmentDataObject = environmentData->value.GetArray();
 
   // Record start time

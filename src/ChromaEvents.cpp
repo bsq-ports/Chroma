@@ -1,19 +1,25 @@
-#include "ChromaEvents.hpp"
+#include <algorithm>
+#include <utility>
 
+
+#include "ChromaEvents.hpp"
 #include "Chroma.hpp"
+#include "ChromaLogger.hpp"
 #include "lighting/ChromaFogController.hpp"
 #include "ChromaComponentManager.hpp"
+
 
 #include "GlobalNamespace/BeatmapData.hpp"
 #include "GlobalNamespace/BeatmapCallbacksController.hpp"
 
+
 #include "custom-json-data/shared/CustomBeatmapData.h"
 #include "custom-json-data/shared/CustomEventData.h"
-
 #include "tracks/shared/TimeSourceHelper.h"
 #include "tracks/shared/Vector.h"
 #include "tracks/shared/Json.h"
-#include <algorithm>
+
+
 
 using namespace GlobalNamespace;
 using namespace NEVector;

@@ -1,27 +1,29 @@
-#include "bsml/shared/BSML.hpp"
 #include "main.hpp"
 
+// Standard library includes
+#include <cstdlib>
+
+// Third-party library includes
+#include "beatsaber-hook/shared/config/rapidjson-utils.hpp"
+#include "beatsaber-hook/shared/utils/logging.hpp" // Required for ChromaLogger
+#include "beatsaber-hook/shared/config/config-utils.hpp"
+#include "beatsaber-hook/shared/utils/il2cpp-functions.hpp"
+#include "bsml/shared/BSML.hpp"
+#include "bsml/shared/BSML/GameplaySetup/MenuType.hpp"
+#include "bsml/shared/BSML/SharedCoroutineStarter.hpp"
+#include "bsml/shared/BSML/MainThreadScheduler.hpp"
+#include "custom-types/shared/register.hpp"
+#include "songcore/shared/Capabilities.hpp"
+
+// Project-specific includes
 #include "Chroma.hpp"
 #include "ChromaLogger.hpp"
 #include "ChromaEvents.hpp"
-#include "bsml/shared/BSML/GameplaySetup/MenuType.hpp"
-#include "custom-types/shared/register.hpp"
 #include "ChromaController.hpp"
-
 #include "ChromaConfig.hpp"
-
-#include <cstdlib>
 #include "lighting/LightIDTableManager.hpp"
-
-#include "songcore/shared/Capabilities.hpp"
-
 #include "ui/ModifierViewController.hpp"
-
 #include "environment_enhancements/EnvironmentMaterialManager.hpp"
-
-#include "bsml/shared/BSML/SharedCoroutineStarter.hpp"
-
-#include "bsml/shared/BSML/MainThreadScheduler.hpp"
 
 using namespace Chroma;
 
@@ -41,7 +43,7 @@ extern "C" void setup(CModInfo* info) {
   info->version = VERSION;
   info->version_long = 0;
 
-  getChromaConfig().Init({modName, VERSION, 0});
+  getChromaConfig().Init({ modName, VERSION, 0 });
 
   ChromaLogger::Logger.info("Completed Chroma setup!");
 }
@@ -50,7 +52,7 @@ extern "C" void late_load() {
   il2cpp_functions::Init();
 
   BSML::Register::RegisterMainMenu<ModifierViewController*>("Chroma", "Chroma", "Colors!");
-  //BSML::Register::RegisterGameplaySetupTab<ModifierViewController*>("Chroma", BSML::MenuType::Solo);
+  // BSML::Register::RegisterGameplaySetupTab<ModifierViewController*>("Chroma", BSML::MenuType::Solo);
 
   ChromaLogger::Logger.info("Installing types...");
 

@@ -1,5 +1,7 @@
 #include "Chroma.hpp"
 #include "ChromaController.hpp"
+#include "ChromaLogger.hpp"
+
 #include "hooks/MultiplayerConnectedPlayerInstaller.hpp"
 
 #include "GlobalNamespace/BeatmapDataTransformHelper.hpp"

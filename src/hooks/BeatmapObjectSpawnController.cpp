@@ -2,6 +2,10 @@
 
 #include "ChromaController.hpp"
 
+#include "ChromaLogger.hpp"
+
+#include "GlobalNamespace/BeatmapObjectSpawnController.hpp"
+
 using namespace Chroma;
 using namespace GlobalNamespace;
 using namespace UnityEngine;

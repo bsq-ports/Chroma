@@ -1,9 +1,16 @@
-#include <unordered_map>
+#pragma once
 
-#include "Chroma.hpp"
-#include "ChromaEvents.hpp"
+#include "ChromaEvents.hpp" // Needed for AnimateComponentEventData
 
-#include "GlobalNamespace/BeatmapCallbacksController.hpp"
+// Forward declarations
+namespace CustomJSONData {
+class CustomEventData;
+}
+
+namespace GlobalNamespace {
+class BeatmapCallbacksController;
+}
+
 
 namespace Chroma::Component {
 void StartEvent(GlobalNamespace::BeatmapCallbacksController* callbackController,

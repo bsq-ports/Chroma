@@ -1,7 +1,6 @@
 #include "Chroma.hpp"
 
-#include "hooks/colorizer/Note/ColorManager.hpp"
-
+#include "ChromaLogger.hpp"
 #include "ChromaController.hpp"
 #include "ChromaObjectData.hpp"
 #include "utils/ChromaUtils.hpp"
@@ -18,6 +17,8 @@
 #include "GlobalNamespace/AudioTimeSyncController.hpp"
 
 #include "custom-json-data/shared/CustomBeatmapData.h"
+
+#include "hooks/colorizer/Note/ColorManager.hpp"
 
 using namespace Chroma;
 using namespace GlobalNamespace;

@@ -2,10 +2,13 @@
 
 #include "Chroma.hpp"
 #include "ChromaController.hpp"
+#include "ChromaLogger.hpp"
 #include "utils/ChromaUtils.hpp"
 
 #include "custom-json-data/shared/CustomBeatmapData.h"
+
 #include "GlobalNamespace/LightRotationEventEffect.hpp"
+
 #include "UnityEngine/Random.hpp"
 #include "UnityEngine/Space.hpp"
 #include "UnityEngine/Transform.hpp"

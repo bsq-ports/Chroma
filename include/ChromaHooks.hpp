@@ -1,6 +1,9 @@
 #pragma once
 #include "main.hpp"
 
+// needed for ChromaInstallHooks
+#include "ChromaLogger.hpp"
+
 #include "beatsaber-hook/shared/utils/hooking.hpp"
 
 namespace Chroma {

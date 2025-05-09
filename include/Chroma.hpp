@@ -8,33 +8,11 @@
 
 template <auto val> using FPtrWrapper = il2cpp_utils::il2cpp_type_check::FPtrWrapper<val>;
 
-inline void PrintJSONValue(rapidjson::Value const& json) {
-#if DEBUGB == 1
-  return;
-#endif
-  using namespace rapidjson;
-
-  StringBuffer sb;
-  PrettyWriter<StringBuffer> writer(sb);
-  json.Accept(writer);
-  auto str = sb.GetString();
-  ChromaLogger::Logger.info("{}", str);
-}
-
-inline void PrintJSONValue(rapidjson::Value const* json) {
-#if DEBUGB == 1
-  return;
-#endif
-  using namespace rapidjson;
-
-  StringBuffer sb;
-  PrettyWriter<StringBuffer> writer(sb);
-  json->Accept(writer);
-  auto str = sb.GetString();
-  ChromaLogger::Logger.info("json {}", str);
-}
 
 namespace Chroma {
+
+void PrintJSONValue(rapidjson::Value const& json);
+void PrintJSONValue(rapidjson::Value const* json);
 
 inline static const std::string REQUIREMENTNAME = "Chroma";
 

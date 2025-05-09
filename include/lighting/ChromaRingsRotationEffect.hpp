@@ -1,19 +1,21 @@
 #pragma once
 
-#include "UnityEngine/MonoBehaviour.hpp"
+
 #include "GlobalNamespace/TrackLaneRingsRotationEffect.hpp"
 #include "GlobalNamespace/TrackLaneRingsManager.hpp"
-#include "GlobalNamespace/BasicBeatmapEventType.hpp"
-#include "GlobalNamespace/SimpleColorSO.hpp"
-#include "GlobalNamespace/MultipliedColorSO.hpp"
+
 #include "GlobalNamespace/TrackLaneRingsManager.hpp"
 #include "GlobalNamespace/TrackLaneRing.hpp"
+
+#include "ChromaLogger.hpp"
+
 #include <vector>
 #include <string>
 #include <optional>
+
 #include "custom-types/shared/types.hpp"
 #include "custom-types/shared/macros.hpp"
-#include "main.hpp"
+
 
 namespace Chroma {
 struct ChromaRotationEffect {

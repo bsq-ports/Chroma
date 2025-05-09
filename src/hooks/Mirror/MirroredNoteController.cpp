@@ -1,6 +1,7 @@
 #include "Chroma.hpp"
 
 #include "ChromaController.hpp"
+#include "ChromaLogger.hpp"
 
 #include "GlobalNamespace/BaseNoteVisuals.hpp"
 #include "GlobalNamespace/BombNoteController.hpp"

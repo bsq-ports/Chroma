@@ -1,16 +1,22 @@
 #pragma once
 
-#include "beatsaber-hook/shared/config/rapidjson-utils.hpp"
-
+#include <optional>
+#include <span>
 #include <unordered_map>
 
-#include "GlobalNamespace/BeatmapObjectData.hpp"
+// Forward declarations
+namespace GlobalNamespace {
+class BeatmapObjectData;
+}
 
+namespace CustomJSONData {
+class CustomBeatmapData;
+}
+
+// Third-party includes
 #include "tracks/shared/Animation/Track.h"
 #include "tracks/shared/Animation/PointDefinition.h"
-
 #include "sombrero/shared/ColorUtils.hpp"
-#include "custom-json-data/shared/CustomBeatmapData.h"
 
 namespace Chroma {
 

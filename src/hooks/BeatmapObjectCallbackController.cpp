@@ -1,9 +1,14 @@
 #include "ChromaComponentManager.hpp"
 
+#include "ChromaLogger.hpp"
+#include "ChromaHooks.hpp"
+
 #include "GlobalNamespace/BeatmapCallbacksController.hpp"
 #include "GlobalNamespace/BeatmapCallbacksUpdater.hpp"
-#include "custom-types/shared/coroutine.hpp"
+
 #include "UnityEngine/Resources.hpp"
+
+#include "custom-types/shared/coroutine.hpp"
 
 using namespace GlobalNamespace;
 
@@ -32,4 +37,4 @@ MAKE_HOOK_MATCH(BeatmapObjectCallbackController_Start, &BeatmapCallbacksControll
 void InstallBeatmapObjectCallbackControllerHooks() {
   INSTALL_HOOK(ChromaLogger::Logger, BeatmapObjectCallbackController_Start);
 }
-ChromaInstallHooks(InstallBeatmapObjectCallbackControllerHooks)
+ChromaInstallHooks(InstallBeatmapObjectCallbackControllerHooks);

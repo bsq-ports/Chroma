@@ -22,6 +22,7 @@
 #include "GlobalNamespace/MirrorRendererSO.hpp"
 #include "GlobalNamespace/BloomFogEnvironment.hpp"
 #include "GlobalNamespace/BloomFogEnvironmentParams.hpp"
+#include "GlobalNamespace/TubeBloomPrePassLight.hpp"
 
 #include "UnityEngine/Vector3.hpp"
 #include "UnityEngine/ParticleSystem.hpp"

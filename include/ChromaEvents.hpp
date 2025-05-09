@@ -1,13 +1,17 @@
 #pragma once
 
 #include <unordered_map>
-#include <utility>
+#include <string_view>
 #include <variant>
+#include <vector>
+// Forward declarations
+namespace CustomJSONData {
+class CustomEventData;
+}
 
 #include "tracks/shared/AssociatedData.h"
 #include "tracks/shared/Animation/Track.h"
 #include "custom-json-data/shared/CustomEventData.h"
-#include "custom-json-data/shared/CustomBeatmapData.h"
 
 // Custom events, not Beatmap Events
 namespace ChromaEvents {

@@ -1,11 +1,15 @@
 #include "ChromaController.hpp"
-
-#include "System/Nullable_1.hpp"
-#include "GlobalNamespace/LightWithIdManager.hpp"
 #include "colorizer/LightColorizer.hpp"
+#include "hooks/LightWithIdManager.hpp"
+
 #include "custom-json-data/shared/VList.h"
 
-#include "hooks/LightWithIdManager.hpp"
+#include "System/Nullable_1.hpp"
+
+#include "GlobalNamespace/LightWithIdManager.hpp"
+
+#include "UnityEngine/SceneManagement/Scene.hpp"
+
 
 std::unordered_map<GlobalNamespace::ILightWithId*, int> Chroma::LightIdRegisterer::RequestedIDs;
 std::unordered_set<GlobalNamespace::ILightWithId*> Chroma::LightIdRegisterer::NeedToRegister;

@@ -1,15 +1,12 @@
 #pragma once
 
-#include "scotland2/shared/loader.hpp"
-
-#include "beatsaber-hook/shared/config/rapidjson-utils.hpp"
-#include "beatsaber-hook/shared/utils/logging.hpp"
-#include "beatsaber-hook/shared/config/config-utils.hpp"
-#include "beatsaber-hook/shared/utils/il2cpp-functions.hpp"
-#include "ChromaConfig.hpp"
-#include "ChromaLogger.hpp"
+// Forward declarations
+class ChromaConfig;
 
 #include <string>
+
+// Only include what's needed in the header
+#include "scotland2/shared/loader.hpp"
 
 void setChromaEnv();
 
