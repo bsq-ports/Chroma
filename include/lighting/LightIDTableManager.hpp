@@ -6,7 +6,6 @@
 #include <unordered_map>
 #include <optional>
 #include <string>
-#include <functional>
 
 namespace Chroma {
 

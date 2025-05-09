@@ -1,15 +1,9 @@
 #pragma once
 
 #include "HMUI/ViewController.hpp"
-#include "UnityEngine/MonoBehaviour.hpp"
 
-#include <utility>
-#include <vector>
-#include <string>
-#include <optional>
-#include "custom-types/shared/types.hpp"
+
 #include "custom-types/shared/macros.hpp"
-#include "main.hpp"
 
 #include "bsml/shared/macros.hpp"
 

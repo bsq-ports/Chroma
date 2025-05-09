@@ -6,13 +6,13 @@
 #include "GlobalNamespace/BloomFogEnvironmentParams.hpp"
 
 #include "UnityEngine/MonoBehaviour.hpp"
-#include "UnityEngine/Color.hpp"
 
 #include "ChromaController.hpp"
 
 #include "tracks/shared/Animation/Track.h"
 #include "tracks/shared/Animation/Easings.h"
 #include "main.hpp"
+
 
 namespace Chroma {
 constexpr float fogAttenuationFix(float attenuation) {

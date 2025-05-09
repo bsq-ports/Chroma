@@ -1,14 +1,9 @@
 #pragma once
 
-#include "GlobalNamespace/BasicBeatmapEventType.hpp"
 #include "GlobalNamespace/BasicBeatmapEventData.hpp"
 
-#include "UnityEngine/Color.hpp"
 
 #include "sombrero/shared/ColorUtils.hpp"
-
-#include "System/Collections/Generic/List_1.hpp"
-#include "System/Collections/Generic/IReadOnlyList_1.hpp"
 
 #include <unordered_map>
 #include <vector>

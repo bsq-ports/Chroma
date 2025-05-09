@@ -6,12 +6,9 @@
 
 #include "UnityEngine/Color.hpp"
 
-#include "GlobalNamespace/BasicBeatmapEventType.hpp"
+#include "Tweening/ColorTween.hpp"
 #include "GlobalNamespace/ILightWithId.hpp"
 #include "GlobalNamespace/LightWithIdManager.hpp"
-#include "GlobalNamespace/BasicBeatmapEventData.hpp"
-#include "System/Action_1.hpp"
-#include "Tweening/ColorTween.hpp"
 
 #include "ChromaController.hpp"
 #include "lighting/ColorTween.hpp"
@@ -22,6 +19,15 @@
 #include "tracks/shared/Animation/Easings.h"
 #include "custom-json-data/shared/CJDLogger.h"
 #include "main.hpp"
+
+namespace GlobalNamespace {
+class BasicBeatmapEventData;
+class LightWithIdManager;
+} // namespace GlobalNamespace
+
+namespace Tweening {
+class ColorTween;
+} // namespace Tweening
 
 namespace Chroma::Tween {
 

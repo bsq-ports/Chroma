@@ -6,13 +6,15 @@
 
 #include <unordered_map>
 
-#include "GlobalNamespace/BasicBeatmapEventData.hpp"
-#include "GlobalNamespace/IReadonlyBeatmapData.hpp"
-
 #include "sombrero/shared/ColorUtils.hpp"
 
 #include "lighting/LerpType.hpp"
 #include "custom-json-data/shared/CustomBeatmapData.h"
+
+namespace GlobalNamespace {
+class BasicBeatmapEventData;
+class BeatmapObjectSpawnController;
+};
 
 namespace Chroma {
 class ChromaEventData {

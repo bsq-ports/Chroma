@@ -1,5 +1,8 @@
 #pragma once
 
+#include <string>
+#include <string_view>
+
 namespace Chroma {
 enum struct LerpType { RGB, HSV };
 

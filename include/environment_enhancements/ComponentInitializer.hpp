@@ -2,10 +2,15 @@
 
 #include "beatsaber-hook/shared/config/rapidjson-utils.hpp"
 
-#include "UnityEngine/Transform.hpp"
+
 
 #include "GameObjectInfo.hpp"
 #include "ComponentData.hpp"
+
+namespace UnityEngine {
+class Transform;
+class GameObject;
+} // namespace UnityEngine
 
 namespace Chroma {
 

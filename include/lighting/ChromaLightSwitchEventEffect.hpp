@@ -9,13 +9,7 @@
 
 #include "UnityEngine/Color.hpp"
 
-#include "GlobalNamespace/ColorBoostBeatmapEventData.hpp"
-#include "GlobalNamespace/BasicBeatmapEventType.hpp"
-#include "GlobalNamespace/ILightWithId.hpp"
-#include "GlobalNamespace/LightWithIdManager.hpp"
-#include "GlobalNamespace/BasicBeatmapEventData.hpp"
 #include "GlobalNamespace/LightSwitchEventEffect.hpp"
-#include "GlobalNamespace/ColorSO.hpp"
 
 #include "ChromaController.hpp"
 #include "ColorTween.hpp"
@@ -27,6 +21,15 @@
 namespace Chroma {
 class LightColorizer;
 }
+
+namespace GlobalNamespace {
+class BasicBeatmapEventData;
+class ColorSO;
+class ColorBoostBeatmapEventData;
+class ILightWithId;
+class LightWithIdManager;
+} // namespace GlobalNamespace
+
 
 DECLARE_CLASS_CODEGEN(Chroma, ChromaLightSwitchEventEffect, GlobalNamespace::LightSwitchEventEffect) {
 public:
