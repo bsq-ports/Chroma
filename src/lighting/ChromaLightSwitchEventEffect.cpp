@@ -7,6 +7,7 @@
 
 #include "GlobalNamespace/EnvironmentColorType.hpp"
 #include "GlobalNamespace/ColorManager.hpp"
+#include "GlobalNamespace/ColorBoostBeatmapEventData.hpp"
 
 #include "Tweening/SongTimeTweeningManager.hpp"
 #include "lighting/LightIDTableManager.hpp"
