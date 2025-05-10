@@ -1,21 +1,18 @@
 #pragma once
 
-#include "UnityEngine/ParticleSystem.hpp"
 #include "UnityEngine/MonoBehaviour.hpp"
-#include "UnityEngine/Color.hpp"
 
+#include "GlobalNamespace/SaberModelController.hpp"
 #include "GlobalNamespace/SaberType.hpp"
-#include "GlobalNamespace/BasicBeatmapEventType.hpp"
 #include "GlobalNamespace/Saber.hpp"
 
-#include "colorizer/SaberColorizer.hpp"
+namespace Chroma {
+class SaberColorizer;
+} // namespace Chroma
 
-#include <vector>
-#include <string>
-#include <optional>
-#include "custom-types/shared/types.hpp"
+
+
 #include "custom-types/shared/macros.hpp"
-#include "main.hpp"
 
 DECLARE_CLASS_CODEGEN(Chroma, ChromaSaberController, UnityEngine::MonoBehaviour) {
 private:

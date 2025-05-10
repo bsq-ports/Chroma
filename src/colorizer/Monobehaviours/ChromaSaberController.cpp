@@ -1,4 +1,5 @@
 #include "colorizer/Monobehaviours/ChromaSaberController.hpp"
+#include "colorizer/SaberColorizer.hpp"
 
 DEFINE_TYPE(Chroma, ChromaSaberController);
 

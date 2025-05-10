@@ -9,6 +9,7 @@
 #include "GlobalNamespace/TrackLaneRingsManager.hpp"
 #include "GlobalNamespace/TrackLaneRing.hpp"
 #include "GlobalNamespace/ColorSO.hpp"
+#include "GlobalNamespace/MultipliedColorSO.hpp"
 
 #include "UnityEngine/Transform.hpp"
 

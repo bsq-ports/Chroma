@@ -1,28 +1,19 @@
 #pragma once
 
-#include "Chroma.hpp"
-#include "beatsaber-hook/shared/utils/il2cpp-utils.hpp"
-#include "beatsaber-hook/shared/utils/typedefs-array.hpp"
-
-#include "lighting/LightIDTableManager.hpp"
-#include "colorizer/LightColorizer.hpp"
-#include "utils/ChromaUtils.hpp"
 
 #include <unordered_map>
+#include <array>
 
-#include "custom-json-data/shared/CustomBeatmapData.h"
-
-#include "UnityEngine/Mathf.hpp"
-
-#include "GlobalNamespace/LightWithIdMonoBehaviour.hpp"
-#include "GlobalNamespace/LightWithIds.hpp"
-#include "GlobalNamespace/TrackLaneRingsManager.hpp"
-#include "GlobalNamespace/TrackLaneRing.hpp"
-#include "GlobalNamespace/ParticleSystemEventEffect.hpp"
-#include "GlobalNamespace/ColorSO.hpp"
-#include "GlobalNamespace/SimpleColorSO.hpp"
-#include "GlobalNamespace/MultipliedColorSO.hpp"
 #include "GlobalNamespace/BasicBeatmapEventType.hpp"
+
+#include "sombrero/shared/ColorUtils.hpp"
+
+namespace GlobalNamespace {
+class ParticleSystemEventEffect;
+class SimpleColorSO;
+class MultipliedColorSO;
+} // namespace GlobalNamespace
+
 
 namespace Chroma {
 class ParticleColorizer {

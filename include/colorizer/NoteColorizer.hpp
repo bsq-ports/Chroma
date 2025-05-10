@@ -1,13 +1,8 @@
 #pragma once
 
 #include "UnityEngine/MonoBehaviour.hpp"
-#include "UnityEngine/Shader.hpp"
 
-#include "GlobalNamespace/NoteControllerBase.hpp"
-#include "GlobalNamespace/NoteController.hpp"
-#include "GlobalNamespace/NoteCutInfo.hpp"
-#include "GlobalNamespace/ColorNoteVisuals.hpp"
-#include "GlobalNamespace/ColorManager.hpp"
+#include "GlobalNamespace/ColorType.hpp"
 
 #include <vector>
 #include <string>
@@ -18,7 +13,13 @@
 #include "ChromaObjectData.hpp"
 #include "ObjectColorizer.hpp"
 
-#include "custom-json-data/shared/CustomBeatmapData.h"
+namespace GlobalNamespace {
+class NoteControllerBase;
+class NoteController;
+class NoteCutInfo;
+class MaterialPropertyBlockController;
+class ColorNoteVisuals;
+}
 
 using ColorPair = std::pair<std::optional<Sombrero::FastColor>, std::optional<Sombrero::FastColor>>;
 using NoteColorStack = std::stack<ColorPair>;

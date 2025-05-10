@@ -2,17 +2,19 @@
 
 #include "ObjectColorizer.hpp"
 
-#include "UnityEngine/Renderer.hpp"
+
 #include "UnityEngine/MonoBehaviour.hpp"
-#include "GlobalNamespace/MaterialPropertyBlockController.hpp"
-#include "GlobalNamespace/BombNoteController.hpp"
-#include "GlobalNamespace/NoteControllerBase.hpp"
-#include "UnityEngine/Material.hpp"
-#include <vector>
-#include <string>
-#include <optional>
-#include "custom-types/shared/types.hpp"
+
+
 #include "custom-types/shared/macros.hpp"
+
+#include <optional>
+
+namespace GlobalNamespace {
+class NoteControllerBase;
+class MaterialPropertyBlockController;
+} // namespace GlobalNamespace
+
 
 namespace Chroma {
 class BombColorizer : public ObjectColorizer<BombColorizer> {

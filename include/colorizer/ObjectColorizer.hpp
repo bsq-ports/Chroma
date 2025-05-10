@@ -1,11 +1,8 @@
 #pragma once
 
-#include <vector>
-#include <optional>
-#include <functional>
 #include <concepts>
+#include <optional>
 
-#include "UnityEngine/Color.hpp"
 #include "sombrero/shared/ColorUtils.hpp"
 
 namespace Chroma {

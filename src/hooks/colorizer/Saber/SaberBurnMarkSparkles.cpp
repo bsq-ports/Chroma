@@ -11,6 +11,7 @@
 #include "GlobalNamespace/MultiplayerConnectedPlayerNoteController.hpp"
 #include "GlobalNamespace/TutorialNoteController.hpp"
 #include "GlobalNamespace/SaberBurnMarkArea.hpp"
+#include "GlobalNamespace/SaberBurnMarkSparkles.hpp"
 
 #include "UnityEngine/ParticleSystem.hpp"
 

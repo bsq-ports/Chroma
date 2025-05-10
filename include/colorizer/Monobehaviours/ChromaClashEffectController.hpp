@@ -9,12 +9,9 @@
 
 #include "sombrero/shared/ColorUtils.hpp"
 
-#include <vector>
-#include <string>
-#include <optional>
-#include "custom-types/shared/types.hpp"
+
 #include "custom-types/shared/macros.hpp"
-#include "main.hpp"
+
 
 DECLARE_CLASS_CODEGEN(Chroma, ChromaClashEffectController, UnityEngine::MonoBehaviour) {
 private:

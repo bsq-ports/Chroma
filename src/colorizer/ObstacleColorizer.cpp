@@ -3,6 +3,8 @@
 #include "UnityEngine/Shader.hpp"
 #include "GlobalNamespace/StretchableObstacle.hpp"
 #include "GlobalNamespace/ColorManager.hpp"
+#include "GlobalNamespace/ObstacleControllerBase.hpp"
+#include "GlobalNamespace/ObstacleController.hpp"
 
 #include <unordered_map>
 #include "colorizer/ObstacleColorizer.hpp"

@@ -4,15 +4,9 @@
 #include "Chroma.hpp"
 #include "ObjectColorizer.hpp"
 
-#include "GlobalNamespace/SimpleColorSO.hpp"
-#include "GlobalNamespace/MultipliedColorSO.hpp"
-#include "GlobalNamespace/ObstacleController.hpp"
-#include "GlobalNamespace/StretchableObstacle.hpp"
-#include "GlobalNamespace/ObstacleControllerBase.hpp"
-#include "GlobalNamespace/MaterialPropertyBlockController.hpp"
-#include "GlobalNamespace/ParametricBoxFrameController.hpp"
 #include "GlobalNamespace/ParametricBoxFakeGlowController.hpp"
-
+#include "GlobalNamespace/ParametricBoxFrameController.hpp"
+#include "GlobalNamespace/MaterialPropertyBlockController.hpp"
 #include "UnityEngine/MaterialPropertyBlock.hpp"
 
 #include <vector>
@@ -20,8 +14,14 @@
 #include <optional>
 #include <unordered_map>
 
-#include "custom-types/shared/types.hpp"
 #include "custom-types/shared/macros.hpp"
+
+namespace GlobalNamespace {
+class ParametricBoxFrameController;
+class ParametricBoxFakeGlowController;
+class MaterialPropertyBlockController;
+class ObstacleControllerBase;
+} // namespace GlobalNamespace
 
 namespace Chroma {
 class ObstacleColorizer : public ObjectColorizer<ObstacleColorizer> {

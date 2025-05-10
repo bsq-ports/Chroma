@@ -6,6 +6,7 @@
 #include "lighting/ChromaGradientController.hpp"
 
 #include "GlobalNamespace/EnvironmentColorType.hpp"
+#include "GlobalNamespace/MultipliedColorSO.hpp"
 #include "GlobalNamespace/ColorManager.hpp"
 #include "GlobalNamespace/ColorBoostBeatmapEventData.hpp"
 

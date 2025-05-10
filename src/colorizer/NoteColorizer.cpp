@@ -1,8 +1,14 @@
 #include "Chroma.hpp"
 
 #include "UnityEngine/MaterialPropertyBlock.hpp"
+#include "UnityEngine/Shader.hpp"
 
 #include "GlobalNamespace/MaterialPropertyBlockController.hpp"
+#include "GlobalNamespace/ColorNoteVisuals.hpp"
+#include "GlobalNamespace/NoteControllerBase.hpp"
+#include "GlobalNamespace/NoteController.hpp"
+#include "GlobalNamespace/ColorManager.hpp"
+
 
 #include <unordered_map>
 #include "colorizer/NoteColorizer.hpp"

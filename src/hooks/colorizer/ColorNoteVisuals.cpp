@@ -5,6 +5,7 @@
 #include "GlobalNamespace/MultiplayerConnectedPlayerNoteController.hpp"
 #include "GlobalNamespace/TutorialNoteController.hpp"
 #include "GlobalNamespace/GameNoteController.hpp"
+#include "GlobalNamespace/ColorNoteVisuals.hpp"
 
 #include "colorizer/NoteColorizer.hpp"
 #include "utils/ChromaUtils.hpp"

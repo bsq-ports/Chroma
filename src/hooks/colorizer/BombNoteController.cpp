@@ -7,6 +7,8 @@
 
 #include "ChromaObjectData.hpp"
 
+#include "GlobalNamespace/BombNoteController.hpp"
+
 using namespace CustomJSONData;
 using namespace GlobalNamespace;
 using namespace Chroma;

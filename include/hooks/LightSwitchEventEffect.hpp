@@ -1,6 +1,10 @@
 #pragma once
 
-#include "GlobalNamespace/ILightWithId.hpp"
+namespace GlobalNamespace {
+class ILightWithId;
+class LightSwitchEventEffect;
+class LightWithIdManager;
+} // namespace GlobalNamespace
 
 #include <optional>
 #include <vector>

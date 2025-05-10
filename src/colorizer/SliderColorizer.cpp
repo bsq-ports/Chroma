@@ -1,11 +1,16 @@
 #include "Chroma.hpp"
 
 #include <unordered_map>
+
 #include "colorizer/SliderColorizer.hpp"
 #include "colorizer/NoteColorizer.hpp"
+
 #include "ChromaController.hpp"
 #include "utils/ChromaUtils.hpp"
 #include "ChromaObjectData.hpp"
+
+#include "GlobalNamespace/SliderController.hpp"
+#include "GlobalNamespace/ColorManager.hpp"
 
 using namespace CustomJSONData;
 using namespace GlobalNamespace;

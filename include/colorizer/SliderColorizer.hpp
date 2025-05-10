@@ -1,18 +1,18 @@
 #pragma once
 
-#include "GlobalNamespace/SliderController.hpp"
-#include "GlobalNamespace/ColorManager.hpp"
 
-#include <vector>
-#include <string>
-#include <optional>
-#include <stack>
-#include <tuple>
 
-#include "ChromaObjectData.hpp"
 #include "ObjectColorizer.hpp"
 
-#include "custom-json-data/shared/CustomBeatmapData.h"
+#include "GlobalNamespace/ColorType.hpp"
+
+#include <optional>
+
+namespace GlobalNamespace {
+class SliderController;
+class ColorSO;
+class MultipliedColorSO;
+} // namespace GlobalNamespace
 
 using ColorPair = std::pair<std::optional<Sombrero::FastColor>, std::optional<Sombrero::FastColor>>;
 using SliderColorStack = std::stack<ColorPair>;

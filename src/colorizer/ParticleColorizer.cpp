@@ -2,6 +2,9 @@
 #include "colorizer/LightColorizer.hpp"
 #include "GlobalNamespace/ColorExtensions.hpp"
 
+#include "GlobalNamespace/ParticleSystemEventEffect.hpp"
+#include "GlobalNamespace/MultipliedColorSO.hpp"
+
 using namespace Chroma;
 using namespace GlobalNamespace;
 using namespace UnityEngine;

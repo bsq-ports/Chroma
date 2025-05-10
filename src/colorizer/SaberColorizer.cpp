@@ -8,6 +8,7 @@
 #include "GlobalNamespace/SetSaberGlowColor.hpp"
 #include "GlobalNamespace/SetSaberFakeGlowColor.hpp"
 #include "GlobalNamespace/TubeBloomPrePassLight.hpp"
+#include "GlobalNamespace/Saber.hpp"
 #include "GlobalNamespace/SaberTrail.hpp"
 #include "GlobalNamespace/Parametric3SliceSpriteController.hpp"
 #include "GlobalNamespace/SaberManager.hpp"
@@ -28,7 +29,6 @@
 using namespace GlobalNamespace;
 using namespace UnityEngine;
 using namespace System::Collections;
-using namespace custom_types::Helpers;
 using namespace Chroma;
 using namespace Sombrero;
 

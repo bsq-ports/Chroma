@@ -10,6 +10,7 @@
 #include "GlobalNamespace/MultiplayerConnectedPlayerNoteController.hpp"
 #include "GlobalNamespace/TutorialNoteController.hpp"
 #include "GlobalNamespace/ColorExtensions.hpp"
+#include "GlobalNamespace/ColorManager.hpp"
 
 #include "custom-json-data/shared/CustomBeatmapData.h"
 

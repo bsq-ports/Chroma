@@ -1,21 +1,18 @@
 #pragma once
 
-#include "UnityEngine/ParticleSystem.hpp"
-#include "UnityEngine/MonoBehaviour.hpp"
-#include "UnityEngine/Color.hpp"
 
-#include "GlobalNamespace/SaberType.hpp"
+#include "UnityEngine/MonoBehaviour.hpp"
+
+
 #include "GlobalNamespace/BasicBeatmapEventType.hpp"
 #include "GlobalNamespace/ParticleSystemEventEffect.hpp"
 
 #include "colorizer/ParticleColorizer.hpp"
 
-#include <vector>
-#include <string>
-#include <optional>
+
 #include "custom-types/shared/types.hpp"
 #include "custom-types/shared/macros.hpp"
-#include "main.hpp"
+
 
 DECLARE_CLASS_CODEGEN(Chroma, ChromaParticleEventController, UnityEngine::MonoBehaviour) {
 private:

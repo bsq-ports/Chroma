@@ -6,22 +6,15 @@
 
 #include "sombrero/shared/ColorUtils.hpp"
 
-#include "custom-types/shared/types.hpp"
+
 #include "custom-types/shared/macros.hpp"
 
-#include "custom-json-data/shared/VList.h"
-
-#include "GlobalNamespace/ILightWithId.hpp"
-#include "GlobalNamespace/LightSwitchEventEffect.hpp"
-#include "GlobalNamespace/BasicBeatmapEventType.hpp"
 #include "GlobalNamespace/SimpleColorSO.hpp"
-#include "GlobalNamespace/MultipliedColorSO.hpp"
-#include "GlobalNamespace/LightWithIdManager.hpp"
-
 #include "UnityEngine/MonoBehaviour.hpp"
 
 #include <vector>
 #include <string>
+#include <unordered_map>
 #include <optional>
 
 namespace Chroma {
@@ -63,7 +56,7 @@ public:
   inline static std::unordered_map<int, LightColorizer*> ColorizersByLightID;
 
   SafePtr<List<GlobalNamespace::ILightWithId*>> LightsSafePtr;
-  VList<GlobalNamespace::ILightWithId*> Lights;
+  ListW<GlobalNamespace::ILightWithId*> Lights;
 
   [[nodiscard]] std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId*>> const&
   getLightsPropagationGrouped();

@@ -6,6 +6,12 @@
 #include "UnityEngine/SpriteRenderer.hpp"
 #include "UnityEngine/Shader.hpp"
 #include "UnityEngine/MaterialPropertyBlock.hpp"
+#include "UnityEngine/Material.hpp"
+#include "UnityEngine/Renderer.hpp"
+
+#include "GlobalNamespace/MaterialPropertyBlockController.hpp"
+#include "GlobalNamespace/NoteControllerBase.hpp"
+#include "GlobalNamespace/NoteController.hpp"
 
 #include <unordered_map>
 #include "colorizer/BombColorizer.hpp"

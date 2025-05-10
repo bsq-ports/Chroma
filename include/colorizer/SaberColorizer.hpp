@@ -4,26 +4,22 @@
 
 #include "UnityEngine/MonoBehaviour.hpp"
 #include "GlobalNamespace/BasicBeatmapEventType.hpp"
-#include "GlobalNamespace/SaberBurnMarkArea.hpp"
-#include "GlobalNamespace/SaberBurnMarkSparkles.hpp"
-#include "GlobalNamespace/SaberTrail.hpp"
-#include "GlobalNamespace/SetSaberGlowColor.hpp"
-#include "GlobalNamespace/SetSaberFakeGlowColor.hpp"
-#include "GlobalNamespace/TubeBloomPrePassLight.hpp"
-#include "GlobalNamespace/SaberModelContainer.hpp"
-#include "GlobalNamespace/SaberModelController.hpp"
-#include "UnityEngine/Color.hpp"
+
 #include "GlobalNamespace/SaberType.hpp"
-#include "GlobalNamespace/Saber.hpp"
-#include "custom-types/shared/types.hpp"
+
 #include "custom-types/shared/macros.hpp"
-#include <vector>
-#include <string>
+
+
 #include <optional>
 
 #include "ObjectColorizer.hpp"
 
-#include "custom-types/shared/coroutine.hpp"
+namespace GlobalNamespace {
+class Saber;
+class SaberModelController;
+class SaberTrail;
+class TubeBloomPrePassLight;
+} // namespace GlobalNamespace
 
 namespace Chroma {
 class SaberColorizer : public ObjectColorizer<SaberColorizer> {

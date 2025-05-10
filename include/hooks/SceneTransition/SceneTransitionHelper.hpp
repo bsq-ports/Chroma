@@ -1,10 +1,11 @@
 #pragma once
 
+#include "custom-json-data/shared/CustomBeatmapData.h"
+#include "custom-json-data/shared/CustomBeatmapSaveDatav3.h"
+
 #include "GlobalNamespace/EnvironmentInfoSO.hpp"
 #include "GlobalNamespace/BeatmapKey.hpp"
 #include "GlobalNamespace/OverrideEnvironmentSettings.hpp"
-#include "custom-json-data/shared/CustomBeatmapData.h"
-#include "custom-json-data/shared/CustomBeatmapSaveDatav3.h"
 #include "songcore/shared/SongLoader/CustomBeatmapLevel.hpp"
 
 namespace Chroma {

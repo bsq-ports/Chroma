@@ -15,6 +15,7 @@
 #include "GlobalNamespace/ILazyCopyHashSet_1.hpp"
 #include "GlobalNamespace/LazyCopyHashSet_1.hpp"
 #include "GlobalNamespace/AudioTimeSyncController.hpp"
+#include "GlobalNamespace/NoteController.hpp"
 
 #include "custom-json-data/shared/CustomBeatmapData.h"
 

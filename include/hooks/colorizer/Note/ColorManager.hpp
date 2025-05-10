@@ -2,7 +2,9 @@
 
 #include "ChromaController.hpp"
 
-#include "GlobalNamespace/NoteControllerBase.hpp"
+namespace GlobalNamespace {
+class NoteControllerBase;
+}
 
 #include "colorizer/NoteColorizer.hpp"
 
