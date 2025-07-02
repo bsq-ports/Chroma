@@ -52,7 +52,7 @@
       },
       {
         "id": "custom-json-data",
-        "versionRange": "^0.24.0",
+        "versionRange": "^0.24.2",
         "additionalData": {
           "private": true
         }
@@ -84,7 +84,7 @@
       },
       {
         "id": "tracks",
-        "versionRange": "^2.2.0",
+        "versionRange": "^2.3.1",
         "additionalData": {
           "private": true
         }
@@ -172,17 +172,17 @@
     {
       "dependency": {
         "id": "tracks",
-        "versionRange": "=2.3.0",
+        "versionRange": "=2.3.1",
         "additionalData": {
-          "soLink": "https://github.com/StackDoubleFlow/Tracks/releases/download/v2.3.0/libtracks.so",
-          "debugSoLink": "https://github.com/StackDoubleFlow/Tracks/releases/download/v2.3.0/debug_libtracks.so",
+          "soLink": "https://github.com/StackDoubleFlow/Tracks/releases/download/v2.3.1/libtracks.so",
+          "debugSoLink": "https://github.com/StackDoubleFlow/Tracks/releases/download/v2.3.1/debug_libtracks.so",
           "overrideSoName": "libtracks.so",
-          "modLink": "https://github.com/StackDoubleFlow/Tracks/releases/download/v2.3.0/Tracks.qmod",
-          "branchName": "version/v2_3_0",
+          "modLink": "https://github.com/StackDoubleFlow/Tracks/releases/download/v2.3.1/Tracks.qmod",
+          "branchName": "version/v2_3_1",
           "cmake": true
         }
       },
-      "version": "2.3.0"
+      "version": "2.3.1"
     },
     {
       "dependency": {
@@ -251,13 +251,13 @@
     {
       "dependency": {
         "id": "custom-json-data",
-        "versionRange": "=0.24.1",
+        "versionRange": "=0.24.2",
         "additionalData": {
-          "soLink": "https://github.com/StackDoubleFlow/CustomJSONData/releases/download/v0.24.1/libcustom-json-data.so",
-          "debugSoLink": "https://github.com/StackDoubleFlow/CustomJSONData/releases/download/v0.24.1/debug_libcustom-json-data.so",
+          "soLink": "https://github.com/StackDoubleFlow/CustomJSONData/releases/download/v0.24.2/libcustom-json-data.so",
+          "debugSoLink": "https://github.com/StackDoubleFlow/CustomJSONData/releases/download/v0.24.2/debug_libcustom-json-data.so",
           "overrideSoName": "libcustom-json-data.so",
-          "modLink": "https://github.com/StackDoubleFlow/CustomJSONData/releases/download/v0.24.1/custom-json-data.qmod",
-          "branchName": "version/v0_24_1",
+          "modLink": "https://github.com/StackDoubleFlow/CustomJSONData/releases/download/v0.24.2/custom-json-data.qmod",
+          "branchName": "version/v0_24_2",
           "compileOptions": {
             "cppFlags": [
               "-DRAPIDJSON_NEON"
@@ -266,7 +266,7 @@
           "cmake": true
         }
       },
-      "version": "0.24.1"
+      "version": "0.24.2"
     },
     {
       "dependency": {

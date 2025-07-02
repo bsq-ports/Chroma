@@ -50,7 +50,7 @@
     },
     {
       "id": "custom-json-data",
-      "versionRange": "^0.24.0",
+      "versionRange": "^0.24.2",
       "additionalData": {
         "private": true
       }
@@ -82,7 +82,7 @@
     },
     {
       "id": "tracks",
-      "versionRange": "^2.2.0",
+      "versionRange": "^2.3.1",
       "additionalData": {
         "private": true
       }
