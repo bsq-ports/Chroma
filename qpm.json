@@ -42,7 +42,7 @@
     },
     {
       "id": "bs-cordl",
-      "versionRange": "^4004.0.0",
+      "versionRange": "^4006.0.0",
       "additionalData": {
         "includeQmod": true,
         "private": true
@@ -50,7 +50,7 @@
     },
     {
       "id": "custom-json-data",
-      "versionRange": "^0.23.0",
+      "versionRange": "^0.24.0",
       "additionalData": {
         "private": true
       }
