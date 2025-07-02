@@ -4,7 +4,9 @@
 #include "lighting/LightIDTableManager.hpp"
 #include "colorizer/LightColorizer.hpp"
 
+#include <algorithm>
 #include <unordered_map>
+#include <utility>
 
 #include "GlobalNamespace/TrackLaneRingsManager.hpp"
 #include "GlobalNamespace/TrackLaneRing.hpp"
@@ -141,7 +143,7 @@ std::vector<ILightWithId*> LightColorizer::GetPropagationLightWithIds(std::vecto
     if (lightCount > id) {
       auto const& lights = props.at(id);
 
-      std::copy(lights.begin(), lights.end(), std::back_inserter(result));
+      std::ranges::copy(lights, std::back_inserter(result));
     }
   }
 

@@ -112,7 +112,7 @@ void Chroma::ChromaGradientController::Update() {
 
 static constexpr Sombrero::FastColor lerpUnclamped(Sombrero::FastColor const& a, Sombrero::FastColor const& b,
                                                    float t) {
-  return { a.r + (b.r - a.r) * t, a.g + (b.g - a.g) * t, a.b + (b.b - a.b) * t, a.a + (b.a - a.a) * t };
+  return { a.r + ((b.r - a.r) * t), a.g + ((b.g - a.g) * t), a.b + ((b.b - a.b) * t), a.a + ((b.a - a.a) * t) };
 }
 
 constexpr Sombrero::FastColor Chroma::ChromaGradientEvent::Interpolate(bool& modified, float const songTime) const {

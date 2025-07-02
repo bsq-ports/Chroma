@@ -43,7 +43,7 @@ extern "C" void setup(CModInfo* info) {
   info->version = VERSION;
   info->version_long = 0;
 
-  getChromaConfig().Init({ modName, VERSION, 0 });
+  ChromaConfig_t::Init({ modName, VERSION, 0 });
 
   ChromaLogger::Logger.info("Completed Chroma setup!");
 }

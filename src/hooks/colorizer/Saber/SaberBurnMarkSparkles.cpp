@@ -34,11 +34,15 @@ void OnSaberColorChanged(int saberType, GlobalNamespace::SaberModelController* /
 
   Sombrero::FastColor::RGBToHSV(color, h, s, _);
   Sombrero::FastColor effectColor = Sombrero::FastColor::HSVToRGB(h, s, 1);
-  auto burnMark = burnMarksPS[saberType];
-  if (!burnMark) return;
+  auto* burnMark = burnMarksPS[saberType];
+  if (!burnMark) {
+    return;
+  }
 
   ParticleSystem::MainModule main = burnMark->get_main();
-  if (!main.m_ParticleSystem) return;
+  if (!main.m_ParticleSystem) {
+    return;
+  }
   main.set_startColor(
       ParticleSystem::MinMaxGradient::op_Implicit___UnityEngine__ParticleSystem_MinMaxGradient(effectColor));
 }

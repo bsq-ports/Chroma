@@ -47,7 +47,8 @@ MAKE_HOOK_MATCH(LightSwitchEventEffect_Start, &LightSwitchEventEffect::Start, vo
 
   // Do nothing if Chroma shouldn't run
   if (!ChromaController::GetChromaLegacy() && !ChromaController::DoChromaHooks()) {
-    return LightSwitchEventEffect_Start(self);
+    LightSwitchEventEffect_Start(self);
+    return;
   }
 
   auto coro = custom_types::Helpers::CoroutineHelper::New(WaitThenStartLight(self, self->_event));
@@ -59,7 +60,8 @@ MAKE_HOOK_MATCH(BeatmapCallbacksController_ManualUpdate, &BeatmapCallbacksContro
                 BeatmapCallbacksController* self, float songTime) {
   // Do nothing if Chroma shouldn't run
   if (!ChromaController::GetChromaLegacy() && !ChromaController::DoChromaHooks()) {
-    return BeatmapCallbacksController_ManualUpdate(self, songTime);
+    BeatmapCallbacksController_ManualUpdate(self, songTime);
+    return;
   }
 
   if (self != beatmapCallbacksController) {

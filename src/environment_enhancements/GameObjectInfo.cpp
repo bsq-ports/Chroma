@@ -4,6 +4,7 @@
 #include "UnityEngine/SceneManagement/Scene.hpp"
 #include "beatsaber-hook/shared/utils/il2cpp-utils.hpp"
 
+#include <algorithm>
 #include <string>
 #include <sstream>
 
@@ -33,7 +34,7 @@ Chroma::GameObjectInfo::GameObjectInfo(UnityEngine::GameObject* gameObject) {
   }
 
   nameList.emplace_back(gameObject->get_scene().get_name());
-  std::reverse(nameList.begin(), nameList.end());
+  std::ranges::reverse(nameList);
 
   std::stringstream id;
 

@@ -29,7 +29,9 @@ custom_types::Helpers::Coroutine Chroma::EnvironmentMaterialManager::Activate() 
   auto loads = environments | Select([&](std::string_view s) { return Load(s); });
   std::vector<UnityEngine::SceneManagement::Scene> scenes;
   for (auto n : loads) {
-    if (!n.m_InternalOp) continue;
+    if (n.m_InternalOp == nullptr) {
+      continue;
+    }
 
     while (!n.IsDone) {
       co_yield nullptr;

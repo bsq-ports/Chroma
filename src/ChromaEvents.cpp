@@ -108,7 +108,7 @@ void ChromaEvents::parseEventData(TracksAD::BeatmapAssociatedData& beatmapAD,
       if (!component.IsObject()) {
         continue;
       }
-      if (std::find(availableNames.begin(), availableNames.end(), componentName) == availableNames.end()) {
+      if (std::ranges::find(availableNames, componentName) == availableNames.end()) {
         continue;
       }
 

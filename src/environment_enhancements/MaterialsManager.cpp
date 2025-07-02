@@ -114,9 +114,8 @@ UnityEngine::Material* Chroma::MaterialsManager::InstantiateSharedMaterial(Shade
       // fallback
       if (shaderType != ShaderType::Standard) {
         return InstantiateSharedMaterial(ShaderType::Standard);
-      } else {
-        ChromaLogger::Logger.fmtThrowError("Unable to find shader {}", shaderName);
       }
+      ChromaLogger::Logger.fmtThrowError("Unable to find shader {}", shaderName);
     }
   }
   auto* material = Material::New_ctor(shader.value());

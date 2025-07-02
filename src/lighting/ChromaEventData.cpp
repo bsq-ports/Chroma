@@ -25,7 +25,9 @@ void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapDa
       continue;
     }
     auto* customBeatmapEvent = reinterpret_cast<CustomJSONData::CustomBeatmapEventData*>(beatmapEvent);
-    if (!customBeatmapEvent->customData) continue;
+    if (!customBeatmapEvent->customData) {
+      continue;
+    }
     auto const& optionalDynData = customBeatmapEvent->customData->value;
 
     std::optional<ChromaEventData::GradientObjectData> gradientObject = std::nullopt;
@@ -34,7 +36,9 @@ void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapDa
 
     // ASSIGN
     ChromaEventData chromaEventData;
-    if (!optionalDynData.has_value()) continue;
+    if (!optionalDynData.has_value()) {
+      continue;
+    }
     if (optionalDynData) {
       rapidjson::Value const& unwrappedData = *optionalDynData;
 
@@ -63,8 +67,8 @@ void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapDa
             easing = FunctionFromStr(easingString);
           }
 
-          gradientObject =
-              std::make_optional(ChromaEventData::GradientObjectData{ duration, initcolor, endcolor, easing });
+          gradientObject = std::make_optional(ChromaEventData::GradientObjectData{
+              .Duration = duration, .StartColor = initcolor, .EndColor = endcolor, .Easing = easing });
         }
 
         auto propId = unwrappedData.FindMember(Chroma::NewConstants::V2_PROPAGATION_ID.data());
@@ -205,11 +209,15 @@ void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapDa
     auto const& beatmapEventData = beatmapEventDatas[i];
     auto const& basicBeatmapEventDataOpt =
         il2cpp_utils::try_cast<GlobalNamespace::BasicBeatmapEventData>(beatmapEventData);
-    if (!basicBeatmapEventDataOpt) continue;
+    if (!basicBeatmapEventDataOpt) {
+      continue;
+    }
     auto const& basicBeatmapEventData = *basicBeatmapEventDataOpt;
 
     auto eventDataIt = ChromaEventDatas.find(beatmapEventData);
-    if (eventDataIt == ChromaEventDatas.end()) continue;
+    if (eventDataIt == ChromaEventDatas.end()) {
+      continue;
+    }
     auto& currentEventData = eventDataIt->second;
 
     int type = (int)basicBeatmapEventData->basicBeatmapEventType.value__;

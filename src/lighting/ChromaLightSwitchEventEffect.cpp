@@ -160,7 +160,7 @@ void Chroma::ChromaLightSwitchEventEffect::HandleEvent(GlobalNamespace::BasicBea
   }
 
   if (color) {
-    lightColorizer->Colorize(false, { *color, *color, *color, *color });
+    lightColorizer->Colorize(false, { color, color, color, color });
   } else if (!ChromaGradientController::IsGradientActive(beatmapEventData->basicBeatmapEventType)) {
     lightColorizer->Colorize(false, { std::nullopt, std::nullopt, std::nullopt, std::nullopt });
   }
@@ -311,7 +311,7 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, std::optional<std::vector<
       auto x = System::Nullable_1<float>();
       x.value = 5;
 
-      auto y = System::Tuple_2<float, float>::New_ctor(0, 0);
+      auto* y = System::Tuple_2<float, float>::New_ctor(0, 0);
       y->m_Item1 = 5;
 
       Tweening::Tween_1<float>::New_ctor()->toValue = 2;

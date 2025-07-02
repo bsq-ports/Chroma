@@ -89,12 +89,12 @@ void origHandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(
 
     chromaRotation->AddRingRotationEffectF(
         chromaRotation->GetFirstRingDestinationRotationAngleCpp() +
-            self->_rotation * static_cast<float>((ChromaController::randomXoshiro() < 0.5F) ? 1 : -1),
+            (self->_rotation * static_cast<float>((ChromaController::randomXoshiro() < 0.5F) ? 1 : -1)),
         step, static_cast<float>(self->_rotationPropagationSpeed), self->_rotationFlexySpeed);
   } else {
     rotationEffect->AddRingRotationEffect(
         rotationEffect->GetFirstRingDestinationRotationAngle() +
-            self->_rotation * static_cast<float>((ChromaController::randomXoshiro() < 0.5F) ? 1 : -1),
+            (self->_rotation * static_cast<float>((ChromaController::randomXoshiro() < 0.5F) ? 1 : -1)),
         step, self->_rotationPropagationSpeed, self->_rotationFlexySpeed);
   }
 }
@@ -156,7 +156,7 @@ MAKE_HOOK_MATCH(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCallbackC
     auto dir = chromaData.Direction;
 
     // https://github.com/Aeroluna/Chroma/commit/3900969d3fef1eaeea745bcfc23c61bfbe525586#diff-e83fa5da7e2e725f2cfb2ee5a6d6a085b2065a95e0d4757e01fe3c29f0fa4024
-    bool rotRight = 0;
+    bool rotRight = false;
     if (!dir) {
       rotRight = ChromaController::randomXoshiro() < 0.5F;
     } else {

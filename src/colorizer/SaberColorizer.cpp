@@ -50,7 +50,7 @@ SaberColorizer& SaberColorizer::New(GlobalNamespace::Saber* saber) {
   return Colorizers.try_emplace(saberModelController, saber, saberModelController).first->second;
 }
 
-std::optional<Sombrero::FastColor> SaberColorizer::GlobalColorGetter() {
+std::optional<Sombrero::FastColor> SaberColorizer::GlobalColorGetter() const {
   return GlobalColor[_saberType.value__];
 }
 

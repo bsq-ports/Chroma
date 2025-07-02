@@ -23,12 +23,14 @@ MAKE_HOOK_MATCH(LightWithIdManager_RegisterLight, &LightWithIdManager::RegisterL
                 GlobalNamespace::ILightWithId* lightWithId) {
   // Do nothing if Chroma shouldn't run
   if (!ChromaController::GetChromaLegacy() && !ChromaController::DoChromaHooks()) {
-    return LightWithIdManager_RegisterLight(self, lightWithId);
+    LightWithIdManager_RegisterLight(self, lightWithId);
+    return;
   }
 
   std::string sceneName = self->get_gameObject()->get_scene().get_name();
   if (sceneName.find("Menu") != std::string::npos) {
-    return LightWithIdManager_RegisterLight(self, lightWithId);
+    LightWithIdManager_RegisterLight(self, lightWithId);
+    return;
   }
 
   LightIdRegisterer::lightWithIdManager = self;
@@ -83,7 +85,8 @@ MAKE_HOOK_MATCH(LightWithIdManager_UnregisterLight, &LightWithIdManager::Unregis
                 LightWithIdManager* self, GlobalNamespace::ILightWithId* lightWithId) {
   // Do nothing if Chroma shouldn't run
   if (!ChromaController::DoChromaHooks() || !Chroma::LightIdRegisterer::canUnregister) {
-    return LightWithIdManager_UnregisterLight(self, lightWithId);
+    LightWithIdManager_UnregisterLight(self, lightWithId);
+    return;
   }
 
   lightWithId->__SetIsUnRegistered();
@@ -114,12 +117,14 @@ MAKE_HOOK_MATCH(LightWithIdManager_SetColorForId, &LightWithIdManager::SetColorF
                 int lightId, ::UnityEngine::Color color) {
   // Do nothing if Chroma shouldn't run
   if (!ChromaController::DoChromaHooks()) {
-    return LightWithIdManager_SetColorForId(self, lightId, color);
+    LightWithIdManager_SetColorForId(self, lightId, color);
+    return;
   }
 
   std::string sceneName = self->get_gameObject()->get_scene().get_name();
   if (sceneName.find("Menu") != std::string::npos) {
-    return LightWithIdManager_SetColorForId(self, lightId, color);
+    LightWithIdManager_SetColorForId(self, lightId, color);
+    return;
   }
 
   self->_colors[lightId] = System::Nullable_1( true, color );

@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <sstream>
 #include <concepts>
 
@@ -221,7 +222,7 @@ void EnvironmentEnhancementManager::GetAllGameObjects() {
     std::u16string_view sceneName = sceneNameIl2cpp;
 
     if ((sceneName.find(u"Environment") != std::string::npos && sceneName.find(u"Menu") == std::string::npos) ||
-        gameObject->GetComponent<GlobalNamespace::TrackLaneRing*>()) {
+        (gameObject->GetComponent<GlobalNamespace::TrackLaneRing*>() != nullptr)) {
       gameObjectsVec.emplace_back(gameObject);
     }
   }
@@ -235,7 +236,7 @@ void EnvironmentEnhancementManager::GetAllGameObjects() {
 
     for (auto& transform : allChildren) {
       auto* childGameObject = transform->get_gameObject().ptr();
-      if (std::find(gameObjectsVec.begin(), gameObjectsVec.end(), childGameObject) == gameObjectsVec.end()) {
+      if (std::ranges::find(gameObjectsVec, childGameObject) == gameObjectsVec.end()) {
         gameObjectsVec2.push_back(childGameObject);
       }
     }
@@ -259,12 +260,12 @@ void EnvironmentEnhancementManager::GetAllGameObjects() {
       auto objectsToPrint = std::vector<GameObjectInfo>(_globalGameObjectInfos);
 
       // Sort in order from shortest to longest string
-      std::sort(objectsToPrint.begin(), objectsToPrint.end(),
-                [](GameObjectInfo const& a, GameObjectInfo const& b) { return a.FullID < b.FullID; });
+      std::ranges::sort(objectsToPrint,
+                        [](GameObjectInfo const& a, GameObjectInfo const& b) { return a.FullID < b.FullID; });
 
       std::stringstream ss;
       for (auto const& o : objectsToPrint) {
-        ss << o.FullID << std::endl;
+        ss << o.FullID << '\n';
       }
 
       ChromaLogger::Logger.info("Objects found in environment:\n{}", ss.str().c_str());
@@ -355,7 +356,7 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
               ->value.GetString();
 
       // Convert string to lower case
-      std::transform(lookupString.begin(), lookupString.end(), lookupString.begin(), ::tolower);
+      std::ranges::transform(lookupString, lookupString.begin(), ::tolower);
       LookupMethod lookupMethod = LookupMethod::Exact;
 
       // Record JSON parse time
@@ -449,7 +450,7 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
           profiler.mark("Duplicating [" + gameObjectInfo.FullID + "]:", false);
         }
 
-        auto gameObject = gameObjectInfo.GameObject;
+        auto* gameObject = gameObjectInfo.GameObject;
         auto parent = gameObject->get_transform()->get_parent();
         auto scene = gameObject->get_scene();
 
@@ -523,7 +524,7 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
       }
 
       // Handle ParametricBoxController
-      auto parametricBoxController = gameObject->GetComponentInChildren<GlobalNamespace::ParametricBoxController*>();
+      auto* parametricBoxController = gameObject->GetComponentInChildren<GlobalNamespace::ParametricBoxController*>();
       if (parametricBoxController != nullptr) {
         if (position || localPosition) {
           ParametricBoxControllerParameters::SetTransformPosition(
@@ -568,7 +569,7 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
         controllerData.PositionUpdate +=
             [=]() { trackLaneRing->_positionOffset = trackLaneRing->transform->get_localPosition(); };
       } else if (parametricBoxController != nullptr) {
-        auto parametricBoxControllerTransform = parametricBoxController->get_transform().ptr();
+        auto* parametricBoxControllerTransform = parametricBoxController->get_transform().ptr();
         controllerData.ScaleUpdate += [=]() {
           ParametricBoxControllerParameters::SetTransformScale(parametricBoxController,
                                                                parametricBoxControllerTransform->get_localScale());
@@ -618,7 +619,7 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
   }
 
   if (!animatedMaterials.empty()) {
-    auto animated = UnityEngine::GameObject::New_ctor("MaterialAnimator")->AddComponent<MaterialAnimator*>();
+    auto* animated = UnityEngine::GameObject::New_ctor("MaterialAnimator")->AddComponent<MaterialAnimator*>();
     animated->context = TracksAD::getBeatmapAD(customBeatmapData->customData).internal_tracks_context;
     animated->materials = std::move(animatedMaterials);
   }

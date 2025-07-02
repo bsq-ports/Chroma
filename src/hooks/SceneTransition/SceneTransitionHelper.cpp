@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "ChromaConfig.hpp"
 #include "Chroma.hpp"
 #include "hooks/SceneTransition/SceneTransitionHelper.hpp"
@@ -52,24 +54,32 @@ bool SceneTransitionHelper::BasicPatch(SongCore::SongLoader::CustomBeatmapLevel*
 
   bool legacyOverride = false;
 
-  if (beatmapLevel == nullptr) return false;
+  if (beatmapLevel == nullptr) {
+    return false;
+  }
 
   ChromaLogger::Logger.debug("Getting Save Data");
 
   auto saveData = beatmapLevel->standardLevelInfoSaveDataV2;
 
-  if (!saveData) return false;
+  if (!saveData) {
+    return false;
+  }
 
   auto customSaveInfo = saveData.value()->CustomSaveDataInfo;
 
-  if (!customSaveInfo) return false;
+  if (!customSaveInfo) {
+    return false;
+  }
 
   ChromaLogger::Logger.debug("Getting Characteristic and diff");
 
   auto diff = customSaveInfo.value().get().TryGetCharacteristicAndDifficulty(
       key.beatmapCharacteristic->get_serializedName(), key.difficulty);
 
-  if (!diff) return false;
+  if (!diff) {
+    return false;
+  }
 
   ChromaLogger::Logger.debug("Getting Requirements & Suggestions");
 
@@ -78,8 +88,8 @@ bool SceneTransitionHelper::BasicPatch(SongCore::SongLoader::CustomBeatmapLevel*
 
   bool chromaRequirement = false;
 
-  chromaRequirement |= std::find(requirements.begin(), requirements.end(), REQUIREMENTNAME) != requirements.end();
-  chromaRequirement |= std::find(suggestions.begin(), suggestions.end(), REQUIREMENTNAME) != suggestions.end();
+  chromaRequirement |= std::ranges::find(requirements, REQUIREMENTNAME) != requirements.end();
+  chromaRequirement |= std::ranges::find(suggestions, REQUIREMENTNAME) != suggestions.end();
 
   ChromaLogger::Logger.debug("Setting environment. Chroma Required: {}", chromaRequirement);
 
@@ -89,11 +99,15 @@ bool SceneTransitionHelper::BasicPatch(SongCore::SongLoader::CustomBeatmapLevel*
         saveData.value()->difficultyBeatmapSets |
         Select([&](auto&& x) -> ::GlobalNamespace::StandardLevelInfoSaveData::DifficultyBeatmap* {
           // short circuit
-          if (x == nullptr || !x->difficultyBeatmaps) return nullptr;
+          if (x == nullptr || !x->difficultyBeatmaps) {
+            return nullptr;
+          }
 
           return x->difficultyBeatmaps | FirstOrDefault([&](auto&& y) {
                    // short circuit
-                   if (y == nullptr || !y->difficulty) return false;
+                   if (y == nullptr || !y->difficulty) {
+                     return false;
+                   }
 
                    BeatmapDifficulty mapDifficulty;
                    GlobalNamespace::BeatmapDifficultySerializedMethods::BeatmapDifficultyFromSerializedName(
@@ -104,9 +118,9 @@ bool SceneTransitionHelper::BasicPatch(SongCore::SongLoader::CustomBeatmapLevel*
                  });
         }) |
         First([](auto x) { return x != nullptr; });
-    auto saveMap = diffSaveMap.value_or(nullptr);
+    auto* saveMap = diffSaveMap.value_or(nullptr);
     ChromaLogger::Logger.debug("Savemap", fmt::ptr(saveMap));
-    auto customDifficultyBeatmap =
+    auto* customDifficultyBeatmap =
         il2cpp_utils::try_cast<SongCore::CustomJSONData::CustomDifficultyBeatmap>(saveMap).value_or(nullptr);
 
     // handle environment v2 removal

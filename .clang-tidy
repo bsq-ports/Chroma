@@ -1,62 +1,35 @@
-Checks: "*,-llvm*,
-  -google-readability-namespace,
-  -llvmlib,
-  -llvmlibc,
-  -fuchsi,
-  -fuchsia,
-  -alter,
-  -modernize-use-trailing-return-type,
-  -modernize-use-trailing-return,
-  -readability-avoid-const-params-in,
-  -cppcoreguidelines-macro-usage,
-  -readability-identifier-length,
-  -google-readability-todo,
-  -fuchsia-default-arguments-calls,
-  -altera-unroll-loops,
-  -altera*,
-  -readability-implicit-bool-conversion,
-  -cert-err58-cpp,
-  -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
-  -hicpp-avoid-c-arrays,
-
-  -bugprone-undefined-memory-manipulation,
-  -misc-use-anonymous-namespace,
-  -readability-magic-numbers,
-  -cppcoreguidelines-pro-type-reinterpret-cast,
-  -cppcoreguidelines-virtual-class-destructor,
-  -cppcoreguidelines-pro-type-union-access,
-  -cppcoreguidelines-pro-type-vararg,
-  -cppcoreguidelines-pro-type-static-cast-downcast,
-  -misc-non-private-member-variables-in-classes,
-  -fuchsia-statically-constructed-objects,
-  -bugprone-easily-swappable-parameters,
-  -cppcoreguidelines-avoid-magic-numbers,
-  -hicpp-vararg,
-  -cppcoreguidelines-pro-bounds-constant-array-index,
-  -google-build-using-namespace,
-  -abseil-string-find-str-contains,
+---
+# Simple clang-tidy configuration using LLVM's standard checks
+Checks: >
   clang-diagnostic-*,
   clang-analyzer-*,
-  -bugprone-unchecked-optional-access,
-  -llvmlibc-callee-namespace,
-  -readability-identifier-length,
-  -llvmlibc-implementation-in-namespace,
-  -llvmlibc-restrict-system-libc-headers,
-  -llvm-namespace-comment,
-  -llvm-include-order,
-  -altera-*,
-  -fuchsia-*,
+  modernize-*,
+  bugprone-*,
+  performance-*,
+  readability-*,
   -modernize-use-trailing-return-type,
-  -cppcoreguidelines-avoid-non-const-global-variables,
-  -llvm-header-guard,
-  -cppcoreguidelines-macro-usage,
-  -cppcoreguidelines-pro-type-vararg,
-  -cppcoreguidelines-avoid-do-while,
-  -hicpp-vararg,
-  -concurrency-mt-unsafe,
-  -abseil-*
-  "
-FormatStyle: file
-HeaderFilterRegex: ""
-AnalyzeTemporaryDtors: false
+  -readability-identifier-length,
+  -readability-redundant-inline-specifier,
+  -cppcoreguidelines-pro-type-reinterpret-cast,
+  -bugprone-casting-through-void,
+  -bugprone-easily-swappable-parameters,
+  -bugprone-exception-escape,
+  -bugprone-reserved-identifier,
+  -readability-magic-numbers,
+  -readability-implicit-bool-conversion,
+  -readability-function-cognitive-complexity,
+  -cppcoreguidelines-init-variables,
+  -cppcoreguidelines-missing-std-forward,
+  -readability-magic-numbers
 
+# Exclude only the extern/ directory but not other paths containing "extern"
+HeaderFilterRegex: "^((?!extern/).)*$"
+
+# The regex above only excludes paths containing the specific directory "extern/"
+# This won't exclude files that just happen to have "extern" in their name
+
+FormatStyle: file
+
+CheckOptions:
+  - key: clang-analyzer-cplusplus.Move.AnalyzeTemporaryDtors
+    value: false

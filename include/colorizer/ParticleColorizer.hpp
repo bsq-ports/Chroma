@@ -51,7 +51,7 @@ public:
   static void Reset();
 
   // extensions
-  inline static std::unordered_set<std::shared_ptr<ParticleColorizer>>&
+  static std::unordered_set<std::shared_ptr<ParticleColorizer>>&
   GetParticleColorizers(GlobalNamespace::BasicBeatmapEventType BasicBeatmapEventType) {
     return Colorizers[BasicBeatmapEventType.value__];
   }

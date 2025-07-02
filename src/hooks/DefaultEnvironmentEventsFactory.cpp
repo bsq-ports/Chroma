@@ -27,8 +27,6 @@ MAKE_HOOK_MATCH(DefaultEnvironmentEventsFactory_InsertDefaultEvents,
 
   // This method causes v2 maps to have default lights on
   // and that's not good?
-
-  return;
 }
 
 void DefaultEnvironmentEventsFactoryHook() {

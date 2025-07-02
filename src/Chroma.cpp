@@ -2,14 +2,16 @@
 #include "ChromaLogger.hpp"
 
 void Chroma::PrintJSONValue(rapidjson::Value const* json) {
-  if (!json) return;
+  if (json == nullptr) {
+    return;
+  }
 
   using namespace rapidjson;
 
   StringBuffer sb;
   PrettyWriter<StringBuffer> writer(sb);
   json->Accept(writer);
-  auto str = sb.GetString();
+  auto const* str = sb.GetString();
   ChromaLogger::Logger.info("{}", str);
 }
 

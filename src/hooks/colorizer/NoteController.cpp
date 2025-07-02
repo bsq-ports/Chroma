@@ -63,7 +63,7 @@ MAKE_HOOK_MATCH(NoteController_Update, &NoteController::ManualUpdate, void, Note
                           (self->noteData->time - (jumpDuration * 0.5F));
       float normalTime = elapsedTime / jumpDuration;
 
-      [[maybe_unused]] bool updated = 0;
+      [[maybe_unused]] bool updated = false;
       std::optional<Sombrero::FastColor> colorOffset =
           AnimationHelper::GetColorOffset(pathPointDefinition, tracks, normalTime, updated, 0);
 

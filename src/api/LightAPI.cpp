@@ -25,8 +25,10 @@ EXPOSE_API(getLightColorSafe, LightAPI::LSEData*, BasicBeatmapEventType mb) {
   auto _lightColor0Boost = colors[2];
   auto _lightColor1Boost = colors[3];
 
-  auto* lseData = new LightAPI::LSEData{ std::make_optional(_lightColor0), std::make_optional(_lightColor1),
-                                         std::make_optional(_lightColor0Boost), std::make_optional(_lightColor1Boost) };
+  auto* lseData = new LightAPI::LSEData{ ._lightColor0 = std::make_optional(_lightColor0),
+                                         ._lightColor1 = std::make_optional(_lightColor1),
+                                         ._lightColor0Boost = std::make_optional(_lightColor0Boost),
+                                         ._lightColor1Boost = std::make_optional(_lightColor1Boost) };
 
   return lseData;
 }

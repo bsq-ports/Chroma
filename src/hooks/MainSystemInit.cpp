@@ -17,7 +17,7 @@ MAKE_HOOK_MATCH(MainSystemInit_Init, &MainSystemInit::Init, void, MainSystemInit
         custom_types::Helpers::CoroutineHelper::New(EnvironmentMaterialManager::Activate));
   }
 
-  return MainSystemInit_Init(self, settingsApplicator);
+  MainSystemInit_Init(self, settingsApplicator);
 }
 
 void MainSystemInitHook() {

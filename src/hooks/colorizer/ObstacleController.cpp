@@ -64,12 +64,12 @@ MAKE_HOOK_MATCH(ObstacleController_ManualUpdate, &ObstacleController::ManualUpda
       float normalTime =
           (elapsedTime - self->_variableMovementDataProvider->moveDuration) / (jumpDuration + self->_obstacleDuration);
 
-      [[maybe_unused]] bool updated = 0;
+      [[maybe_unused]] bool updated = false;
       std::optional<Sombrero::FastColor> colorOffset =
           AnimationHelper::GetColorOffset(pathPointDefinition, tracks, normalTime, updated, 0);
 
       if (colorOffset) {
-        ObstacleColorizer::ColorizeObstacle(self, colorOffset.value());
+        ObstacleColorizer::ColorizeObstacle(self, colorOffset);
       }
     }
   }

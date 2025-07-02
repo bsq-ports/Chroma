@@ -41,7 +41,7 @@ MAKE_HOOK_MATCH(ObstacleSaberSparkleEffectManager_Update, &ObstacleSaberSparkleE
     ObstacleSaberSparkleEffectManager_Update(self);
     return;
   }
-  auto activeObstacleControllers = self->_beatmapObjectManager->activeObstacleControllers;
+  auto* activeObstacleControllers = self->_beatmapObjectManager->activeObstacleControllers;
   Pose identity = Pose::get_identity();
   bool flag;
   for (int i = 0; i < 2; i++) {
@@ -56,14 +56,14 @@ MAKE_HOOK_MATCH(ObstacleSaberSparkleEffectManager_Update, &ObstacleSaberSparkleE
                                                        self->_rumblePreset);
       if (!flag) {
         self->_effects[i]->StartEmission();
-        auto action = self->sparkleEffectDidStartEvent;
+        auto* action = self->sparkleEffectDidStartEvent;
         if (action != nullptr) {
           action->Invoke(self->_sabers[i]->saberType);
         }
       }
     } else if (flag) {
       self->_effects[i]->StopEmission();
-      auto action2 = self->sparkleEffectDidEndEvent;
+      auto* action2 = self->sparkleEffectDidEndEvent;
       if (action2 != nullptr) {
         action2->Invoke(self->_sabers[i]->saberType);
       }

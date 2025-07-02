@@ -132,7 +132,7 @@ void ParticleColorizer::InitializeSO(std::string const& id, int index, bool high
   SafePtrUnity<MultipliedColorSO> mColorSO(ScriptableObject::CreateInstance<MultipliedColorSO*>());
   mColorSO->_multiplierColor = multiplierColor;
 
-  if (_simpleColorSOs.find(index) == _simpleColorSOs.end()) {
+  if (!_simpleColorSOs.contains(index)) {
     SafePtrUnity<SimpleColorSO> sColorSO(ScriptableObject::CreateInstance<SimpleColorSO*>());
     sColorSO->SetColor(lightSO->color);
     _simpleColorSOs.emplace(index, sColorSO);

@@ -36,7 +36,9 @@ void Chroma::LegacyEnvironmentRemoval::Init(CustomJSONData::CustomBeatmapData* /
 
           auto nName = static_cast<std::string>(n->get_name());
           if (nName.find(s) != std::string::npos) {
-            if (s == "TrackLaneRing" && nName.find("Big") != std::string::npos) continue;
+            if (s == "TrackLaneRing" && nName.find("Big") != std::string::npos) {
+              continue;
+            }
 
             debugSpamLog("Setting {} to disabled", nName);
             n->SetActive(false);

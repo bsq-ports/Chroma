@@ -44,7 +44,7 @@ private:
   void ColorColorable(Sombrero::FastColor const& color);
 
 protected:
-  std::optional<Sombrero::FastColor> GlobalColorGetter();
+  std::optional<Sombrero::FastColor> GlobalColorGetter() const;
 
   void Refresh();
 

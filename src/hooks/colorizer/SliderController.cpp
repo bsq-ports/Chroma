@@ -35,7 +35,7 @@ MAKE_HOOK_MATCH(SliderController_Init, &SliderController::Init, void, SliderCont
     auto const& color = chromaData->second.Color;
 
     if (color) {
-      SliderColorizer::ColorizeSlider(self, *color);
+      SliderColorizer::ColorizeSlider(self, color);
     }
   }
 }
@@ -58,7 +58,7 @@ MAKE_HOOK_MATCH(SliderController_Update, &SliderController::ManualUpdate, void, 
       float duration = (jumpDuration * 0.75F) + (self->sliderData->tailTime - self->sliderData->time);
       float normalTime = self->sliderMovement->timeSinceHeadNoteJump / (jumpDuration + duration);
 
-      [[maybe_unused]] bool updated = 0;
+      [[maybe_unused]] bool updated = false;
       std::optional<Sombrero::FastColor> colorOffset =
           AnimationHelper::GetColorOffset(pathPointDefinition, tracks, normalTime, updated, 0);
 

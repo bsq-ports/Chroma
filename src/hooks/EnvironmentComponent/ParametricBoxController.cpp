@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "Chroma.hpp"
 #include "ChromaController.hpp"
 #include "environment_enhancements/ParametricBoxControllerParameters.hpp"
@@ -78,9 +80,7 @@ MAKE_HOOK_MATCH(ParametricBoxController_Refresh, &ParametricBoxController::Refre
 
   auto color = self->color;
   color.a *= self->alphaMultiplier;
-  if (color.a < self->minAlpha) {
-    color.a = self->minAlpha;
-  }
+  color.a = std::max(color.a, self->minAlpha);
 
   static auto colorId = ParametricBoxController::getStaticF__colorID();
   static auto alphaStartID = ParametricBoxController::getStaticF__alphaStartID();

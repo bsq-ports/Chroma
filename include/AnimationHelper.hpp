@@ -52,7 +52,7 @@ static std::optional<NEVector::Vector4> MultiTrackGetPathColor(std::span<TrackW>
 }
 
 static std::optional<Sombrero::FastColor> GetColorOffset(std::optional<PointDefinitionW> const& localColor,
-                                                         std::span<TrackW> const& tracksOpt, float const time,
+                                                         std::span<TrackW const> const& tracksOpt, float const time,
                                                          bool& trackUpdated, Tracks::ffi::BaseProviderContext* context,
                                                          TimeUnit lastCheckedTime = {}) {
   std::optional<NEVector::Vector4> pathColor;
@@ -69,7 +69,7 @@ static std::optional<Sombrero::FastColor> GetColorOffset(std::optional<PointDefi
   std::optional<NEVector::Vector4> colorVector;
 
   if (!tracksOpt.empty()) {
-    std::span<TrackW> const& tracks = tracksOpt;
+    std::span<TrackW const> const& tracks = tracksOpt;
     if (tracks.size() > 1) {
 
       if (!pathColor) {
