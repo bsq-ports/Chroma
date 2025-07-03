@@ -5,9 +5,9 @@
 #include "beatsaber-hook/shared/utils/logging.hpp"
 #include "ChromaLogger.hpp"
 
-
 #include "GlobalNamespace/BeatmapObjectManager.hpp"
 #include "GlobalNamespace/IReadonlyBeatmapData.hpp"
+#include "GlobalNamespace/GameplayCoreInstaller.hpp"
 #include "GlobalNamespace/BeatmapObjectSpawnController.hpp" // Include actual header since we use it
 #include "UnityEngine/WaitForEndOfFrame.hpp"
 #include "UnityEngine/SceneManagement/Scene.hpp" // Include actual header since we use it
@@ -74,7 +74,8 @@ ChromaController::DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnCont
               gradientBackground->SetActive(false);
             }
 
-            EnvironmentEnhancementManager::Init(*customBeatmap);
+            EnvironmentEnhancementManager::Init(*customBeatmap,
+                                                ChromaController::GameplayCoreInstaller.value()->Container);
           }
 
           if (GetChromaLegacy()) {

@@ -18,6 +18,7 @@ class ChromaConfig;
 namespace GlobalNamespace {
 class BeatmapObjectSpawnController;
 class BeatmapCallbacksController;
+class GameplayCoreInstaller;
 }
 
 namespace UnityEngine::SceneManagement {
@@ -82,6 +83,7 @@ public:
   DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnController* beatmapObjectSpawnController);
 
   // Since level data is freed on scene load, we copy it before we load.
+  inline static std::optional<GlobalNamespace::GameplayCoreInstaller*> GameplayCoreInstaller = std::nullopt;
   inline static std::optional<std::vector<std::string>> environmentObjectsRemovalV2 = std::nullopt;
 };
 } // namespace Chroma
