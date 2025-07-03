@@ -273,7 +273,7 @@ void EnvironmentEnhancementManager::GetAllGameObjects() {
   }
 }
 
-void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* customBeatmapData) {
+void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* customBeatmapData, Zenject::DiContainer* diContainer) {
   float noteLinesDistance = 0.6F;
   ChromaLogger::Logger.debug("Custom beat map {}", fmt::ptr(customBeatmapData));
   ChromaLogger::Logger.debug("Custom beat map custom data {}", fmt::ptr(customBeatmapData->customData));
@@ -465,7 +465,7 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
           newGameObject->get_transform()->SetParent(parent, true);
 
           auto const& newGameObjectInfo = ComponentInitializer::InitializeComponents(
-              newGameObject->get_transform(), gameObject->get_transform(), _globalGameObjectInfos, componentDatas);
+              newGameObject->get_transform(), gameObject->get_transform(), _globalGameObjectInfos, componentDatas, diContainer);
           gameObjectInfos.emplace_back(newGameObjectInfo);
           // This is not needed as long as InitializeComponents adds to gameObjectInfos
 

@@ -2,8 +2,6 @@
 
 #include "beatsaber-hook/shared/config/rapidjson-utils.hpp"
 
-
-
 #include "GameObjectInfo.hpp"
 #include "ComponentData.hpp"
 
@@ -25,7 +23,8 @@ public:
 
   static GameObjectInfo const& InitializeComponents(UnityEngine::Transform* root, UnityEngine::Transform* original,
                                                     std::vector<GameObjectInfo>& gameObjectInfos,
-                                                    std::vector<std::shared_ptr<IComponentData>>& componentDatas);
+                                                    std::vector<std::shared_ptr<IComponentData>>& componentDatas,
+                                                    Zenject::DiContainer* _container);
 };
 
 } // namespace Chroma

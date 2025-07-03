@@ -37,6 +37,8 @@
 #include "hooks/LightWithIdManager.hpp"
 #include "utils/ChromaUtils.hpp"
 
+#include "tracks/shared/Animation/GameObjectTrackController.hpp"
+
 #include <functional>
 
 #include "beatsaber-hook/shared/utils/typedefs-disposal.hpp"
@@ -47,205 +49,145 @@ using namespace GlobalNamespace;
 using namespace Chroma;
 using namespace Sombrero::Linq::Functional;
 
-template <typename T, typename F>
-requires(std::is_convertible_v<F, std::function<void(T*, T*)>>) static void constexpr GetComponentAndOriginal(
-    UnityEngine::Transform* root, UnityEngine::Transform* original, F&& initializeDelegate) {
-  ArrayW<T*> rootComponents = root->GetComponents<T*>();
-  ArrayW<T*> originalComponents = original->GetComponents<T*>();
+GameObjectInfo const& Chroma::ComponentInitializer::InitializeComponents(
+    UnityEngine::Transform* root, UnityEngine::Transform* original, std::vector<GameObjectInfo>& gameObjectInfos,
+    std::vector<std::shared_ptr<IComponentData>>& componentDatas, Zenject::DiContainer* _container) {
+
+  ArrayW<UnityEngine::MonoBehaviour*> rootComponents = root->GetComponents<UnityEngine::MonoBehaviour*>();
+  ArrayW<UnityEngine::MonoBehaviour*> otherComponents = original->GetComponents<UnityEngine::MonoBehaviour*>();
 
   for (int i = 0; i < rootComponents.size(); i++) {
-    initializeDelegate(rootComponents.get(i), originalComponents.get(i));
+    auto* rootComp = rootComponents.get(i);
+    auto* otherComp = otherComponents.get(i);
 
-    if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {
-      ChromaLogger::Logger.info("Initialized {}", il2cpp_utils::ClassStandardName(classof(T*)).c_str());
+    if (auto transformController = il2cpp_utils::try_cast<Tracks::GameObjectTrackController>(rootComp)) {
+      UnityEngine::Object::DestroyImmediate(rootComp);
+    }
+
+    if (auto lightWithIdMonoBehaviour = il2cpp_utils::try_cast<LightWithIdMonoBehaviour>(rootComp)) {
+      LightIdRegisterer::MarkForTableRegister(lightWithIdMonoBehaviour.value()->i___GlobalNamespace__ILightWithId());
+    }
+
+    if (auto lightsWithIds = il2cpp_utils::try_cast<LightWithIds>(rootComp)) {
+      if (lightsWithIds.value()->lightWithIds) {
+        auto* enumerator = lightsWithIds.value()->lightWithIds->GetEnumerator();
+        while (enumerator->i___System__Collections__IEnumerator()->MoveNext()) {
+          auto* light = enumerator->get_Current();
+          LightIdRegisterer::MarkForTableRegister(light->i___GlobalNamespace__ILightWithId());
+        }
+        enumerator->i___System__IDisposable()->Dispose();
+      }
+    }
+
+    if (auto trackLaneRing = il2cpp_utils::try_cast<TrackLaneRing>(rootComp)) {
+      auto* originalTrackLaneRing = il2cpp_utils::try_cast<TrackLaneRing>(otherComp).value();
+
+      auto ringIt = EnvironmentEnhancementManager::RingRotationOffsets.find(originalTrackLaneRing);
+      if (ringIt != EnvironmentEnhancementManager::RingRotationOffsets.end()) {
+        EnvironmentEnhancementManager::RingRotationOffsets[trackLaneRing.value()] = ringIt->second;
+      }
+
+      trackLaneRing.value()->_transform = root;
+      trackLaneRing.value()->_positionOffset = originalTrackLaneRing->_positionOffset;
+      trackLaneRing.value()->_posZ = originalTrackLaneRing->_posZ;
+
+      TrackLaneRingsManager* managerToAdd = nullptr;
+
+      for (auto const& manager : Chroma::TrackLaneRingsManagerHolder::RingManagers) {
+        // TrackLaneRingsManagerComponentData? componentData = componentDatas
+        //   .OfType<TrackLaneRingsManagerComponentData>()
+        //   .FirstOrDefault(n => n.OldTrackLaneRingsManager == manager);
+        std::optional<TrackLaneRingsManagerComponentData*> componentData;
+        for (auto const& componentDataC : componentDatas) {
+          if (componentDataC->getComponentType() == ComponentType::TrackLaneRingsManager) {
+            auto trackLaneData = std::static_pointer_cast<TrackLaneRingsManagerComponentData>(componentDataC);
+
+            if ((GlobalNamespace::TrackLaneRingsManager*)trackLaneData->OldTrackLaneRingsManager == manager) {
+              componentData = trackLaneData.get();
+              break;
+            }
+          }
+        }
+
+        if (componentData) {
+          managerToAdd = (GlobalNamespace::TrackLaneRingsManager*)componentData.value()->NewTrackLaneRingsManager;
+        } else {
+          auto rings = manager->_rings;
+          if (rings.contains(originalTrackLaneRing)) {
+            managerToAdd = manager;
+          }
+        }
+
+        if (managerToAdd != nullptr) {
+          auto rings = managerToAdd->_rings;
+
+          if (rings) {
+            std::vector < UnityW<GlobalNamespace::TrackLaneRing>> newRingList(rings.begin(), rings.end());
+            newRingList.emplace_back(trackLaneRing.value());
+
+            managerToAdd->_rings = ArrayW<UnityW<GlobalNamespace::TrackLaneRing>>(newRingList);
+          } else {
+            managerToAdd->_rings = Array<GlobalNamespace::TrackLaneRing*>::New(trackLaneRing.value());
+          }
+
+          break;
+        }
+      }
+    }
+
+    if (auto trackLaneRingsPositionStepEffectSpawner =
+            il2cpp_utils::try_cast<TrackLaneRingsPositionStepEffectSpawner>(rootComp)) {
+      for (auto const& manager : TrackLaneRingsManagerHolder::RingManagers) {
+        std::optional<TrackLaneRingsManagerComponentData*> componentData;
+
+        // TrackLaneRingsManagerComponentData? componentData = componentDatas
+        //   .OfType<TrackLaneRingsManagerComponentData>()
+        //   .FirstOrDefault(n => n.OldTrackLaneRingsManager == manager);
+        for (auto const& componentDataC : componentDatas) {
+          if (componentDataC->getComponentType() == ComponentType::TrackLaneRingsManager) {
+            auto trackLaneData = std::static_pointer_cast<TrackLaneRingsManagerComponentData>(componentDataC);
+
+            if ((GlobalNamespace::TrackLaneRingsManager*)trackLaneData->OldTrackLaneRingsManager == manager) {
+              componentData = trackLaneData.get();
+              break;
+            }
+          }
+        }
+
+        if (componentData) {
+          trackLaneRingsPositionStepEffectSpawner.value()->_trackLaneRingsManager =
+              (GlobalNamespace::TrackLaneRingsManager*)componentData.value()->NewTrackLaneRingsManager;
+          break;
+        }
+      }
+    }
+    if (auto trackLaneRingsRotationEffectSpawner =
+            il2cpp_utils::try_cast<TrackLaneRingsRotationEffectSpawner>(rootComp)) {
+      trackLaneRingsRotationEffectSpawner.value()->_trackLaneRingsRotationEffect =
+          root->GetComponent<TrackLaneRingsRotationEffect*>();
+    }
+    if (auto spectrogram = il2cpp_utils::try_cast<Spectrogram>(rootComp)) {
+      spectrogram.value()->_meshRenderers = root->GetComponentsInChildren<UnityW<UnityEngine::MeshRenderer>>(true);
+    }
+    if (auto lightPairRotationEventEffect = il2cpp_utils::try_cast<LightPairRotationEventEffect>(rootComp)) {
+      auto originalLightPairRotationEventEffect =
+          il2cpp_utils::try_cast<LightPairRotationEventEffect>(otherComp).value();
+
+      auto transformL = originalLightPairRotationEventEffect->_transformL;
+      auto transformR = originalLightPairRotationEventEffect->_transformR;
+
+      lightPairRotationEventEffect.value()->_transformL = root->GetChild(transformL->GetSiblingIndex());
+      lightPairRotationEventEffect.value()->_transformR = root->GetChild(transformR->GetSiblingIndex());
+
+      // We have to enable the object to tell unity to run Start
+      lightPairRotationEventEffect.value()->set_enabled(true);
+    } else if (auto particleSystemEventEffect = il2cpp_utils::try_cast<ParticleSystemEventEffect>(rootComp)) {
+      particleSystemEventEffect.value()->_particleSystem = root->GetComponent<UnityEngine::ParticleSystem*>();
+      particleSystemEventEffect.value()->set_enabled(true);
+    } else if (auto mirror = il2cpp_utils::try_cast<Mirror>(rootComp)) {
+      mirror.value()->_renderer = root->GetComponent<UnityEngine::MeshRenderer*>();
     }
   }
-}
-
-GameObjectInfo const&
-Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform* root, UnityEngine::Transform* original,
-                                                   std::vector<GameObjectInfo>& gameObjectInfos,
-                                                   std::vector<std::shared_ptr<IComponentData>>& componentDatas) {
-  //    UnityEngine::Object::DestroyImmediate(root->GetComponent<GameObjectTrackController*>());
-
-  GetComponentAndOriginal<LightWithIdMonoBehaviour>(
-      root, original, [&](LightWithIdMonoBehaviour* rootComponent, LightWithIdMonoBehaviour* originalComponent) {
-        rootComponent->_lightManager = originalComponent->_lightManager;
-        LightIdRegisterer::MarkForTableRegister(rootComponent->i___GlobalNamespace__ILightWithId());
-      });
-
-  GetComponentAndOriginal<LightWithIds>(root, original,
-                                        [&](LightWithIds* rootComponent, LightWithIds* originalComponent) {
-                                          rootComponent->_lightManager = originalComponent->_lightManager;
-                                          // cross fingers no stripping
-                                          if (rootComponent->lightWithIds != nullptr) {
-                                            auto* lightsWithIdArray = rootComponent->lightWithIds->GetEnumerator();
-
-                                            while (lightsWithIdArray->i___System__Collections__IEnumerator()->MoveNext()) {
-                                              auto* lightIdData = lightsWithIdArray->get_Current();
-                                              LightIdRegisterer::MarkForTableRegister(lightIdData->i___GlobalNamespace__ILightWithId());
-                                            }
-
-                                            // TODO: Handle
-                                            //            lightsWithIdArray->i_IDisposable()->Dispose();
-                                          }
-                                        });
-
-  GetComponentAndOriginal<TrackLaneRing>(
-      root, original, [&](TrackLaneRing* rootComponent, TrackLaneRing* originalComponent) {
-        auto ringIt = EnvironmentEnhancementManager::RingRotationOffsets.find(originalComponent);
-
-        if (ringIt != EnvironmentEnhancementManager::RingRotationOffsets.end()) {
-          EnvironmentEnhancementManager::RingRotationOffsets[rootComponent] = ringIt->second;
-        }
-
-        rootComponent->_transform = root;
-        rootComponent->_positionOffset = originalComponent->_positionOffset;
-        rootComponent->_posZ = originalComponent->_posZ;
-
-        TrackLaneRingsManager* managerToAdd = nullptr;
-        for (auto const& manager : Chroma::TrackLaneRingsManagerHolder::RingManagers) {
-
-          std::optional<TrackLaneRingsManagerComponentData*> componentData;
-          for (auto const& componentDataC : componentDatas) {
-            if (componentDataC->getComponentType() == ComponentType::TrackLaneRingsManager) {
-              auto trackLaneData = std::static_pointer_cast<TrackLaneRingsManagerComponentData>(componentDataC);
-
-              if ((GlobalNamespace::TrackLaneRingsManager*)trackLaneData->OldTrackLaneRingsManager == manager) {
-                componentData = trackLaneData.get();
-                goto afterFindComponent;
-              }
-            }
-          }
-
-        afterFindComponent:
-
-          if (componentData) {
-            managerToAdd = (GlobalNamespace::TrackLaneRingsManager*)componentData.value()->NewTrackLaneRingsManager;
-          } else {
-            auto rings = manager->_rings;
-            if (rings.contains(originalComponent)) {
-              managerToAdd = manager;
-            }
-          }
-
-          if (managerToAdd != nullptr) {
-            auto rings = managerToAdd->_rings;
-
-            if (rings) {
-              std::vector<GlobalNamespace::TrackLaneRing*> newRingList(rings.begin(), rings.end());
-              newRingList.push_back(rootComponent);
-
-              managerToAdd->_rings = il2cpp_utils::vectorToArray(newRingList);
-            } else {
-              managerToAdd->_rings = Array<GlobalNamespace::TrackLaneRing*>::New(rootComponent);
-            }
-
-            break;
-          }
-        }
-      });
-
-  GetComponentAndOriginal<TrackLaneRingsPositionStepEffectSpawner>(
-      root, original,
-      [&](TrackLaneRingsPositionStepEffectSpawner* rootComponent,
-          TrackLaneRingsPositionStepEffectSpawner* /*originalComponent*/) {
-        for (auto const& manager : TrackLaneRingsManagerHolder::RingManagers) {
-          std::optional<TrackLaneRingsManagerComponentData*> componentData;
-          for (auto const& componentDataC : componentDatas) {
-            if (componentDataC->getComponentType() == ComponentType::TrackLaneRingsManager) {
-              auto trackLaneData = std::static_pointer_cast<TrackLaneRingsManagerComponentData>(componentDataC);
-
-              if ((GlobalNamespace::TrackLaneRingsManager*)trackLaneData->OldTrackLaneRingsManager == manager) {
-                componentData = trackLaneData.get();
-                break;
-              }
-            }
-          }
-
-          if (componentData) {
-            rootComponent->_trackLaneRingsManager =
-                (GlobalNamespace::TrackLaneRingsManager*)componentData.value()->NewTrackLaneRingsManager;
-
-            break;
-          }
-        }
-      });
-
-  GetComponentAndOriginal<ChromaRingsRotationEffect>(
-      root, original, [&](ChromaRingsRotationEffect* rootComponent, ChromaRingsRotationEffect* /*originalComponent*/) {
-        for (auto const& manager : TrackLaneRingsManagerHolder::RingManagers) {
-          std::optional<TrackLaneRingsManagerComponentData*> componentData;
-          for (auto const& componentDataC : componentDatas) {
-            if (componentDataC->getComponentType() == ComponentType::TrackLaneRingsManager) {
-              auto trackLaneData = std::static_pointer_cast<TrackLaneRingsManagerComponentData>(componentDataC);
-
-              if ((GlobalNamespace::TrackLaneRingsManager*)trackLaneData->OldTrackLaneRingsManager == manager) {
-                componentData = trackLaneData.get();
-                goto doSet;
-              }
-            }
-          }
-
-        doSet:
-          if (componentData) {
-            rootComponent->SetNewRingManager(
-                (GlobalNamespace::TrackLaneRingsManager*)componentData.value()->NewTrackLaneRingsManager);
-
-            break;
-          }
-        }
-      });
-
-  GetComponentAndOriginal<TrackLaneRingsRotationEffectSpawner>(
-      root, original,
-      [&](TrackLaneRingsRotationEffectSpawner * rootComponent,
-          TrackLaneRingsRotationEffectSpawner * originalComponent) constexpr {
-        rootComponent->_beatmapCallbacksController = originalComponent->_beatmapCallbacksController;
-        rootComponent->_trackLaneRingsRotationEffect = rootComponent->GetComponent<ChromaRingsRotationEffect*>();
-      });
-
-  GetComponentAndOriginal<Spectrogram>(
-      root, original, [&](Spectrogram * rootComponent, Spectrogram * originalComponent) constexpr {
-        rootComponent->_spectrogramData = originalComponent->_spectrogramData;
-      });
-
-  GetComponentAndOriginal<LightRotationEventEffect>(
-      root,
-      original, [&](LightRotationEventEffect * rootComponent, LightRotationEventEffect * originalComponent) constexpr {
-        rootComponent->_beatmapCallbacksController = originalComponent->_beatmapCallbacksController;
-      });
-
-  GetComponentAndOriginal<LightPairRotationEventEffect>(
-      root, original,
-      [&](LightPairRotationEventEffect * rootComponent, LightPairRotationEventEffect * originalComponent) constexpr {
-        rootComponent->_beatmapCallbacksController = originalComponent->_beatmapCallbacksController;
-        rootComponent->_audioTimeSource = originalComponent->_audioTimeSource;
-
-        auto transformL = originalComponent->_transformL;
-        auto transformR = originalComponent->_transformR;
-
-        rootComponent->_transformL = root->GetChild(transformL->GetSiblingIndex());
-        rootComponent->_transformR = root->GetChild(transformR->GetSiblingIndex());
-
-        // We have to enable the object to tell unity to run Start
-        rootComponent->set_enabled(true);
-      });
-
-  GetComponentAndOriginal<ParticleSystemEventEffect>(
-      root, original,
-      [&](ParticleSystemEventEffect * rootComponent, ParticleSystemEventEffect * originalComponent) constexpr {
-        rootComponent->_beatmapCallbacksController = originalComponent->_beatmapCallbacksController;
-        rootComponent->_particleSystem = root->GetComponent<UnityEngine::ParticleSystem*>();
-
-        rootComponent->set_enabled(true);
-      });
-
-  GetComponentAndOriginal<Mirror>(
-      root, original, [&](Mirror * rootComponent, Mirror * originalComponent) constexpr {
-        rootComponent->_mirrorRenderer = UnityEngine::Object::Instantiate(originalComponent->_mirrorRenderer);
-        rootComponent->_mirrorMaterial = UnityEngine::Object::Instantiate(originalComponent->_mirrorMaterial);
-      });
 
   auto const& newGameObject = gameObjectInfos.emplace_back(root->get_gameObject());
 
@@ -255,7 +197,7 @@ Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform* root,
     auto transform = root->GetChild(i);
 
     int index = transform->GetSiblingIndex();
-    InitializeComponents(transform, original->GetChild(index), gameObjectInfos, componentDatas);
+    InitializeComponents(transform, original->GetChild(index), gameObjectInfos, componentDatas, _container);
   }
 
   return newGameObject;
@@ -322,10 +264,10 @@ static void InitializeTubeBloomPrePassLights(rapidjson::Value const& data, std::
   auto bloomFogIntensityMultiplier =
       ChromaUtils::getIfExists<float>(*tubeBloomPrePassLightJSON, Chroma::NewConstants::BLOOM_FOG_INTENSITY_MULTIPLIER);
 
-  auto SetColorAlphaMultiplier = [](TubeBloomPrePassLight * tubeBloomPrePassLight, float value) constexpr {
+  auto SetColorAlphaMultiplier = [](TubeBloomPrePassLight* tubeBloomPrePassLight, float value) constexpr {
     tubeBloomPrePassLight->_parametricBoxControllerOnceParInitialized = false;
     tubeBloomPrePassLight->_bakedGlowOnceParInitialized = false;
-    
+
     tubeBloomPrePassLight->_colorAlphaMultiplier = value;
     tubeBloomPrePassLight->MarkDirty();
   };
