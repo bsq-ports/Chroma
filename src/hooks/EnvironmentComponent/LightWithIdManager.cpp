@@ -52,8 +52,7 @@ MAKE_HOOK_MATCH(LightWithIdManager_RegisterLight, &LightWithIdManager::RegisterL
 
   lightWithId->__SetIsRegistered();
 
-  auto* lightWithIdIt = std::find(lights->_items.begin(), lights->_items.end(), lightWithId);
-  if (lightWithIdIt != lights->_items.end()) {
+  if (lights->_items.contains(lightWithId)) {
     return;
   }
 
@@ -77,6 +76,11 @@ MAKE_HOOK_MATCH(LightWithIdManager_RegisterLight, &LightWithIdManager::RegisterL
   });
 
   lights->Add(lightWithId);
+
+  self->____lightsToUnregister->Remove(lightWithId);
+
+  auto color = self->_colors.get(lightId);
+  lightWithId->ColorWasSet(color.hasValue ? color.value : Sombrero::FastColor::clear());
 }
 
 // This breaks if it doesn't run after Awake
