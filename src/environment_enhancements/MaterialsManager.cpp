@@ -1,6 +1,7 @@
 #include "environment_enhancements/MaterialsManager.hpp"
 #include "Chroma.hpp"
 #include "ChromaLogger.hpp"
+#include <limits>
 #include "UnityEngine/Resources.hpp"
 #include "utils/ChromaUtils.hpp"
 #include "environment_enhancements/EnvironmentMaterialManager.hpp"
@@ -59,6 +60,10 @@ UnityEngine::Material* Chroma::MaterialsManager::InstantiateSharedMaterial(Shade
   static ConstString transparentLight("Custom/TransparentNeonLight");
   static ConstString standardBTSCube("Custom/SimpleLit");
   static ConstString water("Custom/WaterLit");
+  static ConstString glowing("Custom/Glowing");
+
+  static int _metallicPropertyID = Shader::PropertyToID("_Metallic");
+  static int _fogStartOffsetPropertyID = Shader::PropertyToID("_FogStartOffset");
 
   StringW shaderName;
   ArrayW<StringW> shaderKeywords;
@@ -101,9 +106,16 @@ UnityEngine::Material* Chroma::MaterialsManager::InstantiateSharedMaterial(Shade
           "_EMISSIONCOLORTYPE_FLAT", "_EMISSIONTEXTURE_NONE", "_RIMLIGHT_NONE", "_ROTATE_UV_NONE", "_VERTEXMODE_NONE",
           "_WHITEBOOSTTYPE_NONE", "_ZWRITE_ON" }));
     break;
+  case ShaderType::Glowing: {
+    shaderName = glowing;
+    shaderKeywords = ArrayW<StringW>();
   }
-  auto shader =
-      Resources::FindObjectsOfTypeAll<Shader*>().front([&](auto const& e) { return e->get_name() == shaderName; });
+  }
+  auto shader = Shader::Find(shaderName);
+  // TODO: Shader.Find or FindObjectsOfTypeAll?
+  // https://github.com/Aeroluna/Heck/blob/09af7a46957f3a4ff2968a93f9337a3058e47693/Chroma/EnvironmentEnhancement/MaterialsManager.cs#L25?
+  // Resources::FindObjectsOfTypeAll<Shader*>().front([&](auto const& e) { return e->get_name() == shaderName; });
+
   if (!shader) {
     ChromaLogger::Logger.error("Unable to find shader {}", shaderName);
     if (shaderType == ShaderType::BaseWater) {
@@ -118,14 +130,19 @@ UnityEngine::Material* Chroma::MaterialsManager::InstantiateSharedMaterial(Shade
       ChromaLogger::Logger.fmtThrowError("Unable to find shader {}", shaderName);
     }
   }
-  auto* material = Material::New_ctor(shader.value());
+  auto* material = Material::New_ctor(shader);
 
   material->set_globalIlluminationFlags(globalIlluminationFlags);
   material->set_enableInstancing(true);
   material->set_color({ 0, 0, 0, 0 });
 
   if (shaderType == ShaderType::Standard) {
-    material->SetFloat("_Metallic", 0);
+    material->SetFloat(_metallicPropertyID, 0);
+  }
+
+  // Small fix to allow for infinite distance so it doesn't darken
+  if (shaderType == ShaderType::Glowing) {
+    material->SetFloat(_fogStartOffsetPropertyID, std::numeric_limits<float>::infinity());
   }
 
   if (shaderKeywords) {
@@ -170,7 +187,27 @@ MaterialInfo Chroma::MaterialsManager::CreateMaterialInfo(rapidjson::Value const
     }
   }
 
-  auto* material = Object::Instantiate(GetMaterialTemplate(shaderType));
+  auto* originalMaterial = GetMaterialTemplate(shaderType);
+
+  // Post 1.39.1 fix
+  // credit to @Provini for the idea of using Custom/Glowing
+
+  // https://github.com/Aeroluna/Heck/issues/125#issuecomment-2661311783
+
+  // stupid janky fix to the fact that they changed simplelit shader in 1.38
+
+  if (shaderType == ShaderType::Standard || shaderType == ShaderType::BTSPillar && shaderKeywords.size() == 0) {
+
+    shaderKeywords = ArrayW<StringW>(nullptr);
+
+    if (color) {
+      color = color->Alpha(0);
+    }
+
+    originalMaterial = GetMaterialTemplate(ShaderType::Glowing);
+  }
+
+  auto* material = Object::Instantiate(originalMaterial);
   createdMaterials.emplace_back(material);
   if (color) {
     material->set_color(*color);
@@ -215,6 +252,10 @@ UnityEngine::Material* MaterialsManager::GetMaterialTemplate(ShaderType shaderTy
   if (!_standardMaterial) {
     _standardMaterial = InstantiateSharedMaterial(ShaderType::Standard);
   }
+  static SafePtrUnity<Material> _glowingMaterial;
+  if (!_glowingMaterial) {
+    _glowingMaterial = InstantiateSharedMaterial(ShaderType::Glowing);
+  }
 
   static SafePtrUnity<Material> _opaqueLightMaterial;
   if (!_opaqueLightMaterial) {
@@ -248,6 +289,10 @@ UnityEngine::Material* MaterialsManager::GetMaterialTemplate(ShaderType shaderTy
     break;
   case ShaderType::BaseWater:
     originalMaterial = (Material*)_baseWaterMaterial;
+    break;
+
+  case ShaderType::Glowing:
+    originalMaterial = (Material*) _glowingMaterial;
     break;
   }
 

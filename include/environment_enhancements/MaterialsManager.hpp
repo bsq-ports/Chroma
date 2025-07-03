@@ -19,7 +19,8 @@ enum struct ShaderType {
   InterscopeConcrete,
   InterscopeCar,
   Obstacle,
-  WaterfallMirror
+  WaterfallMirror,
+  Glowing,
 };
 
 bool IsLightType(ShaderType shaderType);
@@ -61,6 +62,6 @@ public:
 
   std::optional<MaterialInfo> GetMaterial(rapidjson::Value const& data);
 
-  decltype(MaterialsManager::materials) const& GetMaterials() const;
+  [[nodiscard]] decltype(MaterialsManager::materials) const& GetMaterials() const;
 };
 } // namespace Chroma
