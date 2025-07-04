@@ -166,7 +166,7 @@ void CustomEventCallback(BeatmapCallbacksController* callbackController,
 
       // fail safe, idek why this needs to be done smh
       // CJD you bugger
-      auto* customBeatmapData = (CustomJSONData::CustomBeatmapData*)callbackController->_beatmapData;
+      auto* customBeatmapData = il2cpp_utils::cast<CustomJSONData::CustomBeatmapData>(callbackController->_beatmapData);
       if (!ad.parsed) {
         TracksAD::BeatmapAssociatedData& beatmapAD = TracksAD::getBeatmapAD(customBeatmapData->customData);
         ChromaEvents::parseEventData(beatmapAD, customEventData, customBeatmapData->v2orEarlier);
