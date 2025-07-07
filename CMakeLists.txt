@@ -2,6 +2,8 @@
 set(ANDROID_USE_LEGACY_TOOLCHAIN_FILE OFF)
 include(qpm_defines.cmake)
 
+
+message("Building ${COMPILE_ID} version ${MOD_VERSION} with ID ${MOD_ID} ${CMAKE_BUILD_TYPE}")
 # Enable link time optimization
 # In my experience, this can be highly unstable but it nets a huge size optimization and likely performance
 if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
