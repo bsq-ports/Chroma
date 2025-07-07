@@ -6,7 +6,6 @@
 
 #include "sombrero/shared/ColorUtils.hpp"
 
-
 #include "custom-types/shared/macros.hpp"
 
 #include "GlobalNamespace/SimpleColorSO.hpp"
@@ -24,19 +23,20 @@ private:
 
   int lightId;
   std::unordered_map<int, std::optional<Sombrero::FastColor>> _colors;
+  std::array<SafePtrUnity<GlobalNamespace::SimpleColorSO>, 4> _originalColors;
 
-  std::array<Sombrero::FastColor, 4> _originalColors;
-  std::unordered_map<int, SafePtrUnity<GlobalNamespace::SimpleColorSO>> _simpleColorSOs;
-
-  LightColorizer(ChromaLightSwitchEventEffect* lightSwitchEventEffect,
-                 GlobalNamespace::LightWithIdManager* lightManager);
+  LightColorizer(ChromaLightSwitchEventEffect* lightSwitchEventEffect, GlobalNamespace::LightWithIdManager* lightManager);
 
   inline static std::vector<std::tuple<int, std::function<void(LightColorizer&)>>> _contracts;
   inline static std::vector<std::tuple<int, std::function<void(LightColorizer&)>>> _contractsByLightID;
   std::optional<std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId*>>> LightsPropagationGrouped;
 
+  void Refresh(std::optional<std::vector<GlobalNamespace::ILightWithId*>> const& selectLights) const;
+
+
 public:
   ChromaLightSwitchEventEffect* _lightSwitchEventEffect;
+  SafePtr<List<GlobalNamespace::ILightWithId*>> LightsSafePtr;
 
   using LightColorOptionalPalette = std::array<std::optional<Sombrero::FastColor>, 4>;
   using LightColorPalette = std::array<Sombrero::FastColor, 4>;
@@ -44,44 +44,32 @@ public:
   friend class std::pair<int const, Chroma::LightColorizer>;
   friend class std::pair<int, LightColorizer>;
   friend class std::pair<int const, Chroma::LightColorizer>;
-  static LightColorizer& New(ChromaLightSwitchEventEffect* lightSwitchEventEffect,
-                             GlobalNamespace::LightWithIdManager* lightManager);
 
   inline static LightColorOptionalPalette GlobalColor{ std::nullopt, std::nullopt, std::nullopt, std::nullopt };
-
-  inline static UnorderedEventCallback<GlobalNamespace::BasicBeatmapEventType, std::array<Sombrero::FastColor, 4>>
-      LightColorChanged;
 
   inline static std::unordered_map<int, LightColorizer> Colorizers;
   inline static std::unordered_map<int, LightColorizer*> ColorizersByLightID;
 
-  SafePtr<List<GlobalNamespace::ILightWithId*>> LightsSafePtr;
-  ListW<GlobalNamespace::ILightWithId*> Lights;
-
-  [[nodiscard]] std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId*>> const&
-  getLightsPropagationGrouped();
-
-  [[nodiscard]] LightColorPalette getColor() const {
-    LightColorPalette colors;
-    for (int i = 0; i < COLOR_FIELDS; i++) {
-      std::optional<Sombrero::FastColor> color;
-
-      auto colorIt = _colors.find(i);
-      if (colorIt != _colors.end()) {
-        color = colorIt->second;
-      }
-
-      if (!color) color = GlobalColor[i];
-
-      if (!color) color = _originalColors[i];
-
-      colors[i] = *color;
-    }
-
-    return colors;
+  [[nodiscard]] ListW<GlobalNamespace::ILightWithId*> getLights() const {
+    return LightsSafePtr.ptr();
   }
 
-  inline static void GlobalColorize(std::optional<std::vector<GlobalNamespace::ILightWithId*>> const& selectLights,
+  static LightColorizer& New(ChromaLightSwitchEventEffect* lightSwitchEventEffect, GlobalNamespace::LightWithIdManager* lightManager);
+
+  static void CreateLightColorizerContractByLightID(int lightId, std::function<void(LightColorizer&)> const& callback);
+
+  static void CreateLightColorizerContract(GlobalNamespace::BasicBeatmapEventType type,
+                                           std::function<void(LightColorizer&)> const& callback);
+
+  static void CompleteContracts(ChromaLightSwitchEventEffect* chromaLightSwitchEventEffect);
+
+  static void Reset();
+
+  [[nodiscard]] std::unordered_map<int, std::vector<GlobalNamespace::ILightWithId*>> const& getLightsPropagationGrouped();
+
+  [[nodiscard]] LightColorPalette getColor() const;
+
+  static void GlobalColorize(std::optional<std::vector<GlobalNamespace::ILightWithId*>> const& selectLights,
                                     LightColorOptionalPalette const& colors) {
     GlobalColorize(true, selectLights, colors);
   }
@@ -106,27 +94,9 @@ public:
   }
 
   void Colorize(bool refresh, std::optional<std::vector<GlobalNamespace::ILightWithId*>> const& selectLights,
-                LightColorOptionalPalette const& colors) {
-    for (int i = 0; i < colors.size(); i++) {
-      _colors[i] = colors[i];
-    }
+                LightColorOptionalPalette const& colors);
 
-    SetSOs(getColor());
 
-    // Allow light colorizer to not force color
-    if (!refresh) return;
-
-    Refresh(selectLights);
-  }
-
-  static void CreateLightColorizerContractByLightID(int lightId, std::function<void(LightColorizer&)> const& callback);
-
-  static void CreateLightColorizerContract(GlobalNamespace::BasicBeatmapEventType type,
-                                           std::function<void(LightColorizer&)> const& callback);
-
-  static void CompleteContracts(ChromaLightSwitchEventEffect* chromaLightSwitchEventEffect);
-
-  static void Reset();
 
   // extensions
   inline static LightColorizer* GetLightColorizer(GlobalNamespace::BasicBeatmapEventType BasicBeatmapEventType) {
@@ -153,25 +123,6 @@ public:
     CRASH_UNLESS(colorizer)->Colorize(refresh, colors);
   }
 
-  void InitializeSO(GlobalNamespace::ColorSO*& lightColor0, GlobalNamespace::ColorSO*& highlightColor0,
-                    GlobalNamespace::ColorSO*& lightColor1, GlobalNamespace::ColorSO*& highlightColor1,
-                    GlobalNamespace::ColorSO*& lightColor0Boost, GlobalNamespace::ColorSO*& highlightColor0Boost,
-                    GlobalNamespace::ColorSO*& lightColor1Boost, GlobalNamespace::ColorSO*& highlightColor1Boost);
 
-private:
-  void SetSOs(LightColorPalette const& colors) {
-    return;
-    static auto SetColor = FPtrWrapper<&GlobalNamespace::SimpleColorSO::SetColor>::get();
-
-    for (int i = 0; i < colors.size(); i++) {
-      SetColor((GlobalNamespace::SimpleColorSO*)_simpleColorSOs[i], colors[i]);
-    }
-
-    LightColorChanged.invoke(lightId, colors);
-  }
-
-  void Refresh(std::optional<std::vector<GlobalNamespace::ILightWithId*>> const& selectLights) const {
-    _lightSwitchEventEffect->Refresh(false, selectLights);
-  }
 };
 } // namespace Chroma

@@ -48,8 +48,7 @@ public:
   Sombrero::FastColor _highlightColor0BoostMult;
   Sombrero::FastColor _highlightColor1BoostMult;
 
-  std::unordered_map<GlobalNamespace::ILightWithId*, Tween::ChromaColorTweenData> ColorTweens;
-  static std::unordered_map<Tweening::ColorTween*, Tween::ChromaColorTweenData*> ColorTweensMapping;
+  std::unordered_map<GlobalNamespace::ILightWithId*, SafePtr<Tween::ChromaTween>> ColorTweens;
 
   GlobalNamespace::BasicBeatmapEventType EventType;
 
@@ -62,6 +61,9 @@ public:
 
 public:
   static std::unordered_set<ChromaLightSwitchEventEffect*> livingLightSwitch;
+
+  UnorderedEventCallback<GlobalNamespace::BasicBeatmapEventData*> BeatmapEventDidTrigger;
+  UnorderedEventCallback<> DidRefresh;
 
   // improve speed, avoid codegen
   Sombrero::FastColor GetNormalColor(int beatmapEventValue, bool colorBoost);

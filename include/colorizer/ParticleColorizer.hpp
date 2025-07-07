@@ -1,19 +1,21 @@
 #pragma once
 
-
 #include <unordered_map>
 #include <array>
 
 #include "GlobalNamespace/BasicBeatmapEventType.hpp"
 
+#include "colorizer/LightColorizer.hpp"
+#include "lighting/ChromaLightSwitchEventEffect.hpp"
 #include "sombrero/shared/ColorUtils.hpp"
+
+#include "GlobalNamespace/MultipliedColorSO.hpp"
 
 namespace GlobalNamespace {
 class ParticleSystemEventEffect;
 class SimpleColorSO;
 class MultipliedColorSO;
 } // namespace GlobalNamespace
-
 
 namespace Chroma {
 class ParticleColorizer {
@@ -22,21 +24,25 @@ private:
   static int const COLOR_FIELDS = 2;
 
   GlobalNamespace::ParticleSystemEventEffect* _particleSystemEventEffect;
-  GlobalNamespace::BasicBeatmapEventType _eventType;
+  std::optional<LightColorizer*> lightColorizer;
 
-  std::unordered_map<int, SafePtrUnity<GlobalNamespace::SimpleColorSO>> _simpleColorSOs;
-  std::unordered_map<int, SafePtrUnity<GlobalNamespace::MultipliedColorSO>> _multipliedColorSOs;
-  std::unordered_map<int, SafePtrUnity<GlobalNamespace::MultipliedColorSO>> _multipliedHighlightColorSOs;
+  SafePtrUnity<GlobalNamespace::MultipliedColorSO> _highlightColor0;
+  SafePtrUnity<GlobalNamespace::MultipliedColorSO> _highlightColor1;
+  SafePtrUnity<GlobalNamespace::MultipliedColorSO> _lightColor0;
+  SafePtrUnity<GlobalNamespace::MultipliedColorSO> _lightColor1;
+
+  GlobalNamespace::BasicBeatmapEventType _previousValue;
 
   ParticleColorizer(GlobalNamespace::ParticleSystemEventEffect* particleSystemEventEffect,
                     GlobalNamespace::BasicBeatmapEventType BasicBeatmapEventType);
 
-  static std::unordered_set<std::shared_ptr<ParticleColorizer>>&
-  GetOrCreateColorizerList(GlobalNamespace::BasicBeatmapEventType eventType);
+  static std::unordered_set<std::shared_ptr<ParticleColorizer>>& GetOrCreateColorizerList(GlobalNamespace::BasicBeatmapEventType eventType);
 
-  void OnLightColorChanged(GlobalNamespace::BasicBeatmapEventType eventType, std::array<Sombrero::FastColor, 4> colors);
+  void Refresh();
 
-  void InitializeSO(std::string const& id, int index, bool highlight = false);
+  [[nodiscard]] Sombrero::FastColor GetHighlightColor(int beatmapEventValue, bool colorBoost) const;
+
+  [[nodiscard]] Sombrero::FastColor GetNormalColor(int beatmapEventValue, bool colorBoost) const;
 
 public:
   static std::shared_ptr<ParticleColorizer> New(GlobalNamespace::ParticleSystemEventEffect* particleSystemEventEffect,
@@ -46,7 +52,9 @@ public:
 
   int PreviousValue{};
 
-  void UnsubscribeEvent();
+  void AssignLightColorizer(LightColorizer* colorizer);
+
+  void Callback(GlobalNamespace::BasicBeatmapEventData* beatmapEventData);
 
   static void Reset();
 

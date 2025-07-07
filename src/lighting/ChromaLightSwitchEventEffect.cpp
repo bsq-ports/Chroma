@@ -2,6 +2,7 @@
 #include "GlobalNamespace/BeatmapDataItem.hpp"
 #include "System/Tuple_2.hpp"
 #include "lighting/ChromaEventData.hpp"
+#include "lighting/ColorTween.hpp"
 #include "lighting/LegacyLightHelper.hpp"
 #include "lighting/ChromaGradientController.hpp"
 
@@ -21,12 +22,10 @@ using namespace UnityEngine;
 DEFINE_TYPE(Chroma, ChromaLightSwitchEventEffect);
 
 std::unordered_set<ChromaLightSwitchEventEffect*> ChromaLightSwitchEventEffect::livingLightSwitch;
-std::unordered_map<Tweening::ColorTween*, Tween::ChromaColorTweenData*>
-    ChromaLightSwitchEventEffect::ColorTweensMapping;
 
 constexpr static GlobalNamespace::EnvironmentColorType GetLightColorTypeFromEventDataValue(int beatmapEventValue) {
-  if (beatmapEventValue == 1 || beatmapEventValue == 2 || beatmapEventValue == 3 || beatmapEventValue == 4 ||
-      beatmapEventValue == 0 || beatmapEventValue == -1) {
+  if (beatmapEventValue == 1 || beatmapEventValue == 2 || beatmapEventValue == 3 || beatmapEventValue == 4 || beatmapEventValue == 0 ||
+      beatmapEventValue == -1) {
     return EnvironmentColorType::Color0;
   }
   if (beatmapEventValue == 5 || beatmapEventValue == 6 || beatmapEventValue == 7 || beatmapEventValue == 8) {
@@ -57,6 +56,7 @@ Sombrero::FastColor GetNormalColorOld(ChromaLightSwitchEventEffect* l, int beatm
   }
 }
 
+// constructor of ChromaLightSwitchEventEffect
 void Chroma::ChromaLightSwitchEventEffect::CopyValues(GlobalNamespace::LightSwitchEventEffect* lightSwitchEventEffect) {
   _lightColor0 = lightSwitchEventEffect->_lightColor0;
   _lightColor1 = lightSwitchEventEffect->_lightColor1;
@@ -129,24 +129,23 @@ void Chroma::ChromaLightSwitchEventEffect::HandleEvent(GlobalNamespace::BasicBea
     auto const& chromaData = chromaIt->second;
 
     auto const& lightMember = chromaData.LightID;
-    if (lightMember) {
-      auto const& lightIdData = *lightMember;
-      selectLights = lightColorizer->GetLightWithIds(lightIdData);
-    }
+    auto const& propMember = chromaData.PropID;
+
 
     // Prop ID is deprecated apparently.
     // https://github.com/Aeroluna/Chroma/commit/711cb19f7d03a1776a24cef52fd8ef6fd7685a2b#diff-b8fcfff3ebc4ceb7b43d8401d9f50750dc88326d0a87897c5593923e55b23879R41
-    auto const& propMember = chromaData.PropID;
     if (propMember) {
       auto const& propIDData = *propMember;
 
       selectLights = lightColorizer->GetPropagationLightWithIds(propIDData);
+    }else if (lightMember) {
+      auto const& lightIdData = *lightMember;
+      selectLights = lightColorizer->GetLightWithIds(lightIdData);
     }
 
     auto const& gradient = chromaData.GradientObject;
     if (gradient) {
-      color = ChromaGradientController::AddGradient(gradient.value(), beatmapEventData->basicBeatmapEventType,
-                                                    beatmapEventData->time);
+      color = ChromaGradientController::AddGradient(gradient.value(), beatmapEventData->basicBeatmapEventType, beatmapEventData->time);
     }
 
     std::optional<Sombrero::FastColor> const& colorData = chromaData.ColorData;
@@ -164,6 +163,8 @@ void Chroma::ChromaLightSwitchEventEffect::HandleEvent(GlobalNamespace::BasicBea
   } else if (!ChromaGradientController::IsGradientActive(beatmapEventData->basicBeatmapEventType)) {
     lightColorizer->Colorize(false, { std::nullopt, std::nullopt, std::nullopt, std::nullopt });
   }
+
+  this->BeatmapEventDidTrigger.invoke(beatmapEventData);
 
   Refresh(true, selectLights, beatmapEventData, easing, lerpType);
 }
@@ -192,28 +193,29 @@ void Chroma::ChromaLightSwitchEventEffect::OnDestroy() {
 }
 
 void ChromaLightSwitchEventEffect::Refresh(bool hard, std::optional<std::vector<ILightWithId*>> const& selectLights,
-                                           std::optional<BasicBeatmapEventData*> beatmapEventData,
-                                           std::optional<Functions> easing, std::optional<LerpType> lerpType) {
-  std::vector<Tween::ChromaColorTweenData*> selectTweens;
+                                           std::optional<BasicBeatmapEventData*> beatmapEventData, std::optional<Functions> easing,
+                                           std::optional<LerpType> lerpType) {
+  std::vector<Tween::ChromaTween*> selectTweens;
 
   if (selectLights) {
+    selectTweens.reserve(selectLights->size());
     for (auto const& light : *selectLights) {
       auto tweenIt = ColorTweens.find(light);
       if (tweenIt != ColorTweens.end()) {
-        selectTweens.push_back(&tweenIt->second);
+        selectTweens.push_back(tweenIt->second.ptr());
       }
     }
   } else {
+    selectTweens.reserve(ColorTweens.size());
+
     for (auto& [_, tween] : ColorTweens) {
-      selectTweens.push_back(&tween);
+      selectTweens.push_back(tween.ptr());
     }
   }
 
   bool boost = _usingBoostColors;
   for (auto const& tweenData : selectTweens) {
-    auto const& tween = tweenData->tween;
-    CRASH_UNLESS(tween.isHandleValid());
-    CRASH_UNLESS(tween.ptr());
+    auto const& tween = tweenData;
     BasicBeatmapEventData* previousEvent = nullptr;
     if (hard) {
       tweenData->PreviousEvent = beatmapEventData.value();
@@ -278,56 +280,40 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, std::optional<std::vector<
 
       if (nextColorType != EnvironmentColorType::ColorW && nextColorData) {
         Sombrero::FastColor multiplierColor;
-        if (_usingBoostColors) {
-          if (nextColorType == EnvironmentColorType::Color1) {
-            multiplierColor = _lightColor1BoostMult;
-          } else {
-            multiplierColor = _lightColor0BoostMult;
-          }
+        if (boost) {
+          multiplierColor = nextColorType == EnvironmentColorType::Color1 ? _lightColor1BoostMult : _lightColor0BoostMult;
         } else {
-          if (nextColorType == EnvironmentColorType::Color1) {
-            multiplierColor = _lightColor1Mult;
-          } else {
-            multiplierColor = _lightColor0Mult;
-          }
+          multiplierColor = nextColorType == EnvironmentColorType::Color1 ? _lightColor1Mult : _lightColor0Mult;
         }
 
-        nextColor = nextColorData.value() * multiplierColor;
+        nextColor = *nextColorData * multiplierColor;
       } else {
-        nextColor = GetNormalColorOld(this, nextValue, _usingBoostColors);
+        nextColor = GetNormalColor(nextValue, boost);
       }
 
-      nextColor.a *= nextFloatValue;
-      Sombrero::FastColor prevColor = tweenData->tween->toValue;
+      nextColor.a *= nextFloatValue; // MultAlpha
+      Sombrero::FastColor prevColor = tween->___toValue;
+
       if (previousValue == 0) {
-        prevColor = nextColor.Alpha(0.0F);
+        prevColor = nextColor;
+        prevColor.a = 0.0F; // ColorWithAlpha(0f)
       } else if (!IsFixedDurationLightSwitch(previousValue)) {
         prevColor = GetNormalColor(previousValue, boost);
         prevColor.a *= previousFloatValue; // MultAlpha
       }
 
-      System::Collections::Generic::List_1<float>::New_ctor()->_items = ArrayW<float>::Empty();
-
-      auto x = System::Nullable_1<float>();
-      x.value = 5;
-
-      auto* y = System::Tuple_2<float, float>::New_ctor(0, 0);
-      y->m_Item1 = 5;
-
-      Tweening::Tween_1<float>::New_ctor()->toValue = 2;
-
-      tweenData->tween->fromValue = prevColor;
-      tweenData->tween->toValue = nextColor;
-      tweenData->tween->ForceOnUpdate();
+      tween->___fromValue = prevColor;
+      tween->___toValue = nextColor;
+      tween->ForceOnUpdate();
 
       if (!hard) {
         return;
       }
 
-      tweenData->tween->SetStartTimeAndEndTime(previousEvent->time, nextSameTypeEvent->time);
+      tween->SetStartTimeAndEndTime(previousEvent->time, nextSameTypeEvent->time);
       tweenData->easing = easing.value_or(Functions::EaseLinear);
       tweenData->lerpType = lerpType.value_or(LerpType::RGB);
-      _tweeningManager->ResumeTween(const_cast<Tweening::ColorTween*>(tween.ptr()), this, false);
+      _tweeningManager->ResumeTween(tween, this, false);
     };
 
     switch (previousValue) {
@@ -342,7 +328,7 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, std::optional<std::vector<
       color.a = offAlpha; // ColorWithAlpha
       tween->___fromValue = color;
       tween->___toValue = color;
-      Chroma::Tween::SetColor(tweenData->lightWithId.ptr(), _lightManager, color);
+      Chroma::Tween::ChromaTween::SetColor(tweenData->lightWithId, _lightManager, color);
       CheckNextEventForFadeBetter();
 
       break;
@@ -362,7 +348,7 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, std::optional<std::vector<
       color.a *= previousFloatValue; // MultAlpha
       tween->___fromValue = color;
       tween->___toValue = color;
-      Chroma::Tween::SetColor(tweenData->lightWithId.ptr(), _lightManager, color);
+      Chroma::Tween::ChromaTween::SetColor(tweenData->lightWithId, _lightManager, color);
       CheckNextEventForFadeBetter();
       break;
     }
@@ -382,7 +368,7 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, std::optional<std::vector<
         tween->duration = 0.6F;
         tweenData->easing = easing.value_or(Functions::EaseOutCubic);
         tweenData->lerpType = lerpType.value_or(LerpType::RGB);
-        _tweeningManager->RestartTween(const_cast<Tweening::ColorTween*>(tween.ptr()), this, false);
+        _tweeningManager->RestartTween(tween, this, false);
       }
 
       break;
@@ -405,19 +391,21 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, std::optional<std::vector<
         tween->duration = 1.5F;
         tweenData->easing = easing.value_or(Functions::EaseOutExpo);
         tweenData->lerpType = lerpType.value_or(LerpType::RGB);
-        _tweeningManager->RestartTween(const_cast<Tweening::ColorTween*>(tween.ptr()), this, false);
+        _tweeningManager->RestartTween(tween, this, false);
       }
 
       break;
     }
     }
   }
+
+  DidRefresh.invoke();
 }
 
 // improve speed, avoid codegen
 constexpr bool ChromaLightSwitchEventEffect::IsColor0(int beatmapEventValue) {
-  return beatmapEventValue == 1 || beatmapEventValue == 2 || beatmapEventValue == 3 || beatmapEventValue == 4 ||
-         beatmapEventValue == 0 || beatmapEventValue == -1;
+  return beatmapEventValue == 1 || beatmapEventValue == 2 || beatmapEventValue == 3 || beatmapEventValue == 4 || beatmapEventValue == 0 ||
+         beatmapEventValue == -1;
 }
 
 Sombrero::FastColor ChromaLightSwitchEventEffect::GetNormalColor(int beatmapEventValue, bool colorBoost) {
@@ -461,8 +449,8 @@ Sombrero::FastColor ChromaLightSwitchEventEffect::GetHighlightColor(int beatmapE
 }
 
 constexpr bool ChromaLightSwitchEventEffect::IsFixedDurationLightSwitch(int beatmapEventValue) {
-  return beatmapEventValue == 2 || beatmapEventValue == 6 || beatmapEventValue == 10 || beatmapEventValue == 3 ||
-         beatmapEventValue == 7 || beatmapEventValue == 11 || beatmapEventValue == -1;
+  return beatmapEventValue == 2 || beatmapEventValue == 6 || beatmapEventValue == 10 || beatmapEventValue == 3 || beatmapEventValue == 7 ||
+         beatmapEventValue == 11 || beatmapEventValue == -1;
 }
 
 void ChromaLightSwitchEventEffect::UnregisterLight(GlobalNamespace::ILightWithId* lightWithId) {
@@ -474,9 +462,7 @@ void ChromaLightSwitchEventEffect::UnregisterLight(GlobalNamespace::ILightWithId
 
   auto& tweenData = it->second;
 
-  ColorTweensMapping.erase(tweenData.tween.ptr());
-
-  tweenData.tween->Kill();
+  tweenData->Kill();
   ColorTweens.erase(it);
 }
 
@@ -491,10 +477,8 @@ void ChromaLightSwitchEventEffect::RegisterLight(GlobalNamespace::ILightWithId* 
   }
 
   auto tableId = LightIDTableManager::GetActiveTableValueReverse(_lightsID, id).value_or(0);
-  auto* tween = Chroma::Tween::makeTween(color, color, lightWithId, _lightManager);
+  auto* tween = Chroma::Tween::ChromaTween::New_ctor(color, color, lightWithId, _lightManager, id);
 
-  auto it = ColorTweens.try_emplace(lightWithId, tableId, tween, lightWithId);
-  ColorTweensMapping[tween] = &it.first->second;
-
+  ColorTweens.emplace(lightWithId, tween);
   tween->ForceOnUpdate();
 }

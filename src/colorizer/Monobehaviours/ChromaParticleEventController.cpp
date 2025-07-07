@@ -14,7 +14,6 @@ void ChromaParticleEventController::Init(GlobalNamespace::ParticleSystemEventEff
 
 void ChromaParticleEventController::OnDestroy() {
   if (_colorizer) {
-    _colorizer->UnsubscribeEvent();
     ParticleColorizer::GetParticleColorizers(_eventType).erase(_colorizer);
   }
 }
