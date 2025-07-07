@@ -33,8 +33,11 @@ private:
 
   void Refresh(std::optional<std::vector<GlobalNamespace::ILightWithId*>> const& selectLights) const;
 
-
 public:
+  [[deprecated(""
+               "Use New instead. This constructor is only for internal use.")]]
+  LightColorizer(LightColorizer const&) = default;
+
   ChromaLightSwitchEventEffect* _lightSwitchEventEffect;
   SafePtr<List<GlobalNamespace::ILightWithId*>> LightsSafePtr;
 
@@ -51,7 +54,7 @@ public:
   inline static std::unordered_map<int, LightColorizer*> ColorizersByLightID;
 
   [[nodiscard]] ListW<GlobalNamespace::ILightWithId*> getLights() const {
-    return LightsSafePtr.ptr();
+    return {LightsSafePtr.ptr()};
   }
 
   static LightColorizer& New(ChromaLightSwitchEventEffect* lightSwitchEventEffect, GlobalNamespace::LightWithIdManager* lightManager);
@@ -70,7 +73,7 @@ public:
   [[nodiscard]] LightColorPalette getColor() const;
 
   static void GlobalColorize(std::optional<std::vector<GlobalNamespace::ILightWithId*>> const& selectLights,
-                                    LightColorOptionalPalette const& colors) {
+                             LightColorOptionalPalette const& colors) {
     GlobalColorize(true, selectLights, colors);
   }
   inline static void GlobalColorize(bool refresh, LightColorOptionalPalette const& colors) {
@@ -96,8 +99,6 @@ public:
   void Colorize(bool refresh, std::optional<std::vector<GlobalNamespace::ILightWithId*>> const& selectLights,
                 LightColorOptionalPalette const& colors);
 
-
-
   // extensions
   inline static LightColorizer* GetLightColorizer(GlobalNamespace::BasicBeatmapEventType BasicBeatmapEventType) {
     auto it = Colorizers.find(BasicBeatmapEventType.value__);
@@ -122,7 +123,5 @@ public:
     auto colorizer = GetLightColorizer(BasicBeatmapEventType);
     CRASH_UNLESS(colorizer)->Colorize(refresh, colors);
   }
-
-
 };
 } // namespace Chroma

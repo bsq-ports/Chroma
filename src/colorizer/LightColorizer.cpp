@@ -1,4 +1,5 @@
 #include "Chroma.hpp"
+#include "ChromaLogger.hpp"
 #include "beatsaber-hook/shared/utils/typedefs-array.hpp"
 
 #include "lighting/LightIDTableManager.hpp"
@@ -24,7 +25,8 @@ using namespace Sombrero;
 using namespace Chroma;
 
 LightColorizer::LightColorizer(ChromaLightSwitchEventEffect* lightSwitchEventEffect, LightWithIdManager* lightManager)
-    : _lightSwitchEventEffect(lightSwitchEventEffect), lightId(lightSwitchEventEffect->_lightsID), _colors(COLOR_FIELDS), _originalColors() {
+    : _lightSwitchEventEffect(lightSwitchEventEffect), lightId(lightSwitchEventEffect->_lightsID), _colors(COLOR_FIELDS),
+      _originalColors() {
 
   auto Initialize = [this](UnityW<ColorSO> colorSO, int index) {
     if (auto mColor = il2cpp_utils::try_cast<MultipliedColorSO>(colorSO.ptr())) {
@@ -147,7 +149,7 @@ void LightColorizer::CompleteContracts(ChromaLightSwitchEventEffect* chromaLight
   // complete open contracts
   for (auto it = _contracts.begin(); it != _contracts.end();) {
     auto const& [type, callback] = *it;
-    if (type != chromaLightSwitchEventEffect->EventType.value__) {
+    if (type != chromaLightSwitchEventEffect->_event.value__) {
       it++;
       continue;
     }
@@ -244,13 +246,8 @@ Chroma::LightColorizer::LightColorPalette Chroma::LightColorizer::getColor() con
       color = GlobalColor[i];
     }
 
-    if (!color && _originalColors[i]) {
-      color = _originalColors[i]->get_color();
-    }
-
-    // just in case
     if (!color) {
-      color = Sombrero::FastColor::clear();
+      color = _originalColors[i]->get_color();
     }
 
     colors[i] = *color;

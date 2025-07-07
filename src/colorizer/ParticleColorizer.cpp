@@ -1,4 +1,5 @@
 #include "colorizer/ParticleColorizer.hpp"
+#include "ChromaLogger.hpp"
 #include "colorizer/LightColorizer.hpp"
 #include "GlobalNamespace/ColorExtensions.hpp"
 
@@ -127,4 +128,7 @@ void Chroma::ParticleColorizer::AssignLightColorizer(LightColorizer* colorizer) 
   lightColorizer = colorizer;
   colorizer->_lightSwitchEventEffect->BeatmapEventDidTrigger += { &ParticleColorizer::Callback, this };
   colorizer->_lightSwitchEventEffect->DidRefresh += { &ParticleColorizer::Refresh, this };
+
+  ChromaLogger::Logger.info("Assigned light colorizer to particle colorizer for event type: {}",
+                      static_cast<int>(_particleSystemEventEffect->_colorEvent.value__));
 }

@@ -8,21 +8,21 @@ DEFINE_TYPE(Chroma::Tween, ChromaTween);
 void Chroma::Tween::ChromaTween::ctor(Sombrero::FastColor fromValue, Sombrero::FastColor toValue,
                                       GlobalNamespace::ILightWithId* lightWithId, GlobalNamespace::LightWithIdManager* lightWithIdManager,
                                       int id) {
+  // call super
+  Tweening::ColorTween::_ctor();
+
   this->lightWithId = lightWithId;
   this->id = id;
   this->lightWithIdManager = lightWithIdManager;
   this->fromValue = fromValue;
   this->toValue = toValue;
 
-  std::function<void(UnityEngine::Color)> SetColorFn = [=](UnityEngine::Color const& color) constexpr {
-    SetColor(lightWithId, lightWithIdManager, color);
-  };
-  auto *SetColorAction = custom_types::MakeDelegate<System::Action_1<UnityEngine::Color>*>(SetColorFn);
+  std::function<void(UnityEngine::Color)> SetColorFn = [this](UnityEngine::Color const& color) constexpr { SetColor(color); };
+  auto* SetColorAction = custom_types::MakeDelegate<System::Action_1<UnityEngine::Color>*>(SetColorFn);
   Init(fromValue, toValue, SetColorAction, 0, GlobalNamespace::EaseType::Linear, 0);
 }
 
-void Chroma::Tween::ChromaTween::SetColor(GlobalNamespace::ILightWithId* lightWithId, GlobalNamespace::LightWithIdManager* lightWithIdManager,
-                                    UnityEngine::Color const& color) {
+void Chroma::Tween::ChromaTween::SetColor(UnityEngine::Color const& color) {
   if (!lightWithId->get_isRegistered()) {
     return;
   }
@@ -52,6 +52,6 @@ Sombrero::FastColor Chroma::Tween::ChromaTween::GetColor(float time) const {
 }
 
 UnityEngine::Color Chroma::Tween::ChromaTween::GetValue(float time) {
-    Sombrero::FastColor color = GetColor(time);
-    return color;
+  Sombrero::FastColor color = GetColor(time);
+  return color;
 }

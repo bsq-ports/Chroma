@@ -33,10 +33,6 @@ class LightWithIdManager;
 
 DECLARE_CLASS_CODEGEN(Chroma, ChromaLightSwitchEventEffect, GlobalNamespace::LightSwitchEventEffect) {
 public:
-  DECLARE_INSTANCE_FIELD(GlobalNamespace::ColorSO*, _originalLightColor0);
-  DECLARE_INSTANCE_FIELD(GlobalNamespace::ColorSO*, _originalLightColor1);
-  DECLARE_INSTANCE_FIELD(GlobalNamespace::ColorSO*, _originalLightColor0Boost);
-  DECLARE_INSTANCE_FIELD(GlobalNamespace::ColorSO*, _originalLightColor1Boost);
   //          std::array<Sombrero::FastColor, 4> OriginalColors;
 
   Sombrero::FastColor _lightColor0Mult;
@@ -49,8 +45,6 @@ public:
   Sombrero::FastColor _highlightColor1BoostMult;
 
   std::unordered_map<GlobalNamespace::ILightWithId*, SafePtr<Tween::ChromaTween>> ColorTweens;
-
-  GlobalNamespace::BasicBeatmapEventType EventType;
 
   Chroma::LightColorizer* lightColorizer;
 

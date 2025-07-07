@@ -92,16 +92,18 @@ void Chroma::ChromaGradientController::Update() {
     // Iterate over the map using Iterator till end.
     while (it != Gradients.end()) {
 
-      bool modified = false;
+      bool eol = false;
       // Accessing KEY from element pointed by it.
       BasicBeatmapEventType eventType = it->first;
 
       // Accessing VALUE from element pointed by it.
-      Sombrero::FastColor color = it->second.Interpolate(modified, songTime);
+      Sombrero::FastColor color = it->second.Interpolate(eol, songTime);
 
       LightColorizer::ColorizeLight(eventType, true, { color, color, color, color });
 
-      if (!modified) {
+
+
+      if (!eol) {
         it++;
       } else {
         it = Gradients.erase(it);
@@ -115,8 +117,8 @@ static constexpr Sombrero::FastColor lerpUnclamped(Sombrero::FastColor const& a,
   return { a.r + ((b.r - a.r) * t), a.g + ((b.g - a.g) * t), a.b + ((b.b - a.b) * t), a.a + ((b.a - a.a) * t) };
 }
 
-constexpr Sombrero::FastColor Chroma::ChromaGradientEvent::Interpolate(bool& modified, float const songTime) const {
-  modified = false;
+constexpr Sombrero::FastColor Chroma::ChromaGradientEvent::Interpolate(bool& reachedEnd, float const songTime) const {
+  reachedEnd = false;
   float normalTime = songTime - _start;
   if (normalTime < 0) {
     return _initcolor;
@@ -124,6 +126,6 @@ constexpr Sombrero::FastColor Chroma::ChromaGradientEvent::Interpolate(bool& mod
   if (normalTime <= _duration) {
     return lerpUnclamped(_initcolor, _endcolor, Easings::Interpolate(normalTime / _duration, _easing));
   }
-  modified = true;
+  reachedEnd = true;
   return _endcolor;
 }
