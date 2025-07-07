@@ -4,7 +4,13 @@ include(qpm_defines.cmake)
 
 # Enable link time optimization
 # In my experience, this can be highly unstable but it nets a huge size optimization and likely performance
-set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+        set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+        add_compile_options(-O3)
+
+else()
+        set(CMAKE_INTERPROCEDURAL_OPTIMIZATION FALSE)
+endif()
 
 cmake_minimum_required(VERSION 3.21)
 project(${COMPILE_ID})
@@ -21,9 +27,6 @@ set(INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 # compile options used
 add_compile_options(-frtti -fexceptions)
 
-
-
-add_compile_options(-O3)
 # compile definitions used
 add_compile_definitions(VERSION=\"${MOD_VERSION}\")
 add_compile_definitions(MOD_ID=\"${MOD_ID}\")
@@ -53,14 +56,18 @@ target_include_directories(${COMPILE_ID} PRIVATE extern/includes/questui_compone
 
 # add src dir as include dir
 target_include_directories(${COMPILE_ID} PRIVATE ${SOURCE_DIR})
+
 # add include dir as include dir
 target_include_directories(${COMPILE_ID} PRIVATE ${INCLUDE_DIR})
+
 # add shared dir as include dir
 target_include_directories(${COMPILE_ID} PUBLIC ${SHARED_DIR})
-# codegen includes 
+
+# codegen includes
 target_include_directories(${COMPILE_ID} PRIVATE ${EXTERN_DIR}/includes/${CODEGEN_ID}/include)
 
 target_link_libraries(${COMPILE_ID} PRIVATE -llog)
+
 # add extern stuff like libs and other includes
 include(extern.cmake)
 
@@ -72,16 +79,16 @@ add_custom_command(TARGET ${COMPILE_ID} POST_BUILD
 add_custom_command(TARGET ${COMPILE_ID} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory debug
         COMMENT "Rename the lib to debug_ since it has debug symbols"
-        )
+)
 
 add_custom_command(TARGET ${COMPILE_ID} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E rename lib${COMPILE_ID}.so debug/lib${COMPILE_ID}.so
         COMMENT "Rename the lib to debug_ since it has debug symbols"
-        )
+)
 
 add_custom_command(TARGET ${COMPILE_ID} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E rename stripped_lib${COMPILE_ID}.so lib${COMPILE_ID}.so
         COMMENT "Rename the stripped lib to regular"
-        )
+)
 
 include(assets_include.cmake)

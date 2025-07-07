@@ -19,7 +19,10 @@ if (($clean.IsPresent) -or (-not (Test-Path -Path "build")))
     $out = new-item -Path build -ItemType Directory
 }
 
-cd build
-& cmake -G "Ninja" -DCMAKE_BUILD_TYPE="RelWithDebInfo" ../
-& cmake --build .
+
+# Set build type based on release flag
+$buildType = if ($release.IsPresent) { "RelWithDebInfo" } else { "Debug" }
+
 cd ..
+& cmake -B build -G "Ninja" -DCMAKE_BUILD_TYPE="$buildType" .
+& cmake --build ./build 

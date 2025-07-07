@@ -15,7 +15,13 @@
   "workspace": {
     "scripts": {
       "build": [
-        "pwsh ./build.ps1"
+        "pwsh ./scripts/build.ps1"
+      ],
+      "copy": [
+        "pwsh ./scripts/copy.ps1"
+      ],
+      "copyRelease": [
+        "pwsh ./scripts/copy.ps1 --release"
       ]
     },
     "ndk": "^27.2.12479018",
