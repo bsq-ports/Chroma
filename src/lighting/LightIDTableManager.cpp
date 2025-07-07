@@ -88,10 +88,59 @@ void LightIDTableManager::UnregisterIndex(int lightID, int index) {
   auto& map = it->second;
 
   for (auto const [key, n] : map) {
-    if (n == index) {
-      map.erase(key);
-      ChromaLogger::Logger.info("Unregistered key [{}] from lightid [{}]", key, lightID);
-      return;
+    if (n != index) {
+      continue;
+    }
+
+    map.erase(key);
+    ChromaLogger::Logger.info("Unregistered key [{}] from lightid [{}]", key, lightID);
+    return;
+  }
+}
+std::optional<int> Chroma::LightIDTableManager::GetActiveTableValueReverse(int lightId, int id) {
+  if (!activeTable) {
+    return std::nullopt;
+  }
+  auto const& table = activeTable.value();
+
+  auto typeTableIt = table.find(lightId);
+
+  if (typeTableIt == table.end()) {
+    return std::nullopt;
+  }
+
+  auto const& typeTable = typeTableIt->second;
+  for (auto const& [key, value] : typeTable) {
+    if (value == id) {
+      return key;
     }
   }
+
+  return std::nullopt;
+}
+std::optional<int> Chroma::LightIDTableManager::GetActiveTableValue(int lightId, int id) {
+  if (!activeTable) {
+
+    ChromaLogger::Logger.warn("Return not found");
+    return std::nullopt;
+  }
+  auto const& table = activeTable.value();
+
+  auto typeTableIt = table.find(lightId);
+
+  if (typeTableIt == table.end()) {
+    ChromaLogger::Logger.warn("Unable to find value for type {}", lightId);
+    return std::nullopt;
+  }
+
+  auto const& typeTable = typeTableIt->second;
+  auto it = typeTable.find(id);
+
+  if (it == typeTable.end()) {
+    ChromaLogger::Logger.warn("Unable to find value for type {} and id {}.", lightId, id);
+
+    return std::nullopt;
+  }
+
+  return it->second;
 }

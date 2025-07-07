@@ -74,7 +74,7 @@ public:
 
   void CopyValues(LightSwitchEventEffect * lightSwitchEventEffect);
 
-public:
-  void RegisterLight(GlobalNamespace::ILightWithId * lightWithId, int id);
+
+  void RegisterLight(GlobalNamespace::ILightWithId * lightWithId, int key);
   void UnregisterLight(GlobalNamespace::ILightWithId * lightWithId);
 };

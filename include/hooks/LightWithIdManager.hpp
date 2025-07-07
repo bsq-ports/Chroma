@@ -3,6 +3,7 @@
 #include <unordered_set>
 #include <unordered_map>
 
+#include "ChromaLogger.hpp"
 #include "colorizer/LightColorizer.hpp"
 
 #include "GlobalNamespace/ILightWithId.hpp"

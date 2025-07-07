@@ -1,3 +1,4 @@
+#include "ChromaLogger.hpp"
 #include "main.hpp"
 #include "environment_enhancements/ComponentInitializer.hpp"
 #include "environment_enhancements/EnvironmentEnhancementManager.hpp"
@@ -32,6 +33,8 @@
 
 #include "System/Collections/Generic/List_1.hpp"
 
+#include "Zenject/DiContainer.hpp"
+
 #include "beatsaber-hook/shared/utils/il2cpp-utils.hpp"
 #include "System/Linq/Enumerable.hpp"
 #include "hooks/LightWithIdManager.hpp"
@@ -49,9 +52,10 @@ using namespace GlobalNamespace;
 using namespace Chroma;
 using namespace Sombrero::Linq::Functional;
 
-GameObjectInfo const& Chroma::ComponentInitializer::InitializeComponents(
-    UnityEngine::Transform* root, UnityEngine::Transform* original, std::vector<GameObjectInfo>& gameObjectInfos,
-    std::vector<std::shared_ptr<IComponentData>>& componentDatas, Zenject::DiContainer* _container) {
+GameObjectInfo const& Chroma::ComponentInitializer::InitializeComponents(UnityEngine::Transform* root, UnityEngine::Transform* original,
+                                                                         std::vector<GameObjectInfo>& gameObjectInfos,
+                                                                         std::vector<std::shared_ptr<IComponentData>>& componentDatas,
+                                                                         Zenject::DiContainer* _container) {
 
   ArrayW<UnityEngine::MonoBehaviour*> rootComponents = root->GetComponents<UnityEngine::MonoBehaviour*>();
   ArrayW<UnityEngine::MonoBehaviour*> otherComponents = original->GetComponents<UnityEngine::MonoBehaviour*>();
@@ -59,6 +63,8 @@ GameObjectInfo const& Chroma::ComponentInitializer::InitializeComponents(
   for (int i = 0; i < rootComponents.size(); i++) {
     auto* rootComp = rootComponents.get(i);
     auto* otherComp = otherComponents.get(i);
+
+    _container->Inject(rootComp);
 
     if (auto transformController = il2cpp_utils::try_cast<Tracks::GameObjectTrackController>(rootComp)) {
       UnityEngine::Object::DestroyImmediate(rootComp);
@@ -122,7 +128,7 @@ GameObjectInfo const& Chroma::ComponentInitializer::InitializeComponents(
           auto rings = managerToAdd->_rings;
 
           if (rings) {
-            std::vector < UnityW<GlobalNamespace::TrackLaneRing>> newRingList(rings.begin(), rings.end());
+            std::vector<UnityW<GlobalNamespace::TrackLaneRing>> newRingList(rings.begin(), rings.end());
             newRingList.emplace_back(trackLaneRing.value());
 
             managerToAdd->_rings = ArrayW<UnityW<GlobalNamespace::TrackLaneRing>>(newRingList);
@@ -135,8 +141,7 @@ GameObjectInfo const& Chroma::ComponentInitializer::InitializeComponents(
       }
     }
 
-    if (auto trackLaneRingsPositionStepEffectSpawner =
-            il2cpp_utils::try_cast<TrackLaneRingsPositionStepEffectSpawner>(rootComp)) {
+    if (auto trackLaneRingsPositionStepEffectSpawner = il2cpp_utils::try_cast<TrackLaneRingsPositionStepEffectSpawner>(rootComp)) {
       for (auto const& manager : TrackLaneRingsManagerHolder::RingManagers) {
         std::optional<TrackLaneRingsManagerComponentData*> componentData;
 
@@ -161,17 +166,14 @@ GameObjectInfo const& Chroma::ComponentInitializer::InitializeComponents(
         }
       }
     }
-    if (auto trackLaneRingsRotationEffectSpawner =
-            il2cpp_utils::try_cast<TrackLaneRingsRotationEffectSpawner>(rootComp)) {
-      trackLaneRingsRotationEffectSpawner.value()->_trackLaneRingsRotationEffect =
-          root->GetComponent<TrackLaneRingsRotationEffect*>();
+    if (auto trackLaneRingsRotationEffectSpawner = il2cpp_utils::try_cast<TrackLaneRingsRotationEffectSpawner>(rootComp)) {
+      trackLaneRingsRotationEffectSpawner.value()->_trackLaneRingsRotationEffect = root->GetComponent<TrackLaneRingsRotationEffect*>();
     }
     if (auto spectrogram = il2cpp_utils::try_cast<Spectrogram>(rootComp)) {
       spectrogram.value()->_meshRenderers = root->GetComponentsInChildren<UnityW<UnityEngine::MeshRenderer>>(true);
     }
     if (auto lightPairRotationEventEffect = il2cpp_utils::try_cast<LightPairRotationEventEffect>(rootComp)) {
-      auto originalLightPairRotationEventEffect =
-          il2cpp_utils::try_cast<LightPairRotationEventEffect>(otherComp).value();
+      auto originalLightPairRotationEventEffect = il2cpp_utils::try_cast<LightPairRotationEventEffect>(otherComp).value();
 
       auto transformL = originalLightPairRotationEventEffect->_transformL;
       auto transformR = originalLightPairRotationEventEffect->_transformR;
@@ -207,8 +209,7 @@ void ComponentInitializer::PrefillComponentsData(UnityEngine::Transform* root,
                                                  std::vector<std::shared_ptr<IComponentData>>& componentDatas) {
   auto* trackLaneRingsManager = root->GetComponent<GlobalNamespace::TrackLaneRingsManager*>();
   if (trackLaneRingsManager != nullptr) {
-    std::shared_ptr<TrackLaneRingsManagerComponentData> manager =
-        std::make_shared<TrackLaneRingsManagerComponentData>();
+    std::shared_ptr<TrackLaneRingsManagerComponentData> manager = std::make_shared<TrackLaneRingsManagerComponentData>();
     manager->OldTrackLaneRingsManager.emplace(trackLaneRingsManager);
     componentDatas.emplace_back(manager);
   }
@@ -252,15 +253,14 @@ void ComponentInitializer::PostfillComponentsData(UnityEngine::Transform* root, 
   }
 }
 
-static void InitializeTubeBloomPrePassLights(rapidjson::Value const& data, std::span<UnityEngine::Component*> comps) {
+static void InitializeTubeBloomPrePassLights(rapidjson::Value const& data, std::span<UnityEngine::Component* const> comps) {
   auto tubeBloomPrePassLightJSON =
       ChromaUtils::getIfExists<rapidjson::Value::ConstObject>(data, Chroma::NewConstants::TUBE_BLOOM_PRE_PASS_LIGHT);
   if (!tubeBloomPrePassLightJSON) {
     return;
   }
 
-  auto colorAlphaMultiplier =
-      ChromaUtils::getIfExists<float>(*tubeBloomPrePassLightJSON, Chroma::NewConstants::COLOR_ALPHA_MULTIPLIER);
+  auto colorAlphaMultiplier = ChromaUtils::getIfExists<float>(*tubeBloomPrePassLightJSON, Chroma::NewConstants::COLOR_ALPHA_MULTIPLIER);
   auto bloomFogIntensityMultiplier =
       ChromaUtils::getIfExists<float>(*tubeBloomPrePassLightJSON, Chroma::NewConstants::BLOOM_FOG_INTENSITY_MULTIPLIER);
 
@@ -288,9 +288,8 @@ static void InitializeTubeBloomPrePassLights(rapidjson::Value const& data, std::
   }
 }
 
-static void InitializeFog(rapidjson::Value const& data, std::span<UnityEngine::Component*> comps) {
-  auto bloomJSON =
-      ChromaUtils::getIfExists<rapidjson::Value::ConstObject>(data, Chroma::NewConstants::BLOOM_FOG_ENVIRONMENT);
+static void InitializeFog(rapidjson::Value const& data, std::span<UnityEngine::Component* const> comps) {
+  auto bloomJSON = ChromaUtils::getIfExists<rapidjson::Value::ConstObject>(data, Chroma::NewConstants::BLOOM_FOG_ENVIRONMENT);
 
   if (!bloomJSON) {
     return;
@@ -325,9 +324,8 @@ static void InitializeFog(rapidjson::Value const& data, std::span<UnityEngine::C
   }
 }
 
-static void InitializeLights(rapidjson::Value const& data, std::span<UnityEngine::Component*> comps, bool v2) {
-  auto lightDataJSON =
-      ChromaUtils::getIfExists<rapidjson::Value::ConstObject>(data, Chroma::NewConstants::LIGHT_WITH_ID);
+static void InitializeLights(rapidjson::Value const& data, std::span<UnityEngine::Component* const> comps, bool v2) {
+  auto lightDataJSON = ChromaUtils::getIfExists<rapidjson::Value::ConstObject>(data, Chroma::NewConstants::LIGHT_WITH_ID);
   if (!v2 && !lightDataJSON) {
     return;
   }
@@ -369,6 +367,8 @@ static void InitializeLights(rapidjson::Value const& data, std::span<UnityEngine
         auto* e = enumerator->get_Current();
         lightWithIds.emplace_back(e->i___GlobalNamespace__ILightWithId());
       }
+
+      enumerator->i___System__IDisposable()->Dispose();
     } else if (auto castedMonoLight = il2cpp_utils::try_cast<LightWithIdMonoBehaviour>(comp)) {
       lightWithIds.emplace_back(castedMonoLight.value()->i___GlobalNamespace__ILightWithId());
     }
@@ -390,22 +390,25 @@ static void InitializeLights(rapidjson::Value const& data, std::span<UnityEngine
 
     if (monoBehaviourCast) {
       monoBehaviourCast.value()->_ID = psuedoLightId;
-    } else {
-      auto lightWithIdsCast = il2cpp_utils::try_cast<LightWithIds::LightWithId>(lightWithId);
+    } 
+    auto lightWithIdsCast = il2cpp_utils::try_cast<LightWithIds::LightWithId>(lightWithId);
 
-      if (lightWithIdsCast) {
-        lightWithIdsCast.value()->_lightId = psuedoLightId;
-      }
+    if (lightWithIdsCast) {
+      lightWithIdsCast.value()->_lightId = psuedoLightId;
     }
   };
 
   auto SetLightID = [&](ILightWithId* const& lightWithId) constexpr {
     if (lightID) {
+      ChromaLogger::Logger.fmtLog<Paper::LogLevel::INF>("Setting light ID {} for light {}", *lightID, fmt::ptr(lightWithId));
       LightIdRegisterer::SetRequestedId(lightWithId, *lightID);
     }
   };
 
   for (auto const& lightWithId : lightWithIds) {
+    ChromaLogger::Logger.fmtLog<Paper::LogLevel::INF>("Initializing light with ID {} and type {} {}", lightID.value_or(-1),
+                                                      type.value_or(-1), lightWithId->get_isRegistered());
+
     if (lightWithId->get_isRegistered()) {
       LightIdRegisterer::ForceUnregister(lightWithId);
       LightIdRegisterer::MarkForTableRegister(lightWithId);
@@ -419,8 +422,7 @@ static void InitializeLights(rapidjson::Value const& data, std::span<UnityEngine
   }
 }
 
-void ComponentInitializer::InitializeCustomComponents(UnityEngine::GameObject* go, rapidjson::Value const& data,
-                                                      bool v2) {
+void ComponentInitializer::InitializeCustomComponents(UnityEngine::GameObject* go, rapidjson::Value const& data, bool v2) {
   auto componentData = ChromaUtils::getIfExists<rapidjson::Value::ConstObject>(data, Chroma::NewConstants::COMPONENTS);
   if (!v2 && !componentData) {
     return;

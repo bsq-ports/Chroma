@@ -1,4 +1,5 @@
 #include "ChromaController.hpp"
+#include "ChromaLogger.hpp"
 #include "colorizer/LightColorizer.hpp"
 #include "hooks/LightWithIdManager.hpp"
 
@@ -9,7 +10,6 @@
 #include "GlobalNamespace/LightWithIdManager.hpp"
 
 #include "UnityEngine/SceneManagement/Scene.hpp"
-
 
 std::unordered_map<GlobalNamespace::ILightWithId*, int> Chroma::LightIdRegisterer::RequestedIDs;
 std::unordered_set<GlobalNamespace::ILightWithId*> Chroma::LightIdRegisterer::NeedToRegister;
@@ -52,21 +52,25 @@ MAKE_HOOK_MATCH(LightWithIdManager_RegisterLight, &LightWithIdManager::RegisterL
 
   lightWithId->__SetIsRegistered();
 
-  if (lights->_items.contains(lightWithId)) {
+  if (lights->Contains(lightWithId)) {
     return;
   }
 
-  auto index = lights->get_Count();
+  int index = lights->get_Count();
 
-  auto it = LightIdRegisterer::NeedToRegister.find(lightWithId);
-  if (it != LightIdRegisterer::NeedToRegister.end()) {
-    LightIdRegisterer::NeedToRegister.erase(it);
+  auto registerIt = LightIdRegisterer::NeedToRegister.find(lightWithId);
+  ChromaLogger::Logger.fmtLog<Paper::LogLevel::INF>("Queueing register type {} index {} {}", lightWithId->get_lightId(), index,
+                                                    LightIdRegisterer::NeedToRegister.size());
 
+  if (registerIt != LightIdRegisterer::NeedToRegister.end()) {
+    LightIdRegisterer::NeedToRegister.erase(registerIt);
+    
     std::optional<int> tableId;
-    auto it2 = LightIdRegisterer::RequestedIDs.find(lightWithId);
-    if (it2 != LightIdRegisterer::RequestedIDs.end()) {
-      tableId = it2->second;
+    auto requestedIt = LightIdRegisterer::RequestedIDs.find(lightWithId);
+    if (requestedIt != LightIdRegisterer::RequestedIDs.end()) {
+      tableId = requestedIt->second;
     }
+    
     LightIDTableManager::RegisterIndex(lightId, index, tableId);
   }
 
@@ -85,8 +89,8 @@ MAKE_HOOK_MATCH(LightWithIdManager_RegisterLight, &LightWithIdManager::RegisterL
 
 // This breaks if it doesn't run after Awake
 // PC uses Affinity Patches which run after Awake
-MAKE_HOOK_MATCH(LightWithIdManager_UnregisterLight, &LightWithIdManager::UnregisterLight, void,
-                LightWithIdManager* self, GlobalNamespace::ILightWithId* lightWithId) {
+MAKE_HOOK_MATCH(LightWithIdManager_UnregisterLight, &LightWithIdManager::UnregisterLight, void, LightWithIdManager* self,
+                GlobalNamespace::ILightWithId* lightWithId) {
   // Do nothing if Chroma shouldn't run
   if (!ChromaController::DoChromaHooks() || !Chroma::LightIdRegisterer::canUnregister) {
     LightWithIdManager_UnregisterLight(self, lightWithId);
@@ -117,8 +121,8 @@ MAKE_HOOK_MATCH(LightWithIdManager_LateUpdate, &LightWithIdManager::LateUpdate, 
   //    Clear(self->lightsToUnregister);
 }
 
-MAKE_HOOK_MATCH(LightWithIdManager_SetColorForId, &LightWithIdManager::SetColorForId, void, LightWithIdManager* self,
-                int lightId, ::UnityEngine::Color color) {
+MAKE_HOOK_MATCH(LightWithIdManager_SetColorForId, &LightWithIdManager::SetColorForId, void, LightWithIdManager* self, int lightId,
+                ::UnityEngine::Color color) {
   // Do nothing if Chroma shouldn't run
   if (!ChromaController::DoChromaHooks()) {
     LightWithIdManager_SetColorForId(self, lightId, color);
@@ -131,7 +135,7 @@ MAKE_HOOK_MATCH(LightWithIdManager_SetColorForId, &LightWithIdManager::SetColorF
     return;
   }
 
-  self->_colors[lightId] = System::Nullable_1( true, color );
+  self->_colors[lightId] = System::Nullable_1(true, color);
   self->_didChangeSomeColorsThisFrame = true;
   auto list = VList<GlobalNamespace::ILightWithId*>(self->_lights.get(lightId));
   if (list == nullptr) {

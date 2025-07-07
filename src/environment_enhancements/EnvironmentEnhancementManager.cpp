@@ -29,7 +29,6 @@
 
 #include "paper2_scotland2/shared/Profiler.hpp"
 
-
 using namespace Chroma;
 using namespace ChromaUtils;
 using namespace UnityEngine::SceneManagement;
@@ -38,8 +37,8 @@ using namespace Tracks;
 using ChromaRegex = boost::regex;
 
 // We can return a reference here since _globalGameObjectInfos is keeping the reference alive
-std::vector<ByRef<GameObjectInfo const>>
-Chroma::EnvironmentEnhancementManager::LookupId(std::string_view const id, Chroma::LookupMethod lookupMethod) {
+std::vector<ByRef<GameObjectInfo const>> Chroma::EnvironmentEnhancementManager::LookupId(std::string_view const id,
+                                                                                         Chroma::LookupMethod lookupMethod) {
   std::vector<ByRef<GameObjectInfo const>> ret;
   ret.reserve(_globalGameObjectInfos.size());
 
@@ -51,8 +50,7 @@ Chroma::EnvironmentEnhancementManager::LookupId(std::string_view const id, Chrom
           ret.emplace_back(o);
         }
       } catch (std::exception& e) {
-        ChromaLogger::Logger.error("Failed to match ({}) for lookup ({}) with id ({})", o.FullID.c_str(),
-                                   lookupMethodStr, id.data());
+        ChromaLogger::Logger.error("Failed to match ({}) for lookup ({}) with id ({})", o.FullID.c_str(), lookupMethodStr, id.data());
         ChromaLogger::Logger.error("Error: {}", e.what());
       }
     }
@@ -102,8 +100,7 @@ Chroma::EnvironmentEnhancementManager::LookupId(std::string_view const id, Chrom
     }
     }
   } catch (std::exception const& e) {
-    ChromaLogger::Logger.error("Failed to create match for lookup ({}) with id ({})", lookupMethodStr.data(),
-                               id.data());
+    ChromaLogger::Logger.error("Failed to create match for lookup ({}) with id ({})", lookupMethodStr.data(), id.data());
     ChromaLogger::Logger.error("Error: {}", e.what());
   }
 
@@ -112,8 +109,7 @@ Chroma::EnvironmentEnhancementManager::LookupId(std::string_view const id, Chrom
   return ret;
 }
 
-static std::optional<Sombrero::FastVector3> GetVectorData(rapidjson::Value const& dynData,
-                                                          std::string_view const name) {
+static std::optional<Sombrero::FastVector3> GetVectorData(rapidjson::Value const& dynData, std::string_view const name) {
   auto objectsValIt = dynData.FindMember(name.data());
 
   if (objectsValIt == dynData.MemberEnd()) {
@@ -164,12 +160,9 @@ public:
   }
 
 private:
-  static void Apply(UnityEngine::Transform* transform, bool leftHanded,
-                    std::optional<Sombrero::FastVector3> const& scale,
-                    std::optional<Sombrero::FastVector3> const& position,
-                    std::optional<Sombrero::FastVector3> const& rotation,
-                    std::optional<Sombrero::FastVector3> const& localPosition,
-                    std::optional<Sombrero::FastVector3> const& localRotation) {
+  static void Apply(UnityEngine::Transform* transform, bool leftHanded, std::optional<Sombrero::FastVector3> const& scale,
+                    std::optional<Sombrero::FastVector3> const& position, std::optional<Sombrero::FastVector3> const& rotation,
+                    std::optional<Sombrero::FastVector3> const& localPosition, std::optional<Sombrero::FastVector3> const& localRotation) {
     // TODO: Mirror
     //        if (leftHanded)
     //        {
@@ -260,8 +253,7 @@ void EnvironmentEnhancementManager::GetAllGameObjects() {
       auto objectsToPrint = std::vector<GameObjectInfo>(_globalGameObjectInfos);
 
       // Sort in order from shortest to longest string
-      std::ranges::sort(objectsToPrint,
-                        [](GameObjectInfo const& a, GameObjectInfo const& b) { return a.FullID < b.FullID; });
+      std::ranges::sort(objectsToPrint, [](GameObjectInfo const& a, GameObjectInfo const& b) { return a.FullID < b.FullID; });
 
       std::stringstream ss;
       for (auto const& o : objectsToPrint) {
@@ -306,8 +298,7 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
 
   rapidjson::Value const& dynData = *customDynWrapper;
 
-  auto environmentData =
-      dynData.FindMember(v2 ? NewConstants::V2_ENVIRONMENT.data() : NewConstants::ENVIRONMENT.data());
+  auto environmentData = dynData.FindMember(v2 ? NewConstants::V2_ENVIRONMENT.data() : NewConstants::ENVIRONMENT.data());
 
   if (environmentData == dynData.MemberEnd()) {
     if (v2) {
@@ -334,10 +325,8 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
     auto& profiler = profileData.emplace_back();
     profiler.startTimer();
 
-    auto idMember =
-        gameObjectDataVal.FindMember(v2 ? NewConstants::V2_GAMEOBJECT_ID.data() : NewConstants::GAMEOBJECT_ID.data());
-    auto geometryMember =
-        gameObjectDataVal.FindMember(v2 ? NewConstants::V2_GEOMETRY.data() : NewConstants::GEOMETRY.data());
+    auto idMember = gameObjectDataVal.FindMember(v2 ? NewConstants::V2_GAMEOBJECT_ID.data() : NewConstants::GAMEOBJECT_ID.data());
+    auto geometryMember = gameObjectDataVal.FindMember(v2 ? NewConstants::V2_GEOMETRY.data() : NewConstants::GEOMETRY.data());
     std::vector<ByRef<GameObjectInfo const>> foundObjects;
 
     if (idMember == gameObjectDataVal.MemberEnd() && geometryMember == gameObjectDataVal.MemberEnd()) {
@@ -352,8 +341,7 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
     if (idMember != gameObjectDataVal.MemberEnd()) {
       std::string_view id = idMember->value.GetString();
       std::string lookupString =
-          gameObjectDataVal.FindMember(v2 ? NewConstants::V2_LOOKUP_METHOD.data() : NewConstants::LOOKUP_METHOD.data())
-              ->value.GetString();
+          gameObjectDataVal.FindMember(v2 ? NewConstants::V2_LOOKUP_METHOD.data() : NewConstants::LOOKUP_METHOD.data())->value.GetString();
 
       // Convert string to lower case
       std::ranges::transform(lookupString, lookupString.begin(), ::tolower);
@@ -378,8 +366,7 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
 
       // Record find object time
       std::stringstream foundObjectsLog;
-      foundObjectsLog << "Finding objects for id (" << std::to_string(foundObjects.size()) << ") " << id << " using "
-                      << lookupString;
+      foundObjectsLog << "Finding objects for id (" << std::to_string(foundObjects.size()) << ") " << id << " using " << lookupString;
 
       if (getChromaConfig().PrintEnvironmentEnhancementDebug.GetValue()) {
         ChromaLogger::Logger.info("ID [\"{}\"] using method [{}] found:", id.data(), lookupString.c_str());
@@ -389,8 +376,7 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
     }
 
     if (geometryMember != gameObjectDataVal.MemberEnd()) {
-      auto goInfo = ByRef<GameObjectInfo const>(
-          _globalGameObjectInfos.emplace_back(geometryFactory.Create(geometryMember->value)));
+      auto goInfo = ByRef<GameObjectInfo const>(_globalGameObjectInfos.emplace_back(geometryFactory.Create(geometryMember->value)));
       // Record JSON parse time
       profiler.mark("Parsing JSON for geometry ");
 
@@ -413,29 +399,27 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
 
     TransformData spawnData(gameObjectDataVal, v2, noteLinesDistance);
 
-    std::optional<int> dupeAmount = getIfExists<int>(gameObjectDataVal, v2 ? NewConstants::V2_DUPLICATION_AMOUNT
-                                                                           : NewConstants::DUPLICATION_AMOUNT);
-    std::optional<bool> active =
-        getIfExists<bool>(gameObjectDataVal, v2 ? NewConstants::V2_ACTIVE : NewConstants::ACTIVE);
+    std::optional<int> dupeAmount =
+        getIfExists<int>(gameObjectDataVal, v2 ? NewConstants::V2_DUPLICATION_AMOUNT : NewConstants::DUPLICATION_AMOUNT);
+    std::optional<bool> active = getIfExists<bool>(gameObjectDataVal, v2 ? NewConstants::V2_ACTIVE : NewConstants::ACTIVE);
 
     // Create track if objects are found
-    auto trackNameIt =
-        gameObjectDataVal.FindMember(v2 ? Chroma::NewConstants::V2_TRACK.data() : Chroma::NewConstants::TRACK.data());
+    auto trackNameIt = gameObjectDataVal.FindMember(v2 ? Chroma::NewConstants::V2_TRACK.data() : Chroma::NewConstants::TRACK.data());
 
     std::optional<std::string_view> trackName;
-    std::vector<TrackW> track;
+    std::vector<TrackW> tracks;
 
     if (trackNameIt != gameObjectDataVal.MemberEnd()) {
       auto const& trackJSON = trackNameIt->value;
       if (trackJSON.IsString()) {
         trackName = trackJSON.GetString();
         std::string_view val = *trackName;
-        track = { trackBeatmapAD.getTrack(val) };
+        tracks = { trackBeatmapAD.getTrack(val) };
       } else if (trackJSON.IsArray()) {
         for (auto const& trackJSONItem : trackJSON.GetArray()) {
           trackName = trackJSON.GetString();
           std::string_view val = *trackName;
-          track.emplace_back(trackBeatmapAD.getTrack(val));
+          tracks.emplace_back(trackBeatmapAD.getTrack(val));
         }
       }
     }
@@ -458,8 +442,7 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
           std::vector<std::shared_ptr<IComponentData>> componentDatas;
           ComponentInitializer::PrefillComponentsData(gameObject->get_transform(), componentDatas);
           auto* newGameObject = UnityEngine::Object::Instantiate(gameObject);
-          ComponentInitializer::PostfillComponentsData(newGameObject->get_transform(), gameObject->get_transform(),
-                                                       componentDatas);
+          ComponentInitializer::PostfillComponentsData(newGameObject->get_transform(), gameObject->get_transform(), componentDatas);
 
           SceneManager::MoveGameObjectToScene(newGameObject, scene);
           newGameObject->get_transform()->SetParent(parent, true);
@@ -504,9 +487,8 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
       auto const& scale = spawnData.scale;
 
       if (position) {
-        CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Setting position to go {} to {} {} {}",
-                                                       gameObject->get_name().operator std::string(), position->x,
-                                                       position->y, position->z);
+        CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>(
+            "Setting position to go {} to {} {} {}", gameObject->get_name().operator std::string(), position->x, position->y, position->z);
       }
 
       // Handle TrackLaneRing
@@ -527,35 +509,33 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
       auto* parametricBoxController = gameObject->GetComponentInChildren<GlobalNamespace::ParametricBoxController*>();
       if (parametricBoxController != nullptr) {
         if (position || localPosition) {
-          ParametricBoxControllerParameters::SetTransformPosition(
-              parametricBoxController, parametricBoxController->get_transform()->get_localPosition());
+          ParametricBoxControllerParameters::SetTransformPosition(parametricBoxController,
+                                                                  parametricBoxController->get_transform()->get_localPosition());
         }
 
         if (scale) {
-          ParametricBoxControllerParameters::SetTransformScale(
-              parametricBoxController, parametricBoxController->get_transform()->get_localScale());
+          ParametricBoxControllerParameters::SetTransformScale(parametricBoxController,
+                                                               parametricBoxController->get_transform()->get_localScale());
         }
       }
 
-      auto* beatmapObjectsAvoidance = gameObject->GetComponentInChildren<GlobalNamespace::BeatmapObjectsAvoidance*>();
-
-      if (beatmapObjectsAvoidance != nullptr) {
-        if (position || localPosition) {
-          AvoidancePosition[beatmapObjectsAvoidance] = beatmapObjectsAvoidance->get_transform()->get_localPosition();
-        }
-
-        if (rotation || localRotation) {
-          AvoidanceRotation[beatmapObjectsAvoidance] = beatmapObjectsAvoidance->get_transform()->get_localRotation();
-        }
-      }
+      // apparently not needed for BS 1.37+?
+      // auto* beatmapObjectsAvoidance = gameObject->GetComponentInChildren<GlobalNamespace::BeatmapObjectsAvoidance*>();
+      // if (beatmapObjectsAvoidance != nullptr) {
+      //   if (position || localPosition) {
+      //     AvoidancePosition[beatmapObjectsAvoidance] = beatmapObjectsAvoidance->get_transform()->get_localPosition();
+      //   }
+      //   if (rotation || localRotation) {
+      //     AvoidanceRotation[beatmapObjectsAvoidance] = beatmapObjectsAvoidance->get_transform()->get_localRotation();
+      //   }
+      // }
 
       ComponentInitializer::InitializeCustomComponents(gameObject, gameObjectDataVal, v2);
 
       GameObjectTrackController* controller = nullptr;
 
-      if (!track.empty()) {
-        controller = GameObjectTrackController::HandleTrackData(gameObject, track, noteLinesDistance, v2, true)
-                         .value_or(nullptr);
+      if (!tracks.empty()) {
+        controller = GameObjectTrackController::HandleTrackData(gameObject, tracks, noteLinesDistance, v2, true).value_or(nullptr);
       }
 
       if (controller == nullptr) {
@@ -564,28 +544,33 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
       auto& controllerData = controller->getTrackControllerData();
 
       if (trackLaneRing != nullptr) {
-        controllerData.RotationUpdate +=
-            [=]() { RingRotationOffsets[trackLaneRing] = trackLaneRing->transform->get_localRotation(); };
-        controllerData.PositionUpdate +=
-            [=]() { trackLaneRing->_positionOffset = trackLaneRing->transform->get_localPosition(); };
-      } else if (parametricBoxController != nullptr) {
+        controllerData.RotationUpdate += [=]() { RingRotationOffsets[trackLaneRing] = trackLaneRing->transform->get_localRotation(); };
+        controllerData.PositionUpdate += [=]() { trackLaneRing->_positionOffset = trackLaneRing->transform->get_localPosition(); };
+      }
+      if (parametricBoxController != nullptr) {
         auto* parametricBoxControllerTransform = parametricBoxController->get_transform().ptr();
         controllerData.ScaleUpdate += [=]() {
-          ParametricBoxControllerParameters::SetTransformScale(parametricBoxController,
-                                                               parametricBoxControllerTransform->get_localScale());
+          ParametricBoxControllerParameters::SetTransformScale(parametricBoxController, parametricBoxControllerTransform->get_localScale());
         };
         controllerData.PositionUpdate += [=]() {
-          ParametricBoxControllerParameters::SetTransformPosition(
-              parametricBoxController, parametricBoxControllerTransform->get_localPosition());
-        };
-      } else if (beatmapObjectsAvoidance != nullptr) {
-        controllerData.RotationUpdate += [=]() {
-          AvoidanceRotation[beatmapObjectsAvoidance] = beatmapObjectsAvoidance->transform->get_localRotation();
-        };
-        controllerData.PositionUpdate += [=]() {
-          AvoidancePosition[beatmapObjectsAvoidance] = beatmapObjectsAvoidance->transform->get_localPosition();
+          ParametricBoxControllerParameters::SetTransformPosition(parametricBoxController,
+                                                                  parametricBoxControllerTransform->get_localPosition());
         };
       }
+
+      // for (auto track : tracks) {
+      //   track.RegisterGameObject(gameObject);
+      // }
+
+      // BS 1.37+ apparently doesn't need this
+      // if (beatmapObjectsAvoidance != nullptr) {
+      //   controllerData.RotationUpdate += [=]() {
+      //     AvoidanceRotation[beatmapObjectsAvoidance] = beatmapObjectsAvoidance->transform->get_localRotation();
+      //   };
+      //   controllerData.PositionUpdate += [=]() {
+      //     AvoidancePosition[beatmapObjectsAvoidance] = beatmapObjectsAvoidance->transform->get_localPosition();
+      //   };
+      // }
     }
 
     // Record end time
@@ -625,8 +610,7 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
   }
 }
 
-void EnvironmentEnhancementManager::GetChildRecursive(UnityEngine::Transform* gameObject,
-                                                      std::vector<UnityEngine::Transform*>& children) {
+void EnvironmentEnhancementManager::GetChildRecursive(UnityEngine::Transform* gameObject, std::vector<UnityEngine::Transform*>& children) {
   children.reserve(children.size() + gameObject->get_childCount());
   auto gameObjectChildCount = gameObject->get_childCount();
   for (int i = 0; i < gameObjectChildCount; i++) {

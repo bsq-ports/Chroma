@@ -457,10 +457,10 @@ void ChromaLightSwitchEventEffect::UnregisterLight(GlobalNamespace::ILightWithId
   ColorTweens.erase(it);
 }
 
-void ChromaLightSwitchEventEffect::RegisterLight(GlobalNamespace::ILightWithId* lightWithId, int id) {
+void ChromaLightSwitchEventEffect::RegisterLight(GlobalNamespace::ILightWithId* lightWithId, int key) {
   if (ColorTweens.contains(lightWithId)) {
     ChromaLogger::Logger.fmtLog<Paper::LogLevel::ERR>(
-        "Light with ID {} already registered in ChromaLightSwitchEventEffect, skipping registration", id);
+        "Light with ID {} already registered in ChromaLightSwitchEventEffect, skipping registration", key);
     return;
   }
 
@@ -469,7 +469,9 @@ void ChromaLightSwitchEventEffect::RegisterLight(GlobalNamespace::ILightWithId* 
     color = color.Alpha(_offColorIntensity);
   }
 
-  auto tableId = LightIDTableManager::GetActiveTableValueReverse(_lightsID, id).value_or(0);
+  auto id = LightIDTableManager::GetActiveTableValueReverse(_lightsID, key).value_or(0);
+  ChromaLogger::Logger.fmtLog<Paper::LogLevel::INF>(
+      "Registering light with key {} and id {} in ChromaLightSwitchEventEffect", lightWithId->get_lightId(), id);
   auto* tween = Chroma::Tween::ChromaTween::New_ctor(color, color, lightWithId, _lightManager, id);
 
   ColorTweens.emplace(lightWithId, tween);
