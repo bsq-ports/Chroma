@@ -26,6 +26,18 @@ using namespace Chroma;
 
 BombColorizer::ColorizerMap BombColorizer::Colorizers = BombColorizer::ColorizerMap();
 
+int _simpleColor() {
+  static int colorID = UnityEngine::Shader::PropertyToID("_SimpleColor");
+
+  return colorID;
+}
+
+int _colorId() {
+  static int colorID = UnityEngine::Shader::PropertyToID("_Color");
+
+  return colorID;
+}
+
 void BombColorizer::Refresh() {
   Sombrero::FastColor const& color = getColor();
 
@@ -43,24 +55,27 @@ void BombColorizer::Refresh() {
   }
 
   bombMaterial->SetColor(_simpleColor(), color);
-  bombMaterial->SetColor(_color(), color);
+  bombMaterial->SetColor(_colorId(), color);
   _materialPropertyBlockController->ApplyChanges();
 }
 
 BombColorizer::BombColorizer(GlobalNamespace::NoteControllerBase* noteController)
     : noteController(noteController),
-      _materialPropertyBlockController(
-          noteController->GetComponentInChildren<GlobalNamespace::MaterialPropertyBlockController*>()) {
+      _materialPropertyBlockController(noteController->GetComponentInChildren<GlobalNamespace::MaterialPropertyBlockController*>()) {
 
   OriginalColor = noteController->GetComponentInChildren<Renderer*>()->get_material()->GetColor(_simpleColor());
   // getter here causes the null value to instantiate
   // which then allows later use through field
   auto* materialPropertyBlock = _materialPropertyBlockController->get_materialPropertyBlock();
   materialPropertyBlock->SetColor(_simpleColor(), OriginalColor);
-  materialPropertyBlock->SetColor(_color(), OriginalColor);
+  materialPropertyBlock->SetColor(_colorId(), OriginalColor);
 }
 
-std::optional<Sombrero::FastColor> BombColorizer::getGlobalColor() {
+std::optional<Sombrero::FastColor> BombColorizer::getGlobalColor() const {
+  return GlobalColor;
+}
+
+std::optional<Sombrero::FastColor> BombColorizer::getGlobalColorStatic() {
   return GlobalColor;
 }
 
@@ -75,24 +90,9 @@ BombColorizer& BombColorizer::New(GlobalNamespace::NoteControllerBase* noteContr
   return Colorizers.try_emplace(noteController, noteController).first->second;
 }
 
-std::optional<Sombrero::FastColor> BombColorizer::GlobalColorGetter() {
-  return GlobalColor;
-}
 
 void BombColorizer::Reset() {
   GlobalColor = std::nullopt;
   Colorizers.clear();
   BombColorChanged.clear();
-}
-
-int BombColorizer::_simpleColor() {
-  static int colorID = UnityEngine::Shader::PropertyToID("_SimpleColor");
-
-  return colorID;
-}
-
-int BombColorizer::_color() {
-  static int colorID = UnityEngine::Shader::PropertyToID("_Color");
-
-  return colorID;
 }

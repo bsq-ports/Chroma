@@ -31,7 +31,7 @@ SliderColorizer* SliderColorizer::New(GlobalNamespace::SliderController* sliderC
   return &Colorizers.try_emplace(sliderControllerBase, sliderControllerBase).first->second;
 }
 
-GlobalNamespace::ColorType SliderColorizer::getColorType() {
+GlobalNamespace::ColorType SliderColorizer::getColorType() const {
   if ((_sliderController != nullptr) && (_sliderController->sliderData != nullptr)) {
     auto* sliderData = _sliderController->sliderData;
 
@@ -41,11 +41,11 @@ GlobalNamespace::ColorType SliderColorizer::getColorType() {
   return ColorType::ColorA;
 }
 
-std::optional<Sombrero::FastColor> SliderColorizer::GlobalColorGetter() {
+std::optional<Sombrero::FastColor> SliderColorizer::getGlobalColor() const {
   return NoteColorizer::GlobalColor[getColorType().value__];
 }
 
-std::optional<Sombrero::FastColor> SliderColorizer::OriginalColorGetter() {
+Sombrero::FastColor SliderColorizer::getOriginalColor() const {
   return _sliderController->_colorManager->ColorForType(getColorType());
 }
 

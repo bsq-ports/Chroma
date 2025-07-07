@@ -7,7 +7,7 @@
 
 namespace Chroma {
 
-template<typename T, typename U>
+template <typename T, typename U>
 concept IsConvertible = std::is_convertible_v<T, U>;
 
 template <typename T>
@@ -25,48 +25,34 @@ concept ObjectColorizerInternalMethods = ObjectColorizerMethods<T> && requires(T
   { t.OriginalColor } -> IsConvertible<std::optional<Sombrero::FastColor>>;
 };
 
-template <typename T> class ObjectColorizer {
+class ObjectColorizer {
 private:
   std::optional<Sombrero::FastColor> _color;
 
 protected:
   Sombrero::FastColor OriginalColor;
 
-  // virtual
-  [[nodiscard]] std::optional<Sombrero::FastColor> OriginalColorGetter() const {
+  [[nodiscard]] virtual std::optional<Sombrero::FastColor> getGlobalColor() const = 0;
+
+  [[nodiscard]] virtual Sombrero::FastColor getOriginalColor() const {
     return OriginalColor;
   }
 
-  // abstract void Refresh()
-  // abstract std::optional<Sombrero::FastColor> GlobalColorGetter()
-
-public:
-  [[nodiscard]] std::optional<Sombrero::FastColor> getSelfColor() const {
-    return _color;
-  }
-
-  [[nodiscard]] Sombrero::FastColor getColor() {
-    if (_color) {
-      return *_color;
-    }
-
-    auto globalColor = static_cast<T*>(this)->GlobalColorGetter();
-    if (globalColor) {
-      return *globalColor;
-    }
-
-    // Throw an exception here intentionally or CRASH?
-    return *static_cast<T*>(this)->OriginalColorGetter();
-  }
-
-  void Colorize(std::optional<Sombrero::FastColor> const& color) {
-    _color = color;
-    static_cast<T*>(this)->Refresh();
-  }
-
+public:  
   ObjectColorizer() = default;
-  ObjectColorizer(ObjectColorizer&&) noexcept = default;
-  virtual ~ObjectColorizer() = default;
+  ObjectColorizer(std::optional<Sombrero::FastColor> color) : _color(color) {}
+
+  [[nodiscard]] virtual Sombrero::FastColor getColor() const {
+    return _color.value_or(getGlobalColor().value_or(getOriginalColor()));
+  }
+
+
+  constexpr void Colorize(std::optional<Sombrero::FastColor> const& color) {
+    _color = color;
+    Refresh();
+  }
+
+  virtual void Refresh() = 0;
 };
 
 } // namespace Chroma

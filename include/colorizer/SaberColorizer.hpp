@@ -22,20 +22,15 @@ class TubeBloomPrePassLight;
 } // namespace GlobalNamespace
 
 namespace Chroma {
-class SaberColorizer : public ObjectColorizer<SaberColorizer> {
+class SaberColorizer : public ObjectColorizer {
 private:
-  friend class ObjectColorizer<SaberColorizer>;
   GlobalNamespace::SaberTrail* _saberTrail;
-  Sombrero::FastColor _trailTintColor;
   GlobalNamespace::TubeBloomPrePassLight* _saberLight;
+  Sombrero::FastColor _trailTintColor;
   GlobalNamespace::SaberType _saberType;
   Sombrero::FastColor _lastColor;
   GlobalNamespace::SaberModelController* _saberModelController;
 
-public:
-  [[nodiscard]] GlobalNamespace::SaberModelController* getSaberModelController() const;
-
-private:
   explicit SaberColorizer(GlobalNamespace::Saber* saber, GlobalNamespace::SaberModelController* saberModelController);
 
   // SiraUtil stuff
@@ -44,11 +39,12 @@ private:
   void ColorColorable(Sombrero::FastColor const& color);
 
 protected:
-  std::optional<Sombrero::FastColor> GlobalColorGetter() const;
+  [[nodiscard]] std::optional<Sombrero::FastColor> getGlobalColor() const final;
 
-  void Refresh();
+  void Refresh() final;
 
 public:
+  
   friend class std::pair<GlobalNamespace::SaberModelController const*, SaberColorizer>;
   friend class std::pair<GlobalNamespace::SaberModelController const* const, Chroma::SaberColorizer>;
   SaberColorizer(SaberColorizer const&) = delete;
@@ -66,6 +62,8 @@ public:
 
   static void GlobalColorize(GlobalNamespace::SaberType saberType, std::optional<Sombrero::FastColor> const& color);
   static void Reset();
+
+  [[nodiscard]] GlobalNamespace::SaberModelController* getSaberModelController() const;
 
   // extensions
   static std::unordered_set<SaberColorizer*> GetColorizerList(GlobalNamespace::SaberType saberType);

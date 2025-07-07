@@ -9,19 +9,23 @@
 #include "GlobalNamespace/NoteController.hpp"
 #include "GlobalNamespace/ColorManager.hpp"
 
-
 #include <unordered_map>
 #include "colorizer/NoteColorizer.hpp"
 #include "colorizer/SliderColorizer.hpp"
 #include "colorizer/SaberColorizer.hpp"
 #include "ChromaController.hpp"
 
-
 using namespace CustomJSONData;
 using namespace GlobalNamespace;
 using namespace UnityEngine;
 using namespace Sombrero;
 using namespace Chroma;
+
+static int _colorID() {
+  static int colorID = UnityEngine::Shader::PropertyToID("_Color");
+
+  return colorID;
+}
 
 NoteColorizer::NoteColorizer(GlobalNamespace::NoteControllerBase* noteController) : _noteController(noteController) {
 
@@ -41,7 +45,7 @@ NoteColorizer* NoteColorizer::New(GlobalNamespace::NoteControllerBase* noteContr
   return &Colorizers.try_emplace(noteControllerBase, noteControllerBase).first->second;
 }
 
-GlobalNamespace::ColorType NoteColorizer::getColorType() {
+GlobalNamespace::ColorType NoteColorizer::getColorType() const {
   auto* noteData = _noteController->get_noteData();
   if (noteData != nullptr) {
     return noteData->colorType;
@@ -50,7 +54,7 @@ GlobalNamespace::ColorType NoteColorizer::getColorType() {
   return ColorType::ColorA;
 }
 
-std::optional<Sombrero::FastColor> NoteColorizer::GlobalColorGetter() {
+std::optional<Sombrero::FastColor> NoteColorizer::getGlobalColor() const {
   auto colorType = getColorType();
 
   if (colorType == ColorType::None) {
@@ -60,12 +64,11 @@ std::optional<Sombrero::FastColor> NoteColorizer::GlobalColorGetter() {
   return GlobalColor[colorType.value__];
 }
 
-std::optional<Sombrero::FastColor> NoteColorizer::OriginalColorGetter() {
+Sombrero::FastColor NoteColorizer::getOriginalColor() const {
   return _colorNoteVisuals->_colorManager->ColorForType(getColorType());
 }
 
-void NoteColorizer::GlobalColorize(std::optional<Sombrero::FastColor> const& color,
-                                   GlobalNamespace::ColorType const& colorType) {
+void NoteColorizer::GlobalColorize(std::optional<Sombrero::FastColor> const& color, GlobalNamespace::ColorType const& colorType) {
   GlobalColor[colorType.value__] = color;
   for (auto& [_, colorizer] : Colorizers) {
     colorizer.Refresh();
@@ -97,7 +100,7 @@ void NoteColorizer::Refresh() {
     return;
   }
 
-  Sombrero::FastColor const& color = getColor().Alpha(_colorNoteVisuals->_noteColor.a);
+  Sombrero::FastColor const& color = getColor();
   if (color == Sombrero::FastColor(_colorNoteVisuals->_noteColor)) {
     return;
   }
@@ -117,18 +120,14 @@ void NoteColorizer::Refresh() {
       continue;
     }
 
-    if (materialPropertyBlockController->materialPropertyBlock != nullptr) {
-      auto* propertyBlock = materialPropertyBlockController->materialPropertyBlock;
-      auto const& originalColor = propertyBlock->GetColor(_colorID());
-      SetColor(propertyBlock, _colorID(), color.Alpha(originalColor.a));
+    if (materialPropertyBlockController->materialPropertyBlock == nullptr) {
+      continue;
     }
 
+    auto* propertyBlock = materialPropertyBlockController->materialPropertyBlock;
+    auto originalColor = propertyBlock->GetColor(_colorID());
+
+    SetColor(propertyBlock, _colorID(), color.Alpha(originalColor.a));
     ApplyChanges(materialPropertyBlockController);
   }
-}
-
-int NoteColorizer::_colorID() {
-  static int colorID = UnityEngine::Shader::PropertyToID("_Color");
-
-  return colorID;
 }

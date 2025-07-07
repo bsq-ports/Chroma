@@ -50,7 +50,7 @@ SaberColorizer& SaberColorizer::New(GlobalNamespace::Saber* saber) {
   return Colorizers.try_emplace(saberModelController, saber, saberModelController).first->second;
 }
 
-std::optional<Sombrero::FastColor> SaberColorizer::GlobalColorGetter() const {
+std::optional<Sombrero::FastColor> SaberColorizer::getGlobalColor() const {
   return GlobalColor[_saberType.value__];
 }
 
@@ -73,9 +73,10 @@ void SaberColorizer::Reset() {
 
 void SaberColorizer::Refresh() {
   Sombrero::FastColor const& color = getColor().Alpha(1.0F);
-  if (color == Sombrero::FastColor(_lastColor)) {
+  if (color == _lastColor) {
     return;
   }
+  _lastColor = color;
 
   static auto SetColor =
       FPtrWrapper<static_cast<void (UnityEngine::MaterialPropertyBlock::*)(StringW, UnityEngine::Color)>(
@@ -85,7 +86,6 @@ void SaberColorizer::Refresh() {
           &UnityEngine::Renderer::SetPropertyBlock)>::get();
   static auto Refresh = FPtrWrapper<&Parametric3SliceSpriteController::Refresh>::get();
 
-  _lastColor = color;
   if (!IsColorable(_saberModelController)) {
     auto _setSaberGlowColors = _saberModelController->_setSaberGlowColors;
     auto _setSaberFakeGlowColors = _saberModelController->_setSaberFakeGlowColors;

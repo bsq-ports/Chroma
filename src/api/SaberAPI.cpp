@@ -34,19 +34,12 @@ EXPOSE_API(setGlobalSaberColorSafe, void, int saberType, std::optional<Sombrero:
 EXPOSE_API(getSaberColorSafe, OptColor, GlobalNamespace::SaberModelController* saberModelController) {
   auto& colorizer = SaberColorizer::GetColorizer(saberModelController);
 
-  auto optional = colorizer.getSelfColor();
+  auto color = colorizer.getColor();
 
-  Sombrero::FastColor color;
-
-  if (optional) {
-    color = optional.value();
-    return OptColorFromColor(color);
-  }
-  return OptColorNull;
+  return OptColorFromColor(color);
 }
 
-EXPOSE_API(setSaberColorSafe, void, GlobalNamespace::SaberModelController* saberModelController,
-           std::optional<Sombrero::FastColor> color) {
+EXPOSE_API(setSaberColorSafe, void, GlobalNamespace::SaberModelController* saberModelController, std::optional<Sombrero::FastColor> color) {
   SaberColorizer::ColorizeSaber(saberModelController, color);
 }
 

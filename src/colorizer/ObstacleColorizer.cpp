@@ -16,8 +16,7 @@ using namespace UnityEngine;
 
 using namespace Chroma;
 
-ObstacleColorizer::ObstacleColorizer(GlobalNamespace::ObstacleControllerBase* obstacleController)
-    : obstacleController(obstacleController) {
+ObstacleColorizer::ObstacleColorizer(GlobalNamespace::ObstacleControllerBase* obstacleController) : obstacleController(obstacleController) {
   auto* stretchableObstacle = obstacleController->GetComponent<StretchableObstacle*>();
   _obstacleFrame = stretchableObstacle->_obstacleFrame;
   _obstacleFakeGlow = stretchableObstacle->_obstacleFakeGlow;
@@ -53,12 +52,56 @@ void ObstacleColorizer::GlobalColorize(std::optional<Sombrero::FastColor> const&
   }
 }
 
-int ObstacleColorizer::_tintColorID() {
+int _tintColorID() {
   static auto id = UnityEngine::Shader::PropertyToID("_TintColor");
   return id;
 }
 
-int ObstacleColorizer::_addColorID() {
+int _addColorID() {
   static auto id = UnityEngine::Shader::PropertyToID("_AddColor");
   return id;
+}
+
+void ObstacleColorizer::Refresh() {
+  Sombrero::FastColor const& color = getColor();
+  auto frameColor = Sombrero::FastColor(_obstacleFrame->color);
+  if (color == frameColor) {
+    return;
+  }
+
+  ObstacleColorChanged.invoke(obstacleController, color);
+
+  // We do not handle coloring in obstacle colorable
+  if (ObstacleColorable) {
+    return;
+  }
+
+  _obstacleFrame->color = color;
+  _obstacleFrame->Refresh();
+  
+  if (_obstacleFakeGlow) {
+    _obstacleFakeGlow->color = color;
+    static auto Refresh = FPtrWrapper<&GlobalNamespace::ParametricBoxFakeGlowController::Refresh>::get();
+    Refresh(_obstacleFakeGlow);
+  }
+
+  Sombrero::FastColor value = color * _addColorMultiplier;
+  value.a = 0.0F;
+
+  static auto ApplyChanges = FPtrWrapper<&GlobalNamespace::MaterialPropertyBlockController::ApplyChanges>::get();
+  static auto SetColor = FPtrWrapper<static_cast<void (UnityEngine::MaterialPropertyBlock::*)(int, UnityEngine::Color)>(
+      &UnityEngine::MaterialPropertyBlock::SetColor)>::get();
+
+  for (auto materialPropertyBlockController : _materialPropertyBlockControllers) {
+    if (!materialPropertyBlockController  || !materialPropertyBlockController->materialPropertyBlock) {
+      continue;
+    }
+
+    Sombrero::FastColor white = Sombrero::FastColor::white();
+    
+    SetColor(materialPropertyBlockController->materialPropertyBlock, _addColorID(), value);
+    SetColor(materialPropertyBlockController->materialPropertyBlock, _tintColorID(),
+             Sombrero::FastColor::Lerp(color, white, _obstacleCoreLerpToWhiteFactor));
+    ApplyChanges(materialPropertyBlockController);
+  }
 }

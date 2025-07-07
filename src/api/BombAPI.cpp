@@ -16,7 +16,7 @@ using namespace Sombrero;
 
 // TODO: unsure of this
 EXPOSE_API(getBombColorSafe, OptColor) {
-  auto optional = BombColorizer::getGlobalColor();
+  auto optional = BombColorizer::getGlobalColorStatic();
 
   Sombrero::FastColor color;
 

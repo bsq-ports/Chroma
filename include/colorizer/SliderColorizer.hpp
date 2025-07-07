@@ -1,7 +1,5 @@
 #pragma once
 
-
-
 #include "ObjectColorizer.hpp"
 
 #include "GlobalNamespace/ColorType.hpp"
@@ -18,11 +16,11 @@ using ColorPair = std::pair<std::optional<Sombrero::FastColor>, std::optional<So
 using SliderColorStack = std::stack<ColorPair>;
 
 namespace Chroma {
-class SliderColorizer : public ObjectColorizer<SliderColorizer> {
-private:
-  friend class ObjectColorizer<SliderColorizer>;
-  friend class NoteColorizer;
+class SliderColorizer : public ObjectColorizer {
+friend class std::pair<GlobalNamespace::SliderController const*, SliderColorizer>;
+friend class std::pair<GlobalNamespace::SliderController const* const, SliderColorizer>;
 
+private:
   GlobalNamespace::SliderController* _sliderController;
 
   SliderColorizer(GlobalNamespace::SliderController* sliderController);
@@ -30,11 +28,10 @@ private:
 protected:
   //        override Color? GlobalColorGetter => GlobalColor[(int)ColorType];
   //        override Color OriginalColorGetter => OriginalColors[(int)ColorType];
-  std::optional<Sombrero::FastColor> GlobalColorGetter();
+  [[nodiscard]] std::optional<Sombrero::FastColor> getGlobalColor() const final;
 
-  std::optional<Sombrero::FastColor> OriginalColorGetter();
+  [[nodiscard]] Sombrero::FastColor getOriginalColor() const final;
 
-  void Refresh();
 
 public:
   inline static bool SliderColorable = false;
@@ -42,27 +39,31 @@ public:
                                        GlobalNamespace::ColorType>
       SliderColorChanged;
   inline static std::unordered_map<GlobalNamespace::SliderController const*, SliderColorizer> Colorizers;
-  GlobalNamespace::ColorType getColorType();
 
-  friend class std::pair<GlobalNamespace::SliderController const*, SliderColorizer>;
-  friend class std::pair<GlobalNamespace::SliderController const* const, Chroma::SliderColorizer>;
   SliderColorizer(SliderColorizer const&) = delete;
   static SliderColorizer* New(GlobalNamespace::SliderController* sliderControllerBase);
 
   static void Reset();
 
+  [[nodiscard]] GlobalNamespace::ColorType getColorType() const;
+  void Refresh() final;
+
   // extensions
-  inline static SliderColorizer* GetSliderColorizer(GlobalNamespace::SliderController* sliderController) {
+  static SliderColorizer* GetSliderColorizer(GlobalNamespace::SliderController* sliderController) {
     auto it = Colorizers.find(sliderController);
-    if (it == Colorizers.end()) return nullptr;
+    if (it == Colorizers.end()) {
+      return nullptr;
+    }
 
     return &it->second;
   }
 
-  inline static void ColorizeSlider(GlobalNamespace::SliderController* sliderController,
-                                    std::optional<Sombrero::FastColor> const& color) {
-    auto colorizer = GetSliderColorizer(sliderController);
-    if (colorizer) colorizer->Colorize(color);
+  constexpr static void ColorizeSlider(GlobalNamespace::SliderController* sliderController,
+                             std::optional<Sombrero::FastColor> const& color) {
+    auto* colorizer = GetSliderColorizer(sliderController);
+    if (colorizer) {
+      colorizer->Colorize(color);
+    }
   }
 };
 } // namespace Chroma

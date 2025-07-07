@@ -19,17 +19,17 @@ class NoteController;
 class NoteCutInfo;
 class MaterialPropertyBlockController;
 class ColorNoteVisuals;
-}
+} // namespace GlobalNamespace
 
 using ColorPair = std::pair<std::optional<Sombrero::FastColor>, std::optional<Sombrero::FastColor>>;
 using NoteColorStack = std::stack<ColorPair>;
 
 namespace Chroma {
-class NoteColorizer : public ObjectColorizer<NoteColorizer> {
-private:
-  friend class ObjectColorizer<NoteColorizer>;
-  static int _colorID();
+class NoteColorizer : public ObjectColorizer {
+  friend class std::pair<GlobalNamespace::NoteControllerBase const*, NoteColorizer>;
+  friend class std::pair<GlobalNamespace::NoteControllerBase const* const, NoteColorizer>;
 
+private:
   GlobalNamespace::NoteControllerBase* _noteController;
 
   GlobalNamespace::ColorNoteVisuals* _colorNoteVisuals;
@@ -38,37 +38,32 @@ private:
   NoteColorizer(GlobalNamespace::NoteControllerBase* noteController);
 
 protected:
+  [[nodiscard]] std::optional<Sombrero::FastColor> getGlobalColor() const final;
 
-  std::optional<Sombrero::FastColor> GlobalColorGetter();
+  [[nodiscard]] Sombrero::FastColor getOriginalColor() const final;
 
-  std::optional<Sombrero::FastColor> OriginalColorGetter();
-
-  void Refresh();
+  void Refresh() final;
 
 public:
   inline static bool NoteColorable = false;
   inline static UnorderedEventCallback<GlobalNamespace::NoteControllerBase*, Sombrero::FastColor const&,
                                        GlobalNamespace::ColorType>
       NoteColorChanged;
+
   inline static std::unordered_map<GlobalNamespace::NoteControllerBase const*, NoteColorizer> Colorizers;
   inline static std::array<std::optional<Sombrero::FastColor>, 2> GlobalColor = { std::nullopt, std::nullopt };
-  GlobalNamespace::ColorType getColorType();
 
-  friend class std::pair<GlobalNamespace::NoteControllerBase const*, NoteColorizer>;
-  friend class std::pair<GlobalNamespace::NoteControllerBase const* const, Chroma::NoteColorizer>;
-  NoteColorizer(NoteColorizer const&) = delete;
   static NoteColorizer* New(GlobalNamespace::NoteControllerBase* noteControllerBase);
-
   static void GlobalColorize(std::optional<Sombrero::FastColor> const& color,
                              GlobalNamespace::ColorType const& colorType);
-
   static void Reset();
-
   static void ColorizeSaber(GlobalNamespace::NoteController* noteController,
                             GlobalNamespace::NoteCutInfo const& noteCutInfo);
 
+  [[nodiscard]] GlobalNamespace::ColorType getColorType() const;
+
   // extensions
-  inline static NoteColorizer* GetNoteColorizer(GlobalNamespace::NoteControllerBase* noteController) {
+  static NoteColorizer* GetNoteColorizer(GlobalNamespace::NoteControllerBase* noteController) {
     auto it = Colorizers.find(noteController);
     if (it == Colorizers.end()) {
       return nullptr;
@@ -77,8 +72,8 @@ public:
     return &it->second;
   }
 
-  inline static void ColorizeNote(GlobalNamespace::NoteControllerBase* noteController,
-                                  std::optional<Sombrero::FastColor> const& color) {
+  constexpr static void ColorizeNote(GlobalNamespace::NoteControllerBase* noteController,
+                                     std::optional<Sombrero::FastColor> const& color) {
     auto* colorizer = GetNoteColorizer(noteController);
     if (colorizer != nullptr) {
       colorizer->Colorize(color);
