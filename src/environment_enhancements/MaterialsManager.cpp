@@ -23,7 +23,7 @@ using namespace Chroma;
 using namespace UnityEngine;
 
 ShaderType shaderTypeFromString(std::string_view str) {
-#define READ_ENUM(m)                                                                                                   \
+#define READ_ENUM(m)                                                                                                                       \
   if (str == #m) return ShaderType::m;
 
   READ_ENUM(Standard)
@@ -40,8 +40,7 @@ ShaderType shaderTypeFromString(std::string_view str) {
   return Chroma::ShaderType::Standard;
 }
 
-Chroma::MaterialsManager::MaterialsManager(rapidjson::Value const& customData,
-                                           TracksAD::BeatmapAssociatedData& beatmapAD, bool v2)
+Chroma::MaterialsManager::MaterialsManager(rapidjson::Value const& customData, TracksAD::BeatmapAssociatedData& beatmapAD, bool v2)
     : beatmapAD(beatmapAD), v2(v2) {
   auto it = customData.FindMember(v2 ? NewConstants::V2_MATERIALS.data() : NewConstants::MATERIALS.data());
 
@@ -68,9 +67,8 @@ UnityEngine::Material* Chroma::MaterialsManager::InstantiateSharedMaterial(Shade
   StringW shaderName;
   ArrayW<StringW> shaderKeywords;
 
-  MaterialGlobalIlluminationFlags globalIlluminationFlags = IsLightType(shaderType)
-                                                                ? MaterialGlobalIlluminationFlags::EmissiveIsBlack
-                                                                : MaterialGlobalIlluminationFlags::RealtimeEmissive;
+  MaterialGlobalIlluminationFlags globalIlluminationFlags =
+      IsLightType(shaderType) ? MaterialGlobalIlluminationFlags::EmissiveIsBlack : MaterialGlobalIlluminationFlags::RealtimeEmissive;
 
   // Keywords found in RUE PC in BS 1.23
   switch (shaderType) {
@@ -89,32 +87,30 @@ UnityEngine::Material* Chroma::MaterialsManager::InstantiateSharedMaterial(Shade
     break;
   case ShaderType::OpaqueLight:
     shaderName = opaqueLight;
-    shaderKeywords =
-        ArrayW<StringW>(std::initializer_list<StringW>({ "DIFFUSE", "ENABLE_BLUE_NOISE", "ENABLE_DIFFUSE",
-                                                         "ENABLE_HEIGHT_FOG", "ENABLE_LIGHTNING", "USE_COLOR_FOG" }));
+    shaderKeywords = ArrayW<StringW>(std::initializer_list<StringW>(
+        { "DIFFUSE", "ENABLE_BLUE_NOISE", "ENABLE_DIFFUSE", "ENABLE_HEIGHT_FOG", "ENABLE_LIGHTNING", "USE_COLOR_FOG" }));
     break;
   case ShaderType::TransparentLight:
     shaderName = transparentLight;
-    shaderKeywords = ArrayW<StringW>(std::initializer_list<StringW>(
-        { "ENABLE_HEIGHT_FOG", "MULTIPLY_COLOR_WITH_ALPHA", "_ENABLE_MAIN_EFFECT_WHITE_BOOST" }));
+    shaderKeywords = ArrayW<StringW>(
+        std::initializer_list<StringW>({ "ENABLE_HEIGHT_FOG", "MULTIPLY_COLOR_WITH_ALPHA", "_ENABLE_MAIN_EFFECT_WHITE_BOOST" }));
     break;
   case ShaderType::BaseWater:
     shaderName = water;
     shaderKeywords = ArrayW<StringW>(std::initializer_list<StringW>(
-        { "FOG", "HEIGHT_FOG", "INVERT_RIMLIGHT", "MASK_RED_IS_ALPHA", "NOISE_DITHERING", "NORMAL_MAP",
-          "REFLECTION_PROBE", "REFLECTION_PROBE_BOX_PROJECTION", "_DECALBLEND_ALPHABLEND", "_DISSOLVEAXIS_LOCALX",
-          "_EMISSIONCOLORTYPE_FLAT", "_EMISSIONTEXTURE_NONE", "_RIMLIGHT_NONE", "_ROTATE_UV_NONE", "_VERTEXMODE_NONE",
-          "_WHITEBOOSTTYPE_NONE", "_ZWRITE_ON" }));
+        { "FOG", "HEIGHT_FOG", "INVERT_RIMLIGHT", "MASK_RED_IS_ALPHA", "NOISE_DITHERING", "NORMAL_MAP", "REFLECTION_PROBE",
+          "REFLECTION_PROBE_BOX_PROJECTION", "_DECALBLEND_ALPHABLEND", "_DISSOLVEAXIS_LOCALX", "_EMISSIONCOLORTYPE_FLAT",
+          "_EMISSIONTEXTURE_NONE", "_RIMLIGHT_NONE", "_ROTATE_UV_NONE", "_VERTEXMODE_NONE", "_WHITEBOOSTTYPE_NONE", "_ZWRITE_ON" }));
     break;
   case ShaderType::Glowing: {
     shaderName = glowing;
     shaderKeywords = ArrayW<StringW>();
   }
   }
-  auto shader = Shader::Find(shaderName);
+  auto shader = // Shader::Find(shaderName);
+      Resources::FindObjectsOfTypeAll<Shader*>().front([&](auto const& e) { return e->get_name() == shaderName; }).value_or(nullptr);
   // TODO: Shader.Find or FindObjectsOfTypeAll?
   // https://github.com/Aeroluna/Heck/blob/09af7a46957f3a4ff2968a93f9337a3058e47693/Chroma/EnvironmentEnhancement/MaterialsManager.cs#L25?
-  // Resources::FindObjectsOfTypeAll<Shader*>().front([&](auto const& e) { return e->get_name() == shaderName; });
 
   if (!shader) {
     ChromaLogger::Logger.error("Unable to find shader {}", shaderName);
@@ -154,8 +150,7 @@ UnityEngine::Material* Chroma::MaterialsManager::InstantiateSharedMaterial(Shade
 
 MaterialInfo Chroma::MaterialsManager::CreateMaterialInfo(rapidjson::Value const& data) {
   ArrayW<StringW> shaderKeywords;
-  auto shaderKeywordsIt =
-      data.FindMember(v2 ? NewConstants::V2_SHADER_KEYWORDS.data() : NewConstants::SHADER_KEYWORDS.data());
+  auto shaderKeywordsIt = data.FindMember(v2 ? NewConstants::V2_SHADER_KEYWORDS.data() : NewConstants::SHADER_KEYWORDS.data());
   if (shaderKeywordsIt != data.MemberEnd()) {
     auto arr = shaderKeywordsIt->value.GetArray();
     shaderKeywords = { arr.Size() };
@@ -167,8 +162,7 @@ MaterialInfo Chroma::MaterialsManager::CreateMaterialInfo(rapidjson::Value const
   }
 
   auto color = ChromaUtils::ChromaUtilities::GetColorFromData(data, v2);
-  auto shaderTypeStr = ChromaUtils::getIfExists<std::string_view>(data, v2 ? NewConstants::V2_SHADER_PRESET
-                                                                           : NewConstants::SHADER_PRESET);
+  auto shaderTypeStr = ChromaUtils::getIfExists<std::string_view>(data, v2 ? NewConstants::V2_SHADER_PRESET : NewConstants::SHADER_PRESET);
   ShaderType shaderType = shaderTypeStr ? shaderTypeFromString(shaderTypeStr->data()) : ShaderType::Standard;
 
   std::optional<std::vector<TrackW>> tracks;
@@ -292,7 +286,7 @@ UnityEngine::Material* MaterialsManager::GetMaterialTemplate(ShaderType shaderTy
     break;
 
   case ShaderType::Glowing:
-    originalMaterial = (Material*) _glowingMaterial;
+    originalMaterial = (Material*)_glowingMaterial;
     break;
   }
 
