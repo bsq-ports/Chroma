@@ -15,7 +15,7 @@
   "workspace": {
     "scripts": {
       "build": [
-        "pwsh ./scripts/build.ps1"
+        "pwsh ./scripts/build.ps1 --release"
       ],
       "copy": [
         "pwsh ./scripts/copy.ps1"
