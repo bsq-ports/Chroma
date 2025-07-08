@@ -87,7 +87,7 @@ static int constexpr stringCompare(std::string const& str1, std::string const& s
 }
 
 template <typename T> static std::optional<T> getIfExists(rapidjson::Value const& val, std::string_view member) {
-  if (!val.IsObject() || val.Empty() || val.IsNull()) return std::nullopt;
+  if (!val.IsObject() || val.MemberCount() == 0 || val.IsNull()) return std::nullopt;
 
   auto it = val.FindMember(member.data());
   if (it == val.MemberEnd()) return std::nullopt;

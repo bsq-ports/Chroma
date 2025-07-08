@@ -1,6 +1,8 @@
 Param(
     [Parameter(Mandatory=$false)]
-    [Switch]$clean
+    [Switch]$clean,
+    [Parameter(Mandatory=$false)]
+    [Switch]$release
 )
 
 # if user specified clean, remove all build files

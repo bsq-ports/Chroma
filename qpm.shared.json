@@ -90,7 +90,7 @@
       },
       {
         "id": "tracks",
-        "versionRange": "^2.3.1",
+        "versionRange": "^2.4.1",
         "additionalData": {
           "private": true
         }
@@ -178,17 +178,17 @@
     {
       "dependency": {
         "id": "tracks",
-        "versionRange": "=2.3.1",
+        "versionRange": "=2.4.1",
         "additionalData": {
-          "soLink": "https://github.com/StackDoubleFlow/Tracks/releases/download/v2.3.1/libtracks.so",
-          "debugSoLink": "https://github.com/StackDoubleFlow/Tracks/releases/download/v2.3.1/debug_libtracks.so",
+          "soLink": "https://github.com/bsq-ports/Tracks/releases/download/v2.4.1/libtracks.so",
+          "debugSoLink": "https://github.com/bsq-ports/Tracks/releases/download/v2.4.1/debug_libtracks.so",
           "overrideSoName": "libtracks.so",
-          "modLink": "https://github.com/StackDoubleFlow/Tracks/releases/download/v2.3.1/Tracks.qmod",
-          "branchName": "version/v2_3_1",
+          "modLink": "https://github.com/bsq-ports/Tracks/releases/download/v2.4.1/Tracks.qmod",
+          "branchName": "version/v2_4_1",
           "cmake": true
         }
       },
-      "version": "2.3.1"
+      "version": "2.4.1"
     },
     {
       "dependency": {
