@@ -114,7 +114,7 @@ UnityEngine::Material* Chroma::MaterialsManager::InstantiateSharedMaterial(Shade
 
   if (!shader) {
     ChromaLogger::Logger.error("Unable to find shader {}", shaderName);
-    if (shaderType == ShaderType::BaseWater) {
+    if (shaderType == ShaderType::BaseWater && EnvironmentMaterialManager::waterLit) {
       ChromaLogger::Logger.info("Grabbing Water");
       shader = EnvironmentMaterialManager::waterLit.ptr();
     } else {
