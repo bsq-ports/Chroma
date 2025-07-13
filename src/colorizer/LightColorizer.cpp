@@ -56,6 +56,17 @@ LightColorizer::LightColorizer(ChromaLightSwitchEventEffect* lightSwitchEventEff
 
 LightColorizer& LightColorizer::New(ChromaLightSwitchEventEffect* lightSwitchEventEffect,
                                     GlobalNamespace::LightWithIdManager* lightManager) {
+  // customplatforms can create an extra lightswitcheventeffect, so just return the existing colorizer
+  auto it = Colorizers.find(lightSwitchEventEffect->_event.value__);
+  if (it != Colorizers.end()) {
+    return it->second;
+  }
+
+  auto lightIdIt = ColorizersByLightID.find(lightSwitchEventEffect->_lightsID);
+  if (lightIdIt != ColorizersByLightID.end()) {
+    return *lightIdIt->second;
+  }
+
   auto& light =
       Colorizers.emplace(lightSwitchEventEffect->_event.value__, LightColorizer(lightSwitchEventEffect, lightManager)).first->second;
   ColorizersByLightID[lightSwitchEventEffect->_lightsID] = &light;
