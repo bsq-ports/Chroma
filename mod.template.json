@@ -7,10 +7,12 @@
   "porter": "FernTheDev, nyamimi~",
   "version": "${version}",
   "packageId": "com.beatgames.beatsaber",
-  "packageVersion": "1.40.6_6407",
+  "packageVersion": "1.40.7_7060",
   "description": "Colors!",
   "modFiles": [],
-  "lateModFiles": ["${binary}"],
+  "lateModFiles": [
+    "${binary}"
+  ],
   "dependencies": [],
   "libraryFiles": [],
   "fileCopies": [],

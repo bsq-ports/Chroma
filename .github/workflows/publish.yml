@@ -44,7 +44,7 @@ jobs:
         with:
           #required
           workflow_token: ${{secrets.GITHUB_TOKEN}}
-
+          resolve_ndk: true
           restore: true # will run restore on download
           cache: true #will cache dependencies
 

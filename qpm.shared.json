@@ -7,7 +7,7 @@
     "info": {
       "name": "Chroma",
       "id": "chroma",
-      "version": "2.8.1",
+      "version": "2.9.4",
       "url": "https://github.com/bsq-ports/Chroma",
       "additionalData": {
         "headersOnly": true,
@@ -17,7 +17,10 @@
     "workspace": {
       "scripts": {
         "build": [
-          "pwsh ./scripts/build.ps1"
+          "pwsh ./scripts/build.ps1 --release"
+        ],
+        "clean": [
+          "pwsh ./scripts/build.ps1 -clean"
         ],
         "copy": [
           "pwsh ./scripts/copy.ps1"
@@ -37,12 +40,12 @@
     "dependencies": [
       {
         "id": "beatsaber-hook",
-        "versionRange": "^6.1.7",
+        "versionRange": "^6.4.2",
         "additionalData": {}
       },
       {
         "id": "custom-types",
-        "versionRange": "^0.18.0",
+        "versionRange": "^0.18.3",
         "additionalData": {
           "includeQmod": true,
           "private": true
@@ -50,7 +53,7 @@
       },
       {
         "id": "bs-cordl",
-        "versionRange": "^4006.0.0",
+        "versionRange": "4007.*",
         "additionalData": {
           "includeQmod": true,
           "private": true
@@ -65,14 +68,14 @@
       },
       {
         "id": "config-utils",
-        "versionRange": "^2.0.0",
+        "versionRange": "^2.0.3",
         "additionalData": {
           "private": true
         }
       },
       {
         "id": "bsml",
-        "versionRange": "^0.4.8",
+        "versionRange": "^0.4.54",
         "additionalData": {
           "includeQmod": true,
           "private": true
@@ -80,12 +83,12 @@
       },
       {
         "id": "conditional-dependencies",
-        "versionRange": "*",
+        "versionRange": "^0.3.0",
         "additionalData": {}
       },
       {
         "id": "sombrero",
-        "versionRange": "^0.1.37",
+        "versionRange": "^0.1.43",
         "additionalData": {}
       },
       {
@@ -104,14 +107,14 @@
       },
       {
         "id": "scotland2",
-        "versionRange": "^0.1.0",
+        "versionRange": "^0.1.6",
         "additionalData": {
           "includeQmod": false
         }
       },
       {
         "id": "songcore",
-        "versionRange": "^1.1.0",
+        "versionRange": "^1.1.23",
         "additionalData": {
           "includeQmod": true,
           "private": true
@@ -119,7 +122,7 @@
       },
       {
         "id": "paper2_scotland2",
-        "versionRange": "^4.4.1",
+        "versionRange": "^4.6.4",
         "additionalData": {}
       }
     ]
@@ -139,10 +142,10 @@
     {
       "dependency": {
         "id": "bs-cordl",
-        "versionRange": "=4006.0.0",
+        "versionRange": "=4007.0.0",
         "additionalData": {
           "headersOnly": true,
-          "branchName": "version/v4006_0_0",
+          "branchName": "version/v4007_0_0",
           "compileOptions": {
             "includePaths": [
               "include"
@@ -158,7 +161,7 @@
           }
         }
       },
-      "version": "4006.0.0"
+      "version": "4007.0.0"
     },
     {
       "dependency": {
@@ -178,17 +181,17 @@
     {
       "dependency": {
         "id": "tracks",
-        "versionRange": "=2.4.1",
+        "versionRange": "=2.4.2",
         "additionalData": {
-          "soLink": "https://github.com/bsq-ports/Tracks/releases/download/v2.4.1/libtracks.so",
-          "debugSoLink": "https://github.com/bsq-ports/Tracks/releases/download/v2.4.1/debug_libtracks.so",
+          "soLink": "https://github.com/bsq-ports/Tracks/releases/download/v2.4.2/libtracks.so",
+          "debugSoLink": "https://github.com/bsq-ports/Tracks/releases/download/v2.4.2/debug_libtracks.so",
           "overrideSoName": "libtracks.so",
-          "modLink": "https://github.com/bsq-ports/Tracks/releases/download/v2.4.1/Tracks.qmod",
-          "branchName": "version/v2_4_1",
+          "modLink": "https://github.com/bsq-ports/Tracks/releases/download/v2.4.2/Tracks.qmod",
+          "branchName": "version/v2_4_2",
           "cmake": true
         }
       },
-      "version": "2.4.1"
+      "version": "2.4.2"
     },
     {
       "dependency": {
@@ -257,13 +260,13 @@
     {
       "dependency": {
         "id": "custom-json-data",
-        "versionRange": "=0.24.2",
+        "versionRange": "=0.24.3",
         "additionalData": {
-          "soLink": "https://github.com/StackDoubleFlow/CustomJSONData/releases/download/v0.24.2/libcustom-json-data.so",
-          "debugSoLink": "https://github.com/StackDoubleFlow/CustomJSONData/releases/download/v0.24.2/debug_libcustom-json-data.so",
+          "soLink": "https://github.com/bsq-ports/CustomJSONData/releases/download/v0.24.3/libcustom-json-data.so",
+          "debugSoLink": "https://github.com/bsq-ports/CustomJSONData/releases/download/v0.24.3/debug_libcustom-json-data.so",
           "overrideSoName": "libcustom-json-data.so",
-          "modLink": "https://github.com/StackDoubleFlow/CustomJSONData/releases/download/v0.24.2/custom-json-data.qmod",
-          "branchName": "version/v0_24_2",
+          "modLink": "https://github.com/bsq-ports/CustomJSONData/releases/download/v0.24.3/custom-json-data.qmod",
+          "branchName": "version/v0_24_3",
           "compileOptions": {
             "cppFlags": [
               "-DRAPIDJSON_NEON"
@@ -272,7 +275,7 @@
           "cmake": true
         }
       },
-      "version": "0.24.2"
+      "version": "0.24.3"
     },
     {
       "dependency": {
@@ -374,32 +377,32 @@
     {
       "dependency": {
         "id": "songcore",
-        "versionRange": "=1.1.22",
+        "versionRange": "=1.1.23",
         "additionalData": {
-          "soLink": "https://github.com/raineaeternal/Quest-SongCore/releases/download/v1.1.22/libsongcore.so",
-          "debugSoLink": "https://github.com/raineaeternal/Quest-SongCore/releases/download/v1.1.22/debug_libsongcore.so",
+          "soLink": "https://github.com/raineaeternal/Quest-SongCore/releases/download/v1.1.23/libsongcore.so",
+          "debugSoLink": "https://github.com/raineaeternal/Quest-SongCore/releases/download/v1.1.23/debug_libsongcore.so",
           "overrideSoName": "libsongcore.so",
-          "modLink": "https://github.com/raineaeternal/Quest-SongCore/releases/download/v1.1.22/SongCore.qmod",
-          "branchName": "version/v1_1_22",
+          "modLink": "https://github.com/raineaeternal/Quest-SongCore/releases/download/v1.1.23/SongCore.qmod",
+          "branchName": "version/v1_1_23",
           "cmake": true
         }
       },
-      "version": "1.1.22"
+      "version": "1.1.23"
     },
     {
       "dependency": {
         "id": "bsml",
-        "versionRange": "=0.4.53",
+        "versionRange": "=0.4.54",
         "additionalData": {
-          "soLink": "https://github.com/bsq-ports/Quest-BSML/releases/download/v0.4.53/libbsml.so",
-          "debugSoLink": "https://github.com/bsq-ports/Quest-BSML/releases/download/v0.4.53/debug_libbsml.so",
+          "soLink": "https://github.com/bsq-ports/Quest-BSML/releases/download/v0.4.54/libbsml.so",
+          "debugSoLink": "https://github.com/bsq-ports/Quest-BSML/releases/download/v0.4.54/debug_libbsml.so",
           "overrideSoName": "libbsml.so",
-          "modLink": "https://github.com/bsq-ports/Quest-BSML/releases/download/v0.4.53/BSML.qmod",
-          "branchName": "version/v0_4_53",
+          "modLink": "https://github.com/bsq-ports/Quest-BSML/releases/download/v0.4.54/BSML.qmod",
+          "branchName": "version/v0_4_54",
           "cmake": true
         }
       },
-      "version": "0.4.53"
+      "version": "0.4.54"
     }
   ]
 }
