@@ -53,7 +53,7 @@ static std::optional<NEVector::Vector4> MultiTrackGetPathColor(std::span<TrackW>
 
 static std::optional<Sombrero::FastColor> GetColorOffset(std::optional<PointDefinitionW> const& localColor,
                                                          std::span<TrackW const> const& tracksOpt, float const time,
-                                                         bool& trackUpdated, Tracks::ffi::BaseProviderContext* context,
+                                                         bool& trackUpdated,
                                                          TimeUnit lastCheckedTime = {}) {
   std::optional<NEVector::Vector4> pathColor;
 
@@ -73,12 +73,12 @@ static std::optional<Sombrero::FastColor> GetColorOffset(std::optional<PointDefi
     if (tracks.size() > 1) {
 
       if (!pathColor) {
-        auto pathColors = Animation::getPathPropertiesVec4(tracks, PropertyNames::Color, context, time);
+        auto pathColors = Animation::getPathPropertiesVec4(tracks, PropertyNames::Color, time);
 
         pathColor = Animation::multiplyVector4s(pathColors);
       }
 
-      auto trackColors = Animation::getPathPropertiesVec4(tracks, PropertyNames::Color, context, time);
+      auto trackColors = Animation::getPathPropertiesVec4(tracks, PropertyNames::Color, time);
 
       auto trackColor = Animation::multiplyVector4s(trackColors);
 
@@ -89,7 +89,7 @@ static std::optional<Sombrero::FastColor> GetColorOffset(std::optional<PointDefi
 
       if (!pathColor) {
         auto colorPathProp = trackVal.GetPathPropertyNamed(PropertyNames::Color);
-        pathColor = colorPathProp.InterpolateVec4(time, last, context);
+        pathColor = colorPathProp.InterpolateVec4(time, last);
       }
 
       std::optional<NEVector::Vector4> trackColor;

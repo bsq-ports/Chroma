@@ -11,7 +11,7 @@ void Chroma::MaterialAnimator::Update() {
   for (auto& materialInfo : materials) {
     bool updated = false;
     std::optional<Sombrero::FastColor> colorOffset = AnimationHelper::GetColorOffset(
-        std::nullopt, *materialInfo.Track, 0, updated, context->GetBaseProviderContext(), lastCheckedTime);
+        std::nullopt, *materialInfo.Track, 0, updated, lastCheckedTime);
 
     if (!colorOffset) {
       continue;

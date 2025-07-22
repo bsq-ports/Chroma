@@ -66,7 +66,7 @@ MAKE_HOOK_MATCH(ObstacleController_ManualUpdate, &ObstacleController::ManualUpda
 
       [[maybe_unused]] bool updated = false;
       std::optional<Sombrero::FastColor> colorOffset =
-          AnimationHelper::GetColorOffset(pathPointDefinition, tracks, normalTime, updated, 0);
+          AnimationHelper::GetColorOffset(pathPointDefinition, tracks, normalTime, updated, TimeUnit());
 
       if (colorOffset) {
         ObstacleColorizer::ColorizeObstacle(self, colorOffset);

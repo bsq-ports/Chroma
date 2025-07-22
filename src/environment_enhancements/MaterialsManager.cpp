@@ -190,7 +190,7 @@ MaterialInfo Chroma::MaterialsManager::CreateMaterialInfo(rapidjson::Value const
 
   // stupid janky fix to the fact that they changed simplelit shader in 1.38
 
-  if (shaderType == ShaderType::Standard || shaderType == ShaderType::BTSPillar && shaderKeywords.size() == 0) {
+  if (shaderType == ShaderType::Standard || shaderType == ShaderType::BTSPillar && (!shaderKeywords || shaderKeywords.size() == 0)) {
 
     shaderKeywords = ArrayW<StringW>(nullptr);
 
