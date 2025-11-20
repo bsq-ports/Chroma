@@ -5,6 +5,8 @@
 #include "UnityEngine/Object.hpp"
 #include "UnityEngine/ResourceManagement/AsyncOperations/AsyncOperationHandle_1.hpp"
 #include "UnityEngine/ResourceManagement/ResourceProviders/SceneInstance.hpp"
+#include "UnityEngine/HideFlags.hpp"
+#include "ChromaLogger.hpp"
 
 SafePtrUnity<UnityEngine::Shader> Chroma::EnvironmentMaterialManager::waterLit;
 
@@ -45,6 +47,9 @@ custom_types::Helpers::Coroutine Chroma::EnvironmentMaterialManager::Activate() 
     auto* material = environmentMaterials->FirstOrDefault([&](auto const& e) { return e->get_name() == matName; });
     if (material != nullptr) {
       EnvironmentMaterials[key] = UnityEngine::Material::New_ctor(material);
+      EnvironmentMaterials[key]->hideFlags = UnityEngine::HideFlags::DontUnloadUnusedAsset;
+      // TODO: Check if this is necessary
+      UnityEngine::Object::DontDestroyOnLoad(EnvironmentMaterials[key].ptr());
       CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Saving [{}] to [{}].", matName, static_cast<int>(key));
     } else {
       CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Could not find [{}].", matName);
@@ -70,6 +75,13 @@ std::optional<UnityEngine::Material*> Chroma::EnvironmentMaterialManager::getMat
   auto it = EnvironmentMaterials.find(shaderType);
 
   if (it == EnvironmentMaterials.end()) {
+    return std::nullopt;
+  }
+
+  auto material = it->second;
+
+  if (!material.isAlive()) {
+    ChromaLogger::Logger.error("Material for shader type {} is no longer alive", static_cast<int>(shaderType));
     return std::nullopt;
   }
 
