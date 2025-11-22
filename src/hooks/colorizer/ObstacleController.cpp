@@ -61,11 +61,7 @@ MAKE_HOOK_MATCH(ObstacleController_ManualUpdate, &ObstacleController::ManualUpda
     auto& beatmapAD = TracksAD::getBeatmapAD(customBeatmap->customData);
 
     auto const& trackKeys = chromaData->second.Tracks;
-    std::vector<TrackW> tracks;
-    tracks.reserve(trackKeys.size());
-    for (auto const& trackKey : trackKeys) {
-      tracks.emplace_back(beatmapAD.getTrack(trackKey));
-    }
+    auto tracks = beatmapAD.getTracks(trackKeys);
 
     auto const& pathPointDefinition = chromaData->second.LocalPathColor;
     if (!tracks.empty() || pathPointDefinition) {
