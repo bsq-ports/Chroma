@@ -21,10 +21,10 @@
 #include <string_view>
 
 struct CoroutineInfo {
-  CoroutineInfo(std::string_view componentName, std::vector<UnityEngine::Component*> component,
-                PointDefinitionW const points, float duration, float startTime, Functions easing)
-      : componentName(componentName), component(std::move(component)), points(points), duration(duration),
-        startTime(startTime), easing(easing) {}
+  CoroutineInfo(std::string_view componentName, std::vector<UnityEngine::Component*> component, PointDefinitionW const points,
+                float duration, float startTime, Functions easing)
+      : componentName(componentName), component(std::move(component)), points(points), duration(duration), startTime(startTime),
+        easing(easing) {}
 
   CoroutineInfo(CoroutineInfo const&) = delete;
   ~CoroutineInfo() = default;
@@ -53,9 +53,7 @@ void animateBloomFog(std::string_view propName, std::span<UnityEngine::Component
     }
   };
   if (propName == Chroma::NewConstants::ATTENUATION) {
-    handleFog([&](GlobalNamespace::BloomFogEnvironment* fog) {
-      fog->fogParams->attenuation = Chroma::fogAttenuationFix(val);
-    });
+    handleFog([&](GlobalNamespace::BloomFogEnvironment* fog) { fog->fogParams->attenuation = Chroma::fogAttenuationFix(val); });
   }
   if (propName == Chroma::NewConstants::OFFSET) {
     handleFog([&](GlobalNamespace::BloomFogEnvironment* fog) { fog->fogParams->offset = val; });
@@ -93,8 +91,7 @@ void animateTubeBloom(std::string_view propName, std::span<UnityEngine::Componen
 /// \param context
 /// \param songTime
 /// \return true if not finished. If false, this coroutine is finished
-template <bool skipToLast = false>
-static bool UpdateCoroutine(std::string_view propName, CoroutineInfo const& context, float songTime) {
+template <bool skipToLast = false> static bool UpdateCoroutine(std::string_view propName, CoroutineInfo const& context, float songTime) {
   float elapsedTime = songTime - context.startTime;
 
   // Wait, the coroutine is too early
@@ -170,7 +167,11 @@ static std::vector<UnityEngine::Component*> getComponentsFromType(std::string_vi
 
 void Chroma::Component::StartEvent(GlobalNamespace::BeatmapCallbacksController* callbackController,
                                    CustomJSONData::CustomEventData* customEventData,
-                                   ChromaEvents::AnimateComponentEventData const& eventAD) {
+                                   ChromaEvents::AnimateComponentEventData const& eventAD ) {
+
+  auto beatmap = callbackController->_beatmapData;
+  auto customBeatmap = il2cpp_utils::cast<CustomJSONData::CustomBeatmapData>(beatmap);
+  auto& beatmapAD = TracksAD::getBeatmapAD(customBeatmap->customData);
 
   auto duration = eventAD.duration;
 
@@ -183,7 +184,8 @@ void Chroma::Component::StartEvent(GlobalNamespace::BeatmapCallbacksController* 
   bool noDuration = duration == 0 || customEventData->time + (duration * 1) < callbackController->songTime;
 
   for (auto const& [componentName, props] : eventAD.coroutineInfos) {
-    for (auto const& track : eventAD.track) {
+    for (auto const& trackKey : eventAD.track) {
+      auto track = beatmapAD.getTrack(trackKey);
       std::vector<UnityEngine::Component*> components = getComponentsFromType(componentName, track);
 
       if (components.empty()) {
@@ -192,8 +194,7 @@ void Chroma::Component::StartEvent(GlobalNamespace::BeatmapCallbacksController* 
 
       for (auto const& [propName, prop] : props) {
         auto& propCoros = coroutines[std::string(propName)];
-        propCoros.emplace(track,
-                          CoroutineInfo(componentName, components, prop, duration, customEventData->time, easing));
+        propCoros.emplace(track, CoroutineInfo(componentName, components, prop, duration, customEventData->time, easing));
       }
     }
   }

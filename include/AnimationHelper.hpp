@@ -57,10 +57,10 @@ static std::optional<Sombrero::FastColor> GetColorOffset(std::optional<PointDefi
                                                          TimeUnit lastCheckedTime = {}) {
   std::optional<NEVector::Vector4> pathColor;
 
-  bool last = false;
+
 
   if (localColor) {
-    pathColor = localColor.value().InterpolateVector4(time, last);
+    pathColor = localColor.value().InterpolateVector4(time);
   } else if (tracksOpt.empty()) {
     // Early return because no color will be given
     return std::nullopt;
@@ -89,7 +89,7 @@ static std::optional<Sombrero::FastColor> GetColorOffset(std::optional<PointDefi
 
       if (!pathColor) {
         auto colorPathProp = trackVal.GetPathPropertyNamed(PropertyNames::Color);
-        pathColor = colorPathProp.InterpolateVec4(time, last);
+        pathColor = colorPathProp.InterpolateVec4(time);
       }
 
       std::optional<NEVector::Vector4> trackColor;

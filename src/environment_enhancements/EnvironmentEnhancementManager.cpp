@@ -605,7 +605,7 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
 
   if (!animatedMaterials.empty()) {
     auto* animated = UnityEngine::GameObject::New_ctor("MaterialAnimator")->AddComponent<MaterialAnimator*>();
-    animated->context = TracksAD::getBeatmapAD(customBeatmapData->customData).internal_tracks_context;
+    // animated->context = TracksAD::getBeatmapAD(customBeatmapData->customData).internal_tracks_context;
     animated->materials = std::move(animatedMaterials);
   }
 }

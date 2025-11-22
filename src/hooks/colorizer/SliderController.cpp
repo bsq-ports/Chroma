@@ -50,7 +50,17 @@ MAKE_HOOK_MATCH(SliderController_Update, &SliderController::ManualUpdate, void, 
 
   auto chromaData = ChromaObjectDataManager::ChromaObjectDatas.find(self->sliderData);
   if (chromaData != ChromaObjectDataManager::ChromaObjectDatas.end()) {
-    auto const& tracks = chromaData->second.Tracks;
+    auto beatmap = ChromaController::CallbacksController->_beatmapData;
+    auto customBeatmap = il2cpp_utils::cast<CustomJSONData::CustomBeatmapData>(beatmap);
+    auto& beatmapAD = TracksAD::getBeatmapAD(customBeatmap->customData);
+
+    auto const& trackKeys = chromaData->second.Tracks;
+    std::vector<TrackW> tracks;
+    tracks.reserve(trackKeys.size());
+    for (auto const& trackKey : trackKeys) {
+      tracks.emplace_back(beatmapAD.getTrack(trackKey));
+    }
+
     auto pathPointDefinition = chromaData->second.LocalPathColor;
     if (!tracks.empty() || pathPointDefinition) {
       float jumpDuration = self->sliderMovement->_variableMovementDataProvider->jumpDuration;
