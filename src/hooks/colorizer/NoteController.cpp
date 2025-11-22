@@ -56,13 +56,8 @@ MAKE_HOOK_MATCH(NoteController_Update, &NoteController::ManualUpdate, void, Note
 
   auto chromaData = ChromaObjectDataManager::ChromaObjectDatas.find(self->noteData);
   if (chromaData != ChromaObjectDataManager::ChromaObjectDatas.end()) {
-    auto beatmap = ChromaController::CallbacksController->_beatmapData;
-    auto customBeatmap = il2cpp_utils::cast<CustomJSONData::CustomBeatmapData>(beatmap);
-    auto& beatmapAD = TracksAD::getBeatmapAD(customBeatmap->customData);
+    auto const& tracks = chromaData->second.Tracks;
 
-    auto const& trackKeys = chromaData->second.Tracks;
-
-    auto tracks = beatmapAD.getTracks(trackKeys);
 
     auto pathPointDefinition = chromaData->second.LocalPathColor;
     if (!tracks.empty() || pathPointDefinition) {

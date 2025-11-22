@@ -62,7 +62,7 @@ void ChromaFogController::Awake() {
 }
 
 void Chroma::ChromaFogController::Update() {
-  if (_track == nullptr) {
+  if (!_track) {
     ChromaLogger::Logger.error("Track is null");
     CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Fog track is null!");
     return;

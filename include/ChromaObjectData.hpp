@@ -28,7 +28,7 @@ private:
 
 public:
   std::optional<Sombrero::FastColor> Color;
-  std::span<Tracks::ffi::TrackKeyFFI const> Tracks; // probably a bad idea, this could be freed.
+  std::span<TrackW const> Tracks; // probably a bad idea, this could be freed.
   std::optional<PointDefinitionW> LocalPathColor;
 
   // note

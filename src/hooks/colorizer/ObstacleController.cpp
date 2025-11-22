@@ -56,12 +56,8 @@ MAKE_HOOK_MATCH(ObstacleController_ManualUpdate, &ObstacleController::ManualUpda
 
   auto chromaData = ChromaObjectDataManager::ChromaObjectDatas.find(self->obstacleData);
   if (chromaData != ChromaObjectDataManager::ChromaObjectDatas.end()) {
-    auto beatmap = ChromaController::CallbacksController->_beatmapData;
-    auto customBeatmap = il2cpp_utils::cast<CustomJSONData::CustomBeatmapData>(beatmap);
-    auto& beatmapAD = TracksAD::getBeatmapAD(customBeatmap->customData);
 
-    auto const& trackKeys = chromaData->second.Tracks;
-    auto tracks = beatmapAD.getTracks(trackKeys);
+    auto const& tracks = chromaData->second.Tracks;
 
     auto const& pathPointDefinition = chromaData->second.LocalPathColor;
     if (!tracks.empty() || pathPointDefinition) {

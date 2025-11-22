@@ -39,8 +39,7 @@ struct CoroutineInfo {
 };
 
 // PROPERTY NAME -> TRACKFORGAMEOBJECTS & CORO
-// use Track* pointer here because I need hashing and I'm lazy
-static std::unordered_map<std::string, std::unordered_map<Tracks::ffi::Track*, CoroutineInfo>> coroutines;
+static std::unordered_map<std::string, std::unordered_map<TrackW, CoroutineInfo>> coroutines;
 
 void animateBloomFog(std::string_view propName, std::span<UnityEngine::Component* const> components, float val) {
   if (components.empty()) {
@@ -184,8 +183,7 @@ void Chroma::Component::StartEvent(GlobalNamespace::BeatmapCallbacksController* 
   bool noDuration = duration == 0 || customEventData->time + (duration * 1) < callbackController->songTime;
 
   for (auto const& [componentName, props] : eventAD.coroutineInfos) {
-    for (auto const& trackKey : eventAD.track) {
-      auto track = beatmapAD.getTrack(trackKey);
+    for (auto const& track : eventAD.track) {
       std::vector<UnityEngine::Component*> components = getComponentsFromType(componentName, track);
 
       if (components.empty()) {
