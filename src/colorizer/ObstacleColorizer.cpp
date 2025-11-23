@@ -76,6 +76,12 @@ void ObstacleColorizer::Refresh() {
     return;
   }
 
+  // for Noodle to apply the color in Init
+  auto obstacleController = il2cpp_utils::try_cast<ObstacleController>(this->obstacleController);
+  if (obstacleController) {
+    obstacleController.value()->_color = color;
+  }
+
   _obstacleFrame->color = color;
   _obstacleFrame->Refresh();
   
