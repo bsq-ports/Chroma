@@ -107,6 +107,12 @@ template <typename T> static std::optional<T> getIfExists(rapidjson::Value const
       return std::stoi(it->value.GetString());
     }
   }
+  
+  if (it->value.IsNumber()) {
+    if constexpr (std::is_same_v<T, bool>) {
+      return it->value.GetInt() != 0;
+    }
+  }
 
   if constexpr (std::is_same_v<T, std::string> || std::is_same_v<T, std::string_view> ||
                 std::is_same_v<T, char const*>) {
