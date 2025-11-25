@@ -25,7 +25,7 @@
 using namespace Chroma;
 using namespace GlobalNamespace;
 
-inline bool BeatEffectHide(bool original, NoteController* noteController) {
+static bool BeatEffectHide(bool original, NoteController* noteController) {
   auto it = ChromaObjectDataManager::ChromaObjectDatas.find(noteController->noteData);
 
   if (it != ChromaObjectDataManager::ChromaObjectDatas.end()) {
@@ -33,7 +33,7 @@ inline bool BeatEffectHide(bool original, NoteController* noteController) {
     std::optional<bool> force = chromaData.SpawnEffect;
 
     if (force.has_value()) {
-      // invert 
+      // invert
       return !force.value();
     }
   }
@@ -50,7 +50,6 @@ MAKE_HOOK_MATCH(BeatEffectSpawner_HandleNoteDidStartJump, &BeatEffectSpawner::Ha
   }
 
   // no transpile needed yippe
-
   auto oldHideValue = self->_initData->hideNoteSpawnEffect;
   self->_initData->hideNoteSpawnEffect = BeatEffectHide(oldHideValue, noteController);
 
@@ -60,7 +59,7 @@ MAKE_HOOK_MATCH(BeatEffectSpawner_HandleNoteDidStartJump, &BeatEffectSpawner::Ha
 }
 
 void BeatEffectSpawnerHook() {
-  INSTALL_HOOK_ORIG(ChromaLogger::Logger, BeatEffectSpawner_HandleNoteDidStartJump);
+  INSTALL_HOOK(ChromaLogger::Logger, BeatEffectSpawner_HandleNoteDidStartJump);
 }
 
 ChromaInstallHooks(BeatEffectSpawnerHook)

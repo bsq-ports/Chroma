@@ -55,7 +55,7 @@ void Chroma::ChromaObjectDataManager::deserialize(CustomJSONData::CustomBeatmapD
 
       chromaObjectData.Color = ChromaUtilities::GetColorFromData(objectDynData->value, v2);
       chromaObjectData.SpawnEffect = getIfExistsOpt<bool>(objectDynData->value, NewConstants::NOTE_SPAWN_EFFECT)
-                                         ?: !getIfExistsOpt<bool>(objectDynData->value, NewConstants::V2_DISABLE_SPAWN_EFFECT);
+                                         ?: getIfExistsOpt<bool>(objectDynData->value, NewConstants::V2_DISABLE_SPAWN_EFFECT);
       if (v2 && chromaObjectData.SpawnEffect.has_value()) {
         chromaObjectData.SpawnEffect = !chromaObjectData.SpawnEffect.value();
       }
