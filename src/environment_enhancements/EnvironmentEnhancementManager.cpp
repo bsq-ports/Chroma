@@ -558,9 +558,9 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
         };
       }
 
-      // for (auto track : tracks) {
-      //   track.RegisterGameObject(gameObject);
-      // }
+      for (const auto& track : tracks) {
+        track.RegisterGameObject(gameObject);
+      }
 
       // BS 1.37+ apparently doesn't need this
       // if (beatmapObjectsAvoidance != nullptr) {
