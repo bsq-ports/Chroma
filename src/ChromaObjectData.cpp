@@ -3,8 +3,8 @@
 // Third-party includes
 #include "custom-json-data/shared/CustomBeatmapData.h"
 #include "tracks/shared/Animation/Animation.h"
-#include "tracks/shared/AssociatedData.h"                   
-#include "beatsaber-hook/shared/config/rapidjson-utils.hpp" 
+#include "tracks/shared/AssociatedData.h"
+#include "beatsaber-hook/shared/config/rapidjson-utils.hpp"
 
 // Game includes
 #include "GlobalNamespace/BeatmapData.hpp"
@@ -54,10 +54,11 @@ void Chroma::ChromaObjectDataManager::deserialize(CustomJSONData::CustomBeatmapD
       objectDynData = customNoteData->customData;
 
       chromaObjectData.Color = ChromaUtilities::GetColorFromData(objectDynData->value, v2);
-      chromaObjectData.DisableSpawnEffect =
-          getIfExistsOpt<bool>(objectDynData->value, NewConstants::NOTE_SPAWN_EFFECT)
-              .value_or(
-                  !getIfExistsOpt<bool>(objectDynData->value, NewConstants::V2_DISABLE_SPAWN_EFFECT).value_or(true));
+      chromaObjectData.SpawnEffect = getIfExistsOpt<bool>(objectDynData->value, NewConstants::NOTE_SPAWN_EFFECT)
+                                         ?: !getIfExistsOpt<bool>(objectDynData->value, NewConstants::V2_DISABLE_SPAWN_EFFECT);
+      if (v2 && chromaObjectData.SpawnEffect.has_value()) {
+        chromaObjectData.SpawnEffect = !chromaObjectData.SpawnEffect.value();
+      }
     } else if (ASSIGNMENT_CHECK(CustomSliderDataKlass, beatmapObjectData->klass)) {
       debugSpamLog("Custom note {}", il2cpp_utils::ClassStandardName(beatmapObjectData->klass).c_str());
       auto* customNoteData = reinterpret_cast<CustomJSONData::CustomSliderData*>(beatmapObjectData);
@@ -65,10 +66,11 @@ void Chroma::ChromaObjectDataManager::deserialize(CustomJSONData::CustomBeatmapD
       objectDynData = customNoteData->customData;
 
       chromaObjectData.Color = ChromaUtilities::GetColorFromData(objectDynData->value, v2);
-      chromaObjectData.DisableSpawnEffect =
-          getIfExistsOpt<bool>(objectDynData->value, NewConstants::NOTE_SPAWN_EFFECT)
-              .value_or(
-                  !getIfExistsOpt<bool>(objectDynData->value, NewConstants::V2_DISABLE_SPAWN_EFFECT).value_or(true));
+      chromaObjectData.SpawnEffect = getIfExistsOpt<bool>(objectDynData->value, NewConstants::NOTE_SPAWN_EFFECT)
+                                         ?: getIfExistsOpt<bool>(objectDynData->value, NewConstants::V2_DISABLE_SPAWN_EFFECT);
+      if (v2 && chromaObjectData.SpawnEffect.has_value()) {
+        chromaObjectData.SpawnEffect = !chromaObjectData.SpawnEffect.value();
+      }
     } else if (ASSIGNMENT_CHECK(CustomObstacleDataKlass, beatmapObjectData->klass)) {
       auto* customObstacleData = reinterpret_cast<CustomJSONData::CustomObstacleData*>(beatmapObjectData);
 
@@ -99,13 +101,12 @@ void Chroma::ChromaObjectDataManager::deserialize(CustomJSONData::CustomBeatmapD
 
     if (objectDynData->value) {
       rapidjson::Value const& customData = *objectDynData->value;
-      auto const& animationObjectDyn = customData.FindMember(v2 ? Chroma::NewConstants::V2_ANIMATION.data()
-                                                                : Chroma::NewConstants::ANIMATION.data());
+      auto const& animationObjectDyn =
+          customData.FindMember(v2 ? Chroma::NewConstants::V2_ANIMATION.data() : Chroma::NewConstants::ANIMATION.data());
       if (animationObjectDyn != customData.MemberEnd()) {
         auto localColor =
-            beatmapAD.getPointDefinition(animationObjectDyn->value,
-                                         v2 ? Chroma::NewConstants::V2_COLOR : Chroma::NewConstants::COLOR, Tracks::ffi::WrapBaseValueType::Vec4);
-
+            beatmapAD.getPointDefinition(animationObjectDyn->value, v2 ? Chroma::NewConstants::V2_COLOR : Chroma::NewConstants::COLOR,
+                                         Tracks::ffi::WrapBaseValueType::Vec4);
 
         chromaObjectData.LocalPathColor = localColor != nullptr ? std::make_optional(localColor) : std::nullopt;
       }

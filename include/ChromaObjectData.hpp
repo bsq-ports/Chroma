@@ -32,7 +32,7 @@ public:
   std::optional<PointDefinitionW> LocalPathColor;
 
   // note
-  std::optional<bool> DisableSpawnEffect;
+  std::optional<bool> SpawnEffect;
 
   ChromaObjectData() = default;
   ChromaObjectData(ChromaObjectData&&) = default;
