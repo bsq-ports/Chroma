@@ -546,8 +546,7 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
       if (trackLaneRing != nullptr) {
         controllerData.RotationUpdate += [=]() { RingRotationOffsets[trackLaneRing] = trackLaneRing->transform->get_localRotation(); };
         controllerData.PositionUpdate += [=]() { trackLaneRing->_positionOffset = trackLaneRing->transform->get_localPosition(); };
-      }
-      if (parametricBoxController != nullptr) {
+      }else if (parametricBoxController != nullptr) {
         auto* parametricBoxControllerTransform = parametricBoxController->get_transform().ptr();
         controllerData.ScaleUpdate += [=]() {
           ParametricBoxControllerParameters::SetTransformScale(parametricBoxController, parametricBoxControllerTransform->get_localScale());
