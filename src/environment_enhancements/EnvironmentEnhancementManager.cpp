@@ -24,6 +24,7 @@
 #include "tracks/shared/Animation/GameObjectTrackController.hpp"
 #include "tracks/shared/AssociatedData.h"
 #include "tracks/shared/Animation/PointDefinition.h"
+#include "tracks/shared/Animation/TransformData.hpp"
 
 #include "boost-regex/regex/include/boost/regex.hpp"
 
@@ -125,71 +126,6 @@ static std::optional<Sombrero::FastVector3> GetVectorData(rapidjson::Value const
   return Sombrero::FastVector3{ objectsVal[0].GetFloat(), objectsVal[1].GetFloat(), objectsVal[2].GetFloat() };
 }
 
-struct TransformData {
-public:
-  std::optional<Sombrero::FastVector3> scale;
-  std::optional<Sombrero::FastVector3> position;
-  std::optional<Sombrero::FastVector3> rotation;
-  std::optional<Sombrero::FastVector3> localPosition;
-  std::optional<Sombrero::FastVector3> localRotation;
-
-  TransformData(TransformData&&) = default;
-
-  TransformData(rapidjson::Value const& customData, bool v2, float noteLinesDistance) {
-    scale = GetVectorData(customData, v2 ? NewConstants::V2_SCALE : NewConstants::SCALE);
-    position = GetVectorData(customData, v2 ? NewConstants::V2_POSITION : NewConstants::POSITION);
-    rotation = GetVectorData(customData, v2 ? NewConstants::V2_ROTATION : NewConstants::ROTATION);
-    localPosition = GetVectorData(customData, v2 ? NewConstants::V2_LOCAL_POSITION : NewConstants::LOCAL_POSITION);
-    localRotation = GetVectorData(customData, v2 ? NewConstants::V2_LOCAL_ROTATION : NewConstants::LOCAL_ROTATION);
-
-    if (v2) {
-      // ReSharper disable once UseNullPropagation
-      if (position) {
-        *position *= noteLinesDistance;
-      }
-
-      // ReSharper disable once UseNullPropagation
-      if (localPosition) {
-        *localPosition *= noteLinesDistance;
-      }
-    }
-  }
-
-  inline void Apply(UnityEngine::Transform* transform, bool leftHanded) const {
-    Apply(transform, leftHanded, scale, position, rotation, localPosition, localRotation);
-  }
-
-private:
-  static void Apply(UnityEngine::Transform* transform, bool leftHanded, std::optional<Sombrero::FastVector3> const& scale,
-                    std::optional<Sombrero::FastVector3> const& position, std::optional<Sombrero::FastVector3> const& rotation,
-                    std::optional<Sombrero::FastVector3> const& localPosition, std::optional<Sombrero::FastVector3> const& localRotation) {
-    // TODO: Mirror
-    //        if (leftHanded)
-    //        {
-    //            scale = scale?.Mirror();
-    //            position = position?.Mirror();
-    //            rotation = rotation?.Mirror();
-    //            localPosition = localPosition?.Mirror();
-    //            localRotation = localRotation?.Mirror();
-    //        }
-
-    if (scale) {
-      transform->set_localScale(*scale);
-    }
-
-    if (localPosition) {
-      transform->set_localPosition(*localPosition);
-    } else if (position) {
-      transform->set_position(*position);
-    }
-
-    if (localRotation) {
-      transform->set_localEulerAngles(*localRotation);
-    } else if (rotation) {
-      transform->set_eulerAngles(*rotation);
-    }
-  }
-};
 
 void EnvironmentEnhancementManager::GetAllGameObjects() {
   LightIdRegisterer::canUnregister = true;
@@ -397,7 +333,7 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
       ChromaLogger::Logger.info("=====================================");
     }
 
-    TransformData spawnData(gameObjectDataVal, v2, noteLinesDistance);
+    Tracks::TransformData spawnData(gameObjectDataVal, v2);
 
     std::optional<int> dupeAmount =
         getIfExists<int>(gameObjectDataVal, v2 ? NewConstants::V2_DUPLICATION_AMOUNT : NewConstants::DUPLICATION_AMOUNT);
