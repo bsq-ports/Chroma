@@ -384,7 +384,14 @@ static void InitializeLights(rapidjson::Value const& data, std::span<UnityEngine
       return;
     }
 
-    int psuedoLightId = LightColorizer::GetLightColorizer(*type)->_lightSwitchEventEffect->_lightsID;
+    auto colorizer = LightColorizer::GetLightColorizer(*type);
+    if (!colorizer) {
+      ChromaLogger::Logger.fmtLog<Paper::LogLevel::WRN>("No colorizer found for type {}", *type);
+      ChromaLogger::Logger.fmtLog<Paper::LogLevel::INF>("Skipping setting type for light {}", fmt::ptr(lightWithId));
+      return;
+    }
+
+    int psuedoLightId = colorizer->_lightSwitchEventEffect->_lightsID;
 
     auto monoBehaviourCast = il2cpp_utils::try_cast<LightWithIdMonoBehaviour>(lightWithId);
 
