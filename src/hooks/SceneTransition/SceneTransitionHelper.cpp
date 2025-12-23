@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <string_view>
 
 #include "ChromaConfig.hpp"
 #include "Chroma.hpp"
@@ -24,8 +25,8 @@ using namespace UnityEngine;
 using namespace System::Collections;
 using namespace Sombrero::Linq::Functional;
 
-void SceneTransitionHelper::Patch(SongCore::SongLoader::CustomBeatmapLevel* beatmapLevel,
-                                  GlobalNamespace::BeatmapKey key, GlobalNamespace::EnvironmentInfoSO* environment) {
+void SceneTransitionHelper::Patch(SongCore::SongLoader::CustomBeatmapLevel* beatmapLevel, GlobalNamespace::BeatmapKey key,
+                                  GlobalNamespace::EnvironmentInfoSO* environment) {
   if (beatmapLevel == nullptr) {
     BasicPatch(nullptr, key, nullptr);
     return;
@@ -34,19 +35,56 @@ void SceneTransitionHelper::Patch(SongCore::SongLoader::CustomBeatmapLevel* beat
   BasicPatch(beatmapLevel, key, environment);
 }
 
-void SceneTransitionHelper::Patch(SongCore::SongLoader::CustomBeatmapLevel* beatmapLevel,
-                                  GlobalNamespace::BeatmapKey key, GlobalNamespace::EnvironmentInfoSO* environment,
+void SceneTransitionHelper::Patch(SongCore::SongLoader::CustomBeatmapLevel* beatmapLevel, GlobalNamespace::BeatmapKey key,
+                                  GlobalNamespace::EnvironmentInfoSO* environment,
                                   OverrideEnvironmentSettings*& overrideEnvironmentSettings) {
   if (beatmapLevel == nullptr) {
     BasicPatch(nullptr, key, nullptr);
     return;
   }
 
-  BasicPatch(beatmapLevel, key, environment);
+  if (!BasicPatch(beatmapLevel, key, environment)) {
+    return;
+  }
+
+  auto *level = beatmapLevel->get_beatmapLevelData();
+  if (!level) {
+    return;
+  }
+
+  auto s = level->GetBeatmapString(key);
+  auto view = std::u16string_view(s);
+
+  // check if override environment settings exist in the beatmap data
+  // if so, disable overrideEnvironmentSettings
+  rapidjson::GenericDocument<rapidjson::UTF16<char16_t>> doc;
+  doc.Parse(view.data());
+
+  // look for override environment settings in _customData._environment or customData.environment
+  auto customDataIt = doc.FindMember(u"_customData");
+  if (customDataIt == doc.MemberEnd()) {
+    customDataIt = customDataIt->value.FindMember(u"customData");
+  }
+  if (customDataIt == doc.MemberEnd()) {
+    return;
+  }
+
+  auto environmentData = customDataIt->value.FindMember(u"_environment");
+  if (environmentData == customDataIt->value.MemberEnd()) {
+    environmentData = environmentData->value.FindMember(u"environment");
+  }
+  if (environmentData == customDataIt->value.MemberEnd()) {
+    return;
+  }
+
+  if (!environmentData->value.IsObject()) {
+    return;
+  }
+  // if exists, we do not override environment settings
+  overrideEnvironmentSettings = nullptr;
 }
 
-bool SceneTransitionHelper::BasicPatch(SongCore::SongLoader::CustomBeatmapLevel* beatmapLevel,
-                                       GlobalNamespace::BeatmapKey key,
+bool SceneTransitionHelper::BasicPatch(SongCore::SongLoader::CustomBeatmapLevel* beatmapLevel, GlobalNamespace::BeatmapKey key,
                                        GlobalNamespace::EnvironmentInfoSO* environment) {
   ChromaLogger::Logger.debug("Basic Patch {}", fmt::ptr(beatmapLevel));
   ChromaController::TutorialMode = false;
@@ -74,8 +112,8 @@ bool SceneTransitionHelper::BasicPatch(SongCore::SongLoader::CustomBeatmapLevel*
 
   ChromaLogger::Logger.debug("Getting Characteristic and diff");
 
-  auto diff = customSaveInfo.value().get().TryGetCharacteristicAndDifficulty(
-      key.beatmapCharacteristic->get_serializedName(), key.difficulty);
+  auto diff =
+      customSaveInfo.value().get().TryGetCharacteristicAndDifficulty(key.beatmapCharacteristic->get_serializedName(), key.difficulty);
 
   if (!diff) {
     return false;
@@ -96,8 +134,7 @@ bool SceneTransitionHelper::BasicPatch(SongCore::SongLoader::CustomBeatmapLevel*
   // Legacy environment grab from info.dat
   if (saveData.value()->difficultyBeatmapSets) {
     auto diffSaveMap =
-        saveData.value()->difficultyBeatmapSets |
-        Select([&](auto&& x) -> ::GlobalNamespace::StandardLevelInfoSaveData::DifficultyBeatmap* {
+        saveData.value()->difficultyBeatmapSets | Select([&](auto&& x) -> ::GlobalNamespace::StandardLevelInfoSaveData::DifficultyBeatmap* {
           // short circuit
           if (x == nullptr || !x->difficultyBeatmaps) {
             return nullptr;
@@ -110,8 +147,8 @@ bool SceneTransitionHelper::BasicPatch(SongCore::SongLoader::CustomBeatmapLevel*
                    }
 
                    BeatmapDifficulty mapDifficulty;
-                   GlobalNamespace::BeatmapDifficultySerializedMethods::BeatmapDifficultyFromSerializedName(
-                       y->difficulty, byref(mapDifficulty));
+                   GlobalNamespace::BeatmapDifficultySerializedMethods::BeatmapDifficultyFromSerializedName(y->difficulty,
+                                                                                                            byref(mapDifficulty));
 
                    return mapDifficulty == key.difficulty && key.beatmapCharacteristic.isAlive() &&
                           x->beatmapCharacteristicName == key.beatmapCharacteristic->get_serializedName();
@@ -120,8 +157,7 @@ bool SceneTransitionHelper::BasicPatch(SongCore::SongLoader::CustomBeatmapLevel*
         First([](auto x) { return x != nullptr; });
     auto* saveMap = diffSaveMap.value_or(nullptr);
     ChromaLogger::Logger.debug("Savemap", fmt::ptr(saveMap));
-    auto* customDifficultyBeatmap =
-        il2cpp_utils::try_cast<SongCore::CustomJSONData::CustomDifficultyBeatmap>(saveMap).value_or(nullptr);
+    auto* customDifficultyBeatmap = il2cpp_utils::try_cast<SongCore::CustomJSONData::CustomDifficultyBeatmap>(saveMap).value_or(nullptr);
 
     // handle environment v2 removal
     if (customDifficultyBeatmap && customDifficultyBeatmap->customData.has_value()) {
@@ -133,8 +169,7 @@ bool SceneTransitionHelper::BasicPatch(SongCore::SongLoader::CustomBeatmapLevel*
 
         auto objectsToKill = objectsToKillIt->value.GetArray();
         for (auto const& object : objectsToKill) {
-          ChromaController::environmentObjectsRemovalV2->emplace_back(
-              Paper::StringConvert::from_utf16(object.GetString()));
+          ChromaController::environmentObjectsRemovalV2->emplace_back(Paper::StringConvert::from_utf16(object.GetString()));
         }
       }
     }
