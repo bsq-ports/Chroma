@@ -415,7 +415,7 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
 
       auto transform = gameObject->get_transform();
 
-      spawnData.Apply(transform, leftHanded);
+      spawnData.Apply(transform, leftHanded, v2);
       auto const& position = spawnData.position;
       auto const& localPosition = spawnData.localPosition;
       auto const& rotation = spawnData.rotation;
