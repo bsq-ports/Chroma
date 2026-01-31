@@ -15,6 +15,7 @@
 #include "GlobalNamespace/VariableMovementDataProvider.hpp"
 
 #include "utils/ChromaUtils.hpp"
+#include "utils/VariableMovementHelper.hpp"
 
 #include "AnimationHelper.hpp"
 #include "ChromaObjectData.hpp"
@@ -62,7 +63,8 @@ MAKE_HOOK_MATCH(NoteController_Update, &NoteController::ManualUpdate, void, Note
     auto pathPointDefinition = chromaData->second.LocalPathColor;
     if (!tracks.empty() || pathPointDefinition) {
       NoteJump* noteJump = self->_noteMovement->_jump;
-      float jumpDuration = noteJump->_variableMovementDataProvider->jumpDuration;
+      VariableMovementW movement(noteJump->_variableMovementDataProvider);
+      float jumpDuration = movement.jumpDuration;
       float elapsedTime = ChromaTimeSourceHelper::getSongTimeChroma(noteJump->_audioTimeSyncController) -
                           (self->noteData->time - (jumpDuration * 0.5F));
       float normalTime = elapsedTime / jumpDuration;

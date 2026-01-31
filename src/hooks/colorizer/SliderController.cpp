@@ -11,6 +11,7 @@
 #include "GlobalNamespace/VariableMovementDataProvider.hpp"
 
 #include "utils/ChromaUtils.hpp"
+#include "utils/VariableMovementHelper.hpp"
 
 #include "AnimationHelper.hpp"
 #include "ChromaObjectData.hpp"
@@ -54,7 +55,8 @@ MAKE_HOOK_MATCH(SliderController_Update, &SliderController::ManualUpdate, void, 
 
     auto pathPointDefinition = chromaData->second.LocalPathColor;
     if (!tracks.empty() || pathPointDefinition) {
-      float jumpDuration = self->sliderMovement->_variableMovementDataProvider->jumpDuration;
+      VariableMovementW movement(self->_sliderMovement->_variableMovementDataProvider);
+      float jumpDuration = movement.jumpDuration;
 
       float duration = (jumpDuration * 0.75F) + (self->sliderData->tailTime - self->sliderData->time);
       float normalTime = self->sliderMovement->timeSinceHeadNoteJump / (jumpDuration + duration);

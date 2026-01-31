@@ -8,6 +8,7 @@
 #include "GlobalNamespace/MultiplayerConnectedPlayerObstacleController.hpp"
 #include "GlobalNamespace/VariableMovementDataProvider.hpp"
 #include "utils/ChromaUtils.hpp"
+#include "utils/VariableMovementHelper.hpp"
 
 #include "ChromaObjectData.hpp"
 #include "AnimationHelper.hpp"
@@ -61,11 +62,13 @@ MAKE_HOOK_MATCH(ObstacleController_ManualUpdate, &ObstacleController::ManualUpda
 
     auto const& pathPointDefinition = chromaData->second.LocalPathColor;
     if (!tracks.empty() || pathPointDefinition) {
-      float jumpDuration = self->_variableMovementDataProvider->jumpDuration;
+      VariableMovementW movement(self->_variableMovementDataProvider);
+
+      float jumpDuration = movement.jumpDuration;
       float elapsedTime =
           ChromaTimeSourceHelper::getSongTimeChroma(self->_audioTimeSyncController) - self->_startTimeOffset;
       float normalTime =
-          (elapsedTime - self->_variableMovementDataProvider->moveDuration) / (jumpDuration + self->obstacleData->duration);
+          (elapsedTime - movement.moveDuration) / (jumpDuration + self->obstacleData->duration);
 
       [[maybe_unused]] bool updated = false;
       std::optional<Sombrero::FastColor> colorOffset =
