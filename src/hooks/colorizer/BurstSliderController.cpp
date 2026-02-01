@@ -57,7 +57,7 @@ MAKE_HOOK_MATCH(BurstSliderGameNoteController_Init, &BurstSliderGameNoteControll
     return;
   }
 
-  auto const& chromaData =  getObjectAD(self->noteData);
+  auto const& chromaData =  getObjectAD(self->_noteData);
   if (chromaData) {
     auto const& color = chromaData->Color;
 

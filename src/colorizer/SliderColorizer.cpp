@@ -32,8 +32,8 @@ SliderColorizer* SliderColorizer::New(GlobalNamespace::SliderController* sliderC
 }
 
 GlobalNamespace::ColorType SliderColorizer::getColorType() const {
-  if ((_sliderController != nullptr) && (_sliderController->sliderData != nullptr)) {
-    auto* sliderData = _sliderController->sliderData;
+  if ((_sliderController != nullptr) && (_sliderController->_sliderData != nullptr)) {
+    auto* sliderData = _sliderController->_sliderData;
 
     return sliderData->colorType;
   }

@@ -37,7 +37,7 @@ MAKE_HOOK_MATCH(NoteController_Init, &NoteController::Init, void, NoteController
     return;
   }
 
-  auto const& chromaData =  getObjectAD(self->noteData);
+  auto const& chromaData =  getObjectAD(self->_noteData);
   if (chromaData) {
     auto const& color = chromaData->Color;
 
@@ -55,7 +55,7 @@ MAKE_HOOK_MATCH(NoteController_Update, &NoteController::ManualUpdate, void, Note
 
 
 
-  auto const& chromaData =  getObjectAD(self->noteData);
+  auto const& chromaData =  getObjectAD(self->_noteData);
   if (chromaData) {
     auto const& tracks = chromaData->Tracks;
 
@@ -66,7 +66,7 @@ MAKE_HOOK_MATCH(NoteController_Update, &NoteController::ManualUpdate, void, Note
       VariableMovementW movement(noteJump->_variableMovementDataProvider);
       float jumpDuration = movement.jumpDuration;
       float elapsedTime = ChromaTimeSourceHelper::getSongTimeChroma(noteJump->_audioTimeSyncController) -
-                          (self->noteData->time - (jumpDuration * 0.5F));
+                          (self->_noteData->time - (jumpDuration * 0.5F));
       float normalTime = elapsedTime / jumpDuration;
 
       [[maybe_unused]] bool updated = false;

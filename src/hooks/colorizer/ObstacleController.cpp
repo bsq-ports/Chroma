@@ -69,7 +69,7 @@ MAKE_HOOK_MATCH(ObstacleController_ManualUpdate, &ObstacleController::ManualUpda
       float elapsedTime =
           ChromaTimeSourceHelper::getSongTimeChroma(self->_audioTimeSyncController) - self->_startTimeOffset;
       float normalTime =
-          (elapsedTime - movement.moveDuration) / (jumpDuration + self->obstacleData->duration);
+          (elapsedTime - movement.moveDuration) / (jumpDuration + self->_obstacleData->duration);
 
       [[maybe_unused]] bool updated = false;
       std::optional<Sombrero::FastColor> colorOffset =

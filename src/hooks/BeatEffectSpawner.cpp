@@ -26,7 +26,7 @@ using namespace Chroma;
 using namespace GlobalNamespace;
 
 static bool BeatEffectHide(bool original, NoteController* noteController) {
-  auto it = getObjectAD(noteController->noteData);
+  auto it = getObjectAD(noteController->_noteData);
 
   if (it) {
     auto const& chromaData = *it;

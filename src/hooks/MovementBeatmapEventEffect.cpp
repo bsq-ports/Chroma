@@ -27,7 +27,7 @@ using namespace GlobalNamespace;
 //
 // inline bool BeatEffectForce(bool hideNoteSpawnEffect, NoteController* noteController)
 //{
-//    auto it = ChromaObjectDataManager::ChromaObjectDatas.find(noteController->noteData);
+//    auto it = ChromaObjectDataManager::ChromaObjectDatas.find(noteController->_noteData);
 //
 //    if (it != ChromaObjectDataManager::ChromaObjectDatas.end()) {
 //        auto const& chromaData = it->second;
@@ -59,11 +59,11 @@ using namespace GlobalNamespace;
 //    {
 //        return;
 //    }
-//    if (noteController->noteData->time + 0.1f < self->audioTimeSyncController->songTime)
+//    if (noteController->_noteData->time + 0.1f < self->audioTimeSyncController->songTime)
 //    {
 //        return;
 //    }
-//    ColorType colorType = noteController->noteData->colorType;
+//    ColorType colorType = noteController->_noteData->colorType;
 //    Sombrero::FastColor a = (colorType != ColorType::None) ? self->colorManager->ColorForType(colorType) :
 //    self->bombColorEffect; auto beatEffect = self->beatEffectPoolContainer->Spawn();
 //    beatEffect->didFinishEvent->Add(self->i_IBeatEffectDidFinishEvent());

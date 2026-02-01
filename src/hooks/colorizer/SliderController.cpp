@@ -49,7 +49,7 @@ MAKE_HOOK_MATCH(SliderController_Update, &SliderController::ManualUpdate, void, 
     return;
   }
 
-  auto const& chromaData =  getObjectAD(self->sliderData);
+  auto const& chromaData =  getObjectAD(self->_sliderData);
   if (chromaData) {
     auto const& tracks = chromaData->Tracks;
 
@@ -58,7 +58,7 @@ MAKE_HOOK_MATCH(SliderController_Update, &SliderController::ManualUpdate, void, 
       VariableMovementW movement(self->_sliderMovement->_variableMovementDataProvider);
       float jumpDuration = movement.jumpDuration;
 
-      float duration = (jumpDuration * 0.75F) + (self->sliderData->tailTime - self->sliderData->time);
+      float duration = (jumpDuration * 0.75F) + (self->_sliderData->tailTime - self->_sliderData->time);
       float normalTime = self->sliderMovement->timeSinceHeadNoteJump / (jumpDuration + duration);
 
       [[maybe_unused]] bool updated = false;

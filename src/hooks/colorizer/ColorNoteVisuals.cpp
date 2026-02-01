@@ -25,7 +25,7 @@ MAKE_HOOK_MATCH(ColorNoteVisuals_HandleNoteControllerDidInit, &ColorNoteVisuals:
   auto NoteControllerCast = il2cpp_utils::try_cast<NoteController>(noteController);
 
   if (NoteControllerCast) {
-    auto it = getObjectAD(NoteControllerCast.value()->noteData);
+    auto it = getObjectAD(NoteControllerCast.value()->_noteData);
 
     if (it) {
       auto const& chromaData = *it;
