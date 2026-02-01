@@ -21,7 +21,8 @@ using namespace GlobalNamespace;
 using namespace UnityEngine;
 using namespace Chroma;
 
-static bool global_DisableDebris_Hack = false;
+// If this is true, we disable debris spawning in hooks
+static bool global_DisableDebris_Disable = false;
 static bool DisableDebrisOpt(NoteController* noteController) {
   auto it = ChromaObjectDataManager::ChromaObjectDatas.find(noteController->noteData);
   if (it != ChromaObjectDataManager::ChromaObjectDatas.end()) {
@@ -42,16 +43,17 @@ MAKE_HOOK_MATCH(NoteCutEffectSpawner_SpawnNoteCutEffect, &NoteCutCoreEffectsSpaw
                                                    explosionParticlesCount);
   }
 
-  // A dirty hack to NOT rewrite a function. I dont like it.
-  global_DisableDebris_Hack = DisableDebrisOpt(noteController);
+
+  global_DisableDebris_Disable = DisableDebrisOpt(noteController);
 
   ColorManagerColorForType::EnableColorOverride(noteController);
   NoteCutEffectSpawner_SpawnNoteCutEffect(self, noteCutInfo, noteController, sparkleParticlesCount,
                                           explosionParticlesCount);
   ColorManagerColorForType::DisableColorOverride();
 
-  // Disable hack
-  global_DisableDebris_Hack = false;
+
+  // reset state
+  global_DisableDebris_Disable = false;
 }
 
 MAKE_HOOK_MATCH(NoteCutEffectSpawner_SpawnBombCutEffect, &NoteCutCoreEffectsSpawner::SpawnBombCutEffect, void,
@@ -62,33 +64,44 @@ MAKE_HOOK_MATCH(NoteCutEffectSpawner_SpawnBombCutEffect, &NoteCutCoreEffectsSpaw
     return NoteCutEffectSpawner_SpawnBombCutEffect(self, noteCutInfo, noteController);
   }
 
-  // A dirty hack to NOT rewrite a function. I dont like it.
-  global_DisableDebris_Hack = DisableDebrisOpt(noteController);
+  global_DisableDebris_Disable = DisableDebrisOpt(noteController);
 
   NoteCutEffectSpawner_SpawnBombCutEffect(self, noteCutInfo, noteController);
 
-  // Disable hack
-  global_DisableDebris_Hack = false;
+  // reset state
+  global_DisableDebris_Disable = false;
 }
 
 MAKE_HOOK_MATCH(NoteDebrisSpawner_SpawnDebris, &NoteDebrisSpawner::SpawnDebris, void,
                 NoteDebrisSpawner* self, NoteData_GameplayType noteGameplayType, Vector3 cutPoint, Vector3 cutNormal,
                 float saberSpeed, Vector3 saberDir, Vector3 notePos, Quaternion noteRotation,
                 Vector3 noteScale, ColorType colorType, float timeToNextColorNote, Vector3 moveVec) {
-  // Do nothing if Chroma shouldn't run or debris is disabled
-  if (!global_DisableDebris_Hack || !ChromaController::DoChromaHooks()) {
+
+  // Do nothing if Chroma shouldn't run
+  if (!ChromaController::DoChromaHooks()) {
     return NoteDebrisSpawner_SpawnDebris(self, noteGameplayType, cutPoint, cutNormal,
                                          saberSpeed, saberDir, notePos, noteRotation,
                                          noteScale, colorType, timeToNextColorNote, moveVec);
   }
+
+  // disable debris
+  if (global_DisableDebris_Disable) return;
+
+  return NoteDebrisSpawner_SpawnDebris(self, noteGameplayType, cutPoint, cutNormal,
+                                        saberSpeed, saberDir, notePos, noteRotation,
+                                        noteScale, colorType, timeToNextColorNote, moveVec);
 }
 
 MAKE_HOOK_MATCH(BombExplosionEffect_SpawnExplosion, &BombExplosionEffect::SpawnExplosion, void,
                 BombExplosionEffect* self, Vector3 pos) {
   // Do nothing if Chroma shouldn't run or debris is disabled
-  if (!global_DisableDebris_Hack || !ChromaController::DoChromaHooks()) {
+  if (!ChromaController::DoChromaHooks()) {
     return BombExplosionEffect_SpawnExplosion(self, pos);
   }
+
+  if (global_DisableDebris_Disable) return;
+
+  return BombExplosionEffect_SpawnExplosion(self, pos);
 }
 
 void NoteCutEffectSpawnerHook() {
