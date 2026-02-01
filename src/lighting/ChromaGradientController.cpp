@@ -2,6 +2,7 @@
 #include "lighting/ChromaGradientController.hpp"
 
 #include "GlobalNamespace/BeatmapObjectSpawnController.hpp"
+#include "GlobalNamespace/BeatmapCallbacksController.hpp"
 
 #include "ChromaController.hpp"
 #include "UnityEngine/Color.hpp"
@@ -74,7 +75,7 @@ Sombrero::FastColor ChromaGradientController::AddGradient(ChromaEventData::Gradi
   auto const& newGradientEvent = it.first->second;
   bool erased = false;
 
-  auto r = newGradientEvent.Interpolate(erased, ChromaController::CallbacksController->songTime);
+  auto r = newGradientEvent.Interpolate(erased, ChromaController::CallbacksController->_songTime);
 
   if (erased) {
     getInstance()->Gradients.erase(it.first);

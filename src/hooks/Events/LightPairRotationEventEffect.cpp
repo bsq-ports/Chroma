@@ -53,18 +53,15 @@ MAKE_HOOK_MATCH(LightPairRotationEventEffect_UpdateRotationData, &LightPairRotat
     return;
   }
 
-  auto* beatmapEventData = LastLightPairRotationEventEffectData;
-
-  auto chromaIt = ChromaEventDataManager::ChromaEventDatas.find(beatmapEventData);
-
-  // Not found
-  if (chromaIt == ChromaEventDataManager::ChromaEventDatas.end()) {
+  auto beatmapEventDataOpt = il2cpp_utils::try_cast<CustomBeatmapEventData>(LastLightPairRotationEventEffectData);
+  if (!beatmapEventDataOpt) {
     LightPairRotationEventEffect_UpdateRotationData(self, beatmapEventDataValue, rotationData, startRotationOffset,
-                                                    direction);
+                                                direction);
     return;
   }
 
-  auto const& chromaData = chromaIt->second;
+  auto beatmapEventData = *beatmapEventDataOpt;
+  auto const& chromaData = getLightAD(beatmapEventData->customData);
 
   bool isLeftEvent = beatmapEventData->basicBeatmapEventType == self->_eventL;
   // rotationData

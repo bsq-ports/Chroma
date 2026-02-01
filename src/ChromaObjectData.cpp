@@ -24,8 +24,6 @@ using namespace ChromaUtils;
 using namespace GlobalNamespace;
 
 void Chroma::ChromaObjectDataManager::deserialize(CustomJSONData::CustomBeatmapData* beatmapData) {
-  ChromaObjectDatas.clear();
-
   auto* beatmapDataCast = beatmapData;
   bool v2 = beatmapDataCast->v2orEarlier;
 
@@ -116,6 +114,20 @@ void Chroma::ChromaObjectDataManager::deserialize(CustomJSONData::CustomBeatmapD
     auto const& tracks = TracksAD::getAD(objectDynData).tracks;
     chromaObjectData.Tracks = tracks;
 
-    ChromaObjectDatas.try_emplace(beatmapObjectData, chromaObjectData);
+    getObjectAD(objectDynData) = std::move(chromaObjectData);
   }
+}
+
+Chroma::ChromaObjectData* Chroma::getObjectAD(GlobalNamespace::BeatmapObjectData* obj) {
+  if (auto note = il2cpp_utils::try_cast<CustomJSONData::CustomNoteData>(obj)) {
+    return &getObjectAD(note.value()->customData);
+  }
+  if (auto obstacle = il2cpp_utils::try_cast<CustomJSONData::CustomObstacleData>(obj)) {
+    return &getObjectAD(obstacle.value()->customData);
+  }
+  if (auto slider = il2cpp_utils::try_cast<CustomJSONData::CustomSliderData>(obj)) {
+    return &getObjectAD(slider.value()->customData);
+  }
+
+  return nullptr;
 }

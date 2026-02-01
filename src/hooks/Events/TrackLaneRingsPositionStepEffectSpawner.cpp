@@ -13,11 +13,10 @@ using namespace Chroma;
 using namespace GlobalNamespace;
 
 static float GetPrecisionStep(float const defaultF, GlobalNamespace::BasicBeatmapEventData* beatmapEventData) {
-  auto const& map = ChromaEventDataManager::ChromaEventDatas;
-  auto it = map.find(beatmapEventData);
-
-  if (it != map.end()) {
-    auto const& chromaData = it->second;
+  auto beatmapEventDataOpt = il2cpp_utils::try_cast<CustomJSONData::CustomBeatmapEventData>(beatmapEventData);
+  
+  if (beatmapEventDataOpt.has_value()) {
+    auto const& chromaData = getLightAD(beatmapEventDataOpt.value()->customData);
 
     if (chromaData.Step) {
       return chromaData.Step.value();
@@ -28,11 +27,10 @@ static float GetPrecisionStep(float const defaultF, GlobalNamespace::BasicBeatma
 }
 
 static float GetPrecisionSpeed(float const defaultF, GlobalNamespace::BasicBeatmapEventData* beatmapEventData) {
-  auto const& map = ChromaEventDataManager::ChromaEventDatas;
-  auto it = map.find(beatmapEventData);
-
-  if (it != map.end()) {
-    auto const& chromaData = it->second;
+  auto beatmapEventDataOpt = il2cpp_utils::try_cast<CustomJSONData::CustomBeatmapEventData>(beatmapEventData);
+  
+  if (beatmapEventDataOpt.has_value()) {
+    auto const& chromaData = getLightAD(beatmapEventDataOpt.value()->customData);
 
     if (chromaData.Speed) {
       return chromaData.Speed.value();

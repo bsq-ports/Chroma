@@ -18,13 +18,15 @@ class BeatmapObjectSpawnController;
 
 namespace Chroma {
 class ChromaEventData {
-private:
-  ChromaEventData(ChromaEventData const&) = default;
-  friend class std::unordered_map<GlobalNamespace::BeatmapEventData*, ChromaEventData>;
-  friend class std::pair<GlobalNamespace::BeatmapEventData* const, Chroma::ChromaEventData>;
-
 public:
   ChromaEventData() = default;
+
+  [[deprecated("Copy invoked")]]
+  ChromaEventData(ChromaEventData const&) = default;
+  ChromaEventData(ChromaEventData&&) = default;
+
+  ChromaEventData& operator=(ChromaEventData&&) noexcept = default;
+  ChromaEventData& operator=(ChromaEventData const&) = default;
 
   std::optional<Functions> Easing;
 
@@ -81,10 +83,13 @@ public:
 
 class ChromaEventDataManager {
 public:
-  using EventMapType = std::unordered_map<GlobalNamespace::BeatmapEventData*, ChromaEventData>;
-  inline static EventMapType ChromaEventDatas;
-
   static void deserialize(CustomJSONData::CustomBeatmapData* beatmapData);
 };
+
+static ChromaEventData& getLightAD(CustomJSONData::JSONWrapper* customData) {
+  auto& ad = customData->associatedData['C'];
+  if (!ad.has_value()) ad = std::make_any<Chroma::ChromaEventData>();
+  return std::any_cast<Chroma::ChromaEventData&>(ad);
+}
 
 } // namespace Chroma

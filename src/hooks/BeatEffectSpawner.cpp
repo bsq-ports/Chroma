@@ -26,10 +26,10 @@ using namespace Chroma;
 using namespace GlobalNamespace;
 
 static bool BeatEffectHide(bool original, NoteController* noteController) {
-  auto it = ChromaObjectDataManager::ChromaObjectDatas.find(noteController->noteData);
+  auto it = getObjectAD(noteController->noteData);
 
-  if (it != ChromaObjectDataManager::ChromaObjectDatas.end()) {
-    auto const& chromaData = it->second;
+  if (it) {
+    auto const& chromaData = *it;
     std::optional<bool> force = chromaData.SpawnEffect;
 
     if (force.has_value()) {
