@@ -54,18 +54,20 @@ void Chroma::ChromaObjectDataManager::deserialize(CustomJSONData::CustomBeatmapD
       objectDynData = customNoteData->customData;
 
       chromaObjectData.Color = ChromaUtilities::GetColorFromData(objectDynData->value, v2);
+      chromaObjectData.DisableDebris = getIfExistsOpt<bool>(objectDynData->value, NewConstants::NOTE_DEBRIS);
       chromaObjectData.SpawnEffect = getIfExistsOpt<bool>(objectDynData->value, NewConstants::NOTE_SPAWN_EFFECT)
                                          ?: getIfExistsOpt<bool>(objectDynData->value, NewConstants::V2_DISABLE_SPAWN_EFFECT);
       if (v2 && chromaObjectData.SpawnEffect.has_value()) {
         chromaObjectData.SpawnEffect = !chromaObjectData.SpawnEffect.value();
       }
     } else if (ASSIGNMENT_CHECK(CustomSliderDataKlass, beatmapObjectData->klass)) {
-      debugSpamLog("Custom note {}", il2cpp_utils::ClassStandardName(beatmapObjectData->klass).c_str());
+      debugSpamLog("Custom slider {}", il2cpp_utils::ClassStandardName(beatmapObjectData->klass).c_str());
       auto* customNoteData = reinterpret_cast<CustomJSONData::CustomSliderData*>(beatmapObjectData);
 
       objectDynData = customNoteData->customData;
 
       chromaObjectData.Color = ChromaUtilities::GetColorFromData(objectDynData->value, v2);
+      chromaObjectData.DisableDebris = getIfExistsOpt<bool>(objectDynData->value, NewConstants::NOTE_DEBRIS);
       chromaObjectData.SpawnEffect = getIfExistsOpt<bool>(objectDynData->value, NewConstants::NOTE_SPAWN_EFFECT)
                                          ?: getIfExistsOpt<bool>(objectDynData->value, NewConstants::V2_DISABLE_SPAWN_EFFECT);
       if (v2 && chromaObjectData.SpawnEffect.has_value()) {

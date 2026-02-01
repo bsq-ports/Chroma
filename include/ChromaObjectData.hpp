@@ -32,6 +32,7 @@ public:
   std::optional<PointDefinitionW> LocalPathColor;
 
   // note
+  std::optional<bool> DisableDebris;
   std::optional<bool> SpawnEffect;
 
   ChromaObjectData() = default;

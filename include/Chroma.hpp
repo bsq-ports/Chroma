@@ -63,6 +63,7 @@ inline static constexpr const std::string_view V2_MATERIAL = "_material";
 
 inline static constexpr const std::string_view COLOR = "color";
 inline static constexpr const std::string_view DIRECTION = "direction";
+inline static constexpr const std::string_view NOTE_DEBRIS = "disableDebris";
 inline static constexpr const std::string_view NOTE_SPAWN_EFFECT = "spawnEffect";
 inline static constexpr const std::string_view LERP_TYPE = "lerpType";
 inline static constexpr const std::string_view LIGHT_ID = "lightID";

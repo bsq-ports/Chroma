@@ -5,6 +5,7 @@
 #include "beatsaber-hook/shared/utils/logging.hpp"
 #include "ChromaLogger.hpp"
 
+#include "GlobalNamespace/BeatmapCallbacksController.hpp"
 #include "GlobalNamespace/BeatmapObjectManager.hpp"
 #include "GlobalNamespace/IReadonlyBeatmapData.hpp"
 #include "GlobalNamespace/GameplayCoreInstaller.hpp"
