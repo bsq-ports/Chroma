@@ -204,8 +204,11 @@ void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapDa
 
   // Horrible stupid logic to get next same type event per light id
   // what am i even doing anymore
-  std::unordered_map<int, std::unordered_map<int, GlobalNamespace::BasicBeatmapEventData*>> allNextSameTypes;
-  for (int i = beatmapEventDatas.size() - 1; i >= 0; i--) {
+  std::unordered_map<int, std::unordered_map<int, CustomJSONData::CustomBeatmapEventData*>> allNextSameTypes;
+  if (beatmapEventDatas.size() == 0) {
+    return;
+  }
+  for (auto i = beatmapEventDatas.size() - 1; i >= 0; i--) {
     auto const& beatmapEventData = beatmapEventDatas[i];
     auto const& basicBeatmapEventDataOpt =
         il2cpp_utils::try_cast<GlobalNamespace::BasicBeatmapEventData>(beatmapEventData);
