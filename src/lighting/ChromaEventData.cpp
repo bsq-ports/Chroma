@@ -35,10 +35,10 @@ void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapDa
     debugSpamLog("Light gradient");
 
     // ASSIGN
-    ChromaEventData chromaEventData;
     if (!optionalDynData.has_value()) {
       continue;
     }
+    ChromaEventData& chromaEventData = getLightAD(customBeatmapEvent->customData);
     if (optionalDynData) {
       rapidjson::Value const& unwrappedData = *optionalDynData;
 
@@ -199,7 +199,6 @@ void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapDa
     chromaEventData.LockPosition =
         getIfExistsOpt<bool>(optionalDynData, v2 ? NewConstants::V2_LOCK_POSITION : NewConstants::LOCK_POSITION, false);
 
-    getLightAD(customBeatmapEvent->customData) = std::move(chromaEventData);
   }
 
   // Horrible stupid logic to get next same type event per light id
