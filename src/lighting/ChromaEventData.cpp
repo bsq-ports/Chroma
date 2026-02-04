@@ -7,6 +7,9 @@
 
 #include "utils/ChromaUtils.hpp"
 
+#include <limits>
+#include <ranges>
+
 using namespace ChromaUtils;
 
 void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapData* beatmapData) {
@@ -208,10 +211,9 @@ void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapDa
   if (beatmapEventDatas.size() == 0) {
     return;
   }
-  for (auto i = beatmapEventDatas.size() - 1; i >= 0; i--) {
-    auto const& beatmapEventData = beatmapEventDatas[i];
-    auto const& basicBeatmapEventDataOpt =
-        il2cpp_utils::try_cast<GlobalNamespace::BasicBeatmapEventData>(beatmapEventData);
+  for (auto *beatmapEventData : std::ranges::reverse_view(beatmapEventDatas)) {
+     auto const& basicBeatmapEventDataOpt =
+        il2cpp_utils::try_cast<CustomJSONData::CustomBeatmapEventData>(beatmapEventData);
     if (!basicBeatmapEventDataOpt) {
       continue;
     }
