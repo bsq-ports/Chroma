@@ -31,9 +31,9 @@ MAKE_HOOK_MATCH(SliderController_Init, &SliderController::Init, void, SliderCont
     return;
   }
 
-  auto chromaData = ChromaObjectDataManager::ChromaObjectDatas.find(self->sliderData);
-  if (chromaData != ChromaObjectDataManager::ChromaObjectDatas.end()) {
-    auto const& color = chromaData->second.Color;
+  auto const& chromaData =  getObjectAD(self->_sliderData);
+  if (chromaData) {
+    auto const& color = chromaData->Color;
 
     if (color) {
       SliderColorizer::ColorizeSlider(self, color);
@@ -49,16 +49,16 @@ MAKE_HOOK_MATCH(SliderController_Update, &SliderController::ManualUpdate, void, 
     return;
   }
 
-  auto chromaData = ChromaObjectDataManager::ChromaObjectDatas.find(self->sliderData);
-  if (chromaData != ChromaObjectDataManager::ChromaObjectDatas.end()) {
-    auto const& tracks = chromaData->second.Tracks;
+  auto const& chromaData =  getObjectAD(self->_sliderData);
+  if (chromaData) {
+    auto const& tracks = chromaData->Tracks;
 
-    auto pathPointDefinition = chromaData->second.LocalPathColor;
+    auto pathPointDefinition = chromaData->LocalPathColor;
     if (!tracks.empty() || pathPointDefinition) {
       VariableMovementW movement(self->_sliderMovement->_variableMovementDataProvider);
       float jumpDuration = movement.jumpDuration;
 
-      float duration = (jumpDuration * 0.75F) + (self->sliderData->tailTime - self->sliderData->time);
+      float duration = (jumpDuration * 0.75F) + (self->_sliderData->tailTime - self->_sliderData->time);
       float normalTime = self->sliderMovement->timeSinceHeadNoteJump / (jumpDuration + duration);
 
       [[maybe_unused]] bool updated = false;

@@ -22,9 +22,9 @@ MAKE_HOOK_MATCH(BombNoteController_Init, &BombNoteController::Init, void, BombNo
     return;
   }
 
-  auto chromaData = ChromaObjectDataManager::ChromaObjectDatas.find(noteData);
-  if (chromaData != ChromaObjectDataManager::ChromaObjectDatas.end()) {
-    auto const& color = chromaData->second.Color;
+  auto const& chromaData = getObjectAD(noteData);
+  if (chromaData) {
+    auto const& color = chromaData->Color;
 
     BombColorizer::ColorizeBomb(self, color);
   }

@@ -13,8 +13,6 @@
 using namespace ChromaUtils;
 
 void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapData* beatmapData) {
-  ChromaEventDatas.clear();
-
   auto* beatmapDataCast = beatmapData;
   static auto* CustomBasicBeatmapEventDataKlass = classof(CustomJSONData::CustomBeatmapEventData*);
 
@@ -38,10 +36,10 @@ void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapDa
     debugSpamLog("Light gradient");
 
     // ASSIGN
-    ChromaEventData chromaEventData;
     if (!optionalDynData.has_value()) {
       continue;
     }
+    ChromaEventData& chromaEventData = getLightAD(customBeatmapEvent->customData);
     if (optionalDynData) {
       rapidjson::Value const& unwrappedData = *optionalDynData;
 
@@ -202,7 +200,6 @@ void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapDa
     chromaEventData.LockPosition =
         getIfExistsOpt<bool>(optionalDynData, v2 ? NewConstants::V2_LOCK_POSITION : NewConstants::LOCK_POSITION, false);
 
-    ChromaEventDatas.try_emplace(customBeatmapEvent, std::move(chromaEventData));
   }
 
   // Horrible stupid logic to get next same type event per light id
@@ -219,18 +216,15 @@ void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapDa
     }
     auto const& basicBeatmapEventData = *basicBeatmapEventDataOpt;
 
-    auto eventDataIt = ChromaEventDatas.find(beatmapEventData);
-    if (eventDataIt == ChromaEventDatas.end()) {
-      continue;
-    }
-    auto& currentEventData = eventDataIt->second;
+
+    auto& currentEventData = getLightAD(basicBeatmapEventData->customData);
 
     int type = (int)basicBeatmapEventData->basicBeatmapEventType.value__;
     auto& nextSameTypes = allNextSameTypes[type];
 
     if (currentEventData.NextSameTypeEvent.empty()) {
       for (auto const& [k, v] : nextSameTypes) {
-        currentEventData.NextSameTypeEvent[k] = std::pair(v, &ChromaEventDatas.at(v));
+        currentEventData.NextSameTypeEvent[k] = std::pair(v, &getLightAD(v->customData));
       }
     }
 

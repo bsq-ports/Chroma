@@ -1,3 +1,4 @@
+#include "ChromaObjectData.hpp"
 #include "main.hpp"
 #include "NoteAPI.hpp"
 #include "colorizer/NoteColorizer.hpp"
@@ -34,13 +35,14 @@ EXPOSE_API(getNoteControllerOverrideColorSafe, OptColor, NoteController* noteCon
 }
 
 EXPOSE_API(getNoteControllerColorSafe, OptColor, NoteController* noteController) {
-  auto it = ChromaObjectDataManager::ChromaObjectDatas.find(noteController->noteData);
 
-  if (it == ChromaObjectDataManager::ChromaObjectDatas.end()) {
+  auto *ad = getObjectAD(noteController->_noteData);
+
+  if (!ad) {
     return OptColorNull;
   }
 
-  auto const& color = it->second.Color;
+  auto const& color = ad->Color;
 
   if (!color) {
     return OptColorNull;
