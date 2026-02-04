@@ -77,24 +77,6 @@ void Chroma::ChromaObjectDataManager::deserialize(CustomJSONData::CustomBeatmapD
       objectDynData = customObstacleData->customData;
       chromaObjectData.Color = ChromaUtilities::GetColorFromData(objectDynData->value, v2);
     }
-    //                else if (false && ASSIGNMENT_CHECK(CustomWaypointDataKlass,beatmapObjectData->klass)) {
-    //                    debugSpamLog("Custom waypoint");
-    //                    auto *customBeatmapEvent =
-    //                    il2cpp_utils::cast<CustomJSONData::CustomWaypointData>(beatmapObjectData);
-    //
-    //                    // TODO: uncomment when CJD adds customData
-    //                    // bool isCustomData = customBeatmapEvent->customData && customBeatmapEvent->customData->value
-    //                    &&
-    //                    //                customBeatmapEvent->customData->value->IsObject();
-    //                    // dynData = isCustomData ? customBeatmapEvent->customData->value : nullptr;
-    //
-    //                    auto data = std::make_shared<ChromaObjectData>();
-    //
-    //                    data->Color = std::nullopt;
-    //
-    //
-    //                    chromaObjectData = data;
-    //                }
     else {
       continue;
     }

@@ -14,7 +14,7 @@
 namespace GlobalNamespace {
 class BasicBeatmapEventData;
 class BeatmapObjectSpawnController;
-};
+}; // namespace GlobalNamespace
 
 namespace Chroma {
 class ChromaEventData {
@@ -86,10 +86,20 @@ public:
   static void deserialize(CustomJSONData::CustomBeatmapData* beatmapData);
 };
 
-static ChromaEventData& getLightAD(CustomJSONData::JSONWrapper* customData) {
+constexpr ChromaEventData& getLightAD(CustomJSONData::JSONWrapper* customData) {
   auto& ad = customData->associatedData['C'];
-  if (!ad.has_value()) ad = std::make_any<Chroma::ChromaEventData>();
+  if (!ad.has_value()) {
+    ad = std::make_any<Chroma::ChromaEventData>();
+  }
   return std::any_cast<Chroma::ChromaEventData&>(ad);
+}
+
+constexpr ChromaEventData* getLightAD(GlobalNamespace::BeatmapEventData* beatmap) {
+  auto const& customBeatmapEvent = il2cpp_utils::try_cast<CustomJSONData::CustomBeatmapEventData>(beatmap);
+  if (!customBeatmapEvent) {
+    return nullptr;
+  }
+  return &getLightAD(customBeatmapEvent.value()->customData);
 }
 
 } // namespace Chroma
