@@ -41,7 +41,11 @@ void ChromaEvents::parseEventData(TracksAD::BeatmapAssociatedData& beatmapAD,
     return;
   }
 
-  rapidjson::Value const& eventData = *customEventData->data;
+  if (!customEventData->customData || !customEventData->customData->value) {
+    return;
+  }
+
+  rapidjson::Value const& eventData = *customEventData->customData->value;
   auto& eventAD = getEventAD(customEventData);
 
   if (eventAD.parsed) {
