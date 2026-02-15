@@ -112,7 +112,7 @@ void Chroma::ChromaLightSwitchEventEffect::HandleEvent(GlobalNamespace::BasicBea
 
   // fun fun chroma stuff
 
-  auto beatmapEventDataOpt = il2cpp_utils::try_cast<CustomJSONData::CustomEventData>(beatmapEventData);
+  auto beatmapEventDataOpt = il2cpp_utils::try_cast<CustomJSONData::CustomBeatmapEventData>(beatmapEventData);
 
   // Aero thinks legacy was a mistake. I think a Quest port was a bigger mistake.
   std::optional<Sombrero::FastColor> color;
@@ -229,7 +229,7 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, std::optional<std::vector<
     auto CheckNextEventForFadeBetter = [&, this, hard, easing, lerpType]() {
       auto previousEventOpt = il2cpp_utils::try_cast<CustomJSONData::CustomBeatmapEventData>(previousEvent);
 
-      auto const* eventData = previousEventOpt.has_value() ? &getLightAD(previousEventOpt.value()->customData) : nullptr;
+      auto const* eventData = getLightAD(previousEvent);
 
       auto const& nextSameTypesDict = eventData != nullptr ? &eventData->NextSameTypeEvent : nullptr;
 
@@ -265,7 +265,7 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, std::optional<std::vector<
 
 
       if (nextEventData == nullptr) {
-        nextEventData = previousEventOpt.has_value() ? &getLightAD(previousEventOpt.value()->customData) : nullptr;
+        nextEventData = getLightAD(nextSameTypeEvent);
       }
 
       std::optional<Sombrero::FastColor> nextColorData = nextEventData != nullptr ? nextEventData->ColorData : std::nullopt;

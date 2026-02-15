@@ -14,40 +14,34 @@ using namespace ChromaUtils;
 
 void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapData* beatmapData) {
   auto* beatmapDataCast = beatmapData;
-  static auto* CustomBasicBeatmapEventDataKlass = classof(CustomJSONData::CustomBeatmapEventData*);
 
   bool v2 = beatmapDataCast->v2orEarlier;
 
   auto const& beatmapEventDatas = beatmapDataCast->beatmapEventDatas;
 
+  ChromaLogger::Logger.debug("Deserializing Chroma events, count: {}", beatmapEventDatas.size());
   for (auto* beatmapEvent : beatmapEventDatas) {
 
-    if (beatmapEvent->klass != CustomBasicBeatmapEventDataKlass) {
+    auto customBeatmapEvent = il2cpp_utils::try_cast<CustomJSONData::CustomBeatmapEventData>(beatmapEvent);
+
+    if (!customBeatmapEvent) {
       continue;
     }
-    auto* customBeatmapEvent = reinterpret_cast<CustomJSONData::CustomBeatmapEventData*>(beatmapEvent);
-    if (!customBeatmapEvent->customData) {
+
+    if (!customBeatmapEvent.value()->customData) {
       continue;
     }
-    auto const& optionalDynData = customBeatmapEvent->customData->value;
+    auto const& optionalDynData = customBeatmapEvent.value()->customData->value;
 
-    std::optional<ChromaEventData::GradientObjectData> gradientObject = std::nullopt;
-
-    debugSpamLog("Light gradient");
 
     // ASSIGN
-    if (!optionalDynData.has_value()) {
-      continue;
-    }
-    ChromaEventData& chromaEventData = getLightAD(customBeatmapEvent->customData);
+    ChromaEventData& chromaEventData = getLightAD(customBeatmapEvent.value()->customData);
     if (optionalDynData) {
       rapidjson::Value const& unwrappedData = *optionalDynData;
 
-#pragma region V2 Gradients and prop
       if (v2) {
         auto gradientJSON = unwrappedData.FindMember(NewConstants::V2_LIGHT_GRADIENT.data());
-        if (gradientJSON != unwrappedData.MemberEnd() && !gradientJSON->value.IsNull() &&
-            gradientJSON->value.IsObject()) {
+        if (gradientJSON != unwrappedData.MemberEnd() && !gradientJSON->value.IsNull() && gradientJSON->value.IsObject()) {
           auto const& gValue = gradientJSON->value;
 
           float duration = ChromaUtils::getIfExists<float>(gValue, Chroma::NewConstants::V2_DURATION).value_or(0);
@@ -55,8 +49,7 @@ void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapDa
           Sombrero::FastColor initcolor =
               ChromaUtils::ChromaUtilities::GetColorFromData(gValue, Chroma::NewConstants::V2_START_COLOR).value();
 
-          Sombrero::FastColor endcolor =
-              ChromaUtils::ChromaUtilities::GetColorFromData(gValue, Chroma::NewConstants::V2_END_COLOR).value();
+          Sombrero::FastColor endcolor = ChromaUtils::ChromaUtilities::GetColorFromData(gValue, Chroma::NewConstants::V2_END_COLOR).value();
 
           std::string_view easingString = gValue.FindMember(Chroma::NewConstants::V2_EASING.data())->value.GetString();
 
@@ -68,8 +61,8 @@ void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapDa
             easing = FunctionFromStr(easingString);
           }
 
-          gradientObject = std::make_optional(ChromaEventData::GradientObjectData{
-              .Duration = duration, .StartColor = initcolor, .EndColor = endcolor, .Easing = easing });
+          chromaEventData.GradientObject = std::make_optional(
+              ChromaEventData::GradientObjectData{ .Duration = duration, .StartColor = initcolor, .EndColor = endcolor, .Easing = easing });
         }
 
         auto propId = unwrappedData.FindMember(Chroma::NewConstants::V2_PROPAGATION_ID.data());
@@ -109,9 +102,8 @@ void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapDa
           chromaEventData.PropID = propIds;
         }
       }
-#pragma endregion
-      auto easingString =
-          getIfExistsOpt<std::string>(optionalDynData, v2 ? NewConstants::V2_EASING : NewConstants::EASING);
+
+      auto easingString = getIfExistsOpt<std::string>(optionalDynData, v2 ? NewConstants::V2_EASING : NewConstants::EASING);
 
       if (easingString) {
         Functions easing;
@@ -125,8 +117,7 @@ void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapDa
         chromaEventData.Easing = easing;
       }
 
-      auto lerpTypeStr =
-          getIfExistsOpt<std::string>(optionalDynData, v2 ? NewConstants::V2_LERP_TYPE : NewConstants::LERP_TYPE);
+      auto lerpTypeStr = getIfExistsOpt<std::string>(optionalDynData, v2 ? NewConstants::V2_LERP_TYPE : NewConstants::LERP_TYPE);
 
       if (lerpTypeStr) {
         LerpType lerpType;
@@ -140,7 +131,6 @@ void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapDa
         chromaEventData.LerpType = lerpType;
       }
 
-      debugSpamLog("Light ID");
       auto lightId = unwrappedData.FindMember(v2 ? NewConstants::V2_LIGHT_ID.data() : NewConstants::LIGHT_ID.data());
 
       if (lightId != unwrappedData.MemberEnd()) {
@@ -167,19 +157,16 @@ void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapDa
 
       // Light stuff
       chromaEventData.ColorData = ChromaUtilities::GetColorFromData(optionalDynData, v2);
-      chromaEventData.GradientObject = gradientObject;
+
 
       // RING STUFF
       chromaEventData.NameFilter =
           getIfExistsOpt<std::string>(optionalDynData, v2 ? NewConstants::V2_NAME_FILTER : NewConstants::NAME_FILTER);
-      chromaEventData.Direction =
-          getIfExistsOpt<int>(optionalDynData, v2 ? NewConstants::V2_DIRECTION : NewConstants::DIRECTION);
-      chromaEventData.CounterSpin =
-          v2 ? getIfExistsOpt<bool>(optionalDynData, NewConstants::V2_COUNTER_SPIN) : std::nullopt;
+      chromaEventData.Direction = getIfExistsOpt<int>(optionalDynData, v2 ? NewConstants::V2_DIRECTION : NewConstants::DIRECTION);
+      chromaEventData.CounterSpin = v2 ? getIfExistsOpt<bool>(optionalDynData, NewConstants::V2_COUNTER_SPIN) : std::nullopt;
       chromaEventData.Reset = v2 ? getIfExistsOpt<bool>(optionalDynData, NewConstants::V2_RESET) : std::nullopt;
 
-      std::optional<float> speed =
-          getIfExistsOpt<float>(optionalDynData, v2 ? NewConstants::V2_SPEED : NewConstants::SPEED);
+      std::optional<float> speed = getIfExistsOpt<float>(optionalDynData, v2 ? NewConstants::V2_SPEED : NewConstants::SPEED);
 
       if (!speed && v2) {
         speed = getIfExistsOpt<float>(optionalDynData, NewConstants::V2_PRECISE_SPEED);
@@ -188,8 +175,7 @@ void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapDa
       chromaEventData.Prop = getIfExistsOpt<float>(optionalDynData, v2 ? NewConstants::V2_PROP : NewConstants::PROP);
       chromaEventData.Step = getIfExistsOpt<float>(optionalDynData, v2 ? NewConstants::V2_STEP : NewConstants::STEP);
       chromaEventData.Speed = speed;
-      chromaEventData.Rotation =
-          getIfExistsOpt<float>(optionalDynData, v2 ? NewConstants::V2_ROTATION : NewConstants::ROTATION);
+      chromaEventData.Rotation = getIfExistsOpt<float>(optionalDynData, v2 ? NewConstants::V2_ROTATION : NewConstants::ROTATION);
     }
 
     chromaEventData.StepMult = v2 ? getIfExistsOpt<float>(optionalDynData, NewConstants::V2_STEP_MULT, 1.0F) : 1;
@@ -199,7 +185,6 @@ void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapDa
     // Light stuff again
     chromaEventData.LockPosition =
         getIfExistsOpt<bool>(optionalDynData, v2 ? NewConstants::V2_LOCK_POSITION : NewConstants::LOCK_POSITION, false);
-
   }
 
   // Horrible stupid logic to get next same type event per light id
@@ -208,14 +193,12 @@ void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapDa
   if (beatmapEventDatas.size() == 0) {
     return;
   }
-  for (auto *beatmapEventData : std::ranges::reverse_view(beatmapEventDatas)) {
-     auto const& basicBeatmapEventDataOpt =
-        il2cpp_utils::try_cast<CustomJSONData::CustomBeatmapEventData>(beatmapEventData);
+  for (auto* beatmapEventData : std::ranges::reverse_view(beatmapEventDatas)) {
+    auto basicBeatmapEventDataOpt = il2cpp_utils::try_cast<CustomJSONData::CustomBeatmapEventData>(beatmapEventData);
     if (!basicBeatmapEventDataOpt) {
       continue;
     }
     auto const& basicBeatmapEventData = *basicBeatmapEventDataOpt;
-
 
     auto& currentEventData = getLightAD(basicBeatmapEventData->customData);
 
