@@ -13,28 +13,20 @@ using namespace Chroma;
 using namespace GlobalNamespace;
 
 static float GetPrecisionStep(float const defaultF, GlobalNamespace::BasicBeatmapEventData* beatmapEventData) {
-  auto beatmapEventDataOpt = il2cpp_utils::try_cast<CustomJSONData::CustomBeatmapEventData>(beatmapEventData);
-  
-  if (beatmapEventDataOpt.has_value()) {
-    auto const& chromaData = getLightAD(beatmapEventDataOpt.value()->customData);
+  auto const& chromaData = getLightAD(beatmapEventData);
+  if (chromaData && chromaData->Step) {
 
-    if (chromaData.Step) {
-      return chromaData.Step.value();
-    }
+    return chromaData->Step.value();
   }
 
   return defaultF;
 }
 
 static float GetPrecisionSpeed(float const defaultF, GlobalNamespace::BasicBeatmapEventData* beatmapEventData) {
-  auto beatmapEventDataOpt = il2cpp_utils::try_cast<CustomJSONData::CustomBeatmapEventData>(beatmapEventData);
-  
-  if (beatmapEventDataOpt.has_value()) {
-    auto const& chromaData = getLightAD(beatmapEventDataOpt.value()->customData);
+  auto chromaData = getLightAD(beatmapEventData);
 
-    if (chromaData.Speed) {
-      return chromaData.Speed.value();
-    }
+  if (chromaData && chromaData->Speed) {
+    return chromaData->Speed.value();
   }
 
   return defaultF;
@@ -43,12 +35,10 @@ static float GetPrecisionSpeed(float const defaultF, GlobalNamespace::BasicBeatm
 // Aero why do you have to use transpilers for everything damn it? Just rewrite the method
 MAKE_HOOK_MATCH(TrackLaneRingsPositionStepEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger,
                 &TrackLaneRingsPositionStepEffectSpawner::HandleBeatmapEvent, void,
-                GlobalNamespace::TrackLaneRingsPositionStepEffectSpawner* self,
-                GlobalNamespace::BasicBeatmapEventData* beatmapEventData) {
+                GlobalNamespace::TrackLaneRingsPositionStepEffectSpawner* self, GlobalNamespace::BasicBeatmapEventData* beatmapEventData) {
   // Essentially, here we cancel the original method. DO NOT call it IF it's a Chroma map
   if (!ChromaController::DoChromaHooks()) {
-    TrackLaneRingsPositionStepEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(
-        self, beatmapEventData);
+    TrackLaneRingsPositionStepEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);
     return;
   }
 
@@ -67,8 +57,7 @@ MAKE_HOOK_MATCH(TrackLaneRingsPositionStepEffectSpawner_HandleBeatmapObjectCallb
 }
 
 void TrackLaneRingsPositionStepEffectSpawnerHook() {
-  INSTALL_HOOK(ChromaLogger::Logger,
-               TrackLaneRingsPositionStepEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger);
+  INSTALL_HOOK(ChromaLogger::Logger, TrackLaneRingsPositionStepEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger);
   //    INSTALL_HOOK_OFFSETLESS(ChromaLogger::Logger, SaberManager_Finalize, il2cpp_utils::FindMethodUnsafe("System", "Object",
   //    "Finalize", 0));
 }

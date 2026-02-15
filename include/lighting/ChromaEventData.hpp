@@ -4,6 +4,7 @@
 
 #include "tracks/shared/Animation/Easings.h"
 
+#include <functional>
 #include <unordered_map>
 
 #include "sombrero/shared/ColorUtils.hpp"
@@ -20,7 +21,6 @@ namespace Chroma {
 class ChromaEventData {
 public:
   ChromaEventData() = default;
-
   [[deprecated("Copy invoked")]]
   ChromaEventData(ChromaEventData const&) = default;
   ChromaEventData(ChromaEventData&&) = default;
@@ -95,7 +95,7 @@ constexpr ChromaEventData& getLightAD(CustomJSONData::JSONWrapper* customData) {
 }
 
 constexpr ChromaEventData* getLightAD(GlobalNamespace::BeatmapEventData* beatmap) {
-  auto const& customBeatmapEvent = il2cpp_utils::try_cast<CustomJSONData::CustomBeatmapEventData>(beatmap);
+  auto customBeatmapEvent = il2cpp_utils::try_cast<CustomJSONData::CustomBeatmapEventData>(beatmap);
   if (!customBeatmapEvent) {
     return nullptr;
   }
