@@ -54,8 +54,7 @@ std::optional<Sombrero::FastColor> SaberColorizer::getGlobalColor() const {
   return GlobalColor[_saberType.value__];
 }
 
-void SaberColorizer::GlobalColorize(GlobalNamespace::SaberType saberType,
-                                    std::optional<Sombrero::FastColor> const& color) {
+void SaberColorizer::GlobalColorize(GlobalNamespace::SaberType saberType, std::optional<Sombrero::FastColor> const& color) {
   GlobalColor[saberType.value__] = color;
   for (auto const& c : GetColorizerList(saberType)) {
     c->Refresh();
@@ -78,12 +77,10 @@ void SaberColorizer::Refresh() {
   }
   _lastColor = color;
 
-  static auto SetColor =
-      FPtrWrapper<static_cast<void (UnityEngine::MaterialPropertyBlock::*)(StringW, UnityEngine::Color)>(
-          &UnityEngine::MaterialPropertyBlock::SetColor)>::get();
-  static auto SetPropertyBlock =
-      FPtrWrapper<static_cast<void (UnityEngine::Renderer::*)(UnityEngine::MaterialPropertyBlock*)>(
-          &UnityEngine::Renderer::SetPropertyBlock)>::get();
+  static auto SetColor = FPtrWrapper<static_cast<void (UnityEngine::MaterialPropertyBlock::*)(StringW, UnityEngine::Color)>(
+      &UnityEngine::MaterialPropertyBlock::SetColor)>::get();
+  static auto SetPropertyBlock = FPtrWrapper<static_cast<void (UnityEngine::Renderer::*)(UnityEngine::MaterialPropertyBlock*)>(
+      &UnityEngine::Renderer::SetPropertyBlock)>::get();
   static auto Refresh = FPtrWrapper<&Parametric3SliceSpriteController::Refresh>::get();
 
   if (!IsColorable(_saberModelController)) {
@@ -135,7 +132,7 @@ void SaberColorizer::Refresh() {
     }
 
     if (_saberLight != nullptr) {
-      _saberLight->color = color;
+      _saberLight->_color = color;
     }
   } else {
     ColorColorable(color);

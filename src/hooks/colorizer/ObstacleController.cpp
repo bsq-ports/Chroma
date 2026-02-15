@@ -22,16 +22,13 @@ using namespace Chroma;
 using namespace ChromaUtils;
 
 MAKE_HOOK_MATCH(ObstacleController_Init, &ObstacleController::Init, void, ObstacleController* self,
-                ::GlobalNamespace::ObstacleData* obstacleData,
-                ::ByRef<::GlobalNamespace::ObstacleSpawnData> obstacleSpawnData) {
-  static auto* MultiplayerConnectedPlayerObstacleControllerKlass =
-      classof(MultiplayerConnectedPlayerObstacleController*);
+                ::GlobalNamespace::ObstacleData* obstacleData, ::ByRef<::GlobalNamespace::ObstacleSpawnData> obstacleSpawnData) {
+  static auto* MultiplayerConnectedPlayerObstacleControllerKlass = classof(MultiplayerConnectedPlayerObstacleController*);
 
   ObstacleController_Init(self, obstacleData, obstacleSpawnData);
 
   // Do nothing if Chroma shouldn't run
-  if (!ChromaController::DoChromaHooks() ||
-      ASSIGNMENT_CHECK(MultiplayerConnectedPlayerObstacleControllerKlass, self->klass)) {
+  if (!ChromaController::DoChromaHooks() || ASSIGNMENT_CHECK(MultiplayerConnectedPlayerObstacleControllerKlass, self->klass)) {
     return;
   }
 
@@ -44,18 +41,16 @@ MAKE_HOOK_MATCH(ObstacleController_Init, &ObstacleController::Init, void, Obstac
 }
 // Update is too small, use manual update yay
 MAKE_HOOK_MATCH(ObstacleController_ManualUpdate, &ObstacleController::ManualUpdate, void, ObstacleController* self) {
-  static auto* MultiplayerConnectedPlayerObstacleControllerKlass =
-      classof(MultiplayerConnectedPlayerObstacleController*);
+  static auto* MultiplayerConnectedPlayerObstacleControllerKlass = classof(MultiplayerConnectedPlayerObstacleController*);
 
   ObstacleController_ManualUpdate(self);
 
   // Do nothing if Chroma shouldn't run
-  if (!ChromaController::DoChromaHooks() ||
-      ASSIGNMENT_CHECK(MultiplayerConnectedPlayerObstacleControllerKlass, self->klass)) {
+  if (!ChromaController::DoChromaHooks() || ASSIGNMENT_CHECK(MultiplayerConnectedPlayerObstacleControllerKlass, self->klass)) {
     return;
   }
 
-  auto chromaData = ChromaObjectDataManager::ChromaObjectDatas.find(self->obstacleData);
+  auto chromaData = ChromaObjectDataManager::ChromaObjectDatas.find(self->_obstacleData);
   if (chromaData != ChromaObjectDataManager::ChromaObjectDatas.end()) {
 
     auto const& tracks = chromaData->second.Tracks;
@@ -65,10 +60,8 @@ MAKE_HOOK_MATCH(ObstacleController_ManualUpdate, &ObstacleController::ManualUpda
       VariableMovementW movement(self->_variableMovementDataProvider);
 
       float jumpDuration = movement.jumpDuration;
-      float elapsedTime =
-          ChromaTimeSourceHelper::getSongTimeChroma(self->_audioTimeSyncController) - self->_startTimeOffset;
-      float normalTime =
-          (elapsedTime - movement.moveDuration) / (jumpDuration + self->obstacleData->duration);
+      float elapsedTime = ChromaTimeSourceHelper::getSongTimeChroma(self->_audioTimeSyncController) - self->_startTimeOffset;
+      float normalTime = (elapsedTime - movement.moveDuration) / (jumpDuration + self->_obstacleData->_duration_k__BackingField);
 
       [[maybe_unused]] bool updated = false;
       std::optional<Sombrero::FastColor> colorOffset =

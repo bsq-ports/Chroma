@@ -84,7 +84,7 @@ void ObstacleColorizer::Refresh() {
 
   _obstacleFrame->color = color;
   _obstacleFrame->Refresh();
-  
+
   if (_obstacleFakeGlow) {
     _obstacleFakeGlow->color = color;
     static auto Refresh = FPtrWrapper<&GlobalNamespace::ParametricBoxFakeGlowController::Refresh>::get();
@@ -99,12 +99,12 @@ void ObstacleColorizer::Refresh() {
       &UnityEngine::MaterialPropertyBlock::SetColor)>::get();
 
   for (auto materialPropertyBlockController : _materialPropertyBlockControllers) {
-    if (!materialPropertyBlockController  || !materialPropertyBlockController->materialPropertyBlock) {
+    if (!materialPropertyBlockController || !materialPropertyBlockController->materialPropertyBlock) {
       continue;
     }
 
     Sombrero::FastColor white = Sombrero::FastColor::white();
-    
+
     SetColor(materialPropertyBlockController->materialPropertyBlock, _addColorID(), value);
     SetColor(materialPropertyBlockController->materialPropertyBlock, _tintColorID(),
              Sombrero::FastColor::Lerp(color, white, _obstacleCoreLerpToWhiteFactor));

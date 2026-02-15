@@ -27,17 +27,16 @@ using namespace GlobalNamespace;
 using namespace Chroma;
 using namespace ChromaUtils;
 
-MAKE_HOOK_MATCH(NoteController_Init, &NoteController::Init, void, NoteController* self,
-                ::GlobalNamespace::NoteData* noteData, ::ByRef<::GlobalNamespace::NoteSpawnData> noteSpawnData,
-                float_t endRotation, float_t uniformScale, bool rotateTowardsPlayer, bool useRandomRotation) {
-  NoteController_Init(self, noteData, noteSpawnData, endRotation, uniformScale, rotateTowardsPlayer,
-                      useRandomRotation);
+MAKE_HOOK_MATCH(NoteController_Init, &NoteController::Init, void, NoteController* self, ::GlobalNamespace::NoteData* noteData,
+                ::ByRef<::GlobalNamespace::NoteSpawnData> noteSpawnData, float_t endRotation, float_t uniformScale,
+                bool rotateTowardsPlayer, bool useRandomRotation) {
+  NoteController_Init(self, noteData, noteSpawnData, endRotation, uniformScale, rotateTowardsPlayer, useRandomRotation);
 
   if (!ChromaController::DoChromaHooks() || !ChromaController::DoColorizerSabers()) {
     return;
   }
 
-  auto chromaData = ChromaObjectDataManager::ChromaObjectDatas.find(self->noteData);
+  auto chromaData = ChromaObjectDataManager::ChromaObjectDatas.find(self->_noteData);
   if (chromaData != ChromaObjectDataManager::ChromaObjectDatas.end()) {
     auto const& color = chromaData->second.Color;
 
@@ -53,12 +52,9 @@ MAKE_HOOK_MATCH(NoteController_Update, &NoteController::ManualUpdate, void, Note
     return;
   }
 
-
-
-  auto chromaData = ChromaObjectDataManager::ChromaObjectDatas.find(self->noteData);
+  auto chromaData = ChromaObjectDataManager::ChromaObjectDatas.find(self->_noteData);
   if (chromaData != ChromaObjectDataManager::ChromaObjectDatas.end()) {
     auto const& tracks = chromaData->second.Tracks;
-
 
     auto pathPointDefinition = chromaData->second.LocalPathColor;
     if (!tracks.empty() || pathPointDefinition) {
@@ -66,7 +62,7 @@ MAKE_HOOK_MATCH(NoteController_Update, &NoteController::ManualUpdate, void, Note
       VariableMovementW movement(noteJump->_variableMovementDataProvider);
       float jumpDuration = movement.jumpDuration;
       float elapsedTime = ChromaTimeSourceHelper::getSongTimeChroma(noteJump->_audioTimeSyncController) -
-                          (self->noteData->time - (jumpDuration * 0.5F));
+                          (self->_noteData->_time_k__BackingField - (jumpDuration * 0.5F));
       float normalTime = elapsedTime / jumpDuration;
 
       [[maybe_unused]] bool updated = false;

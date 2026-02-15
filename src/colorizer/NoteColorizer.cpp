@@ -87,7 +87,7 @@ void NoteColorizer::Reset() {
 
 void NoteColorizer::ColorizeSaber(GlobalNamespace::NoteController* noteController, NoteCutInfo const& noteCutInfo) {
   if (ChromaController::DoColorizerSabers()) {
-    auto* noteData = noteController->noteData;
+    auto* noteData = noteController->_noteData;
     SaberType saberType = noteCutInfo.saberType;
     if (noteData->colorType.value__ == saberType.value__) {
       SaberColorizer::ColorizeSaber(saberType, GetNoteColorizer(noteController)->getColor());

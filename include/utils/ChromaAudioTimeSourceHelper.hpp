@@ -10,7 +10,7 @@ static float getSongTimeChroma(GlobalNamespace::IAudioTimeSource* timeSource) {
   auto* timeSourceObject = reinterpret_cast<Il2CppObject*>(timeSource);
   if (timeSourceObject->klass == timeSyncControllerClass) {
     auto* timeSyncController = reinterpret_cast<GlobalNamespace::AudioTimeSyncController*>(timeSource);
-    return timeSyncController->songTime;
+    return timeSyncController->_songTime;
   } else {
     return timeSource->get_songTime();
   }

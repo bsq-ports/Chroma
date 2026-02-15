@@ -18,14 +18,12 @@
 #include "UnityEngine/MeshRenderer.hpp"
 #include "UnityEngine/GameObject.hpp"
 
-
 using namespace CustomJSONData;
 using namespace GlobalNamespace;
 using namespace Chroma;
 using namespace ChromaUtils;
 
-Sombrero::FastVector3 const& GetTransformScale(Sombrero::FastVector3 const& defaultV,
-                                               ParametricBoxControllerParameters const& parameters) {
+Sombrero::FastVector3 const& GetTransformScale(Sombrero::FastVector3 const& defaultV, ParametricBoxControllerParameters const& parameters) {
 
   if (parameters.Scale) {
     return parameters.Scale.value();
@@ -44,8 +42,7 @@ Sombrero::FastVector3 const& GetTransformPosition(Sombrero::FastVector3 const& d
   return defaultV;
 }
 
-MAKE_HOOK_MATCH(ParametricBoxController_Refresh, &ParametricBoxController::Refresh, void,
-                ParametricBoxController* self) {
+MAKE_HOOK_MATCH(ParametricBoxController_Refresh, &ParametricBoxController::Refresh, void, ParametricBoxController* self) {
   // Do nothing if Chroma shouldn't run
   if (!ChromaController::DoChromaHooks()) {
     ParametricBoxController_Refresh(self);
@@ -105,9 +102,8 @@ MAKE_HOOK_MATCH(ParametricBoxController_Refresh, &ParametricBoxController::Refre
       &UnityEngine::MaterialPropertyBlock::SetColor)>::get();
   static auto SetFloat = FPtrWrapper<static_cast<void (UnityEngine::MaterialPropertyBlock::*)(int, float)>(
       &UnityEngine::MaterialPropertyBlock::SetFloat)>::get();
-  static auto SetPropertyBlock =
-      FPtrWrapper<static_cast<void (UnityEngine::Renderer::*)(UnityEngine::MaterialPropertyBlock*)>(
-          &UnityEngine::Renderer::SetPropertyBlock)>::get();
+  static auto SetPropertyBlock = FPtrWrapper<static_cast<void (UnityEngine::Renderer::*)(UnityEngine::MaterialPropertyBlock*)>(
+      &UnityEngine::Renderer::SetPropertyBlock)>::get();
 
   SetColor(materialPropertyBlock, colorId, color);
   SetFloat(materialPropertyBlock, alphaStartID, self->alphaStart);

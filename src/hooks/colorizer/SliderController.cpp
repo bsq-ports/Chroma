@@ -23,15 +23,14 @@ using namespace ChromaUtils;
 
 MAKE_HOOK_MATCH(SliderController_Init, &SliderController::Init, void, SliderController* self,
                 ::GlobalNamespace::SliderController_LengthType lengthType, ::GlobalNamespace::SliderData* sliderData,
-                ::ByRef<::GlobalNamespace::SliderSpawnData> sliderSpawnData, float_t noteUniformScale,
-                float_t randomValue) {
+                ::ByRef<::GlobalNamespace::SliderSpawnData> sliderSpawnData, float_t noteUniformScale, float_t randomValue) {
   SliderController_Init(self, lengthType, sliderData, sliderSpawnData, noteUniformScale, randomValue);
 
   if (!ChromaController::DoChromaHooks() || !ChromaController::DoColorizerSabers()) {
     return;
   }
 
-  auto chromaData = ChromaObjectDataManager::ChromaObjectDatas.find(self->sliderData);
+  auto chromaData = ChromaObjectDataManager::ChromaObjectDatas.find(self->_sliderData);
   if (chromaData != ChromaObjectDataManager::ChromaObjectDatas.end()) {
     auto const& color = chromaData->second.Color;
 
@@ -49,7 +48,7 @@ MAKE_HOOK_MATCH(SliderController_Update, &SliderController::ManualUpdate, void, 
     return;
   }
 
-  auto chromaData = ChromaObjectDataManager::ChromaObjectDatas.find(self->sliderData);
+  auto chromaData = ChromaObjectDataManager::ChromaObjectDatas.find(self->_sliderData);
   if (chromaData != ChromaObjectDataManager::ChromaObjectDatas.end()) {
     auto const& tracks = chromaData->second.Tracks;
 
@@ -58,8 +57,8 @@ MAKE_HOOK_MATCH(SliderController_Update, &SliderController::ManualUpdate, void, 
       VariableMovementW movement(self->_sliderMovement->_variableMovementDataProvider);
       float jumpDuration = movement.jumpDuration;
 
-      float duration = (jumpDuration * 0.75F) + (self->sliderData->tailTime - self->sliderData->time);
-      float normalTime = self->sliderMovement->timeSinceHeadNoteJump / (jumpDuration + duration);
+      float duration = (jumpDuration * 0.75F) + (self->_sliderData->_tailTime_k__BackingField - self->_sliderData->_time_k__BackingField);
+      float normalTime = self->_sliderMovement->_timeSinceHeadNoteJump / (jumpDuration + duration);
 
       [[maybe_unused]] bool updated = false;
       std::optional<Sombrero::FastColor> colorOffset =

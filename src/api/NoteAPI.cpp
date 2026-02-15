@@ -34,7 +34,7 @@ EXPOSE_API(getNoteControllerOverrideColorSafe, OptColor, NoteController* noteCon
 }
 
 EXPOSE_API(getNoteControllerColorSafe, OptColor, NoteController* noteController) {
-  auto it = ChromaObjectDataManager::ChromaObjectDatas.find(noteController->noteData);
+  auto it = ChromaObjectDataManager::ChromaObjectDatas.find(noteController->_noteData);
 
   if (it == ChromaObjectDataManager::ChromaObjectDatas.end()) {
     return OptColorNull;
@@ -67,8 +67,7 @@ EXPOSE_API(setNoteColorable, void, bool colorable) {
   NoteColorizer::NoteColorable = colorable;
 }
 
-EXPOSE_API(setGlobalNoteColorSafe, void, std::optional<Sombrero::FastColor> color0,
-           std::optional<Sombrero::FastColor> color1) {
+EXPOSE_API(setGlobalNoteColorSafe, void, std::optional<Sombrero::FastColor> color0, std::optional<Sombrero::FastColor> color1) {
   NoteColorizer::GlobalColorize(color0, ColorType::ColorA);
   NoteColorizer::GlobalColorize(color1, ColorType::ColorB);
 }
