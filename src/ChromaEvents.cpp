@@ -37,13 +37,13 @@ void ChromaEvents::parseEventData(TracksAD::BeatmapAssociatedData& beatmapAD, Cu
   }
 
   auto& eventAD = getEventAD(customEventData);
-  eventAD.parsed = true;
   if (eventAD.parsed) {
     return;
   }
-  if (!customEventData->customData->value) {
+  if (!customEventData->customData  || !customEventData->customData->value) {
     return;
   }
+  eventAD.parsed = true;
 
   rapidjson::Value const& eventData = *customEventData->customData->value;
 
@@ -141,38 +141,40 @@ void ChromaEvents::deserialize(CustomJSONData::CustomBeatmapData* readOnlyBeatma
 }
 
 void CustomEventCallback(BeatmapCallbacksController* callbackController, CustomJSONData::CustomEventData* customEventData) {
-  PAPER_IL2CPP_CATCH_HANDLER(
-      bool isType = false;
 
-      auto typeHash = customEventData->typeHash;
+  bool isType = false;
+
+  auto typeHash = customEventData->typeHash;
 
 #define TYPE_GET(jsonName, varName)                                                                                                        \
   static auto jsonNameHash_##varName = std::hash<std::string_view>()(jsonName);                                                            \
   if (!isType && typeHash == (jsonNameHash_##varName)) isType = true;
 
-      TYPE_GET(Chroma::OldConstants::ASSIGNFOGTRACK, ASSIGNFOGTRACK) TYPE_GET(Chroma::NewConstants::ANIMATE_COMPONENT, ANIMATE_COMPONENT)
+  TYPE_GET(Chroma::OldConstants::ASSIGNFOGTRACK, ASSIGNFOGTRACK)
+  TYPE_GET(Chroma::NewConstants::ANIMATE_COMPONENT, ANIMATE_COMPONENT)
 
-          if (!isType) { return; }
+  if (!isType) {
+    return;
+  }
 
-      auto const& ad = ChromaEvents::getEventAD(customEventData);
+  auto const& ad = ChromaEvents::getEventAD(customEventData);
 
-      // fail safe, idek why this needs to be done smh
-      // CJD you bugger
-      auto* customBeatmapData = il2cpp_utils::cast<CustomJSONData::CustomBeatmapData>(callbackController->_beatmapData);
-      if (!ad.parsed) {
-        TracksAD::BeatmapAssociatedData& beatmapAD = TracksAD::getBeatmapAD(customBeatmapData->customData);
-        ChromaEvents::parseEventData(beatmapAD, customEventData, customBeatmapData->v2orEarlier);
-      }
+  // fail safe, idek why this needs to be done smh
+  // CJD you bugger
+  auto* customBeatmapData = il2cpp_utils::cast<CustomJSONData::CustomBeatmapData>(callbackController->_beatmapData);
+  if (!ad.parsed) {
+    TracksAD::BeatmapAssociatedData& beatmapAD = TracksAD::getBeatmapAD(customBeatmapData->customData);
+    ChromaEvents::parseEventData(beatmapAD, customEventData, customBeatmapData->v2orEarlier);
+  }
 
-      if (typeHash == jsonNameHash_ASSIGNFOGTRACK) {
-        Chroma::ChromaFogController::getInstance()->AssignTrack(std::get<ChromaEvents::AssignBloomFogTrack>(ad.data).track);
-        CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Assigned fog controller to track");
-      } if (typeHash == jsonNameHash_ANIMATE_COMPONENT && !customBeatmapData->v2orEarlier) {
-        CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Animated component");
-        Chroma::Component::StartEvent(callbackController, customEventData, std::get<ChromaEvents::AnimateComponentEventData>(ad.data));
-      }
-
-  )
+  if (typeHash == jsonNameHash_ASSIGNFOGTRACK) {
+    Chroma::ChromaFogController::getInstance()->AssignTrack(std::get<ChromaEvents::AssignBloomFogTrack>(ad.data).track);
+    CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Assigned fog controller to track");
+  }
+  if (typeHash == jsonNameHash_ANIMATE_COMPONENT && !customBeatmapData->v2orEarlier) {
+    CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Animated component");
+    Chroma::Component::StartEvent(callbackController, customEventData, std::get<ChromaEvents::AnimateComponentEventData>(ad.data));
+  }
 }
 
 void ChromaEvents::AddEventCallbacks() {
