@@ -13,7 +13,6 @@
 #include "UnityEngine/Quaternion.hpp"
 #include "UnityEngine/Transform.hpp"
 
-
 using namespace CustomJSONData;
 using namespace GlobalNamespace;
 using namespace UnityEngine;
@@ -31,8 +30,7 @@ MAKE_HOOK_MATCH(LightPairRotationEventEffect_HandleBeatmapObjectCallbackControll
     return;
   }
 
-  if (beatmapEventData->basicBeatmapEventType == self->_eventL ||
-      beatmapEventData->basicBeatmapEventType == self->_eventR) {
+  if (beatmapEventData->basicBeatmapEventType == self->_eventL || beatmapEventData->basicBeatmapEventType == self->_eventR) {
     LastLightPairRotationEventEffectData = beatmapEventData;
   }
 
@@ -43,13 +41,12 @@ MAKE_HOOK_MATCH(LightPairRotationEventEffect_HandleBeatmapObjectCallbackControll
   LastLightPairRotationEventEffectData = nullptr;
 }
 
-MAKE_HOOK_MATCH(LightPairRotationEventEffect_UpdateRotationData, &LightPairRotationEventEffect::UpdateRotationData,
-                void, LightPairRotationEventEffect* self, int beatmapEventDataValue,
-                LightPairRotationEventEffect::RotationData* rotationData, float startRotationOffset, float direction) {
+MAKE_HOOK_MATCH(LightPairRotationEventEffect_UpdateRotationData, &LightPairRotationEventEffect::UpdateRotationData, void,
+                LightPairRotationEventEffect* self, int beatmapEventDataValue, LightPairRotationEventEffect::RotationData* rotationData,
+                float startRotationOffset, float direction) {
   // Do nothing if Chroma shouldn't run
   if (!ChromaController::DoChromaHooks()) {
-    LightPairRotationEventEffect_UpdateRotationData(self, beatmapEventDataValue, rotationData, startRotationOffset,
-                                                    direction);
+    LightPairRotationEventEffect_UpdateRotationData(self, beatmapEventDataValue, rotationData, startRotationOffset, direction);
     return;
   }
 
@@ -65,8 +62,7 @@ MAKE_HOOK_MATCH(LightPairRotationEventEffect_UpdateRotationData, &LightPairRotat
 
   bool isLeftEvent = beatmapEventData->basicBeatmapEventType == self->_eventL;
   // rotationData
-  LightPairRotationEventEffect::RotationData* customRotationData =
-      isLeftEvent ? self->_rotationDataL : self->_rotationDataR;
+  LightPairRotationEventEffect::RotationData* customRotationData = isLeftEvent ? self->_rotationDataL : self->_rotationDataR;
 
   bool lockPosition = chromaData.LockPosition;
   float precisionSpeed = chromaData.Speed.value_or(beatmapEventData->value);
@@ -84,17 +80,17 @@ MAKE_HOOK_MATCH(LightPairRotationEventEffect_UpdateRotationData, &LightPairRotat
     }
   }
 
-  static auto QuaternionEulerMPtr = FPtrWrapper<static_cast<UnityEngine::Quaternion (*)(UnityEngine::Vector3)>(
-      &UnityEngine::Quaternion::Euler)>::get();
+  static auto QuaternionEulerMPtr =
+      FPtrWrapper<static_cast<UnityEngine::Quaternion (*)(UnityEngine::Vector3)>(&UnityEngine::Quaternion::Euler)>::get();
 
-  // ChromaLogger::Logger.debug("The time is: {}", beatmapEventData->time);
+  // ChromaLogger::Logger.debug("The time is: {}", beatmapEventData->_time);
   if (beatmapEventData->value == 0) {
     customRotationData->enabled = false;
     if (!lockPosition) {
       customRotationData->rotationAngle = customRotationData->startRotationAngle;
       customRotationData->transform->set_localRotation(Sombrero::QuaternionMultiply(
-          customRotationData->startRotation, QuaternionEulerMPtr(Sombrero::vector3multiply(
-                                                 self->_rotationVector, customRotationData->startRotationAngle))));
+          customRotationData->startRotation,
+          QuaternionEulerMPtr(Sombrero::vector3multiply(self->_rotationVector, customRotationData->startRotationAngle))));
     }
   } else if (beatmapEventData->value > 0) {
     customRotationData->enabled = true;
@@ -104,8 +100,7 @@ MAKE_HOOK_MATCH(LightPairRotationEventEffect_UpdateRotationData, &LightPairRotat
       float rotationAngle = startRotationOffset + customRotationData->startRotationAngle;
       customRotationData->rotationAngle = rotationAngle;
       customRotationData->transform->set_localRotation(Sombrero::QuaternionMultiply(
-          customRotationData->startRotation,
-          QuaternionEulerMPtr(Sombrero::vector3multiply(self->_rotationVector, rotationAngle))));
+          customRotationData->startRotation, QuaternionEulerMPtr(Sombrero::vector3multiply(self->_rotationVector, rotationAngle))));
     }
   }
 }

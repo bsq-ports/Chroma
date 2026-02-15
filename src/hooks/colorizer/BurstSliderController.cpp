@@ -25,8 +25,7 @@ using namespace GlobalNamespace;
 using namespace Chroma;
 using namespace ChromaUtils;
 
-MAKE_HOOK_MATCH(BurstSliderGameNoteController_Awake, &BurstSliderGameNoteController::Awake, void,
-                BurstSliderGameNoteController* self) {
+MAKE_HOOK_MATCH(BurstSliderGameNoteController_Awake, &BurstSliderGameNoteController::Awake, void, BurstSliderGameNoteController* self) {
   BurstSliderGameNoteController_Awake(self);
 
   if (!ChromaController::DoChromaHooks() || !ChromaController::DoColorizerSabers()) {
@@ -47,9 +46,8 @@ MAKE_HOOK_MATCH(BurstSliderGameNoteController_OnDestroy, &BurstSliderGameNoteCon
   NoteColorizer::Colorizers.erase(self);
 }
 
-MAKE_HOOK_MATCH(BurstSliderGameNoteController_Init, &BurstSliderGameNoteController::Init, void,
-                BurstSliderGameNoteController* self, ::GlobalNamespace::NoteData* noteData,
-                ::ByRef<::GlobalNamespace::NoteSpawnData> noteSpawnData,
+MAKE_HOOK_MATCH(BurstSliderGameNoteController_Init, &BurstSliderGameNoteController::Init, void, BurstSliderGameNoteController* self,
+                ::GlobalNamespace::NoteData* noteData, ::ByRef<::GlobalNamespace::NoteSpawnData> noteSpawnData,
                 ::GlobalNamespace::NoteVisualModifierType noteVisualModifierType, float_t uniformScale) {
   BurstSliderGameNoteController_Init(self, noteData, noteSpawnData, noteVisualModifierType, uniformScale);
 

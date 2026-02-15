@@ -23,8 +23,7 @@ using namespace ChromaUtils;
 
 MAKE_HOOK_MATCH(SliderController_Init, &SliderController::Init, void, SliderController* self,
                 ::GlobalNamespace::SliderController_LengthType lengthType, ::GlobalNamespace::SliderData* sliderData,
-                ::ByRef<::GlobalNamespace::SliderSpawnData> sliderSpawnData, float_t noteUniformScale,
-                float_t randomValue) {
+                ::ByRef<::GlobalNamespace::SliderSpawnData> sliderSpawnData, float_t noteUniformScale, float_t randomValue) {
   SliderController_Init(self, lengthType, sliderData, sliderSpawnData, noteUniformScale, randomValue);
 
   if (!ChromaController::DoChromaHooks() || !ChromaController::DoColorizerSabers()) {

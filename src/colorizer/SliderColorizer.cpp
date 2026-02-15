@@ -18,8 +18,7 @@ using namespace UnityEngine;
 using namespace Sombrero;
 using namespace Chroma;
 
-SliderColorizer::SliderColorizer(GlobalNamespace::SliderController* sliderController)
-    : _sliderController(sliderController) {
+SliderColorizer::SliderColorizer(GlobalNamespace::SliderController* sliderController) : _sliderController(sliderController) {
   CRASH_UNLESS(_sliderController);
 }
 

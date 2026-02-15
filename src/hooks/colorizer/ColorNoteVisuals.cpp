@@ -13,8 +13,8 @@
 using namespace GlobalNamespace;
 using namespace Chroma;
 
-MAKE_HOOK_MATCH(ColorNoteVisuals_HandleNoteControllerDidInit, &ColorNoteVisuals::HandleNoteControllerDidInit, void,
-                ColorNoteVisuals* self, NoteControllerBase* noteController) {
+MAKE_HOOK_MATCH(ColorNoteVisuals_HandleNoteControllerDidInit, &ColorNoteVisuals::HandleNoteControllerDidInit, void, ColorNoteVisuals* self,
+                NoteControllerBase* noteController) {
   ColorNoteVisuals_HandleNoteControllerDidInit(self, noteController); // This calls the original method
 
   // Do nothing if Chroma shouldn't run

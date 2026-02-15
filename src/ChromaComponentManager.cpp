@@ -120,7 +120,7 @@ template <bool skipToLast = false> static bool UpdateCoroutine(std::string_view 
 }
 
 void Chroma::Component::UpdateCoroutines(GlobalNamespace::BeatmapCallbacksController* callbackController) {
-  auto songTime = callbackController->songTime;
+  auto songTime = callbackController->_songTime;
   for (auto& coroutineGroup : coroutines) {
 
     auto const& componentName = coroutineGroup.first;
@@ -166,7 +166,7 @@ static std::vector<UnityEngine::Component*> getComponentsFromType(std::string_vi
 
 void Chroma::Component::StartEvent(GlobalNamespace::BeatmapCallbacksController* callbackController,
                                    CustomJSONData::CustomEventData* customEventData,
-                                   ChromaEvents::AnimateComponentEventData const& eventAD ) {
+                                   ChromaEvents::AnimateComponentEventData const& eventAD) {
 
   auto beatmap = callbackController->_beatmapData;
   auto customBeatmap = il2cpp_utils::cast<CustomJSONData::CustomBeatmapData>(beatmap);
@@ -180,7 +180,7 @@ void Chroma::Component::StartEvent(GlobalNamespace::BeatmapCallbacksController* 
 
   auto easing = eventAD.easing;
 
-  bool noDuration = duration == 0 || customEventData->time + (duration * 1) < callbackController->songTime;
+  bool noDuration = duration == 0 || customEventData->time + (duration * 1) < callbackController->_songTime;
 
   for (auto const& [componentName, props] : eventAD.coroutineInfos) {
     for (auto const& track : eventAD.track) {

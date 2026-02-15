@@ -68,10 +68,9 @@ Sombrero::FastColor ChromaGradientController::AddGradient(ChromaEventData::Gradi
   Sombrero::FastColor const& endcolor = gradientObject.EndColor;
   Functions easing = gradientObject.Easing;
 
-  auto it = getInstance()->Gradients.try_emplace(id.value__,
-                                                 ChromaGradientEvent(initcolor, endcolor, time, duration, id, easing));
+  auto it = getInstance()->Gradients.try_emplace(id.value__, ChromaGradientEvent(initcolor, endcolor, time, duration, id, easing));
   // Grab by reference since assignment copies to the map
-  // This way calling interpolate actually modifies the struct itself.
+  // This way calling interpolate actually modifies the struct itself.f
   auto const& newGradientEvent = it.first->second;
   bool erased = false;
 
@@ -89,7 +88,7 @@ void Chroma::ChromaGradientController::Update() {
     // Create a map iterator and point to beginning of map
     auto it = Gradients.begin();
 
-    auto songTime = ChromaController::CallbacksController->songTime;
+    auto songTime = ChromaController::CallbacksController->_songTime;
     // Iterate over the map using Iterator till end.
     while (it != Gradients.end()) {
 
@@ -102,8 +101,6 @@ void Chroma::ChromaGradientController::Update() {
 
       LightColorizer::ColorizeLight(eventType, true, { color, color, color, color });
 
-
-
       if (!eol) {
         it++;
       } else {
@@ -113,8 +110,7 @@ void Chroma::ChromaGradientController::Update() {
   }
 }
 
-static constexpr Sombrero::FastColor lerpUnclamped(Sombrero::FastColor const& a, Sombrero::FastColor const& b,
-                                                   float t) {
+static constexpr Sombrero::FastColor lerpUnclamped(Sombrero::FastColor const& a, Sombrero::FastColor const& b, float t) {
   return { a.r + ((b.r - a.r) * t), a.g + ((b.g - a.g) * t), a.b + ((b.b - a.b) * t), a.a + ((b.a - a.a) * t) };
 }
 

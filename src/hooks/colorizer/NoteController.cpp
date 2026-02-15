@@ -27,11 +27,10 @@ using namespace GlobalNamespace;
 using namespace Chroma;
 using namespace ChromaUtils;
 
-MAKE_HOOK_MATCH(NoteController_Init, &NoteController::Init, void, NoteController* self,
-                ::GlobalNamespace::NoteData* noteData, ::ByRef<::GlobalNamespace::NoteSpawnData> noteSpawnData,
-                float_t endRotation, float_t uniformScale, bool rotateTowardsPlayer, bool useRandomRotation) {
-  NoteController_Init(self, noteData, noteSpawnData, endRotation, uniformScale, rotateTowardsPlayer,
-                      useRandomRotation);
+MAKE_HOOK_MATCH(NoteController_Init, &NoteController::Init, void, NoteController* self, ::GlobalNamespace::NoteData* noteData,
+                ::ByRef<::GlobalNamespace::NoteSpawnData> noteSpawnData, float_t endRotation, float_t uniformScale,
+                bool rotateTowardsPlayer, bool useRandomRotation) {
+  NoteController_Init(self, noteData, noteSpawnData, endRotation, uniformScale, rotateTowardsPlayer, useRandomRotation);
 
   if (!ChromaController::DoChromaHooks() || !ChromaController::DoColorizerSabers()) {
     return;

@@ -34,8 +34,7 @@ void LegacyLightHelper::Activate(std::span<GlobalNamespace::BasicBeatmapEventDat
   }
 }
 
-std::optional<Sombrero::FastColor>
-LegacyLightHelper::GetLegacyColor(GlobalNamespace::BasicBeatmapEventData* beatmapEventData) {
+std::optional<Sombrero::FastColor> LegacyLightHelper::GetLegacyColor(GlobalNamespace::BasicBeatmapEventData* beatmapEventData) {
   if (!ChromaController::GetChromaLegacy()) {
     return std::nullopt;
   }

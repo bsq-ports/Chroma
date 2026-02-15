@@ -78,7 +78,6 @@ void Chroma::ChromaLightSwitchEventEffect::CopyValues(GlobalNamespace::LightSwit
   this->_tweeningManager = lightSwitchEventEffect->_tweeningManager;
   this->_colorManager = lightSwitchEventEffect->_colorManager;
 
-
   auto Initialize = [](UnityW<ColorSO> so, Sombrero::FastColor& color) {
     if (auto multi = il2cpp_utils::try_cast<MultipliedColorSO>(so.ptr())) {
       color = multi.value()->_multiplierColor;
@@ -129,21 +128,20 @@ void Chroma::ChromaLightSwitchEventEffect::HandleEvent(GlobalNamespace::BasicBea
     auto const& lightMember = chromaData.LightID;
     auto const& propMember = chromaData.PropID;
 
-
     // Prop ID is deprecated apparently.
     // https://github.com/Aeroluna/Chroma/commit/711cb19f7d03a1776a24cef52fd8ef6fd7685a2b#diff-b8fcfff3ebc4ceb7b43d8401d9f50750dc88326d0a87897c5593923e55b23879R41
     if (propMember) {
       auto const& propIDData = *propMember;
 
       selectLights = lightColorizer->GetPropagationLightWithIds(propIDData);
-    }else if (lightMember) {
+    } else if (lightMember) {
       auto const& lightIdData = *lightMember;
       selectLights = lightColorizer->GetLightWithIds(lightIdData);
     }
 
     auto const& gradient = chromaData.GradientObject;
     if (gradient) {
-      color = ChromaGradientController::AddGradient(gradient.value(), beatmapEventData->basicBeatmapEventType, beatmapEventData->time);
+      color = ChromaGradientController::AddGradient(gradient.value(), beatmapEventData->basicBeatmapEventType, beatmapEventData->_time_k__BackingField);
     }
 
     std::optional<Sombrero::FastColor> const& colorData = chromaData.ColorData;
@@ -305,7 +303,7 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, std::optional<std::vector<
         return;
       }
 
-      tween->SetStartTimeAndEndTime(previousEvent->time, nextSameTypeEvent->time);
+      tween->SetStartTimeAndEndTime(previousEvent->_time_k__BackingField, nextSameTypeEvent->_time_k__BackingField);
       tween->easing = easing.value_or(Functions::EaseLinear);
       tween->lerpType = lerpType.value_or(LerpType::RGB);
       _tweeningManager->ResumeTween(tween, this, false);
@@ -360,7 +358,7 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, std::optional<std::vector<
       tween->ForceOnUpdate();
 
       if (hard) {
-        tween->duration = 0.6F;
+        tween->_duration = 0.6F;
         tween->easing = easing.value_or(Functions::EaseOutCubic);
         tween->lerpType = lerpType.value_or(LerpType::RGB);
         _tweeningManager->RestartTween(tween, this, false);
@@ -383,7 +381,7 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, std::optional<std::vector<
       tween->ForceOnUpdate();
 
       if (hard) {
-        tween->duration = 1.5F;
+        tween->_duration = 1.5F;
         tween->easing = easing.value_or(Functions::EaseOutExpo);
         tween->lerpType = lerpType.value_or(LerpType::RGB);
         _tweeningManager->RestartTween(tween, this, false);
@@ -474,8 +472,8 @@ void ChromaLightSwitchEventEffect::RegisterLight(GlobalNamespace::ILightWithId* 
   }
 
   auto id = LightIDTableManager::GetActiveTableValueReverse(_lightsID, key).value_or(0);
-  ChromaLogger::Logger.fmtLog<Paper::LogLevel::INF>(
-      "Registering light with key {} and id {} in ChromaLightSwitchEventEffect", lightWithId->get_lightId(), id);
+  ChromaLogger::Logger.fmtLog<Paper::LogLevel::INF>("Registering light with key {} and id {} in ChromaLightSwitchEventEffect",
+                                                    lightWithId->get_lightId(), id);
   auto* tween = Chroma::Tween::ChromaTween::New_ctor(color, color, lightWithId, _lightManager, id);
 
   ColorTweens.emplace(lightWithId, tween);
