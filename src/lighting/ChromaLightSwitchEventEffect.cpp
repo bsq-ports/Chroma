@@ -112,17 +112,18 @@ void Chroma::ChromaLightSwitchEventEffect::HandleEvent(GlobalNamespace::BasicBea
 
   // fun fun chroma stuff
 
-  auto chromaIt = ChromaEventDataManager::ChromaEventDatas.find(beatmapEventData);
+  auto beatmapEventDataOpt = il2cpp_utils::try_cast<CustomJSONData::CustomBeatmapEventData>(beatmapEventData);
 
   // Aero thinks legacy was a mistake. I think a Quest port was a bigger mistake.
   std::optional<Sombrero::FastColor> color;
 
-  if (chromaIt == ChromaEventDataManager::ChromaEventDatas.end()) {
+  if (!beatmapEventDataOpt) {
     color = LegacyLightHelper::GetLegacyColor(beatmapEventData);
   } else {
     debugSpamLog("Color is legacy? {}", color ? "true" : "false");
 
-    auto const& chromaData = chromaIt->second;
+    auto const& chromaData = getLightAD(beatmapEventDataOpt.value()->customData);
+
 
     auto const& lightMember = chromaData.LightID;
     auto const& propMember = chromaData.PropID;
@@ -226,8 +227,9 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, std::optional<std::vector<
     float previousFloatValue = previousEvent->floatValue;
 
     auto CheckNextEventForFadeBetter = [&, this, hard, easing, lerpType]() {
-      auto eventDataIt = ChromaEventDataManager::ChromaEventDatas.find(previousEvent);
-      auto const* eventData = eventDataIt != ChromaEventDataManager::ChromaEventDatas.end() ? &eventDataIt->second : nullptr;
+      auto previousEventOpt = il2cpp_utils::try_cast<CustomJSONData::CustomBeatmapEventData>(previousEvent);
+
+      auto const* eventData = getLightAD(previousEvent);
 
       auto const& nextSameTypesDict = eventData != nullptr ? &eventData->NextSameTypeEvent : nullptr;
 
@@ -259,9 +261,11 @@ void ChromaLightSwitchEventEffect::Refresh(bool hard, std::optional<std::vector<
       EnvironmentColorType nextColorType = GetLightColorTypeFromEventDataValue(nextSameTypeEvent->value);
       Sombrero::FastColor nextColor;
 
-      eventDataIt = ChromaEventDataManager::ChromaEventDatas.find(nextSameTypeEvent);
+      previousEventOpt = il2cpp_utils::try_cast<CustomJSONData::CustomBeatmapEventData>(nextSameTypeEvent);
+
+
       if (nextEventData == nullptr) {
-        nextEventData = eventDataIt != ChromaEventDataManager::ChromaEventDatas.end() ? &eventDataIt->second : nullptr;
+        nextEventData = getLightAD(nextSameTypeEvent);
       }
 
       std::optional<Sombrero::FastColor> nextColorData = nextEventData != nullptr ? nextEventData->ColorData : std::nullopt;

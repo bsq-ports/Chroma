@@ -25,10 +25,10 @@ MAKE_HOOK_MATCH(ColorNoteVisuals_HandleNoteControllerDidInit, &ColorNoteVisuals:
   auto NoteControllerCast = il2cpp_utils::try_cast<NoteController>(noteController);
 
   if (NoteControllerCast) {
-    auto it = ChromaObjectDataManager::ChromaObjectDatas.find(NoteControllerCast.value()->_noteData);
+    auto it = getObjectAD(NoteControllerCast.value()->_noteData);
 
-    if (it != ChromaObjectDataManager::ChromaObjectDatas.end()) {
-      auto const& chromaData = it->second;
+    if (it) {
+      auto const& chromaData = *it;
 
       std::optional<Sombrero::FastColor> const& color = chromaData.Color;
 

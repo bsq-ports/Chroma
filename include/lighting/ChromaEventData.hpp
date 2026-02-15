@@ -4,6 +4,7 @@
 
 #include "tracks/shared/Animation/Easings.h"
 
+#include <functional>
 #include <unordered_map>
 
 #include "sombrero/shared/ColorUtils.hpp"
@@ -14,17 +15,18 @@
 namespace GlobalNamespace {
 class BasicBeatmapEventData;
 class BeatmapObjectSpawnController;
-};
+}; // namespace GlobalNamespace
 
 namespace Chroma {
 class ChromaEventData {
-private:
-  ChromaEventData(ChromaEventData const&) = default;
-  friend class std::unordered_map<GlobalNamespace::BeatmapEventData*, ChromaEventData>;
-  friend class std::pair<GlobalNamespace::BeatmapEventData* const, Chroma::ChromaEventData>;
-
 public:
   ChromaEventData() = default;
+  [[deprecated("Copy invoked")]]
+  ChromaEventData(ChromaEventData const&) = default;
+  ChromaEventData(ChromaEventData&&) = default;
+
+  ChromaEventData& operator=(ChromaEventData&&) noexcept = default;
+  ChromaEventData& operator=(ChromaEventData const&) = default;
 
   std::optional<Functions> Easing;
 
@@ -81,10 +83,23 @@ public:
 
 class ChromaEventDataManager {
 public:
-  using EventMapType = std::unordered_map<GlobalNamespace::BeatmapEventData*, ChromaEventData>;
-  inline static EventMapType ChromaEventDatas;
-
   static void deserialize(CustomJSONData::CustomBeatmapData* beatmapData);
 };
+
+constexpr ChromaEventData& getLightAD(CustomJSONData::JSONWrapper* customData) {
+  auto& ad = customData->associatedData['C'];
+  if (!ad.has_value()) {
+    ad = std::make_any<Chroma::ChromaEventData>();
+  }
+  return std::any_cast<Chroma::ChromaEventData&>(ad);
+}
+
+constexpr ChromaEventData* getLightAD(GlobalNamespace::BeatmapEventData* beatmap) {
+  auto customBeatmapEvent = il2cpp_utils::try_cast<CustomJSONData::CustomBeatmapEventData>(beatmap);
+  if (!customBeatmapEvent) {
+    return nullptr;
+  }
+  return &getLightAD(customBeatmapEvent.value()->customData);
+}
 
 } // namespace Chroma

@@ -59,7 +59,7 @@ using namespace GlobalNamespace;
 //    {
 //        return;
 //    }
-//    if (noteController->_noteData->_time + 0.1f < self->audioTimeSyncController->_songTime)
+//    if (noteController->_noteData->time + 0.1f < self->audioTimeSyncController->songTime)
 //    {
 //        return;
 //    }

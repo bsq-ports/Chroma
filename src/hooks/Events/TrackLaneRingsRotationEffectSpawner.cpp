@@ -46,8 +46,8 @@ template <typename T> T getValueOrDefault(rapidjson::Value* val, std::string con
   return v != val->MemberEnd() ? v->value.Get<T>() : def;
 }
 
-void TriggerRotation(TrackLaneRingsRotationEffect* trackLaneRingsRotationEffect, bool rotRight, float rotation,
-                     float rotationStep, float rotationPropagationSpeed, float rotationFlexySpeed) {
+void TriggerRotation(TrackLaneRingsRotationEffect* trackLaneRingsRotationEffect, bool rotRight, float rotation, float rotationStep,
+                     float rotationPropagationSpeed, float rotationFlexySpeed) {
   debugSpamLog("DOING TRIGGER ROTATION {}", trackLaneRingsRotationEffect->klass->name);
 
   auto* chromaRingRotation = static_cast<ChromaRingsRotationEffect*>(trackLaneRingsRotationEffect);
@@ -61,8 +61,8 @@ void TriggerRotation(TrackLaneRingsRotationEffect* trackLaneRingsRotationEffect,
 // This method is directly ported from TrackLaneRingsRotationEffectSpawner. It is required to be ported since for some
 // inexplicable reason using the original method causes CJD or something else to stop loading the map and it just stays
 // as limbo. Hopefully with time we can fix that and use that instead
-void origHandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(
-    GlobalNamespace::TrackLaneRingsRotationEffectSpawner* self, BasicBeatmapEventData* beatmapEventData) {
+void origHandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(GlobalNamespace::TrackLaneRingsRotationEffectSpawner* self,
+                                                                     BasicBeatmapEventData* beatmapEventData) {
   if (beatmapEventData->basicBeatmapEventType != self->_beatmapEventType) {
     return;
   }
@@ -87,24 +87,21 @@ void origHandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(
 
     auto* chromaRotation = reinterpret_cast<ChromaRingsRotationEffect*>(rotationEffect.ptr());
 
-    chromaRotation->AddRingRotationEffectF(
-        chromaRotation->GetFirstRingDestinationRotationAngleCpp() +
-            (self->_rotation * static_cast<float>((ChromaController::randomXoshiro() < 0.5F) ? 1 : -1)),
-        step, static_cast<float>(self->_rotationPropagationSpeed), self->_rotationFlexySpeed);
+    chromaRotation->AddRingRotationEffectF(chromaRotation->GetFirstRingDestinationRotationAngleCpp() +
+                                               (self->_rotation * static_cast<float>((ChromaController::randomXoshiro() < 0.5F) ? 1 : -1)),
+                                           step, static_cast<float>(self->_rotationPropagationSpeed), self->_rotationFlexySpeed);
   } else {
-    rotationEffect->AddRingRotationEffect(
-        rotationEffect->GetFirstRingDestinationRotationAngle() +
-            (self->_rotation * static_cast<float>((ChromaController::randomXoshiro() < 0.5F) ? 1 : -1)),
-        step, self->_rotationPropagationSpeed, self->_rotationFlexySpeed);
+    rotationEffect->AddRingRotationEffect(rotationEffect->GetFirstRingDestinationRotationAngle() +
+                                              (self->_rotation * static_cast<float>((ChromaController::randomXoshiro() < 0.5F) ? 1 : -1)),
+                                          step, self->_rotationPropagationSpeed, self->_rotationFlexySpeed);
   }
 }
 
 MAKE_HOOK_MATCH(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger,
-                &TrackLaneRingsRotationEffectSpawner::HandleBeatmapEvent, void,
-                GlobalNamespace::TrackLaneRingsRotationEffectSpawner* self, BasicBeatmapEventData* beatmapEventData) {
+                &TrackLaneRingsRotationEffectSpawner::HandleBeatmapEvent, void, GlobalNamespace::TrackLaneRingsRotationEffectSpawner* self,
+                BasicBeatmapEventData* beatmapEventData) {
   if (!ChromaController::DoChromaHooks()) {
-    TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self,
-                                                                                                    beatmapEventData);
+    TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);
     return;
   }
 
@@ -115,15 +112,15 @@ MAKE_HOOK_MATCH(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCallbackC
   //                      : 1);
 
   if (beatmapEventData->basicBeatmapEventType == self->_beatmapEventType) {
-    auto chromaIt = ChromaEventDataManager::ChromaEventDatas.find(beatmapEventData);
+    auto beatmapEventDataOpt = il2cpp_utils::try_cast<CustomBeatmapEventData>(beatmapEventData);
 
     // Not found
-    if (chromaIt == ChromaEventDataManager::ChromaEventDatas.end()) {
+    if (!beatmapEventDataOpt) {
       origHandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);
       return;
     }
 
-    auto const& chromaData = chromaIt->second;
+    auto const& chromaData = getLightAD(beatmapEventDataOpt.value()->customData);
 
     debugSpamLog("Doing stuff with custom Data ring");
 
@@ -188,8 +185,7 @@ MAKE_HOOK_MATCH(TrackLaneRingsRotationEffectSpawner_HandleBeatmapObjectCallbackC
     float propMult = chromaData.PropMult;
     float speedMult = chromaData.SpeedMult;
 
-    TriggerRotation(self->_trackLaneRingsRotationEffect, rotRight, rotation, step * stepMult, prop * propMult,
-                    speed * speedMult);
+    TriggerRotation(self->_trackLaneRingsRotationEffect, rotRight, rotation, step * stepMult, prop * propMult, speed * speedMult);
     debugSpamLog("Finished spawn, returning");
     return;
   }
