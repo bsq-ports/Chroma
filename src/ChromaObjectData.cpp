@@ -101,6 +101,8 @@ void Chroma::ChromaObjectDataManager::deserialize(CustomJSONData::CustomBeatmapD
 }
 
 Chroma::ChromaObjectData* Chroma::getObjectAD(GlobalNamespace::BeatmapObjectData* obj) {
+  if (!obj) return nullptr;
+
   if (auto note = il2cpp_utils::try_cast<CustomJSONData::CustomNoteData>(obj)) {
     return &getObjectAD(note.value()->customData);
   }

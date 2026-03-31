@@ -24,6 +24,14 @@ using namespace Chroma;
 // If this is true, we disable debris spawning in hooks
 static bool global_DisableDebris_Disable = false;
 static bool DisableDebrisOpt(NoteController* noteController) {
+  if (!noteController) {
+    ChromaLogger::Logger.debug("DisableDebrisOpt: noteController is null");
+    return false;
+  }
+  if (!noteController->_noteData) {
+    ChromaLogger::Logger.debug("DisableDebrisOpt: noteController->_noteData is null (noteController={} )", fmt::ptr(noteController));
+    return false;
+  }
   auto it = getObjectAD(noteController->_noteData);
   if (it) {
     auto const& chromaData = *it;
