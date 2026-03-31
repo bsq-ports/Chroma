@@ -76,6 +76,7 @@ inline static constexpr const std::string_view STEP = "step";
 inline static constexpr const std::string_view RING_ROTATION = "rotation";
 
 inline static constexpr const std::string_view ENVIRONMENT = "environment";
+
 inline static constexpr const std::string_view GAMEOBJECT_ID = "id";
 inline static constexpr const std::string_view GEOMETRY = "geometry";
 inline static constexpr const std::string_view MATERIAL = "material";

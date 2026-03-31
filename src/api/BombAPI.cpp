@@ -42,13 +42,13 @@ EXPOSE_API(getBombNoteControllerOverrideColorSafe, OptColor, BombNoteController*
 }
 
 EXPOSE_API(getBombNoteControllerColorSafe, OptColor, BombNoteController* BombNoteController) {
-  auto it = ChromaObjectDataManager::ChromaObjectDatas.find(BombNoteController->_noteData);
+  auto ad = getObjectAD(BombNoteController->_noteData);
 
-  if (it == ChromaObjectDataManager::ChromaObjectDatas.end()) {
+  if (!ad) {
     return OptColorNull;
   }
 
-  auto color = it->second.Color;
+  auto color = ad->Color;
 
   if (!color) {
     return OptColorNull;

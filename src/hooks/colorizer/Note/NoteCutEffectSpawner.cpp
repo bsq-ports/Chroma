@@ -24,9 +24,9 @@ using namespace Chroma;
 // If this is true, we disable debris spawning in hooks
 static bool global_DisableDebris_Disable = false;
 static bool DisableDebrisOpt(NoteController* noteController) {
-  auto it = ChromaObjectDataManager::ChromaObjectDatas.find(noteController->_noteData);
-  if (it != ChromaObjectDataManager::ChromaObjectDatas.end()) {
-    auto const& chromaData = it->second;
+  auto it = getObjectAD(noteController->_noteData);
+  if (it) {
+    auto const& chromaData = *it;
     std::optional<bool> disableDebris = chromaData.DisableDebris;
     return disableDebris.has_value() && disableDebris.value();
   }

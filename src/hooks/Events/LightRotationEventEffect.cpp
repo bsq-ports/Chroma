@@ -33,15 +33,15 @@ MAKE_HOOK_MATCH(LightRotationEventEffect_HandleBeatmapObjectCallbackControllerBe
     return;
   }
 
-  auto chromaIt = ChromaEventDataManager::ChromaEventDatas.find(beatmapEventData);
-
-  // Not found
-  if (chromaIt == ChromaEventDataManager::ChromaEventDatas.end()) {
+  auto *chromaDataOpt = getLightAD(beatmapEventData);
+  if (!chromaDataOpt) {
     LightRotationEventEffect_HandleBeatmapObjectCallbackControllerBeatmapEventDidTrigger(self, beatmapEventData);
     return;
   }
 
-  auto const& chromaData = chromaIt->second;
+  // Not found
+
+  auto const& chromaData = *chromaDataOpt;
 
   bool isLeftEvent = self->_event == BasicBeatmapEventType::Event12;
 

@@ -32,9 +32,9 @@ MAKE_HOOK_MATCH(ObstacleController_Init, &ObstacleController::Init, void, Obstac
     return;
   }
 
-  auto chromaData = ChromaObjectDataManager::ChromaObjectDatas.find(obstacleData);
-  if (chromaData != ChromaObjectDataManager::ChromaObjectDatas.end()) {
-    auto const& color = chromaData->second.Color;
+  auto const& chromaData =  getObjectAD(obstacleData);
+  if (chromaData) {
+    auto const& color = chromaData->Color;
 
     ObstacleColorizer::ColorizeObstacle(self, color);
   }
@@ -50,18 +50,21 @@ MAKE_HOOK_MATCH(ObstacleController_ManualUpdate, &ObstacleController::ManualUpda
     return;
   }
 
-  auto chromaData = ChromaObjectDataManager::ChromaObjectDatas.find(self->_obstacleData);
-  if (chromaData != ChromaObjectDataManager::ChromaObjectDatas.end()) {
+  auto const& chromaData =  getObjectAD(self->_obstacleData);
+  if (chromaData) {
+    auto const& color = chromaData->Color;
 
-    auto const& tracks = chromaData->second.Tracks;
+    auto const& tracks = chromaData->Tracks;
 
-    auto const& pathPointDefinition = chromaData->second.LocalPathColor;
+    auto const& pathPointDefinition = chromaData->LocalPathColor;
     if (!tracks.empty() || pathPointDefinition) {
       VariableMovementW movement(self->_variableMovementDataProvider);
 
       float jumpDuration = movement.jumpDuration;
-      float elapsedTime = ChromaTimeSourceHelper::getSongTimeChroma(self->_audioTimeSyncController) - self->_startTimeOffset;
-      float normalTime = (elapsedTime - movement.moveDuration) / (jumpDuration + self->_obstacleData->_duration_k__BackingField);
+      float elapsedTime =
+          ChromaTimeSourceHelper::getSongTimeChroma(self->_audioTimeSyncController) - self->_startTimeOffset;
+      float normalTime =
+          (elapsedTime - movement.moveDuration) / (jumpDuration + self->_obstacleData->duration);
 
       [[maybe_unused]] bool updated = false;
       std::optional<Sombrero::FastColor> colorOffset =

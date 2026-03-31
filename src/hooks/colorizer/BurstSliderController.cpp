@@ -55,9 +55,9 @@ MAKE_HOOK_MATCH(BurstSliderGameNoteController_Init, &BurstSliderGameNoteControll
     return;
   }
 
-  auto chromaData = ChromaObjectDataManager::ChromaObjectDatas.find(self->_noteData);
-  if (chromaData != ChromaObjectDataManager::ChromaObjectDatas.end()) {
-    auto const& color = chromaData->second.Color;
+  auto const& chromaData =  getObjectAD(self->_noteData);
+  if (chromaData) {
+    auto const& color = chromaData->Color;
 
     NoteColorizer::ColorizeNote(self, color);
   }
