@@ -4,10 +4,10 @@
   "id": "${mod_id}",
   "coverImage": "cover.png",
   "author": "Aeroluna",
-  "porter": "FernTheDev, nyamimi~",
+  "porter": "FernTheDev, nyamimi~(Kaitlyn), Catsacode, Futurmapper",
   "version": "${version}",
   "packageId": "com.beatgames.beatsaber",
-  "packageVersion": "1.40.7_7060",
+  "packageVersion": "1.40.8_7379",
   "description": "Colors!",
   "modFiles": [],
   "lateModFiles": [

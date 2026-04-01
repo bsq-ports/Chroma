@@ -26,6 +26,9 @@
       ],
       "copyRelease": [
         "pwsh ./scripts/copy.ps1 --release"
+      ],
+      "profile": [
+        "pwsh ./scripts/profile.ps1"
       ]
     },
     "ndk": "^27.2.12479018",
@@ -52,7 +55,7 @@
     },
     {
       "id": "bs-cordl",
-      "versionRange": "4007.*",
+      "versionRange": "4008.*",
       "additionalData": {
         "includeQmod": true,
         "private": true
