@@ -49,22 +49,31 @@ GeometryType geometryTypeFromString(std::string_view str) {
   return Chroma::GeometryType::Cube;
 }
 
-GeometryFactory::GeometryFactory(MaterialsManager& materialsManager, bool v2)
-    : materialsManager(materialsManager), v2(v2) {
+GeometryFactory::GeometryFactory(MaterialsManager& materialsManager, bool v2) : materialsManager(materialsManager), v2(v2) {
   auto* tube = CRASH_UNLESS(Resources::FindObjectsOfTypeAll<TubeBloomPrePassLight*>())->FirstOrDefault();
 
   if (tube != nullptr) {
     _originalTubeBloomPrePassLight = tube;
   }
-  lightWithIDManager = Resources::FindObjectsOfTypeAll<SaberModelContainer*>()->FirstOrDefault()->_container->Resolve<LightWithIdManager*>();
+  auto modelContainer = Resources::FindObjectsOfTypeAll<SaberModelContainer*>()->FirstOrDefault();
+  if (modelContainer == nullptr) {
+    CJDLogger::Logger.fmtLog<Paper::LogLevel::ERR>("Could not find a SaberModelContainer in the scene");
+    return;
+  }
+  auto container = modelContainer->_container;
+
+  if (container == nullptr) {
+    CJDLogger::Logger.fmtLog<Paper::LogLevel::ERR>("Container was null");
+    return;
+  }
+
+  lightWithIDManager = container->Resolve<LightWithIdManager*>();
 }
 
 GameObject* Chroma::GeometryFactory::Create(rapidjson::Value const& data) {
   GeometryType geometryType;
-  auto geometryStr = ChromaUtils::getIfExists<std::string_view>(data, v2 ? NewConstants::V2_GEOMETRY_TYPE
-                                                                         : NewConstants::GEOMETRY_TYPE);
-  bool collision =
-      ChromaUtils::getIfExists<bool>(data, v2 ? NewConstants::V2_COLLISION : NewConstants::COLLISION).value_or(false);
+  auto geometryStr = ChromaUtils::getIfExists<std::string_view>(data, v2 ? NewConstants::V2_GEOMETRY_TYPE : NewConstants::GEOMETRY_TYPE);
+  bool collision = ChromaUtils::getIfExists<bool>(data, v2 ? NewConstants::V2_COLLISION : NewConstants::COLLISION).value_or(false);
 
   if (!geometryStr) {
     geometryType = GeometryType::Cube;
@@ -73,9 +82,7 @@ GameObject* Chroma::GeometryFactory::Create(rapidjson::Value const& data) {
   }
 
   MaterialInfo materialInfo =
-      materialsManager
-          .GetMaterial(data.FindMember(v2 ? NewConstants::V2_MATERIAL.data() : NewConstants::MATERIAL.data())->value)
-          .value();
+      materialsManager.GetMaterial(data.FindMember(v2 ? NewConstants::V2_MATERIAL.data() : NewConstants::MATERIAL.data())->value).value();
 
   ShaderType shaderType = materialInfo.ShaderType;
 
@@ -143,10 +150,9 @@ GameObject* Chroma::GeometryFactory::Create(rapidjson::Value const& data) {
   auto* tubeBloomPrePassLight = go->AddComponent<TubeBloomPrePassLight*>();
   auto* parametricBoxController = go->AddComponent<ParametricBoxController*>();
 
-  ParametricBoxControllerParameters::SetTransformPosition(
-      parametricBoxController, parametricBoxController->get_transform()->get_localPosition());
-  ParametricBoxControllerParameters::SetTransformScale(parametricBoxController,
-                                                       parametricBoxController->get_transform()->get_localScale());
+  ParametricBoxControllerParameters::SetTransformPosition(parametricBoxController,
+                                                          parametricBoxController->get_transform()->get_localPosition());
+  ParametricBoxControllerParameters::SetTransformScale(parametricBoxController, parametricBoxController->get_transform()->get_localScale());
   parametricBoxController->_meshRenderer = meshRenderer;
 
   if (_originalTubeBloomPrePassLight) {
@@ -163,7 +169,11 @@ GameObject* Chroma::GeometryFactory::Create(rapidjson::Value const& data) {
   tubeBloomPrePassLight->_parametricBoxController = parametricBoxController;
 
   auto* tubeBloomPrePassLightWithId = go->AddComponent<TubeBloomPrePassLightWithId*>();
-  tubeBloomPrePassLightWithId->_lightManager = lightWithIDManager.ptr();
+  if (!lightWithIDManager) {
+    CJDLogger::Logger.fmtLog<Paper::LogLevel::ERR>("LightWithIDManager was null, cannot create TubeBloomPrePassLightWithId");
+  } else {
+    tubeBloomPrePassLightWithId->_lightManager = lightWithIDManager.ptr();
+  }
   tubeBloomPrePassLightWithId->_tubeBloomPrePassLight = tubeBloomPrePassLight;
 
   LightIdRegisterer::MarkForTableRegister(tubeBloomPrePassLightWithId->i___GlobalNamespace__ILightWithId());
@@ -174,6 +184,5 @@ GameObject* Chroma::GeometryFactory::Create(rapidjson::Value const& data) {
 }
 
 bool Chroma::IsLightType(ShaderType shaderType) {
-  return shaderType == ShaderType::OpaqueLight || shaderType == ShaderType::TransparentLight ||
-         shaderType == ShaderType::BillieWater;
+  return shaderType == ShaderType::OpaqueLight || shaderType == ShaderType::TransparentLight || shaderType == ShaderType::BillieWater;
 }
