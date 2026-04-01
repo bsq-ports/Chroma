@@ -1,5 +1,6 @@
 #include "lighting/ChromaEventData.hpp"
 
+#include "ChromaLogger.hpp"
 #include "GlobalNamespace/BeatmapData.hpp"
 #include "System/Collections/Generic/List_1.hpp"
 
@@ -199,6 +200,10 @@ void Chroma::ChromaEventDataManager::deserialize(CustomJSONData::CustomBeatmapDa
       continue;
     }
     auto const& basicBeatmapEventData = *basicBeatmapEventDataOpt;
+    if (!basicBeatmapEventData->customData) {
+      ChromaLogger::Logger.warn("Beatmap event at time {} has no custom data, skipping for next same type logic", basicBeatmapEventData->time);
+      continue;
+    }
 
     auto& currentEventData = getLightAD(basicBeatmapEventData->customData);
 
