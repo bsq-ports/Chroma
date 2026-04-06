@@ -1,4 +1,6 @@
 #pragma once
+#include <algorithm>
+
 #include "main.hpp"
 
 // needed for ChromaInstallHooks
@@ -9,24 +11,27 @@
 namespace Chroma {
 class Hooks {
 private:
-  inline static std::vector<void (*)()> installFuncs;
+  inline static std::vector<std::pair<std::string, void (*)()>> installFuncs;
 
 public:
-  static void AddInstallFunc(void (*installFunc)()) {
-    installFuncs.push_back(installFunc);
+  static void AddInstallFunc(std::string name, void (*installFunc)()) {
+    installFuncs.emplace_back(std::move(name), installFunc);
   }
 
   static void InstallHooks() {
-    for (auto installFunc : installFuncs) {
-      installFunc();
+    std::ranges::sort(installFuncs,
+              [](std::pair<std::string, void (*)()> const& a, std::pair<std::string, void (*)()> const& b) { return a.first < b.first; });
+    for (const auto& installFunc : installFuncs) {
+      installFunc.second();
     }
   }
 };
 } // namespace Chroma
-#define ChromaInstallHooks(func)                                                                                       \
-  struct __ChromaRegister##func {                                                                                      \
-    __ChromaRegister##func() {                                                                                         \
-      Chroma::Hooks::AddInstallFunc(func);                                                                             \
-    }                                                                                                                  \
-  };                                                                                                                   \
+#define ChromaInstallHooks(func)                                                                                                           \
+  struct __ChromaRegister##func {                                                                                                          \
+    __ChromaRegister##func() {                                                                                                             \
+      Chroma::Hooks::AddInstallFunc(#func, func);                                                                                          \
+      Chroma::Logger.info("ChromaHooks Registered install func: " #func);                                                                  \
+    }                                                                                                                                      \
+  };                                                                                                                                       \
   static __ChromaRegister##func __ChromaRegisterInstance##func;
