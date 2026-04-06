@@ -94,6 +94,7 @@ jobs:
 
       - name: Make PR to QeatMods3
         id: qmod-release
+        continue-on-error: true
         uses: QuestPackageManager/qmod-repo-publish-action@main
         with:
           token: ${{secrets.REPO_TOKEN}}
