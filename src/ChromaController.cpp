@@ -103,10 +103,10 @@ ChromaController::DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnCont
   co_return; // Reached end of coroutine
 }
 
-void ChromaController::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene current) {
+void ChromaController::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene previousScene, UnityEngine::SceneManagement::Scene newScene) {
   ChromaLogger::Logger.debug("Clear scene");
 
-  if (current.IsValid() && current.get_name() == "GameCore") {
+  if (newScene.IsValid() && newScene.get_name() == "GameCore") {
     CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Clearing all data");
     ChromaGradientController::clearInstance();
     TrackLaneRingsManagerHolder::RingManagers.clear();
@@ -119,6 +119,10 @@ void ChromaController::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene 
     ParticleColorizer::Reset();
     LightIdRegisterer::Reset();
     MaterialsManager::Reset();
+  }
+
+  else if (previousScene.IsValid() && previousScene.get_name() == "GameCore") {
+    setChromaRequired(false);
   }
 }
 

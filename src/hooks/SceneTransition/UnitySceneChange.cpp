@@ -11,14 +11,14 @@ using namespace GlobalNamespace;
 using namespace UnityEngine;
 using namespace Chroma;
 
-MAKE_HOOK_MATCH(SceneManager_Internal_SceneLoaded, &UnityEngine::SceneManagement::SceneManager::Internal_SceneLoaded,
-                void, UnityEngine::SceneManagement::Scene scene, UnityEngine::SceneManagement::LoadSceneMode mode) {
-  ChromaController::OnActiveSceneChanged(scene);
-  SceneManager_Internal_SceneLoaded(scene, mode);
+MAKE_HOOK_MATCH(SceneManager_Internal_ActiveSceneChanged, &UnityEngine::SceneManagement::SceneManager::Internal_ActiveSceneChanged,
+                void, UnityEngine::SceneManagement::Scene previousActiveScene, UnityEngine::SceneManagement::Scene newActiveScene) {
+  ChromaController::OnActiveSceneChanged(previousActiveScene, newActiveScene);
+  SceneManager_Internal_ActiveSceneChanged(previousActiveScene, newActiveScene);
 }
 
 void SceneManager_Internal() {
-  INSTALL_HOOK(ChromaLogger::Logger, SceneManager_Internal_SceneLoaded);
+  INSTALL_HOOK(ChromaLogger::Logger, SceneManager_Internal_ActiveSceneChanged);
 }
 
 ChromaInstallHooks(SceneManager_Internal)

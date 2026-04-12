@@ -77,7 +77,7 @@ public:
   inline static GlobalNamespace::BeatmapCallbacksController* CallbacksController = nullptr;
 
   // internal
-  static void OnActiveSceneChanged(UnityEngine::SceneManagement::Scene current);
+  static void OnActiveSceneChanged(UnityEngine::SceneManagement::Scene previousScene, UnityEngine::SceneManagement::Scene newScene);
 
   static custom_types::Helpers::Coroutine
   DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnController* beatmapObjectSpawnController);
