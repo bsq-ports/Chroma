@@ -7,9 +7,10 @@
 #include "GlobalNamespace/NoteDebrisSpawner.hpp"
 #include "GlobalNamespace/BombExplosionEffect.hpp"
 #include "GlobalNamespace/NoteController.hpp"
-#include "UnityEngine/Vector3.hpp"
-#include "GlobalNamespace/SaberType.hpp"
+#include "GlobalNamespace/AudioTimeSyncController.hpp"
+#include "GlobalNamespace/NoteCutHapticEffect.hpp"
 #include "colorizer/NoteColorizer.hpp"
+#include "UnityEngine/Vector3.hpp"
 #include "UnityEngine/Random.hpp"
 #include "UnityEngine/Space.hpp"
 #include "UnityEngine/Transform.hpp"
@@ -104,11 +105,32 @@ MAKE_HOOK_MATCH(BombExplosionEffect_SpawnExplosion, &BombExplosionEffect::SpawnE
   return BombExplosionEffect_SpawnExplosion(self, pos);
 }
 
+// Fix for crash upon hitting bombs
+// NoteCutCoreEffectsSpawner::SpawnBombCutEffect has an unused parameter that gets optimized out in assembly
+// Calling the method manually will provide Hook_NoteCutEffectSpawner_SpawnBombCutEffect with the expected parameters
+MAKE_HOOK_MATCH(NoteCutCoreEffectsSpawner_HandleNoteWasCut, &NoteCutCoreEffectsSpawner::HandleNoteWasCut, void,
+                NoteCutCoreEffectsSpawner* self, NoteController* noteController, ByRef<NoteCutInfo> noteCutInfo) {
+  // Do nothing if Chroma shouldn't run
+  if (!ChromaController::DoChromaHooks()) {
+    return NoteCutCoreEffectsSpawner_HandleNoteWasCut(self, noteController, noteCutInfo);
+  }
+
+  if (noteController->_noteData->time + 0.5 >= self->_audioTimeSyncController->_songTime
+      && noteController->_noteData->gameplayType == NoteData::GameplayType::Bomb) {
+    self->SpawnBombCutEffect(noteCutInfo, noteController);
+		self->_noteCutHapticEffect->HitNote(noteCutInfo->saberType, NoteCutHapticEffect::Type::Bomb);
+    return;
+  }
+
+  return NoteCutCoreEffectsSpawner_HandleNoteWasCut(self, noteController, noteCutInfo);
+}
+
 void NoteCutEffectSpawnerHook() {
   INSTALL_HOOK(ChromaLogger::Logger, NoteCutEffectSpawner_SpawnNoteCutEffect);
   INSTALL_HOOK(ChromaLogger::Logger, NoteCutEffectSpawner_SpawnBombCutEffect);
   INSTALL_HOOK(ChromaLogger::Logger, NoteDebrisSpawner_SpawnDebris);
   INSTALL_HOOK(ChromaLogger::Logger, BombExplosionEffect_SpawnExplosion);
+  INSTALL_HOOK(ChromaLogger::Logger, NoteCutCoreEffectsSpawner_HandleNoteWasCut);
 }
 
 ChromaInstallHooks(NoteCutEffectSpawnerHook)
