@@ -31,7 +31,7 @@ public:
   struct __ChromaRegister##func {                                                                                                          \
     __ChromaRegister##func() {                                                                                                             \
       Chroma::Hooks::AddInstallFunc(#func, func);                                                                                          \
-      Chroma::Logger.info("ChromaHooks Registered install func: " #func);                                                                  \
+      ChromaLogger::Logger.info("ChromaHooks Registered install func: " #func);                                                                  \
     }                                                                                                                                      \
   };                                                                                                                                       \
   static __ChromaRegister##func __ChromaRegisterInstance##func;
