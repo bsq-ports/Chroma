@@ -32,6 +32,7 @@
 #include "UnityEngine/Material.hpp"
 
 #include "System/Collections/Generic/List_1.hpp"
+#include "System/Array.hpp"
 
 #include "Zenject/DiContainer.hpp"
 
@@ -47,6 +48,8 @@
 #include "beatsaber-hook/shared/utils/typedefs-disposal.hpp"
 
 #include "sombrero/shared/linq_functional.hpp"
+
+#include "beatsaber-hook/shared/utils/il2cpp-utils-boxing.hpp"
 
 using namespace GlobalNamespace;
 using namespace Chroma;
@@ -76,12 +79,13 @@ GameObjectInfo const& Chroma::ComponentInitializer::InitializeComponents(UnityEn
 
     if (auto lightsWithIds = il2cpp_utils::try_cast<LightWithIds>(rootComp)) {
       if (lightsWithIds.value()->lightWithIds) {
-        auto* enumerator = lightsWithIds.value()->lightWithIds->GetEnumerator();
-        while (enumerator->i___System__Collections__IEnumerator()->MoveNext()) {
-          auto* light = enumerator->get_Current();
-          LightIdRegisterer::MarkForTableRegister(light->i___GlobalNamespace__ILightWithId());
+        auto enumerator = il2cpp_utils::Unbox<System::Array::InternalEnumerator_1<ILightWithId*>>(
+          reinterpret_cast<Il2CppObject*>(lightsWithIds.value()->lightWithIds->GetEnumerator()));
+        while (enumerator.MoveNext()) {
+          auto* light = enumerator.get_Current();
+          LightIdRegisterer::MarkForTableRegister(light);
         }
-        enumerator->i___System__IDisposable()->Dispose();
+        enumerator.Dispose();
       }
     }
 
@@ -357,18 +361,19 @@ static void InitializeLights(rapidjson::Value const& data, std::span<UnityEngine
         continue;
       }
 
-      auto* enumerator = castedLights.value()->lightWithIds->GetEnumerator();
+      auto enumerator = il2cpp_utils::Unbox<System::Array::InternalEnumerator_1<ILightWithId*>>(
+        reinterpret_cast<Il2CppObject*>(castedLights.value()->lightWithIds->GetEnumerator()));
 
       // MEMORY LEAK YAY
       // TODO: Fix
       //        auto dispose = bs_hook::Disposable(enumerator->i_IDisposable());
 
-      while (enumerator->i___System__Collections__IEnumerator()->MoveNext()) {
-        auto* e = enumerator->get_Current();
-        lightWithIds.emplace_back(e->i___GlobalNamespace__ILightWithId());
+      while (enumerator.MoveNext()) {
+        auto* e = enumerator.get_Current();
+        lightWithIds.emplace_back(e);
       }
 
-      enumerator->i___System__IDisposable()->Dispose();
+      enumerator.Dispose();
     } else if (auto castedMonoLight = il2cpp_utils::try_cast<LightWithIdMonoBehaviour>(comp)) {
       lightWithIds.emplace_back(castedMonoLight.value()->i___GlobalNamespace__ILightWithId());
     }
