@@ -3,20 +3,11 @@
 
 #include "colorizer/LightColorizer.hpp"
 
-#include <vector>
-#include <optional>
-#include "custom-json-data/shared/CustomBeatmapData.h"
-#include "System/Collections/IEnumerator.hpp"
-#include "custom-types/shared/coroutine.hpp"
-#include "UnityEngine/Color.hpp"
-#include "UnityEngine/WaitForEndOfFrame.hpp"
-#include "GlobalNamespace/ILightWithId.hpp"
 #include "GlobalNamespace/BeatmapCallbacksController.hpp"
 #include "GlobalNamespace/CallbacksInTime.hpp"
 #include "System/Collections/Generic/Dictionary_2.hpp"
 #include "UnityEngine/GameObject.hpp"
 #include "hooks/LightSwitchEventEffect.hpp"
-#include "lighting/LightIDTableManager.hpp"
 
 using namespace CustomJSONData;
 using namespace Chroma;
@@ -26,17 +17,6 @@ using namespace System::Collections;
 using namespace custom_types::Helpers;
 
 BeatmapCallbacksController* beatmapCallbacksController;
-
-custom_types::Helpers::Coroutine WaitThenStartLight(LightSwitchEventEffect* instance, BasicBeatmapEventType eventType) {
-  co_yield reinterpret_cast<IEnumerator*>(CRASH_UNLESS(WaitForEndOfFrame::New_ctor()));
-
-  auto* newEffect = instance->get_gameObject()->AddComponent<ChromaLightSwitchEventEffect*>();
-  newEffect->CopyValues(instance);
-
-  IL2CPP_CATCH_HANDLER(Object::Destroy(instance);)
-
-  co_return;
-}
 
 MAKE_HOOK_MATCH(LightSwitchEventEffect_Start, &LightSwitchEventEffect::Start, void, LightSwitchEventEffect* self) {
   static auto* ChromaLightSwitchEventEffectKlass = classof(ChromaLightSwitchEventEffect*);
@@ -51,9 +31,8 @@ MAKE_HOOK_MATCH(LightSwitchEventEffect_Start, &LightSwitchEventEffect::Start, vo
     return;
   }
 
-  auto coro = custom_types::Helpers::CoroutineHelper::New(WaitThenStartLight(self, self->_event));
-
-  self->StartCoroutine(coro);
+  auto* newEffect = self->get_gameObject()->AddComponent<ChromaLightSwitchEventEffect*>();
+  newEffect->CopyValues(self);
 }
 
 MAKE_HOOK_MATCH(BeatmapCallbacksController_ManualUpdate, &BeatmapCallbacksController::ManualUpdate, void,
