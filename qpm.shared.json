@@ -6,7 +6,7 @@
     "info": {
       "name": "Chroma",
       "id": "chroma",
-      "version": "2.10.1",
+      "version": "2.10.2",
       "url": "https://github.com/bsq-ports/Chroma",
       "additionalData": {
         "headersOnly": true,
@@ -95,7 +95,7 @@
       },
       {
         "id": "tracks",
-        "versionRange": "^2.5.1",
+        "versionRange": "^2.5.2",
         "additionalData": {
           "private": true
         }
@@ -164,13 +164,13 @@
     {
       "dependency": {
         "id": "tracks",
-        "versionRange": "=2.5.1",
+        "versionRange": "=2.5.2",
         "additionalData": {
           "overrideSoName": "libtracks.so",
           "cmake": true
         }
       },
-      "version": "2.5.1"
+      "version": "2.5.2"
     },
     {
       "dependency": {
