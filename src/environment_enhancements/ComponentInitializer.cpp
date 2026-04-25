@@ -361,6 +361,7 @@ static void InitializeLights(rapidjson::Value const& data, std::span<UnityEngine
         continue;
       }
 
+      // TODO: Casting and method calling safety
       auto enumerator = il2cpp_utils::Unbox<System::Array::InternalEnumerator_1<ILightWithId*>>(
         reinterpret_cast<Il2CppObject*>(castedLights.value()->lightWithIds->GetEnumerator()));
 
