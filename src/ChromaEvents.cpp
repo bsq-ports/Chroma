@@ -57,14 +57,15 @@ void ChromaEvents::parseEventData(TracksAD::BeatmapAssociatedData& beatmapAD, Cu
 
     std::string trackName(trackIt->value.GetString());
     TrackW track = beatmapAD.getTrack(trackName);
-
+    // TODO: TO track array?
     eventAD.data.emplace<AssignBloomFogTrack>(track);
   }
 
   if (typeHash == jsonNameHash_ANIMATE_COMPONENT) {
-    auto trackIt = eventData.FindMember((v2 ? Chroma::NewConstants::V2_TRACK : Chroma::NewConstants::TRACK).data());
+    auto tracks = NEJSON::ReadOptionalTracks(eventData, v2 ? Chroma::NewConstants::V2_TRACK : Chroma::NewConstants::TRACK, beatmapAD);
 
-    if (trackIt == eventData.MemberEnd() || trackIt->value.IsNull() || !trackIt->value.IsString()) {
+
+    if (!tracks.has_value() || tracks->empty()) {
       ChromaLogger::Logger.debug("Track data is missing for Chroma custom event {}", customEventData->____time_k__BackingField);
       return;
     }
@@ -74,7 +75,6 @@ void ChromaEvents::parseEventData(TracksAD::BeatmapAssociatedData& beatmapAD, Cu
     auto easing = static_cast<Functions>(
         NEJSON::ReadOptionalInt(eventData, Chroma::NewConstants::EASING.data()).value_or(static_cast<int>(Functions::EaseLinear)));
 
-    auto tracks = NEJSON::ReadOptionalTracks(eventData, Chroma::NewConstants::TRACK, beatmapAD).value();
 
     auto const availableNames = { Chroma::NewConstants::BLOOM_FOG_ENVIRONMENT, Chroma::NewConstants::TUBE_BLOOM_PRE_PASS_LIGHT };
     std::unordered_map<std::string_view, std::vector<AnimateComponentEventData::ComponentData>> coroutineInfos;
@@ -116,7 +116,7 @@ void ChromaEvents::parseEventData(TracksAD::BeatmapAssociatedData& beatmapAD, Cu
       }
     }
 
-    eventAD.data.emplace<AnimateComponentEventData>(duration, easing, tracks, coroutineInfos);
+    eventAD.data.emplace<AnimateComponentEventData>(duration, easing, *tracks, coroutineInfos);
   }
 }
 

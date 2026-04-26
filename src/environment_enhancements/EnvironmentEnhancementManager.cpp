@@ -340,25 +340,7 @@ void EnvironmentEnhancementManager::Init(CustomJSONData::CustomBeatmapData* cust
     std::optional<bool> active = getIfExists<bool>(gameObjectDataVal, v2 ? NewConstants::V2_ACTIVE : NewConstants::ACTIVE);
 
     // Create track if objects are found
-    auto trackNameIt = gameObjectDataVal.FindMember(v2 ? Chroma::NewConstants::V2_TRACK.data() : Chroma::NewConstants::TRACK.data());
-
-    std::optional<std::string_view> trackName;
-    std::vector<TrackW> tracks;
-
-    if (trackNameIt != gameObjectDataVal.MemberEnd()) {
-      auto const& trackJSON = trackNameIt->value;
-      if (trackJSON.IsString()) {
-        trackName = trackJSON.GetString();
-        std::string_view val = *trackName;
-        tracks = { trackBeatmapAD.getTrack(val) };
-      } else if (trackJSON.IsArray()) {
-        for (auto const& trackJSONItem : trackJSON.GetArray()) {
-          trackName = trackJSON.GetString();
-          std::string_view val = *trackName;
-          tracks.emplace_back(trackBeatmapAD.getTrack(val));
-        }
-      }
-    }
+    auto tracks = NEJSON::ReadOptionalTracks(gameObjectDataVal, v2 ? Chroma::NewConstants::V2_TRACK.data() : Chroma::NewConstants::TRACK.data(), trackBeatmapAD).value_or(TracksAD::TracksVector{});
 
     std::vector<ByRef<GameObjectInfo const>> gameObjectInfos;
     if (dupeAmount) {

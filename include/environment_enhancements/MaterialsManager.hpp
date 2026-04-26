@@ -27,7 +27,7 @@ bool IsLightType(ShaderType shaderType);
 
 struct MaterialInfo {
   MaterialInfo(ShaderType shaderType, std::string_view shaderTypeStr,
-               SafePtrUnity<UnityEngine::Material> const& material, std::optional<std::vector<TrackW>> track)
+               SafePtrUnity<UnityEngine::Material> const& material, std::optional<TracksAD::TracksVector> track)
       : ShaderType(shaderType), ShaderTypeStr(shaderTypeStr), Material(material), Track(std::move(track)) {
     CRASH_UNLESS(material.isAlive());
   }
@@ -37,7 +37,7 @@ struct MaterialInfo {
 
   SafePtrUnity<UnityEngine::Material> Material;
 
-  std::optional<std::vector<TrackW>> Track;
+  std::optional<TracksAD::TracksVector> Track;
 };
 
 struct MaterialsManager {

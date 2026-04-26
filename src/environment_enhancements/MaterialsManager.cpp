@@ -165,21 +165,8 @@ MaterialInfo Chroma::MaterialsManager::CreateMaterialInfo(rapidjson::Value const
   auto shaderTypeStr = ChromaUtils::getIfExists<std::string_view>(data, v2 ? NewConstants::V2_SHADER_PRESET : NewConstants::SHADER_PRESET);
   ShaderType shaderType = shaderTypeStr ? shaderTypeFromString(shaderTypeStr->data()) : ShaderType::Standard;
 
-  std::optional<std::vector<TrackW>> tracks;
-
-  auto tracksIt = data.FindMember(v2 ? NewConstants::V2_TRACK.data() : NewConstants::TRACK.data());
-  if (tracksIt != data.MemberEnd()) {
-    auto size = tracksIt->value.IsString() ? 1 : tracksIt->value.Size();
-    tracks.emplace().reserve(size);
-
-    if (tracksIt->value.IsString()) {
-      tracks.value().emplace_back(beatmapAD.getTrack(tracksIt->value.GetString()));
-    } else if (tracksIt->value.IsArray()) {
-      for (auto const& it : tracksIt->value.GetArray()) {
-        tracks.value().emplace_back(beatmapAD.getTrack(it.GetString()));
-      }
-    }
-  }
+  auto tracks = NEJSON::ReadOptionalTracks(data, v2 ? NewConstants::V2_TRACK.data() : NewConstants::TRACK.data(), beatmapAD)
+                    .value_or(TracksAD::TracksVector{});
 
   auto* originalMaterial = GetMaterialTemplate(shaderType);
 
