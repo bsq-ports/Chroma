@@ -20,7 +20,8 @@ Checks: >
   -readability-function-cognitive-complexity,
   -cppcoreguidelines-init-variables,
   -cppcoreguidelines-missing-std-forward,
-  -readability-magic-numbers
+  -readability-magic-numbers,
+  -bugprone-suspicious-stringview-data-usage
 
 # Exclude only the extern/ directory but not other paths containing "extern"
 HeaderFilterRegex: "^((?!extern/).)*$"
