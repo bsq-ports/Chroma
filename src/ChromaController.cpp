@@ -121,7 +121,7 @@ void ChromaController::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene 
     MaterialsManager::Reset();
   }
 
-  else if (previousScene.IsValid() && previousScene.get_name() == "GameCore") {
+  else if (newScene.IsValid() && newScene.get_name() != "GameCore" && newScene.get_name() != "EmptyTransition") {
     setChromaRequired(false);
   }
 }
