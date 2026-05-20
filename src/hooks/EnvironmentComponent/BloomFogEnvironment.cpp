@@ -10,12 +10,14 @@ using namespace GlobalNamespace;
 using namespace UnityEngine;
 
 MAKE_HOOK_MATCH(BloomFogEnvironment_Awake, &BloomFogEnvironment::OnEnable, void, BloomFogEnvironment* self) {
-  BloomFogEnvironment_Awake(self);
   if (!ChromaController::DoChromaHooks()) {
+    BloomFogEnvironment_Awake(self);
     return;
   }
 
   self->_fogParams = Object::Instantiate(self->fogParams);
+
+  BloomFogEnvironment_Awake(self);
 }
 
 void BloomFogEnvironmentHook() {
