@@ -197,3 +197,7 @@ void Chroma::Component::StartEvent(GlobalNamespace::BeatmapCallbacksController* 
     }
   }
 }
+
+void Chroma::Component::ClearCoroutines() {
+  coroutines.clear();
+}

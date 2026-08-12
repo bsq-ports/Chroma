@@ -26,6 +26,7 @@
 #include "colorizer/LightColorizer.hpp"
 #include "colorizer/ParticleColorizer.hpp"
 
+#include "ChromaComponentManager.hpp"
 #include "lighting/LegacyLightHelper.hpp"
 #include "environment_enhancements/EnvironmentEnhancementManager.hpp"
 #include "environment_enhancements/MaterialsManager.hpp"
@@ -111,6 +112,7 @@ void ChromaController::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene 
     ChromaGradientController::clearInstance();
     TrackLaneRingsManagerHolder::RingManagers.clear();
     TrackLaneRingsManagerHolder::RingManagers.shrink_to_fit(); // Deallocate unnecessary used memory
+    Chroma::Component::ClearCoroutines();
     LightColorizer::Reset();
     ObstacleColorizer::Reset();
     BombColorizer::Reset();

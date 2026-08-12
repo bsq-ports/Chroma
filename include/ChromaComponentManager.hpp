@@ -17,4 +17,5 @@ void StartEvent(GlobalNamespace::BeatmapCallbacksController* callbackController,
                 CustomJSONData::CustomEventData* customEventData,
                 ChromaEvents::AnimateComponentEventData const& eventAD);
 void UpdateCoroutines(GlobalNamespace::BeatmapCallbacksController* callbackController);
+void ClearCoroutines();
 } // namespace Chroma::Component
