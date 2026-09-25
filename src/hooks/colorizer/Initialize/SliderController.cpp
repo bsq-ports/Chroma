@@ -21,11 +21,7 @@ MAKE_HOOK_MATCH(SliderController_Awake, &SliderController::Awake, void, SliderCo
 
 MAKE_HOOK_MATCH(SliderController_OnDestroy, &SliderController::OnDestroy, void, SliderController* self) {
   SliderController_OnDestroy(self);
-  // Do nothing if Chroma shouldn't run
-  if (!ChromaController::DoChromaHooks()) {
-    return;
-  }
-
+  // Active-scene changes can disable Chroma before these objects are destroyed.
   SliderColorizer::Colorizers.erase(self);
 }
 
