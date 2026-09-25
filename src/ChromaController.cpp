@@ -1,6 +1,7 @@
 #include "main.hpp"
 #include "ChromaConfig.hpp"
 #include "ChromaController.hpp"
+#include "GameplayLifetime.hpp"
 
 #include "beatsaber-hook/shared/utils/logging.hpp"
 #include "ChromaLogger.hpp"
@@ -20,6 +21,7 @@
 #include "custom-json-data/shared/CustomBeatmapData.h"
 
 #include "colorizer/NoteColorizer.hpp"
+#include "colorizer/SliderColorizer.hpp"
 #include "colorizer/SaberColorizer.hpp"
 #include "colorizer/ObstacleColorizer.hpp"
 #include "colorizer/BombColorizer.hpp"
@@ -104,23 +106,28 @@ ChromaController::DelayedStartEnumerator(GlobalNamespace::BeatmapObjectSpawnCont
   co_return; // Reached end of coroutine
 }
 
+void ClearChromaGameplayReferences() {
+  CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Clearing all data");
+  ChromaGradientController::clearInstance();
+  TrackLaneRingsManagerHolder::RingManagers.clear();
+  TrackLaneRingsManagerHolder::RingManagers.shrink_to_fit(); // Deallocate unnecessary used memory
+  Chroma::Component::ClearCoroutines();
+  LightColorizer::Reset();
+  ObstacleColorizer::Reset();
+  BombColorizer::Reset();
+  NoteColorizer::Reset();
+  SliderColorizer::Reset();
+  SaberColorizer::Reset();
+  ParticleColorizer::Reset();
+  LightIdRegisterer::Reset();
+  MaterialsManager::Reset();
+}
+
 void ChromaController::OnActiveSceneChanged(UnityEngine::SceneManagement::Scene previousScene, UnityEngine::SceneManagement::Scene newScene) {
   ChromaLogger::Logger.debug("Clear scene");
 
   if (newScene.IsValid() && newScene.get_name() == "GameCore") {
-    CJDLogger::Logger.fmtLog<Paper::LogLevel::INF>("Clearing all data");
-    ChromaGradientController::clearInstance();
-    TrackLaneRingsManagerHolder::RingManagers.clear();
-    TrackLaneRingsManagerHolder::RingManagers.shrink_to_fit(); // Deallocate unnecessary used memory
-    Chroma::Component::ClearCoroutines();
-    LightColorizer::Reset();
-    ObstacleColorizer::Reset();
-    BombColorizer::Reset();
-    NoteColorizer::Reset();
-    SaberColorizer::Reset();
-    ParticleColorizer::Reset();
-    LightIdRegisterer::Reset();
-    MaterialsManager::Reset();
+    ClearChromaGameplayReferences();
   }
 
   else if (newScene.IsValid() && newScene.get_name() != "GameCore" && newScene.get_name() != "EmptyTransition") {
